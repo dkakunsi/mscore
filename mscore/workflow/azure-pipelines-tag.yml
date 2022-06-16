@@ -1,0 +1,54 @@
+# Maven
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+trigger:
+  branches:
+    include:
+      - refs/tags/*
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: Bash@3
+  name: 'Version'
+  displayName: 'Set Tag'
+  inputs:
+    targetType: 'inline'
+    script: 'echo "##vso[task.setvariable variable=tag;isOutput=true]$(git describe --tags --abbrev=0)"'
+
+- task: Bash@3
+  displayName: 'Print Version'
+  inputs:
+    targetType: 'inline'
+    script: 'echo "$(Version.tag)"'
+
+- task: MavenAuthenticate@0
+  displayName: 'Maven Authenticate'
+  inputs:
+    artifactsFeeds: mscore
+
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.11'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'deploy'
+    options: -Drevision=$(Version.tag)
+
+- task: Docker@2
+  displayName: 'Docker build & push workflow image'
+  inputs:
+    containerRegistry: 'Docker Hub - devit16'
+    repository: 'devit16/mscore-workflow-service'
+    command: 'buildAndPush'
+    Dockerfile: '**/service/target/Dockerfile'
+    tags: |
+      latest
+      $(Version.tag)

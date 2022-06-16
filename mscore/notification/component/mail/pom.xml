@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.devit.mscore</groupId>
+        <artifactId>notification-component</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>mail</artifactId>
+    <version>${revision}</version>
+    <packaging>jar</packaging>
+    <name>MS Core :: Notification :: Email Implementation</name>
+
+    <properties>
+        <revision>1.0-SNAPSHOT</revision>
+        <minimum.class.line.coverage>0.5</minimum.class.line.coverage>
+        <mail.version>2.0.1</mail.version>
+        <activation.version>2.0.0</activation.version>
+        <greenmail.version>2.0.0-alpha-2</greenmail.version>
+        <javax-mail.version>1.6.2</javax-mail.version>
+        <javax-activation.version>1.2.0</javax-activation.version>
+        <notification-api.version>${revision}</notification-api.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>notification-api</artifactId>
+            <version>${notification-api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>${mail.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sun.activation</groupId>
+                    <artifactId>jakarta.activation</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
+            <version>${activation.version}</version>
+        </dependency>
+
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>com.icegreen</groupId>
+            <artifactId>greenmail</artifactId>
+            <version>${greenmail.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sun.mail</groupId>
+                    <artifactId>jakarta.mail</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+</project>

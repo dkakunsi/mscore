@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.devit.mscore</groupId>
+        <artifactId>workflow-component</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <groupId>com.devit.mscore</groupId>
+    <artifactId>flowable-delegate</artifactId>
+    <version>${revision}</version>
+    <packaging>jar</packaging>
+    <name>MSCore :: Workflow :: Delegate</name>
+
+    <properties>
+        <revision>1.0-SNAPSHOT</revision>
+        <workflow.version>${revision}</workflow.version>
+        <common.version>[0.1,2.0)</common.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>flowable</artifactId>
+            <version>${workflow.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.liquibase</groupId>
+                    <artifactId>liquibase-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+</project>

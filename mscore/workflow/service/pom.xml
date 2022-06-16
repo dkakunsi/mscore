@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.devit.mscore</groupId>
+        <artifactId>main</artifactId>
+        <version>1.1.17</version>
+        <relativePath />
+    </parent>
+
+    <artifactId>workflow</artifactId>
+    <version>${revision}</version>
+    <name>MSCore :: Workflow Service</name>
+
+    <properties>
+        <revision>1.0-SNAPSHOT</revision>
+        <assembly.mainClass>com.devit.mscore.workflow.Main</assembly.mainClass>
+
+        <javalin.version>[1.0,2.0)</javalin.version>
+        <jersey.version>[1.0,2.0)</jersey.version>
+        <kafka.version>[1.0,2.0)</kafka.version>
+        <auth.version>[1.0,2.0)</auth.version>
+        <local.version>[1.0,2.0)</local.version>
+        <zk.version>[1.0,2.0)</zk.version>
+
+        <flowable.version>${revision}</flowable.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>flowable</artifactId>
+            <version>${flowable.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>javalin</artifactId>
+            <version>${javalin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>flowable-delegate</artifactId>
+            <version>${flowable.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>jersey</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>kafka</artifactId>
+            <version>${kafka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>authentication</artifactId>
+            <version>${auth.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>local</artifactId>
+            <version>${local.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>${zk.version}</version>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>enable-docker</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <repositories>
+        <repository>
+            <id>mscore</id>
+            <url>https://pkgs.dev.azure.com/iddevit/mscore/_packaging/mscore/maven/v1</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+</project>
