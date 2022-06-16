@@ -1,0 +1,2 @@
+platform.mongo.host=mongo-host
+services.data.schema.resource.location

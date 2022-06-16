@@ -1,0 +1,4 @@
+platform.mongo.host=mongo-host
+services.data.schema.resource.location=
+
+services.workflow.db.name=workflow

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.devit.mscore</groupId>
+    <artifactId>history-component</artifactId>
+    <version>${revision}</version>
+  </parent>
+
+  <artifactId>git</artifactId>
+  <packaging>jar</packaging>
+  <name>MS Core :: History :: Git Implementation</name>
+
+  <properties>
+    <revision>1.0-SNAPSHOT</revision>
+    <history-api.version>${revision}</history-api.version>
+    <jgit.version>6.0.0.202111291000-r</jgit.version>
+    <jsch.version>0.1.72</jsch.version>
+    <commons-io.version>2.11.0</commons-io.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.devit.mscore</groupId>
+      <artifactId>history-api</artifactId>
+      <version>${history-api.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jgit</groupId>
+      <artifactId>org.eclipse.jgit</artifactId>
+      <version>${jgit.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jgit</groupId>
+      <artifactId>org.eclipse.jgit.ssh.jsch</artifactId>
+      <version>${jgit.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.jcraft</groupId>
+          <artifactId>jsch</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.github.mwiede</groupId>
+      <artifactId>jsch</artifactId>
+      <version>${jsch.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io.version}</version>
+    </dependency>
+  </dependencies>
+</project>

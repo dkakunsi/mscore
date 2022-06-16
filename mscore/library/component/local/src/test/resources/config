@@ -1,0 +1,8 @@
+platform.mongo.host=mongo-host
+services.data.schema.resource.location=./schema
+
+services.workflow.db.name=workflow
+
+service.name=test
+
+# commentcd comp

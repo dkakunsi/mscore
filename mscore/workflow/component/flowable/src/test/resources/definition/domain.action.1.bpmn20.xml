@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions 
+        xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:flowable="http://flowable.org/bpmn"
+        typeLanguage="http://www.w3.org/2001/XMLSchema"
+        expressionLanguage="http://www.w3.org/1999/XPath"
+        targetNamespace="http://www.flowable.org/processdef">
+
+    <process id="domain.action" name="Test Definition" isExecutable="true">
+
+        <startEvent id="startEvent" />
+        <sequenceFlow sourceRef="startEvent" targetRef="approveTask" />
+
+        <userTask id="approveTask" name="Test Approve" flowable:assignee="${approver}" />
+        <sequenceFlow sourceRef="approveTask" targetRef="decision" />
+
+        <exclusiveGateway id="decision" />
+        <sequenceFlow sourceRef="decision" targetRef="approvedCall">
+            <conditionExpression xsi:type="tFormalExpression">
+                <![CDATA[
+                    ${approved}
+                ]]>
+            </conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow sourceRef="decision" targetRef="rejectedCall">
+            <conditionExpression xsi:type="tFormalExpression">
+                <![CDATA[
+                    ${!approved}
+                ]]>
+            </conditionExpression>
+        </sequenceFlow>
+
+        <serviceTask id="approvedCall" name="Process after approval" flowable:class="com.devit.mscore.workflow.flowable.delegate.TestDelegate" />
+        <sequenceFlow sourceRef="approvedCall" targetRef="approvedTask" />
+
+        <userTask id="approvedTask" name="Test Approved" flowable:assignee="${assignee}" />
+        <sequenceFlow sourceRef="approvedTask" targetRef="approveEnd" />
+
+        <serviceTask id="rejectedCall" name="Process After Rejction" flowable:class="com.devit.mscore.workflow.flowable.delegate.TestDelegate" />
+        <sequenceFlow sourceRef="rejectedCall" targetRef="rejectEnd" />
+
+        <endEvent id="approveEnd" />
+        <endEvent id="rejectEnd" />
+    </process>
+
+</definitions>
