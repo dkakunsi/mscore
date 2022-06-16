@@ -1,0 +1,30 @@
+trigger:
+  branches:
+    exclude:
+      - master
+  paths:
+      exclude: 
+        - mscore/common/README.MD
+        - mscore/common/azure-pipelines*
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: MavenAuthenticate@0
+  displayName: 'Maven Authenticate'
+  inputs:
+    artifactsFeeds: mscore
+
+- task: Maven@3
+  displayName: 'Maven build'
+  inputs:
+    mavenPomFile: 'mscore/common/pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.11'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    testResultsFiles: 'mscore/common/**/surefire-reports/TEST-*.xml'
+    goals: 'install'
+    options: -Drevision=$(Build.BuildNumber)
