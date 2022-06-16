@@ -15,9 +15,9 @@ public class ApiFactory extends JavalinApiFactory {
     }
 
     public static ApiFactory of(ApplicationContext context, Configuration configuration, AuthenticationProvider authentication) {
-        var manager = new ApiFactory(context, configuration);
-        manager.authentication = authentication;
-        return manager;
+        var factory = new ApiFactory(context, configuration);
+        factory.authentication = authentication;
+        return factory;
     }
 
     public ApiFactory addService(Service service) {

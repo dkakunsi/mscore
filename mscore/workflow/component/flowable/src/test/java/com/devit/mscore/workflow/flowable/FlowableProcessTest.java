@@ -73,20 +73,16 @@ public class FlowableProcessTest {
 
     @Before
     public void setup() throws RegistryException, ConfigException {
-        var map = new HashMap<String, Object>();
-        map.put("principal", new JSONObject("{\"requestedBy\":\"createdBy\"}"));
-        this.context = DefaultApplicationContext.of("test", map);
-
         this.configuration = mock(Configuration.class);
-        doReturn(Optional.of("localhost")).when(this.configuration).getConfig(this.context, "process.db.host");
-        doReturn(Optional.of("5432")).when(this.configuration).getConfig(this.context, "process.db.port");
-        doReturn(Optional.of("flowable")).when(this.configuration).getConfig(this.context, "process.db.name");
-        doReturn(Optional.of("process")).when(this.configuration).getConfig(this.context, "process.db.schema");
-        doReturn(Optional.of("postgres")).when(this.configuration).getConfig(this.context, "process.db.username");
-        doReturn(Optional.of("postgres")).when(this.configuration).getConfig(this.context, "process.db.password");
-        doReturn(Optional.of(TASK_INDEX)).when(this.configuration).getConfig(this.context, "process.index.task");
-        doReturn(Optional.of(INSTANCE_INDEX)).when(this.configuration).getConfig(this.context, "process.index.instance");
-        doReturn(Optional.of("definition")).when(this.configuration).getConfig(this.context, "process.definition.location");
+        doReturn(Optional.of("localhost")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.db.host"));
+        doReturn(Optional.of("5432")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.db.port"));
+        doReturn(Optional.of("flowable")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.db.name"));
+        doReturn(Optional.of("process")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.db.schema"));
+        doReturn(Optional.of("postgres")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.db.username"));
+        doReturn(Optional.of("postgres")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.db.password"));
+        doReturn(Optional.of(TASK_INDEX)).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.index.task"));
+        doReturn(Optional.of(INSTANCE_INDEX)).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.index.instance"));
+        doReturn(Optional.of("definition")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.definition.location"));
         doReturn(true).when(this.configuration).has("workflow.definition.location");
 
         this.serviceRegistration = mock(ServiceRegistration.class);
@@ -105,6 +101,9 @@ public class FlowableProcessTest {
         TestDelegate.registry = this.registry;
 
         this.process = getProcess();
+        var map = new HashMap<String, Object>();
+        map.put("requestedBy", "createdBy");
+        this.context = DefaultApplicationContext.of("test", map);
 
         // only for coverage
         this.dataClient.getDomainUri(this.context, "domain");
@@ -275,10 +274,8 @@ public class FlowableProcessTest {
         doReturn(argumentObject.toString()).when(this.registry).get(any(ApplicationContext.class), eq("domain.action"));
 
         // Create instance
-        var processInstance = this.process.createInstanceByAction(this.context, 
-                argumentObject.getString("name"),
-                new JSONObject(ENTITY), 
-                new JSONObject(VARIABLES).toMap());
+        var processInstance = this.process.createInstanceByAction(this.context, argumentObject.getString("name"),
+                new JSONObject(ENTITY), new JSONObject(VARIABLES).toMap());
         assertNotNull(processInstance);
 
         // Verify task is created

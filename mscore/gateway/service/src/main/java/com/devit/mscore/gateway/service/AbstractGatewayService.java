@@ -24,5 +24,5 @@ public abstract class AbstractGatewayService implements Service {
         } catch (RegistryException ex) {
             throw new ApplicationRuntimeException(ex);
         }
-}
+    }
 }

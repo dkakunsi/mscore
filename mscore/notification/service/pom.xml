@@ -17,10 +17,11 @@
         <revision>1.0-SNAPSHOT</revision>
         <assembly.mainClass>com.devit.mscore.notification.Main</assembly.mainClass>
         <local.version>[1.0,2.0)</local.version>
+        <zookeeper.version>[1.0,2.0)</zookeeper.version>
         <jersey.version>[1.0,2.0)</jersey.version>
         <kafka.version>[1.0,2.0)</kafka.version>
-        <pebble.version>[1.0,2.0)</pebble.version>
 
+        <pebble.version>${revision}</pebble.version>
         <mail.version>${revision}</mail.version>
     </properties>
 
@@ -40,6 +41,11 @@
             <groupId>com.devit.mscore</groupId>
             <artifactId>local</artifactId>
             <version>${local.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>${zookeeper.version}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>

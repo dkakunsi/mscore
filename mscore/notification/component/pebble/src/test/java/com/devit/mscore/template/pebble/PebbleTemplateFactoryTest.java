@@ -3,6 +3,8 @@ package com.devit.mscore.template.pebble;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -10,6 +12,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
+import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.Registry;
@@ -28,11 +31,15 @@ public class PebbleTemplateFactoryTest {
 
     private PebbleTemplateFactory factory;
 
+    private ApplicationContext context;
+
     @Before
     public void setup() {
+        this.context = DefaultApplicationContext.of("test");
         this.registry = mock(Registry.class);
         this.configuration = mock(Configuration.class);
-        doReturn(true).when(this.configuration).has("template.resource.location");
+        doReturn("notification").when(this.configuration).getServiceName();
+        doReturn(true).when(this.configuration).has("services.notification.template.resource.location");
         this.factory = PebbleTemplateFactory.of(this.registry, this.configuration);
     }
 
@@ -44,8 +51,7 @@ public class PebbleTemplateFactoryTest {
 
     @Test
     public void testGetResourceLocation() throws ConfigException {
-        var context = DefaultApplicationContext.of("test");
-        doReturn(Optional.of("./template")).when(this.configuration).getConfig(context, "template.resource.location");
+        doReturn(Optional.of("./template")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("services.notification.template.resource.location"));
 
         var location = this.factory.getResourceLocation(context);
         assertThat(location, is("./template"));
