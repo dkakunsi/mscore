@@ -3,7 +3,7 @@ trigger:
     exclude:
       - master
   paths:
-    inlcude:
+    include:
       - mscore/gateway/**
     exclude: 
       - mscore/gateway/README.MD

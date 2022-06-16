@@ -3,14 +3,20 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.devit.mscore</groupId>
   <artifactId>history-platform</artifactId>
-  <version>1.0</version>
+  <version>${revision}</version>
   <packaging>pom</packaging>
   <name>MSCore :: History Platform</name>
+
+  <properties>
+    <revision>1.0-SNAPSHOT</revision>
+  </properties>
+
   <modules>
     <module>api</module>
     <module>component</module>
     <module>service</module>
   </modules>
+
   <build>
     <plugins>
       <plugin>

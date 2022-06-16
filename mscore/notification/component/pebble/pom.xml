@@ -14,7 +14,7 @@
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>
-        <notification-api.version>[1.0,2.0)</notification-api.version>
+        <notification-api.version>${revision}</notification-api.version>
         <pebble.version>3.1.5</pebble.version>
     </properties>
 

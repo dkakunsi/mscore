@@ -3,9 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.devit</groupId>
     <artifactId>mscore</artifactId>
-    <version>1.2</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
     <name>MSCore</name>
+
+    <properties>
+        <revision>1.0-SNAPSHOT</revision>
+    </properties>
 
     <modules>
         <module>common</module>
@@ -16,4 +20,16 @@
         <module>notification</module>
         <module>workflow</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                  <skip>true</skip>
+                </configuration>
+              </plugin>
+        </plugins>
+    </build>
 </project>
