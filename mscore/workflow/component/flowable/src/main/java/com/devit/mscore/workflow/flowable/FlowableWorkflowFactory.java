@@ -22,19 +22,21 @@ import org.postgresql.ds.PGSimpleDataSource;
 
 public class FlowableWorkflowFactory extends ResourceManager {
 
-    private static final String DB_HOST = "workflow.db.host";
+    private static final String DB_HOST = "platform.postgres.host";
 
-    private static final String DB_PORT = "workflow.db.port";
+    private static final String DB_PORT = "platform.postgres.port";
 
-    private static final String DB_NAME = "workflow.db.name";
+    private static final String DB_USERNAME = "platform.postgres.username";
 
-    private static final String DB_SCHEMA = "workflow.db.schema";
+    private static final String DB_PASSWORD = "platform.postgres.password";
 
-    private static final String DB_USERNAME = "workflow.db.username";
+    private static final String DB_NAME = "services.%s.db.name";
 
-    private static final String DB_PASSWORD = "workflow.db.password";
+    private static final String DB_SCHEMA = "services.%s.db.schema";
 
-    private static final String LOCATION = "workflow.definition.location";
+    private static final String LOCATION = "services.%s.definition.location";
+
+    private static final String DEFAULT_PORT = "5432";
 
     protected FlowableWorkflowFactory(Configuration configuration, Registry registry) {
         super("workflow_definition", configuration, registry);
@@ -54,36 +56,35 @@ public class FlowableWorkflowFactory extends ResourceManager {
     }
 
     private DataSource getDataSource(ApplicationContext context) throws ConfigException {
+        var serviceName = this.configuration.getServiceName();
+
         var dataSource = new PGSimpleDataSource();
-        dataSource.setServerNames(getDataSourceConfig(context, DB_HOST).split(","));
+        dataSource.setServerNames(this.configuration.getConfig(context, DB_HOST).orElseThrow(() -> new ConfigException("No psql host provided")).split(","));
         dataSource.setPortNumbers(getPorts(context));
-        dataSource.setUser(getDataSourceConfig(context, DB_USERNAME));
-        dataSource.setPassword(getDataSourceConfig(context, DB_PASSWORD));
-        dataSource.setCurrentSchema(getDataSourceConfig(context, DB_SCHEMA));
-        dataSource.setDatabaseName(getDataSourceConfig(context, DB_NAME));
+        dataSource.setUser(this.configuration.getConfig(context, DB_USERNAME).orElseThrow(() -> new ConfigException("No psql user provided")));
+        dataSource.setPassword(this.configuration.getConfig(context, DB_PASSWORD).orElseThrow(() -> new ConfigException("No psql password provided")));
+        dataSource.setCurrentSchema(this.configuration.getConfig(context, String.format(DB_SCHEMA, serviceName)).orElseThrow(() -> new ConfigException("No psql schema configured")));
+        dataSource.setDatabaseName(this.configuration.getConfig(context, String.format(DB_NAME, serviceName)).orElseThrow(() -> new ConfigException("No psql database configured")));
         return dataSource;
     }
 
     private int[] getPorts(ApplicationContext context) throws ConfigException {
-        var ports = getDataSourceConfig(context, DB_PORT).split(",");
+        var ports = this.configuration.getConfig(context, DB_PORT).orElse(DEFAULT_PORT).split(",");
         return Arrays.stream(ports).mapToInt(Integer::parseInt).toArray();
     }
 
-    private String getDataSourceConfig(ApplicationContext context, String configName) throws ConfigException {
-        return this.configuration.getConfig(context, configName).orElse("");
-    }
-
     public List<WorkflowDefinition> getDefinitions(ApplicationContext context) throws RegistryException {
-        var registeredDefinitions = this.registry.all(context);
+        var registeredDefinitions = this.registry.values(context);
         var definitions = new ArrayList<WorkflowDefinition>();
-        registeredDefinitions.forEach((name, definition) -> definitions.add(new FlowableDefinition(definition)));
+        registeredDefinitions.forEach(definition -> definitions.add(new FlowableDefinition(definition)));
         return definitions;
     }
 
     @Override
     protected String getResourceLocation(ApplicationContext context) {
+        var configName = String.format(LOCATION, this.configuration.getServiceName());
         try {
-            return this.configuration.getConfig(context, LOCATION).orElse(null);
+            return this.configuration.getConfig(context, configName).orElse(null);
         } catch (ConfigException ex) {
             return null;
         }

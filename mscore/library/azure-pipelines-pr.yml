@@ -4,10 +4,10 @@ trigger:
       - master
   paths:
     include:
-      - mscore/common/**
+      - mscore/library/**
     exclude: 
-      - mscore/common/README.MD
-      - mscore/common/azure-pipelines*
+      - mscore/library/README.MD
+      - mscore/library/azure-pipelines*
 
 pool:
   vmImage: ubuntu-latest
@@ -21,12 +21,12 @@ steps:
 - task: Maven@3
   displayName: 'Maven build'
   inputs:
-    mavenPomFile: 'mscore/common/pom.xml'
+    mavenPomFile: 'mscore/library/pom.xml'
     mavenOptions: '-Xmx3072m'
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.11'
     jdkArchitectureOption: 'x64'
     publishJUnitResults: true
-    testResultsFiles: 'mscore/common/**/surefire-reports/TEST-*.xml'
+    testResultsFiles: 'mscore/library/**/surefire-reports/TEST-*.xml'
     goals: 'install'
     options: -Drevision=$(Build.BuildNumber)

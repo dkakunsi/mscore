@@ -1,29 +1,37 @@
 package com.devit.mscore.notification.mail;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import java.util.Optional;
+
+import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
+import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.Registry;
+import com.devit.mscore.exception.ConfigException;
 
 import org.junit.Test;
 
 public class MailNotificationFactoryTest {
     
     @Test
-    public void testCreateMailNotification() {
+    public void testCreateMailNotification() throws ConfigException {
+        var context = DefaultApplicationContext.of("test");
         var configuration = mock(Configuration.class);
-        doReturn("host").when(configuration).getConfig(eq("mail.host"));
-        doReturn("3025").when(configuration).getConfig(eq("mail.port"));
-        doReturn("from@email.com").when(configuration).getConfig(eq("mail.from"));
-        doReturn("Subject").when(configuration).getConfig(eq("mail.subject"));
-        doReturn("email,contact").when(configuration).getConfig(eq("mail.possibleAttributes"));
+        doReturn("notification").when(configuration).getServiceName();
+        doReturn(Optional.of("host")).when(configuration).getConfig(any(ApplicationContext.class), eq("platform.mail.host"));
+        doReturn(Optional.of("3025")).when(configuration).getConfig(any(ApplicationContext.class), eq("platform.mail.port"));
+        doReturn(Optional.of("from@email.com")).when(configuration).getConfig(any(ApplicationContext.class), eq("platform.mail.from"));
+        doReturn(Optional.of("Subject")).when(configuration).getConfig(any(ApplicationContext.class), eq("services.notification.email.subject"));
+        doReturn(Optional.of("email,contact")).when(configuration).getConfig(any(ApplicationContext.class), eq("platform.mail.possibleAttributes"));
         var registry = mock(Registry.class);
         var template = new StringTemplate();
         var factory = MailNotificationFactory.of(configuration, registry, template);
-        var notification = factory.mailNotification();
+        var notification = factory.mailNotification(context);
         assertNotNull(notification);
     }
 }

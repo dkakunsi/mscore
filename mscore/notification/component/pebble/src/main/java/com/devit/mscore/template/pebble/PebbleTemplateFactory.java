@@ -12,7 +12,7 @@ import com.devit.mscore.exception.ResourceException;
 
 public class PebbleTemplateFactory extends ResourceManager {
 
-    private static final String LOCATION = "template.resource.location";
+    private static final String LOCATION = "services.%s.template.resource.location";
 
     private PebbleTemplateFactory(Registry registry, Configuration configuration) {
         super("template", configuration, registry);
@@ -28,8 +28,9 @@ public class PebbleTemplateFactory extends ResourceManager {
 
     @Override
     protected String getResourceLocation(ApplicationContext context) {
+        var configName = String.format(LOCATION, this.configuration.getServiceName());
         try {
-            return this.configuration.getConfig(context, LOCATION).orElse(null);
+            return this.configuration.getConfig(context, configName).orElse(null);
         } catch (ConfigException ex) {
             return null;
         }

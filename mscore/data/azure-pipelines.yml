@@ -8,9 +8,11 @@ trigger:
     include:
       - master
   paths:
-      exclude: 
-        - README.MD
-        - azure-pipelines*
+    include:
+      - mscore/data/**
+    exclude: 
+      - mscore/data/README.MD
+      - mscore/data/azure-pipelines*
 
 pool:
   vmImage: ubuntu-latest
@@ -43,13 +45,13 @@ steps:
 - task: Maven@3
   displayName: 'Maven build'
   inputs:
-    mavenPomFile: 'pom.xml'
+    mavenPomFile: 'mscore/data/pom.xml'
     mavenOptions: '-Xmx3072m'
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.11'
     jdkArchitectureOption: 'x64'
     publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    testResultsFiles: 'mscore/data/**/surefire-reports/TEST-*.xml'
     goals: 'deploy'
     options: -Drevision=$(Version.tag).$(revision)
 
@@ -59,7 +61,7 @@ steps:
     containerRegistry: 'Docker Hub - devit16'
     repository: 'devit16/mscore-data-service'
     command: 'buildAndPush'
-    Dockerfile: '**/service/target/Dockerfile'
+    Dockerfile: 'mscore/data/**/service/target/Dockerfile'
     tags: |
       latest
       $(Version.tag).$(revision)

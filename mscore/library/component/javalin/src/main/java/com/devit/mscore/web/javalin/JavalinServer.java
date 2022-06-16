@@ -135,6 +135,7 @@ public final class JavalinServer extends Server {
                 ctx.req.setAttribute(PRINCIPAL, principal.toString());
                 ctx.req.setAttribute(BREADCRUMB_ID, applicationContext.getBreadcrumbId());
                 applicationContext = JavalinApplicationContext.of(ctx);
+                LOG.debug("BreadcrumbId: {}. {}", applicationContext.getBreadcrumbId(), applicationContext);
                 var requiredRole = getRequiredRole(role, ctx.method());
                 if (StringUtils.isNotBlank(requiredRole) && !applicationContext.hasRole(requiredRole)) {
                     throw new AuthorizationException("Not authorized.");

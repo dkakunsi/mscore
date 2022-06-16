@@ -8,9 +8,11 @@ trigger:
     include:
       - master
   paths:
-      exclude: 
-        - README.MD
-        - azure-pipelines*
+    include:
+      - mscore/notification/**
+    exclude: 
+      - mscore/notification/README.MD
+      - mscore/notification/azure-pipelines*
 
 pool:
   vmImage: ubuntu-latest
@@ -42,13 +44,13 @@ steps:
 
 - task: Maven@3
   inputs:
-    mavenPomFile: 'pom.xml'
+    mavenPomFile: 'mscore/notification/pom.xml'
     mavenOptions: '-Xmx3072m'
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.11'
     jdkArchitectureOption: 'x64'
     publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    testResultsFiles: 'mscore/notification/**/surefire-reports/TEST-*.xml'
     goals: 'deploy'
     options: -Drevision=$(Version.tag).$(revision)
 
@@ -58,7 +60,7 @@ steps:
     containerRegistry: 'Docker Hub - devit16'
     repository: 'devit16/mscore-notification-service'
     command: 'buildAndPush'
-    Dockerfile: '**/service/target/Dockerfile'
+    Dockerfile: 'mscore/notification/**/service/target/Dockerfile'
     tags: |
       latest
       $(Version.tag).$(revision)
