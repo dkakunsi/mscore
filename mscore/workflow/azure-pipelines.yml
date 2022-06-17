@@ -9,10 +9,10 @@ trigger:
       - master
   paths:
     include:
-      - mscore/notification/**
+      - mscore/workflow/**
     exclude: 
-      - mscore/notification/README.MD
-      - mscore/notification/azure-pipelines*
+      - mscore/workflow/README.MD
+      - mscore/workflow/azure-pipelines*
 
 pool:
   vmImage: ubuntu-latest
@@ -44,13 +44,13 @@ steps:
 
 - task: Maven@3
   inputs:
-    mavenPomFile: 'mscore/notification/pom.xml'
+    mavenPomFile: 'mscore/workflow/pom.xml'
     mavenOptions: '-Xmx3072m'
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.11'
     jdkArchitectureOption: 'x64'
     publishJUnitResults: true
-    testResultsFiles: 'mscore/notification/**/surefire-reports/TEST-*.xml'
+    testResultsFiles: 'mscore/workflow/**/surefire-reports/TEST-*.xml'
     goals: 'deploy'
     options: -Drevision=$(Version.tag).$(revision)
 
@@ -60,7 +60,7 @@ steps:
     containerRegistry: 'Docker Hub - devit16'
     repository: 'devit16/mscore-workflow-service'
     command: 'buildAndPush'
-    Dockerfile: 'mscore/notification/**/service/target/Dockerfile'
+    Dockerfile: 'mscore/workflow/**/service/target/Dockerfile'
     tags: |
       latest
       $(Version.tag).$(revision)
