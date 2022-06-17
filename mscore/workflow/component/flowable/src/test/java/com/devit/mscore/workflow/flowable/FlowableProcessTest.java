@@ -102,7 +102,7 @@ public class FlowableProcessTest {
 
         this.process = getProcess();
         var map = new HashMap<String, Object>();
-        map.put("requestedBy", "createdBy");
+        map.put("principal", new JSONObject("{\"requestedBy\":\"createdBy\"}"));
         this.context = DefaultApplicationContext.of("test", map);
 
         // only for coverage
