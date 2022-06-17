@@ -202,7 +202,7 @@ public class ApplicationStarter implements Starter {
     private static void registerResource(ResourceManager resourceManager, ApplicationContext context) {
         LOGGER.info("BreadcrumbId: {}. Register resource: {}.", context.getBreadcrumbId(), resourceManager.getType());
         try {
-            resourceManager.register(context);
+            resourceManager.registerResources(context);
         } catch (ResourceException ex) {
             LOGGER.warn("BreadcrumbId: {}. Cannot register resource {}.", context.getBreadcrumbId(),
                     resourceManager.getType(), ex);
