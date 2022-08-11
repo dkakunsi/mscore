@@ -23,17 +23,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.devit.mscore</groupId>
-            <artifactId>data-api</artifactId>
-            <version>${data-api.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>com.devit.mscore</artifactId>
-                    <groupId>api</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>io.javalin</groupId>
             <artifactId>javalin</artifactId>
             <version>${javalin.version}</version>

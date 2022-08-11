@@ -26,7 +26,7 @@ public interface Synchronizer {
      * 
      * @return schema of domain.
      */
-    public Schema getSchema();
+    public Resource getSchema();
 
     /**
      * <p>

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Executor;
+import com.devit.mscore.Schema;
 import com.devit.mscore.Synchronization;
 import com.devit.mscore.Synchronizer;
 import com.devit.mscore.exception.SynchronizationException;
@@ -46,7 +47,14 @@ public final class SynchronizationsExecutor implements Executor<Synchronization>
      * @param synchronizer service.
      */
     public void add(Synchronizer synchronizer) {
-        synchronizer.getSchema().getReferences().forEach((referenceAttribute, referenceDomains) -> {
+        var resource = synchronizer.getSchema();
+        if (!(resource instanceof Schema)) {
+            LOG.info("Cannot sync data because schema is not found.");
+            return;
+        }
+
+        var schema = (Schema) resource;
+        schema.getReferences().forEach((referenceAttribute, referenceDomains) -> {
             referenceDomains.forEach(referenceDomain -> add(new DefaultSynchronization(synchronizer, referenceDomain, referenceAttribute)));
         });
     }
