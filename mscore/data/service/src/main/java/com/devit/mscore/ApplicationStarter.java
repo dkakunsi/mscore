@@ -1,4 +1,4 @@
-package com.devit.mscore.data;
+package com.devit.mscore;
 
 import static com.devit.mscore.util.Utils.INDEX_MAP;
 import static com.devit.mscore.util.Utils.SCHEMA;
@@ -8,15 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.devit.mscore.ApplicationContext;
-import com.devit.mscore.Configuration;
-import com.devit.mscore.DefaultApplicationContext;
-import com.devit.mscore.Index;
-import com.devit.mscore.Registry;
-import com.devit.mscore.ResourceManager;
-import com.devit.mscore.Schema;
-import com.devit.mscore.Starter;
-import com.devit.mscore.Validation;
 import com.devit.mscore.authentication.JWTAuthenticationProvider;
 import com.devit.mscore.configuration.FileConfiguration;
 import com.devit.mscore.configuration.FileConfigurationUtils;
@@ -35,7 +26,6 @@ import com.devit.mscore.observer.IndexingObserver;
 import com.devit.mscore.observer.PublishingObserver;
 import com.devit.mscore.registry.MemoryRegistry;
 import com.devit.mscore.registry.ZookeeperRegistryFactory;
-import com.devit.mscore.ServiceRegistration;
 import com.devit.mscore.schema.everit.SchemaManager;
 import com.devit.mscore.schema.everit.SchemaValidation;
 import com.devit.mscore.service.DefaultService;

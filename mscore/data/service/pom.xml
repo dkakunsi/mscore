@@ -63,11 +63,6 @@
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
-            <artifactId>data-common</artifactId>
-            <version>${mscore-data-common.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
             <artifactId>jersey</artifactId>
             <version>${mscore-jersey.version}</version>
         </dependency>

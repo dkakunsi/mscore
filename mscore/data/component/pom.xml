@@ -91,7 +91,6 @@
     </reporting>
 
     <modules>
-        <module>common</module>
         <module>elasticsearch</module>
         <module>everit</module>
         <module>mongo</module>

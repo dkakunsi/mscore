@@ -1,5 +1,4 @@
 package com.devit.mscore;
-import com.devit.mscore.data.ApplicationStarter;
 import com.devit.mscore.exception.ApplicationException;
 
 import org.slf4j.Logger;
