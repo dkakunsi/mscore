@@ -38,17 +38,17 @@ public class GitHistoryFactory {
         this.repository = repository;
     }
 
-    public static GitHistoryFactory of(ApplicationContext context, Configuration configuration) throws ConfigException {
+    public static GitHistoryFactory of(Configuration configuration) throws ConfigException {
         try {
-            var repoDir = getRepoDirectory(context, configuration);
+            var repoDir = getRepoDirectory(configuration);
 
             Git repository;
             if (isLocalRepositoryExists(repoDir)) {
                 repository = Git.open(repoDir);
             } else {
                 repoDir.mkdir();
-                repository = cloneRepository(context, configuration, repoDir,
-                        createTransportConfigCallback(context, configuration));
+                repository = cloneRepository(configuration, repoDir,
+                        createTransportConfigCallback(configuration));
             }
             return new GitHistoryFactory(configuration, repository);
         } catch (Exception ex) {
@@ -56,30 +56,30 @@ public class GitHistoryFactory {
         }
     }
 
-    private static File getRepoDirectory(ApplicationContext context, Configuration configuration)
+    private static File getRepoDirectory(Configuration configuration)
             throws ConfigException {
-        var gitDir = getLocalDirectory(context, configuration);
+        var gitDir = getLocalDirectory(configuration);
         return Paths.get(gitDir).toFile();
     }
 
-    private static String getLocalDirectory(ApplicationContext context, Configuration configuration) throws ConfigException {
+    private static String getLocalDirectory(Configuration configuration) throws ConfigException {
         var dirKey = String.format(LOCAL_REPOSITORY, configuration.getServiceName());
-        return configuration.getConfig(context, dirKey).orElse(DEFAULT_LOCAL_REPOSITORY);
+        return configuration.getConfig(dirKey).orElse(DEFAULT_LOCAL_REPOSITORY);
     }
 
     static boolean isLocalRepositoryExists(File repoDir) {
         return Files.exists(Paths.get(repoDir.toString(), ".git"));
     }
 
-    static Git cloneRepository(ApplicationContext context, Configuration configuration, File repoDir,
+    static Git cloneRepository(Configuration configuration, File repoDir,
             TransportConfigCallback transportConfigCallback)
             throws ConfigException {
 
         var uriConfigName = String.format(GIT_URL, configuration.getServiceName());
-        var uriConfig = configuration.getConfig(context, uriConfigName)
+        var uriConfig = configuration.getConfig(uriConfigName)
                 .orElseThrow(() -> new ConfigException("No git uri is provided."));
         var localTransportConfigCallback = transportConfigCallback != null ? transportConfigCallback
-                : createTransportConfigCallback(context, configuration);
+                : createTransportConfigCallback(configuration);
 
         try {
             return Git.cloneRepository().setTransportConfigCallback(localTransportConfigCallback)
@@ -89,19 +89,18 @@ public class GitHistoryFactory {
         }
     }
 
-    static TransportConfigCallback createTransportConfigCallback(ApplicationContext context,
-            Configuration configuration) {
+    static TransportConfigCallback createTransportConfigCallback(Configuration configuration) {
         return transport -> {
             try {
                 var sshTransport = (SshTransport) transport;
-                sshTransport.setSshSessionFactory(createSshSessionFactory(context, configuration));
+                sshTransport.setSshSessionFactory(createSshSessionFactory(configuration));
             } catch (ConfigException ex) {
                 throw new ApplicationRuntimeException(ex);
             }
         };
     }
 
-    private static SshSessionFactory createSshSessionFactory(ApplicationContext context, Configuration configuration)
+    private static SshSessionFactory createSshSessionFactory(Configuration configuration)
             throws ConfigException {
         var serviceName = configuration.getServiceName();
         var hostNameConfigName = String.format(HOST_NAME, serviceName);
@@ -109,21 +108,21 @@ public class GitHistoryFactory {
         var privateKeyConfigName = String.format(PRIVATE_KEY, serviceName);
         var passPhraseConfigName = String.format(PASS_PHRASE, serviceName);
 
-        var hostName = configuration.getConfig(context, hostNameConfigName)
+        var hostName = configuration.getConfig(hostNameConfigName)
                 .orElseThrow(() -> new ConfigException("No host name configured."));
-        var hostKey = configuration.getConfig(context, hostKeyConfigName)
+        var hostKey = configuration.getConfig(hostKeyConfigName)
                 .orElseThrow(() -> new ConfigException("No host key configured."));
-        var privateKey = configuration.getConfig(context, privateKeyConfigName)
+        var privateKey = configuration.getConfig(privateKeyConfigName)
                 .orElseThrow(() -> new ConfigException("No private key configured."));
-        var passphrase = configuration.getConfig(context, passPhraseConfigName)
+        var passphrase = configuration.getConfig(passPhraseConfigName)
                 .orElseThrow(() -> new ConfigException("No passphrase provided."));
 
         return new CustomJschConfigSessionFactory(hostName, hostKey, privateKey, passphrase);
     }
 
-    public GitHistory historyManager(ApplicationContext context) throws ConfigException {
-        var gitDir = getLocalDirectory(context, this.configuration);
-        return new GitHistory(gitDir, this.repository, createTransportConfigCallback(context, this.configuration));
+    public GitHistory historyManager() throws ConfigException {
+        var gitDir = getLocalDirectory(this.configuration);
+        return new GitHistory(gitDir, this.repository, createTransportConfigCallback(this.configuration));
     }
 
     Git getRepository() {

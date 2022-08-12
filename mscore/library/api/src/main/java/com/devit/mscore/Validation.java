@@ -24,9 +24,8 @@ public interface Validation {
      * Validate json object.
      * </p>
      * 
-     * @param context application context.
      * @param object  to validate.
      * @return true when object is valid, else otherwise.
      */
-    boolean validate(ApplicationContext context, JSONObject json);
+    boolean validate(JSONObject json);
 }

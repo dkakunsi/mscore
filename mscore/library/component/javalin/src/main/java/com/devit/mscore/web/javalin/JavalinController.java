@@ -5,14 +5,14 @@ import static com.devit.mscore.util.AttributeConstants.ID;
 
 import java.util.Arrays;
 
+import com.devit.mscore.Logger;
 import com.devit.mscore.Service;
 import com.devit.mscore.Synchronizer;
 import com.devit.mscore.exception.ImplementationException;
 import com.devit.mscore.exception.ValidationException;
+import com.devit.mscore.logging.ApplicationLogger;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.javalin.http.Handler;
 
@@ -23,7 +23,7 @@ import io.javalin.http.Handler;
  */
 public class JavalinController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JavalinController.class);
+    private static final Logger LOG = ApplicationLogger.getLogger(JavalinController.class);
 
     protected static final String CONTENT_TYPE = "application/json";
 
@@ -48,11 +48,9 @@ public class JavalinController {
 
     public Handler post() {
         return ctx -> {
-            var applicationContext = JavalinApplicationContext.of(ctx);
-
-            LOG.debug("BreadcrumbId: {}. Posting data.", applicationContext.getBreadcrumbId());
+            LOG.debug("Posting data.");
             var payload = ctx.body();
-            var id = this.service.save(applicationContext, new JSONObject(payload));
+            var id = this.service.save(new JSONObject(payload));
             var data = new JSONObject();
             data.put(ID, id);
 
@@ -62,15 +60,14 @@ public class JavalinController {
 
     public Handler put() {
         return ctx -> {
-            var applicationContext = JavalinApplicationContext.of(ctx);
             var key = ctx.pathParam(ID);
-            LOG.debug("BreadcrumbId: {}. Putting data: {}.", applicationContext.getBreadcrumbId(), key);
+            LOG.debug("Putting data: {}.", key);
 
             var payload = ctx.body();
             var data = new JSONObject(payload);
             data.put(ID, key);
 
-            var id = this.service.save(applicationContext, data);
+            var id = this.service.save(data);
             data = new JSONObject();
             data.put(ID, id);
 
@@ -80,11 +77,10 @@ public class JavalinController {
 
     public Handler getOne() {
         return ctx -> {
-            var applicationContext = JavalinApplicationContext.of(ctx);
             var key = ctx.pathParam(ID);
 
-            LOG.debug("BreadcrumbId: {}. Get data with id: {}.", applicationContext.getBreadcrumbId(), key);
-            var data = this.service.find(applicationContext, key);
+            LOG.debug("Get data with id: {}.", key);
+            var data = this.service.find(key);
 
             LOG.trace("Retrieved data for id: {}. {}", key, data);
             ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
@@ -93,11 +89,10 @@ public class JavalinController {
 
     public Handler getOneByCode() {
         return ctx -> {
-            var applicationContext = JavalinApplicationContext.of(ctx);
             var code = ctx.pathParam(CODE);
 
-            LOG.debug("BreadcrumbId: {}. Get data with code: {}.", applicationContext.getBreadcrumbId(), code);
-            var data = this.service.findByCode(applicationContext, code);
+            LOG.debug("Get data with code: {}.", code);
+            var data = this.service.findByCode(code);
 
             LOG.trace("Retrieved data for code: {}. {}", code, data);
             ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
@@ -106,16 +101,14 @@ public class JavalinController {
 
     public Handler getMany() {
         return ctx -> {
-            var applicationContext = JavalinApplicationContext.of(ctx);
-
             var listOfId = ctx.queryParam("ids");
             if (listOfId == null) {
                 throw new ValidationException("List of IDs is not provided");
             }
 
-            LOG.debug("BreadcrumbId: {}. Get data with keys: {}.", applicationContext.getBreadcrumbId(), listOfId);
+            LOG.debug("Get data with keys: {}.", listOfId);
             var keys = Arrays.asList(listOfId.split(","));
-            var data = this.service.find(applicationContext, keys);
+            var data = this.service.find(keys);
 
             LOG.trace("Retrieved data for id: {}. {}", listOfId, data);
             ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
@@ -124,8 +117,7 @@ public class JavalinController {
 
     public Handler all() {
         return ctx -> {
-            var applicationContext = JavalinApplicationContext.of(ctx);
-            var data = this.service.all(applicationContext);
+            var data = this.service.all();
 
             LOG.debug("Retrieved all data. {}", data);
             ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
@@ -140,9 +132,8 @@ public class JavalinController {
 
     public Handler search() {
         return ctx -> {
-            var applicationContext = JavalinApplicationContext.of(ctx);
             var criteria = ctx.body();
-            var result = this.service.search(applicationContext, new JSONObject(criteria));
+            var result = this.service.search(new JSONObject(criteria));
 
             ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(result.toString());
         };
@@ -150,11 +141,10 @@ public class JavalinController {
 
     public Handler syncById() {
         return ctx -> {
-            var applicationContext = JavalinApplicationContext.of(ctx);
             var key = ctx.pathParam(ID);
 
-            LOG.debug("BreadcrumbId: {}. Sync data with id: {}.", applicationContext.getBreadcrumbId(), key);
-            this.synchronizer.synchronize(applicationContext, key);
+            LOG.debug("Sync data with id: {}.", key);
+            this.synchronizer.synchronize(key);
 
             var data = getSyncMessage();
             ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
@@ -163,11 +153,9 @@ public class JavalinController {
 
     public Handler syncAll() {
         return ctx -> {
-            var applicationContext = JavalinApplicationContext.of(ctx);
+            LOG.debug("Sync all.");
 
-            LOG.debug("BreadcrumbId: {}. Sync all.", applicationContext.getBreadcrumbId());
-
-            this.synchronizer.synchronize(applicationContext);
+            this.synchronizer.synchronize();
             var data = getSyncMessage();
             ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
         };

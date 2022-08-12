@@ -1,5 +1,6 @@
 package com.devit.mscore.notification.mail;
 
+import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.notification.mail.EmailExtractor.extract;
 import static com.devit.mscore.util.AttributeConstants.getName;
 import static com.devit.mscore.util.JsonUtils.flatten;
@@ -7,25 +8,24 @@ import static com.devit.mscore.util.Utils.ACTION;
 
 import java.util.List;
 
-import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Logger;
 import com.devit.mscore.Notification;
 import com.devit.mscore.Registry;
 import com.devit.mscore.Template;
 import com.devit.mscore.exception.NotificationException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.TemplateException;
+import com.devit.mscore.logging.ApplicationLogger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jakarta.mail.MessagingException;
 
 public class MailNotification implements Notification {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MailNotification.class);
+    private static final Logger LOGGER = ApplicationLogger.getLogger(MailNotification.class);
 
     private static final String NO_TEMPLATE_MESSAGE = "Cannot send notification. No email template found in request.";
 
@@ -59,20 +59,20 @@ public class MailNotification implements Notification {
     }
 
     @Override
-    public void send(ApplicationContext context, JSONObject entity) throws NotificationException {
+    public void send(JSONObject entity) throws NotificationException {
         var optional = extract(entity, this.possibleAttributes);
         if (optional.isEmpty()) {
-            LOGGER.warn("BreadcrumbId: {}. No email available in entity.", context.getBreadcrumbId());
+            LOGGER.warn("No email available in entity.");
             return;
         }
 
         var emails = optional.get();
-        var emailTemplate = loadTemplate(context, entity);
+        var emailTemplate = loadTemplate(entity);
         var emailSubject = String.format("%s | %s", this.sendInfo.getSubject(), getName(entity));
 
         try {
             for (String to : emails) {
-                var text = this.template.build(context, emailTemplate, flatten(entity));
+                var text = this.template.build(emailTemplate, flatten(entity));
                 this.sender.send(this.sendInfo, to, emailSubject, text);
             }
         } catch (MessagingException | TemplateException ex) {
@@ -80,18 +80,19 @@ public class MailNotification implements Notification {
         }
     }
 
-    private String loadTemplate(ApplicationContext context, JSONObject entity) throws NotificationException {
+    private String loadTemplate(JSONObject entity) throws NotificationException {
+        var context = getContext();
         var templateName = context.getAction().orElse(entity.optString(ACTION));
         if (StringUtils.isBlank(templateName)) {
-            LOGGER.warn("BreadcrumbId: {}. Message: {}.", context.getBreadcrumbId(), NO_TEMPLATE_MESSAGE);
+            LOGGER.warn("Message: {}.", NO_TEMPLATE_MESSAGE);
             throw new NotificationException(NO_TEMPLATE_MESSAGE);
         }
 
         try {
-            var templateRegister = this.registry.get(context, templateName);
+            var templateRegister = this.registry.get(templateName);
             return new JSONObject(templateRegister).getString("content");
         } catch (JSONException | RegistryException ex) {
-            LOGGER.error("BreadcrumbId: {}. Message: {}.", context.getBreadcrumbId(), CANNOT_LOAD_TEMPLATE_MESSAGE);
+            LOGGER.error("Message: {}.", CANNOT_LOAD_TEMPLATE_MESSAGE);
             throw new NotificationException(CANNOT_LOAD_TEMPLATE_MESSAGE, ex);
         }
     }

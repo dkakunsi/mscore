@@ -15,7 +15,6 @@
     
     <properties>
         <revision>1.0-SNAPSHOT</revision>
-        <api.version>[2.0,)</api.version>
         <data-api.version>${revision}</data-api.version>
         <minimum.class.line.coverage>0.75</minimum.class.line.coverage>
         <minimum.bundle.line.coverage>0.90</minimum.bundle.line.coverage>
@@ -24,20 +23,8 @@
     <dependencies>
         <dependency>
             <groupId>com.devit.mscore</groupId>
-            <artifactId>api</artifactId>
-            <version>${api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
             <artifactId>data-api</artifactId>
             <version>${data-api.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

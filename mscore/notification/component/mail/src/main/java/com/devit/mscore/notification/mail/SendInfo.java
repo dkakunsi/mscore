@@ -1,6 +1,5 @@
 package com.devit.mscore.notification.mail;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.exception.ConfigException;
 
@@ -30,12 +29,12 @@ public class SendInfo {
         super();
     }
 
-    public SendInfo(ApplicationContext context, Configuration configuration) throws ConfigException {
+    public SendInfo(Configuration configuration) throws ConfigException {
         var serviceName = configuration.getServiceName();
-        this.host = configuration.getConfig(context, MAIL_HOST).orElseThrow(() -> new ConfigException("No mailing host provided"));
-        this.port = configuration.getConfig(context, MAIL_PORT).orElseThrow(() -> new ConfigException("No mailing port provided"));
-        this.from = configuration.getConfig(context, MAIL_FROM).orElseThrow(() -> new ConfigException("No mailing from address provided"));
-        this.subject = configuration.getConfig(context, String.format(MAIL_SUBJECT, serviceName)).orElseThrow(() -> new ConfigException("No mailing subject provided"));
+        this.host = configuration.getConfig(MAIL_HOST).orElseThrow(() -> new ConfigException("No mailing host provided"));
+        this.port = configuration.getConfig(MAIL_PORT).orElseThrow(() -> new ConfigException("No mailing port provided"));
+        this.from = configuration.getConfig(MAIL_FROM).orElseThrow(() -> new ConfigException("No mailing from address provided"));
+        this.subject = configuration.getConfig(String.format(MAIL_SUBJECT, serviceName)).orElseThrow(() -> new ConfigException("No mailing subject provided"));
 
     }
 

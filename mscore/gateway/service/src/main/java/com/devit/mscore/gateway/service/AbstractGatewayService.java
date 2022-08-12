@@ -1,6 +1,5 @@
 package com.devit.mscore.gateway.service;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Service;
 import com.devit.mscore.ServiceRegistration;
 import com.devit.mscore.exception.ApplicationRuntimeException;
@@ -18,9 +17,9 @@ public abstract class AbstractGatewayService implements Service {
         this.client = client;
     }
 
-    protected String getUri(ApplicationContext context, String domain) {
+    protected String getUri(String domain) {
         try {
-            return this.serviceRegistration.get(context, domain);
+            return this.serviceRegistration.get(domain);
         } catch (RegistryException ex) {
             throw new ApplicationRuntimeException(ex);
         }

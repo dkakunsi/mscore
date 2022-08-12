@@ -3,19 +3,18 @@ package com.devit.mscore.notification;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Listener;
+import com.devit.mscore.Logger;
 import com.devit.mscore.Notification;
 import com.devit.mscore.Subscriber;
 import com.devit.mscore.exception.NotificationException;
+import com.devit.mscore.logging.ApplicationLogger;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EventListener extends Listener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EventListener.class);
+    private static final Logger LOGGER = ApplicationLogger.getLogger(EventListener.class);
 
     private List<Notification> notifications;
 
@@ -38,14 +37,14 @@ public class EventListener extends Listener {
     }
 
     @Override
-    public void consume(ApplicationContext context, JSONObject message) {
-        LOGGER.debug("BreadcrumbId: {}. Receive event message: {}", context.getBreadcrumbId(), message);
+    public void consume(JSONObject message) {
+        LOGGER.debug("Receive event message: {}", message);
         this.notifications.forEach(notification -> {
             try {
-                LOGGER.info("BreadcrumbId: {}. Sending '{}' notification.", context.getBreadcrumbId(), notification.getType());
-                notification.send(context, message);
+                LOGGER.info("Sending '{}' notification.", notification.getType());
+                notification.send(message);
             } catch (NotificationException ex) {
-                LOGGER.error("BreadcrumbId: {}. Notification failed.", context.getBreadcrumbId(), ex);
+                LOGGER.error("Notification failed.", ex);
             }
         });
     }

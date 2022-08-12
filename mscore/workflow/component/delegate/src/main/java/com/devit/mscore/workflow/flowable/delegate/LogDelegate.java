@@ -3,8 +3,9 @@ package com.devit.mscore.workflow.flowable.delegate;
 import org.flowable.common.engine.api.delegate.Expression;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.devit.mscore.Logger;
+import com.devit.mscore.logging.ApplicationLogger;
 
 /**
  * Delegate that print message to log channle.
@@ -13,7 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LogDelegate implements JavaDelegate {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LogDelegate.class);
+    private static final Logger LOG = ApplicationLogger.getLogger(LogDelegate.class);
 
     private Expression message;
 

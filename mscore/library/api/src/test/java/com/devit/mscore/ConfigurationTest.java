@@ -2,7 +2,6 @@ package com.devit.mscore;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
@@ -44,10 +43,10 @@ public class ConfigurationTest {
     public void testDummy() throws ConfigException {
         var configuration = new ConfigurationImpl();
         var valueConfig = configuration.getConfig("key");
-        assertNull(valueConfig);
-        var optionalConfig = configuration.getConfig(DefaultApplicationContext.of("test"), "type", "service", "key");
+        assertTrue(valueConfig.isEmpty());
+        var optionalConfig = configuration.getConfig("type", "service", "key");
         assertTrue(optionalConfig.isEmpty());
-        optionalConfig = configuration.getConfig(DefaultApplicationContext.of("test"), "path");
+        optionalConfig = configuration.getConfig("path");
         assertTrue(optionalConfig.isEmpty());
     }
 

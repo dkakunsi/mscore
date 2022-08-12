@@ -21,6 +21,7 @@
         <local.version>[2.0,)</local.version>
         <authentication.version>[2.0,)</authentication.version>
         <jersey.version>[2.0,)</jersey.version>
+        <logger.version>[2.0,)</logger.version>
     </properties>
 
     <dependencies>
@@ -48,6 +49,11 @@
             <groupId>com.devit.mscore</groupId>
             <artifactId>jersey</artifactId>
             <version>${jersey.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${logger.version}</version>
         </dependency>
     </dependencies>
 

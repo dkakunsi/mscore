@@ -4,6 +4,6 @@ import org.json.JSONObject;
 
 public interface History {
 
-    void create(ApplicationContext context, JSONObject message) throws HistoryException;
+    void create(JSONObject message) throws HistoryException;
     
 }

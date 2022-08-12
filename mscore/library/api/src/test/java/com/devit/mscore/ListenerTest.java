@@ -1,5 +1,7 @@
 package com.devit.mscore;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
@@ -9,7 +11,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import com.devit.mscore.exception.ApplicationException;
 
@@ -28,7 +30,7 @@ public class ListenerTest {
 
         spiedListener.listen("topic1", "topic2");
 
-        verify(spiedListener, times(2)).consume(any(ApplicationContext.class), any(JSONObject.class));
+        verify(spiedListener, times(2)).consume(any(JSONObject.class));
 
         verify(subscriber).start();
         spiedListener.stop();
@@ -42,7 +44,8 @@ public class ListenerTest {
         var listener = listener(subscriber);
         var spiedListener = spy(listener);
 
-        spiedListener.listen("topic1", "topic2");
+        var ex = assertThrows(ApplicationException.class, () -> spiedListener.listen("topic1", "topic2"));
+        assertEquals("Cannot start consumer.", ex.getMessage());
         verify(subscriber).start();
     }
 
@@ -53,8 +56,8 @@ public class ListenerTest {
 
             @Override
             public String answer(InvocationOnMock invocation) throws Throwable {
-                var consumer = (BiConsumer<ApplicationContext, JSONObject>) invocation.getArgument(1);
-                consumer.accept(DefaultApplicationContext.of("test"), new JSONObject());
+                var consumer = (Consumer<JSONObject>) invocation.getArgument(1);
+                consumer.accept(new JSONObject());
                 return null;
             }
 
@@ -67,7 +70,7 @@ public class ListenerTest {
         return new Listener(subscriber) {
 
             @Override
-            protected void consume(ApplicationContext context, JSONObject message) {
+            public void consume(JSONObject message) {
             }
         };        
     }

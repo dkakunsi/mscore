@@ -19,9 +19,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Optional;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
-import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.Registry;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
@@ -49,8 +47,6 @@ public class ElasticsearchIndexingFactoryTest {
 
     private RestHighLevelClient client;
 
-    private ApplicationContext context;
-
     @Before
     public void setup() {
         this.configuration = mock(Configuration.class);
@@ -61,7 +57,6 @@ public class ElasticsearchIndexingFactoryTest {
         this.client = mock(RestHighLevelClient.class);
         this.manager = ElasticsearchIndexFactory.of(this.configuration, this.registry);
         this.manager.setESClient(this.client);
-        this.context = DefaultApplicationContext.of("test");
     }
 
     @Test
@@ -71,16 +66,16 @@ public class ElasticsearchIndexingFactoryTest {
         doReturn(new CreateIndexResponse(true, false, null)).when(indices).create(any(CreateIndexRequest.class),
                 any(RequestOptions.class));
         doReturn(indices).when(this.client).indices();
-        doReturn("{\"a\":\"A\"}").when(this.registry).get(any(), any());
+        doReturn("{\"a\":\"A\"}").when(this.registry).get(any());
 
-        var index = this.manager.index(context, "indexName");
+        var index = this.manager.index("indexName");
         assertNotNull(index);
     }
 
     @Test
     public void testGetHost() throws ConfigException {
-        doReturn(Optional.of("http://ref-es:9200")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.elasticsearch.host"));
-        var hosts = this.manager.getHost(this.context);
+        doReturn(Optional.of("http://ref-es:9200")).when(this.configuration).getConfig(eq("platform.elasticsearch.host"));
+        var hosts = this.manager.getHost();
         assertNotNull(hosts);
         assertThat(hosts.length, is(1));
         assertThat(hosts[0].getSchemeName(), is("http"));
@@ -90,78 +85,78 @@ public class ElasticsearchIndexingFactoryTest {
 
     @Test
     public void testGetHost_MalformedURL() throws ConfigException {
-        doReturn(Optional.of("###")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.elasticsearch.host"));
-        var ex = assertThrows(ConfigException.class, () -> this.manager.getHost(this.context));
+        doReturn(Optional.of("###")).when(this.configuration).getConfig(eq("platform.elasticsearch.host"));
+        var ex = assertThrows(ConfigException.class, () -> this.manager.getHost());
         assertThat(ex.getMessage(), is("Cannot create host: ###."));
         assertThat(ex.getCause(), instanceOf(MalformedURLException.class));
     }
 
     @Test
     public void testGetHost_NotProvided() throws ConfigException {
-        doReturn(Optional.empty()).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.elasticsearch.host"));
-        var ex = assertThrows(ConfigException.class, () -> this.manager.getHost(this.context));
+        doReturn(Optional.empty()).when(this.configuration).getConfig(eq("platform.elasticsearch.host"));
+        var ex = assertThrows(ConfigException.class, () -> this.manager.getHost());
         assertThat(ex.getMessage(), is("No ES host is configured."));
     }
 
     @Test
     public void testApplyAuthentication() throws ConfigException {
-        doReturn(Optional.of("true")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.elasticsearch.secure"));
-        doReturn(Optional.of("username")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.elasticsearch.username"));
-        doReturn(Optional.of("password")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.elasticsearch.password"));
+        doReturn(Optional.of("true")).when(this.configuration).getConfig(eq("platform.elasticsearch.secure"));
+        doReturn(Optional.of("username")).when(this.configuration).getConfig(eq("platform.elasticsearch.username"));
+        doReturn(Optional.of("password")).when(this.configuration).getConfig(eq("platform.elasticsearch.password"));
 
         var restClientBuilder = mock(RestClientBuilder.class);
-        this.manager.applyAuthentication(this.context, restClientBuilder);
+        this.manager.applyAuthentication(restClientBuilder);
 
         verify(restClientBuilder, times(1)).setHttpClientConfigCallback(any());
     }
 
     @Test
     public void testIsSecure_Exception() throws ConfigException {
-        doReturn(Optional.empty()).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.elasticsearch.secure"));
-        assertFalse(this.manager.isSecure(this.context));
+        doReturn(Optional.empty()).when(this.configuration).getConfig(eq("platform.elasticsearch.secure"));
+        assertFalse(this.manager.isSecure());
     }
 
     @Test
     public void testGetUsername_NotProvidedWhenSecure() throws ConfigException {
-        doReturn(Optional.of("true")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.elasticsearch.secure"));
-        doReturn(Optional.empty()).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.elasticsearch.username"));
-        var ex = assertThrows(ConfigException.class, () -> this.manager.getUsername(this.context));
+        doReturn(Optional.of("true")).when(this.configuration).getConfig(eq("platform.elasticsearch.secure"));
+        doReturn(Optional.empty()).when(this.configuration).getConfig(eq("platform.elasticsearch.username"));
+        var ex = assertThrows(ConfigException.class, () -> this.manager.getUsername());
         assertThat(ex.getMessage(), is("ES username is not provided"));
     }
 
     @Test
     public void testGetUsername_NotProvidedWhenNotSecure() throws ConfigException {
-        doReturn(Optional.of("false")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.elasticsearch.secure"));
-        doReturn(Optional.empty()).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.elasticsearch.username"));
-        var ex = assertThrows(ConfigException.class, () -> this.manager.getUsername(this.context));
+        doReturn(Optional.of("false")).when(this.configuration).getConfig(eq("platform.elasticsearch.secure"));
+        doReturn(Optional.empty()).when(this.configuration).getConfig(eq("platform.elasticsearch.username"));
+        var ex = assertThrows(ConfigException.class, () -> this.manager.getUsername());
         assertThat(ex.getMessage(), is("ES username is not provided"));
     }
 
     @Test
     public void testGetPassword_NotProvidedWhenSecure() throws ConfigException {
-        doReturn(Optional.of("true")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.elasticsearch.secure"));
-        doReturn(Optional.empty()).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.elasticsearch.password"));
-        var ex = assertThrows(ConfigException.class, () -> this.manager.getPassword(this.context));
+        doReturn(Optional.of("true")).when(this.configuration).getConfig(eq("platform.elasticsearch.secure"));
+        doReturn(Optional.empty()).when(this.configuration).getConfig(eq("platform.elasticsearch.password"));
+        var ex = assertThrows(ConfigException.class, () -> this.manager.getPassword());
         assertThat(ex.getMessage(), is("ES password is not provided"));
     }
 
     @Test
     public void testGetPassword_NotProvidedWhenNotSecure() throws ConfigException {
-        doReturn(Optional.of("false")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.elasticsearch.secure"));
-        doReturn(Optional.empty()).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.elasticsearch.password"));
-        var ex = assertThrows(ConfigException.class, () -> this.manager.getPassword(this.context));
+        doReturn(Optional.of("false")).when(this.configuration).getConfig(eq("platform.elasticsearch.secure"));
+        doReturn(Optional.empty()).when(this.configuration).getConfig(eq("platform.elasticsearch.password"));
+        var ex = assertThrows(ConfigException.class, () -> this.manager.getPassword());
         assertThat(ex.getMessage(), is("ES password is not provided"));
     }
 
     @Test
     public void testRegisterMapping() throws ConfigException, ResourceException, RegistryException {
         var location = getLocation("resource");
-        doReturn(Optional.of(location)).when(this.configuration).getConfig(any(ApplicationContext.class), eq("services.data.index.mapping.location"));
+        doReturn(Optional.of(location)).when(this.configuration).getConfig(eq("services.data.index.mapping.location"));
 
-        this.manager.registerResources(this.context);
+        this.manager.registerResources();
 
         var captor = ArgumentCaptor.forClass(String.class);
-        verify(this.registry, times(1)).add(any(ApplicationContext.class), anyString(), captor.capture());
+        verify(this.registry, times(1)).add(anyString(), captor.capture());
 
         var argument = new JSONObject(captor.getValue());
         assertThat(argument.getString("name"), is("resource"));

@@ -4,14 +4,15 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
+import com.devit.mscore.Logger;
 import com.devit.mscore.Registry;
 import com.devit.mscore.Resource;
 import com.devit.mscore.ResourceManager;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.ResourceException;
+import com.devit.mscore.logging.ApplicationLogger;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -21,12 +22,10 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ElasticsearchIndexFactory extends ResourceManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ElasticsearchIndexFactory.class);
+    private static final Logger LOG = new ApplicationLogger(ElasticsearchIndexFactory.class);
 
     private static final String CONFIG_TEMPLATE = "platform.elasticsearch.%s";
 
@@ -52,27 +51,27 @@ public class ElasticsearchIndexFactory extends ResourceManager {
         return new ElasticsearchIndexFactory(configuration, registry);
     }
 
-    public ElasticsearchIndex index(ApplicationContext context, String indexName) throws ConfigException, RegistryException {
-        var mapping = this.registry.get(context, indexName);
-        return new ElasticsearchIndex(indexName, service(context), new JSONObject(mapping));
+    public ElasticsearchIndex index(String indexName) throws ConfigException, RegistryException {
+        var mapping = this.registry.get(indexName);
+        return new ElasticsearchIndex(indexName, service(), new JSONObject(mapping));
     }
 
-    protected ElasticsearchService service(ApplicationContext context) throws ConfigException {
+    protected ElasticsearchService service() throws ConfigException {
         if (this.service == null) {
-            this.service = new ElasticsearchService(getESClient(context));
+            this.service = new ElasticsearchService(getESClient());
         }
         return this.service;
     }
 
-    private RestHighLevelClient getESClient(ApplicationContext context) throws ConfigException {
+    private RestHighLevelClient getESClient() throws ConfigException {
         if (this.client != null) {
             return this.client;
         }
 
-        var builder = RestClient.builder(getHost(context));
-        if (isSecure(context)) {
+        var builder = RestClient.builder(getHost());
+        if (isSecure()) {
             LOG.info("Applying secure connection to ES.");
-            applyAuthentication(context, builder);
+            applyAuthentication(builder);
         }
         this.client = new RestHighLevelClient(builder);
         return this.client;
@@ -83,9 +82,9 @@ public class ElasticsearchIndexFactory extends ResourceManager {
         this.client = client;
     }
 
-    protected void applyAuthentication(ApplicationContext context, RestClientBuilder restClientBuilder) throws ConfigException {
-        var username = getUsername(context);
-        var password = getPassword(context);
+    protected void applyAuthentication(RestClientBuilder restClientBuilder) throws ConfigException {
+        var username = getUsername();
+        var password = getPassword();
         final var credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
 
@@ -94,8 +93,8 @@ public class ElasticsearchIndexFactory extends ResourceManager {
         });
     }
 
-    protected HttpHost[] getHost(ApplicationContext context) throws ConfigException {
-        var addresses = this.configuration.getConfig(context, getConfigName(HOST)).orElseThrow(() -> new ConfigException("No ES host is configured.")).split(",");
+    protected HttpHost[] getHost() throws ConfigException {
+        var addresses = this.configuration.getConfig(getConfigName(HOST)).orElseThrow(() -> new ConfigException("No ES host is configured.")).split(",");
         var hosts = new HttpHost[addresses.length];
 
         LOG.debug("Trying to connect to ES host: {}", (Object[]) addresses);
@@ -113,22 +112,22 @@ public class ElasticsearchIndexFactory extends ResourceManager {
         return hosts;
     }
 
-    protected boolean isSecure(ApplicationContext context) {
+    protected boolean isSecure() {
         try {
-            var secureConfig = this.configuration.getConfig(context, getConfigName(SECURE)).orElse("false");
+            var secureConfig = this.configuration.getConfig(getConfigName(SECURE)).orElse("false");
             return Boolean.parseBoolean(secureConfig);
         } catch (ConfigException ex) {
             return false;
         }
     }
 
-    protected String getUsername(ApplicationContext context) throws ConfigException {
-        var username = this.configuration.getConfig(context, getConfigName(USERNAME));
+    protected String getUsername() throws ConfigException {
+        var username = this.configuration.getConfig(getConfigName(USERNAME));
         return username.orElseThrow(() -> new ConfigException("ES username is not provided"));
     }
 
-    protected String getPassword(ApplicationContext context) throws ConfigException {
-        var password = this.configuration.getConfig(context, getConfigName(PASSWORD));
+    protected String getPassword() throws ConfigException {
+        var password = this.configuration.getConfig(getConfigName(PASSWORD));
         return password.orElseThrow(() -> new ConfigException("ES password is not provided"));
     }
 
@@ -137,10 +136,10 @@ public class ElasticsearchIndexFactory extends ResourceManager {
     }
 
     @Override
-    protected String getResourceLocation(ApplicationContext context) {
+    protected String getResourceLocation() {
         var configName = String.format(LOCATION, this.configuration.getServiceName());
         try {
-            return this.configuration.getConfig(context, configName).orElse(null);
+            return this.configuration.getConfig(configName).orElse(null);
         } catch (ConfigException e) {
             return null;
         }

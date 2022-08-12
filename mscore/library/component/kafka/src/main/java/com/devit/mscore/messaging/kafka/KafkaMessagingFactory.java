@@ -7,9 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
-import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.ConfigException;
 
@@ -55,17 +53,17 @@ public class KafkaMessagingFactory {
 
     private Pair<String, String> kafkaGroupId;
 
-    protected KafkaMessagingFactory(ApplicationContext context, Configuration configuration) throws ConfigException {
+    protected KafkaMessagingFactory(Configuration configuration) throws ConfigException {
         this.kafkaPublishers = new HashMap<>();
         this.configuration = configuration;
 
-        initKafkaIds(context);
+        initKafkaIds();
     }
 
-    private void initKafkaIds(ApplicationContext context) throws ConfigException {
+    private void initKafkaIds() throws ConfigException {
         var serviceName = this.configuration.getServiceName();
         var groupIdConfigName = String.format(SERVICE_CONFIG_TEMPLATE, serviceName, ConsumerConfig.GROUP_ID_CONFIG);
-        var groupIdConfig = getConfig(context, groupIdConfigName).orElseThrow(() -> new ConfigException("No kafka group id is provided"));
+        var groupIdConfig = getConfig(groupIdConfigName).orElseThrow(() -> new ConfigException("No kafka group id is provided"));
         this.kafkaGroupId = Pair.of(ConsumerConfig.GROUP_ID_CONFIG, groupIdConfig);
 
         var clientIdConfig = getClientIdConfig(groupIdConfig);
@@ -76,13 +74,13 @@ public class KafkaMessagingFactory {
         return String.format("%s-%s", groupIdConfig, String.valueOf(Math.random()));
     }
 
-    public static KafkaMessagingFactory of(ApplicationContext context, Configuration configuration) throws ConfigException {
-        return new KafkaMessagingFactory(context, configuration);
+    public static KafkaMessagingFactory of(Configuration configuration) throws ConfigException {
+        return new KafkaMessagingFactory(configuration);
     }
 
-    public Producer<String, String> producer(ApplicationContext context) {
+    public Producer<String, String> producer() {
         if (this.producer == null) {
-            var properties = getProperties(context, PRODUCER_CONFIG_OPTIONS);
+            var properties = getProperties(PRODUCER_CONFIG_OPTIONS);
             this.producer = new KafkaProducer<>(properties);
         }
         return this.producer;
@@ -93,9 +91,9 @@ public class KafkaMessagingFactory {
         this.producer = producer;
     }
 
-    public Consumer<String, String> consumer(ApplicationContext context) {
+    public Consumer<String, String> consumer() {
         if (this.consumer == null) {
-            var properties = getProperties(context, CONSUMER_CONFIG_OPTIONS);
+            var properties = getProperties(CONSUMER_CONFIG_OPTIONS);
             properties.setProperty(this.kafkaGroupId.getKey(), this.kafkaGroupId.getValue());
             this.consumer = new KafkaConsumer<>(properties);
         }
@@ -107,27 +105,27 @@ public class KafkaMessagingFactory {
         this.consumer = consumer;
     }
 
-    protected Properties getProperties(ApplicationContext context, List<String> configOptions) {
+    protected Properties getProperties(List<String> configOptions) {
         var properties = new Properties();
         properties.setProperty(this.kafkaClientId.getKey(), this.kafkaClientId.getValue());
-        configOptions.forEach(option -> properties.put(option, executeGetTemplatedConfig(context, option).orElse(null)));
+        configOptions.forEach(option -> properties.put(option, executeGetTemplatedConfig(option).orElse(null)));
         return properties;
     }
 
-    private Optional<String> executeGetTemplatedConfig(ApplicationContext context, String key) {
+    private Optional<String> executeGetTemplatedConfig(String key) {
         try {
-            return getTemplatedConfig(context, key);
+            return getTemplatedConfig(key);
         } catch (ConfigException ex) {
             throw new ApplicationRuntimeException(ex);
         }
     }
 
-    protected Optional<String> getTemplatedConfig(ApplicationContext context, String key) throws ConfigException {
-        return getConfig(context, String.format(CONFIG_TEMPLATE, key));
+    protected Optional<String> getTemplatedConfig(String key) throws ConfigException {
+        return getConfig(String.format(CONFIG_TEMPLATE, key));
     }
 
-    protected Optional<String> getConfig(ApplicationContext context, String key) throws ConfigException {
-        return this.configuration.getConfig(context, key);
+    protected Optional<String> getConfig(String key) throws ConfigException {
+        return this.configuration.getConfig(key);
     }
 
     /**
@@ -137,14 +135,14 @@ public class KafkaMessagingFactory {
      * @return kafka topics.
      * @throws ConfigException
      */
-    public Optional<String[]> getTemplatedTopics(ApplicationContext context, String name) throws ConfigException {
+    public Optional<String[]> getTemplatedTopics(String name) throws ConfigException {
         var topicName = String.format(TOPIC_TEMPLATE, name);
-        var topic = getTemplatedConfig(context, topicName);
+        var topic = getTemplatedConfig(topicName);
         return checkTopicsResult(topic);
     }
 
-    public Optional<String[]> getTopics(ApplicationContext context, String name) throws ConfigException {
-        var topic = getConfig(context, name);
+    public Optional<String[]> getTopics(String name) throws ConfigException {
+        var topic = getConfig(name);
         return checkTopicsResult(topic);
     }
 
@@ -160,20 +158,18 @@ public class KafkaMessagingFactory {
     }
 
     public KafkaSubscriber subscriber() {
-        var context = DefaultApplicationContext.of("subscriber-init");
         if (this.kafkaSubscriber == null) {
-            this.kafkaSubscriber = new KafkaSubscriber(consumer(context));
+            this.kafkaSubscriber = new KafkaSubscriber(consumer());
         }
         return this.kafkaSubscriber;
     }
 
     public KafkaPublisher publisher(String name) {
-        var context = DefaultApplicationContext.of("publisher-init");
         this.kafkaPublishers.computeIfAbsent(name, publisherName -> {
             var topicName = String.format(TOPIC_TEMPLATE, publisherName);
-            var topic = executeGetTemplatedConfig(context, topicName)
+            var topic = executeGetTemplatedConfig(topicName)
                     .orElseThrow(() -> new ApplicationRuntimeException(String.format("No topic for %s", name)));
-            return new KafkaPublisher(topic, producer(context));
+            return new KafkaPublisher(topic, producer());
         });
         return this.kafkaPublishers.get(name);
     }

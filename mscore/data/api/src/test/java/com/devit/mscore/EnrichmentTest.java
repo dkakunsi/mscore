@@ -25,13 +25,11 @@ public class EnrichmentTest {
 
     private Enrichment failRetryEnrichment;
 
-    private ApplicationContext context;
-
     @Before
     public void setup() {
         this.enrichment = new Enrichment(ATTRIBUTE_TO_ENRICH) {
             @Override
-            protected Optional<JSONObject> loadFromDataStore(ApplicationContext context, String domain, String id) throws DataException {
+            protected Optional<JSONObject> loadFromDataStore(String domain, String id) throws DataException {
                 if (StringUtils.equals(id, "throwexception")) {
                     throw new DataException("");
                 }
@@ -48,7 +46,7 @@ public class EnrichmentTest {
 
         this.failRetryEnrichment = new Enrichment(ATTRIBUTE_TO_ENRICH) {
             @Override
-            protected Optional<JSONObject> loadFromDataStore(ApplicationContext context, String domain, String id) throws DataException {
+            protected Optional<JSONObject> loadFromDataStore(String domain, String id) throws DataException {
                 return Optional.empty();
             }
 
@@ -56,8 +54,6 @@ public class EnrichmentTest {
 
         assertThat(this.enrichment.getDomain(), is("all"));
         assertThat(this.enrichment.getAttribute(), is(ATTRIBUTE_TO_ENRICH));
-
-        this.context = DefaultApplicationContext.of("test");
     }
 
     @Test
@@ -65,7 +61,7 @@ public class EnrichmentTest {
         var json = new JSONObject();
         json.put(ATTRIBUTE_TO_ENRICH, createJsonObject("referencedomain", "referenceid"));
 
-        this.enrichment.enrich(this.context, json);
+        this.enrichment.enrich(json);
         var enriched = json.getJSONObject(ATTRIBUTE_TO_ENRICH);
         assertResult(enriched);
     }
@@ -75,7 +71,7 @@ public class EnrichmentTest {
         var json = new JSONObject();
         json.put(ATTRIBUTE_TO_ENRICH, createJsonObject("referencedomain", "referenceid"));
 
-        this.failRetryEnrichment.enrich(this.context, json);
+        this.failRetryEnrichment.enrich(json);
         var enriched = json.getJSONObject(ATTRIBUTE_TO_ENRICH);
         assertThat(enriched.length(), is(3));
     }
@@ -89,7 +85,7 @@ public class EnrichmentTest {
         var json = createJsonObject("domain", "id");
         json.put(ATTRIBUTE_TO_ENRICH, references);
 
-        this.enrichment.enrich(this.context, json);
+        this.enrichment.enrich(json);
         var enriched = json.getJSONArray(ATTRIBUTE_TO_ENRICH).getJSONObject(0);
         assertResult(enriched);
     }
@@ -99,7 +95,7 @@ public class EnrichmentTest {
         var json = new JSONObject();
         json.put(ATTRIBUTE_TO_ENRICH, createJsonObject(null, "referenceid"));
 
-        this.enrichment.enrich(this.context, json);
+        this.enrichment.enrich(json);
         var enriched = json.getJSONObject(ATTRIBUTE_TO_ENRICH);
         assertThat(enriched.getString("keyA"), is("Initial value"));
         assertThat(enriched.length(), is(2));
@@ -108,7 +104,7 @@ public class EnrichmentTest {
     @Test
     public void testEnrich_NoEnrichAttribute() throws EnrichmentException {
         var json = new JSONObject();
-        this.enrichment.enrich(this.context, json);
+        this.enrichment.enrich(json);
         assertFalse(json.has(ATTRIBUTE_TO_ENRICH));
     }
 
@@ -117,7 +113,7 @@ public class EnrichmentTest {
         var json = new JSONObject();
         json.put(ATTRIBUTE_TO_ENRICH, createJsonObject("domain", "throwexception"));
 
-        var ex = assertThrows(EnrichmentException.class, () -> this.enrichment.enrich(this.context, json));
+        var ex = assertThrows(EnrichmentException.class, () -> this.enrichment.enrich(json));
         assertThat(ex.getMessage(), is("Cannot enrich object."));
         assertThat(ex.getCause(), instanceOf(DataException.class));
     }
@@ -127,7 +123,7 @@ public class EnrichmentTest {
         var json = new JSONObject();
         json.put(ATTRIBUTE_TO_ENRICH, "nonjson");
 
-        var ex = assertThrows(EnrichmentException.class, () -> this.enrichment.enrich(this.context, json));
+        var ex = assertThrows(EnrichmentException.class, () -> this.enrichment.enrich(json));
         assertThat(ex.getMessage(), is("Cannot enrich object. Only JSONObject or JSONArray is allowed"));
     }
 

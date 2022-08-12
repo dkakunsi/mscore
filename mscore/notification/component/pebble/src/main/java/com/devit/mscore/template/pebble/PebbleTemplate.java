@@ -4,25 +4,24 @@ import static com.devit.mscore.util.JsonUtils.flatten;
 
 import java.io.StringWriter;
 
-import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Logger;
 import com.devit.mscore.Template;
 import com.devit.mscore.exception.TemplateException;
+import com.devit.mscore.logging.ApplicationLogger;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PebbleTemplate implements Template {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PebbleTemplate.class);
+    private static final Logger LOGGER = ApplicationLogger.getLogger(PebbleTemplate.class);
 
     PebbleTemplate() {
     }
 
     @Override
-    public String build(ApplicationContext context, String template, JSONObject object) throws TemplateException {
+    public String build(String template, JSONObject object) throws TemplateException {
         var engine = new PebbleEngine.Builder().loader(new StringLoader()).build();
         var writer = new StringWriter();
 
@@ -30,7 +29,7 @@ public class PebbleTemplate implements Template {
             engine.getTemplate(template).evaluate(writer, flatten(object).toMap());
             return writer.toString();
         } catch (Exception ex) {
-            LOGGER.error("BreadcrumbId: {}. Cannot load template.", context.getBreadcrumbId());
+            LOGGER.error("Cannot load template.");
             throw new TemplateException("Cannot load template.", ex);
         }
     }

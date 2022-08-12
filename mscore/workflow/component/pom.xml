@@ -16,6 +16,7 @@
     <properties>
         <revision>1.0-SNAPSHOT</revision>
         <workflow-api.version>${revision}</workflow-api.version>
+        <logger.version>${revision}</logger.version>
         <minimum.class.line.coverage>0.75</minimum.class.line.coverage>
         <minimum.bundle.line.coverage>0.90</minimum.bundle.line.coverage>
     </properties>
@@ -26,12 +27,10 @@
             <artifactId>workflow-api</artifactId>
             <version>${workflow-api.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-            <scope>test</scope>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${logger.version}</version>
         </dependency>
     </dependencies>
 

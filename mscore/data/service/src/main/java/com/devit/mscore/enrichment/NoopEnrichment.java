@@ -2,7 +2,6 @@ package com.devit.mscore.enrichment;
 
 import java.util.Optional;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Enrichment;
 
 import org.json.JSONObject;
@@ -28,7 +27,7 @@ public class NoopEnrichment extends Enrichment {
     }
 
     @Override
-    protected Optional<JSONObject> loadFromDataStore(ApplicationContext context, String domain, String id) {
+    protected Optional<JSONObject> loadFromDataStore(String domain, String id) {
         return Optional.empty();
     }
 }

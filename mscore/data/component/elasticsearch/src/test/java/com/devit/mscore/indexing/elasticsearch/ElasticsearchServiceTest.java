@@ -14,8 +14,6 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.util.Map;
 
-import com.devit.mscore.ApplicationContext;
-import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.exception.IndexingException;
 
 import org.elasticsearch.client.indices.CreateIndexRequest;
@@ -45,13 +43,10 @@ public class ElasticsearchServiceTest {
 
     private RestHighLevelClient client;
 
-    private ApplicationContext context;
-
     @Before
     public void setup() {
         this.client = mock(RestHighLevelClient.class);
         this.index = new ElasticsearchService(this.client);
-        this.context = DefaultApplicationContext.of("test");
     }
 
     @Test
@@ -60,7 +55,7 @@ public class ElasticsearchServiceTest {
         doThrow(new IOException()).when(indices).exists(any(GetIndexRequest.class), any(RequestOptions.class));
         doReturn(indices).when(this.client).indices();
 
-        this.index.createIndex(this.context, Map.of("map1", "{\"attribute\":\"value\"}"));
+        this.index.createIndex(Map.of("map1", "{\"attribute\":\"value\"}"));
 
         verify(indices, times(1)).exists(any(GetIndexRequest.class), any(RequestOptions.class));
         verify(indices, times(0)).putMapping(any(PutMappingRequest.class), any(RequestOptions.class));
@@ -75,7 +70,7 @@ public class ElasticsearchServiceTest {
                 any(RequestOptions.class));
         doReturn(indices).when(this.client).indices();
 
-        this.index.createIndex(this.context, Map.of("map1", "{\"attribute\":\"value\"}"));
+        this.index.createIndex(Map.of("map1", "{\"attribute\":\"value\"}"));
 
         verify(indices, times(1)).exists(any(GetIndexRequest.class), any(RequestOptions.class));
         verify(indices, times(0)).putMapping(any(PutMappingRequest.class), any(RequestOptions.class));
@@ -90,7 +85,7 @@ public class ElasticsearchServiceTest {
                 any(RequestOptions.class));
         doReturn(indices).when(this.client).indices();
 
-        this.index.createIndex(this.context, Map.of("map1", "{\"attribute\":\"value\"}"));
+        this.index.createIndex(Map.of("map1", "{\"attribute\":\"value\"}"));
 
         verify(indices, times(1)).exists(any(GetIndexRequest.class), any(RequestOptions.class));
         verify(indices, times(0)).putMapping(any(PutMappingRequest.class), any(RequestOptions.class));
@@ -104,7 +99,7 @@ public class ElasticsearchServiceTest {
         doThrow(new IOException()).when(indices).create(any(CreateIndexRequest.class), any(RequestOptions.class));
         doReturn(indices).when(this.client).indices();
 
-        this.index.createIndex(this.context, Map.of("map1", "{\"attribute\":\"value\"}"));
+        this.index.createIndex(Map.of("map1", "{\"attribute\":\"value\"}"));
 
         verify(indices, times(1)).exists(any(GetIndexRequest.class), any(RequestOptions.class));
         verify(indices, times(0)).putMapping(any(PutMappingRequest.class), any(RequestOptions.class));
@@ -119,7 +114,7 @@ public class ElasticsearchServiceTest {
                 any(RequestOptions.class));
         doReturn(indices).when(this.client).indices();
 
-        this.index.createIndex(this.context, Map.of("map1", "{\"attribute\":\"value\"}"));
+        this.index.createIndex(Map.of("map1", "{\"attribute\":\"value\"}"));
 
         verify(indices, times(1)).exists(any(GetIndexRequest.class), any(RequestOptions.class));
         verify(indices, times(1)).putMapping(any(PutMappingRequest.class), any(RequestOptions.class));
@@ -134,7 +129,7 @@ public class ElasticsearchServiceTest {
                 any(RequestOptions.class));
         doReturn(indices).when(this.client).indices();
 
-        this.index.createIndex(this.context, Map.of("map1", "{\"attribute\":\"value\"}"));
+        this.index.createIndex(Map.of("map1", "{\"attribute\":\"value\"}"));
 
         verify(indices, times(1)).exists(any(GetIndexRequest.class), any(RequestOptions.class));
         verify(indices, times(1)).putMapping(any(PutMappingRequest.class), any(RequestOptions.class));
@@ -148,7 +143,7 @@ public class ElasticsearchServiceTest {
         doThrow(new IOException()).when(indices).putMapping(any(PutMappingRequest.class), any(RequestOptions.class));
         doReturn(indices).when(this.client).indices();
 
-        this.index.createIndex(this.context, Map.of("map1", "{\"attribute\":\"value\"}"));
+        this.index.createIndex(Map.of("map1", "{\"attribute\":\"value\"}"));
 
         verify(indices, times(1)).exists(any(GetIndexRequest.class), any(RequestOptions.class));
         verify(indices, times(1)).putMapping(any(PutMappingRequest.class), any(RequestOptions.class));
@@ -168,7 +163,7 @@ public class ElasticsearchServiceTest {
         doReturn("indexId").when(indexResponse).getId();
         doReturn(indexResponse).when(this.client).index(any(IndexRequest.class), any(RequestOptions.class));
 
-        var result = this.index.index(this.context, "indexName", new JSONObject("{\"id\":\"id\"}"));
+        var result = this.index.index("indexName", new JSONObject("{\"id\":\"id\"}"));
         assertThat(result, is("indexId"));
 
         verify(this.client, times(1)).search(any(SearchRequest.class), any(RequestOptions.class));
@@ -187,7 +182,7 @@ public class ElasticsearchServiceTest {
 
         doThrow(new IOException()).when(this.client).index(any(IndexRequest.class), any(RequestOptions.class));
 
-        var ex = assertThrows(IndexingException.class, () -> this.index.index(this.context, "indexName", new JSONObject("{\"id\":\"id\"}")));
+        var ex = assertThrows(IndexingException.class, () -> this.index.index("indexName", new JSONObject("{\"id\":\"id\"}")));
         assertThat(ex.getMessage(), is("Failed indexing document in index: indexName"));
         assertThat(ex.getCause(), instanceOf(IOException.class));
     }
@@ -205,7 +200,7 @@ public class ElasticsearchServiceTest {
         doReturn("updateId").when(updateResponse).getId();
         doReturn(updateResponse).when(this.client).update(any(UpdateRequest.class), any(RequestOptions.class));
 
-        var result = this.index.index(this.context, "indexName", new JSONObject("{\"id\":\"id\"}"));
+        var result = this.index.index("indexName", new JSONObject("{\"id\":\"id\"}"));
         assertThat(result, is("updateId"));
 
         verify(this.client, times(1)).search(any(SearchRequest.class), any(RequestOptions.class));
@@ -224,7 +219,7 @@ public class ElasticsearchServiceTest {
 
         doThrow(new IOException()).when(this.client).update(any(UpdateRequest.class), any(RequestOptions.class));
 
-        var ex = assertThrows(IndexingException.class, () -> this.index.index(this.context, "indexName", new JSONObject("{\"id\":\"id\"}")));
+        var ex = assertThrows(IndexingException.class, () -> this.index.index("indexName", new JSONObject("{\"id\":\"id\"}")));
         assertThat(ex.getMessage(), is("Failed updating document in index: indexName"));
         assertThat(ex.getCause(), instanceOf(IOException.class));
     }
@@ -233,7 +228,7 @@ public class ElasticsearchServiceTest {
     public void testIndex_ThrowIOException() throws IOException, IndexingException, JSONException {
         doThrow(new IOException()).when(this.client).search(any(SearchRequest.class), any(RequestOptions.class));
 
-        var ex = assertThrows(IndexingException.class, () -> this.index.index(this.context, "indexName", new JSONObject("{\"id\":\"id\"}")));
+        var ex = assertThrows(IndexingException.class, () -> this.index.index("indexName", new JSONObject("{\"id\":\"id\"}")));
         assertThat(ex.getMessage(), is("Fail to search index."));
         assertThat(ex.getCause(), instanceOf(IOException.class));
     }

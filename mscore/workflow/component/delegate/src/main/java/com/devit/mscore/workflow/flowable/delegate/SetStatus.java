@@ -1,5 +1,9 @@
 package com.devit.mscore.workflow.flowable.delegate;
 
+import static com.devit.mscore.ApplicationContext.setContext;
+
+import com.devit.mscore.Logger;
+import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.util.AttributeConstants;
 import com.devit.mscore.workflow.flowable.FlowableApplicationContext;
 
@@ -7,12 +11,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.api.delegate.Expression;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SetStatus extends SetAttribute {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SetStatus.class);
+    private static final Logger LOGGER = ApplicationLogger.getLogger(SetStatus.class);
 
     private Expression status;
 
@@ -21,15 +23,15 @@ public class SetStatus extends SetAttribute {
     @Override
     public void execute(DelegateExecution execution) {
         var context = FlowableApplicationContext.of(execution);
+        setContext(context);
 
         var domain = getEntityDomain(execution);
         var entityId = execution.getVariable("businessKey", String.class);
         var targetValue = this.status.getValue(execution).toString();
 
-        LOGGER.info("BreadcrumbId: {}. Action: {}. Updating status of {} in domain {} to {}.",
-                context.getBreadcrumbId(), context.getAction(), entityId, domain, targetValue);
+        LOGGER.info("Action: {}. Updating status of {} in domain {} to {}.", context.getAction(), entityId, domain, targetValue);
 
-        var entity = getEntity((FlowableApplicationContext) context, domain, entityId, "status", targetValue);
+        var entity = getEntity(domain, entityId, "status", targetValue);
         entity.put("status", targetValue);
 
         var closeReasonStr = getCloseReason(execution);
@@ -37,7 +39,7 @@ public class SetStatus extends SetAttribute {
             entity.put("closeReason", closeReasonStr);
         }
 
-        updateEntity((FlowableApplicationContext) context, entity);
+        updateEntity(entity);
 
         execution.setVariable("entity", entity.toString());
         LOGGER.info("BreadcrumbId: {}. Entity process variable is updated.", context.getBreadcrumbId());

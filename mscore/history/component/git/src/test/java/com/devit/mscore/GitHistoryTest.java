@@ -27,14 +27,16 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class GitHistoryTest {
-    
+
     private GitHistory gitHistory;
 
-    private ApplicationContext context;
-
     private Git git;
+
+    private ApplicationContext context;
 
     @Before
     public void setup() {
@@ -47,7 +49,6 @@ public class GitHistoryTest {
         this.git = mock(Git.class);
         doReturn(repository).when(this.git).getRepository();
 
-
         var transportConfigCallback = mock(TransportConfigCallback.class);
 
         this.gitHistory = new GitHistory("repo", this.git, transportConfigCallback);
@@ -56,7 +57,6 @@ public class GitHistoryTest {
     @After
     public void cleanup() throws IOException {
         FileUtils.deleteDirectory(Paths.get("domain").toFile());
-
     }
 
     @Test
@@ -72,7 +72,11 @@ public class GitHistoryTest {
         message.put("id", "id");
         message.put("name", "name");
 
-        this.gitHistory.create(this.context, message);
+        try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+            utilities.when(() -> ApplicationContext.getContext()).thenReturn(context);
+
+            this.gitHistory.create(message);
+        }
     }
 
     @Test
@@ -88,9 +92,13 @@ public class GitHistoryTest {
         message.put("id", "id");
         message.put("name", "name");
 
-        var ex = assertThrows(HistoryException.class, () -> this.gitHistory.create(this.context, message));
-        var cause = ex.getCause();
-        assertThat(cause, instanceOf(GitAPIException.class));
+        try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+            utilities.when(() -> ApplicationContext.getContext()).thenReturn(context);
+
+            var ex = assertThrows(HistoryException.class, () -> this.gitHistory.create(message));
+            var cause = ex.getCause();
+            assertThat(cause, instanceOf(GitAPIException.class));
+        }
     }
 
     private static void mockCheckout(Git repository) {

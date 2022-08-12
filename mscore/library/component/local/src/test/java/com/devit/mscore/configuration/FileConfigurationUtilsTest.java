@@ -7,21 +7,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
 
-import com.devit.mscore.ApplicationContext;
-import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.exception.ConfigException;
 
-import org.junit.Before;
 import org.junit.Test;
 
 public class FileConfigurationUtilsTest {
-
-    private ApplicationContext context;
-
-    @Before
-    public void setup() {
-        this.context = DefaultApplicationContext.of("test");
-    }
 
     @Test
     public void testPrefixSeparator() throws ConfigException {
@@ -39,9 +29,9 @@ public class FileConfigurationUtilsTest {
 
         assertNotNull(config);
         assertThat(config.getConfigs().size(), is(4));
-        assertThat(config.getConfig(this.context, "platform.mongo.host").get(), is("mongo-host"));
-        assertThat(config.getConfig(this.context, "services.data.schema.resource.location").get(), is("./schema"));
-        assertThat(config.getConfig(this.context, "services.workflow.db.name").get(), is("workflow"));
+        assertThat(config.getConfig("platform.mongo.host").get(), is("mongo-host"));
+        assertThat(config.getConfig("services.data.schema.resource.location").get(), is("./schema"));
+        assertThat(config.getConfig("services.workflow.db.name").get(), is("workflow"));
     }
 
     @Test
@@ -51,9 +41,9 @@ public class FileConfigurationUtilsTest {
 
         assertNotNull(config);
         assertThat(config.getConfigs().size(), is(4));
-        assertThat(config.getConfig(this.context, "platform.mongo.host").get(), is("mongo-host"));
-        assertThat(config.getConfig(this.context, "services.data.schema.resource.location").get(), is("./schema"));
-        assertThat(config.getConfig(this.context, "services.workflow.db.name").get(), is("workflow"));
+        assertThat(config.getConfig("platform.mongo.host").get(), is("mongo-host"));
+        assertThat(config.getConfig("services.data.schema.resource.location").get(), is("./schema"));
+        assertThat(config.getConfig("services.workflow.db.name").get(), is("workflow"));
     }
 
     @Test
@@ -63,9 +53,9 @@ public class FileConfigurationUtilsTest {
 
         assertNotNull(config);
         assertThat(config.getConfigs().size(), is(4));
-        assertThat(config.getConfig(this.context, "platform.mongo.host").get(), is("mongo-host"));
-        assertThat(config.getConfig(this.context, "services.data.schema.resource.location").get(), is("./schema"));
-        assertThat(config.getConfig(this.context, "services.workflow.db.name").get(), is("workflow"));
+        assertThat(config.getConfig("platform.mongo.host").get(), is("mongo-host"));
+        assertThat(config.getConfig("services.data.schema.resource.location").get(), is("./schema"));
+        assertThat(config.getConfig("services.workflow.db.name").get(), is("workflow"));
     }
 
     @Test
@@ -75,9 +65,9 @@ public class FileConfigurationUtilsTest {
 
         assertNotNull(config);
         assertThat(config.getConfigs().size(), is(3));
-        assertThat(config.getConfig(this.context, "platform.mongo.host").get(), is("mongo-host"));
-        assertThat(config.getConfig(this.context, "services.data.schema.resource.location").isEmpty(), is(true));
-        assertThat(config.getConfig(this.context, "services.workflow.db.name").get(), is("workflow"));
+        assertThat(config.getConfig("platform.mongo.host").get(), is("mongo-host"));
+        assertThat(config.getConfig("services.data.schema.resource.location").isEmpty(), is(true));
+        assertThat(config.getConfig("services.workflow.db.name").get(), is("workflow"));
     }
 
     @Test

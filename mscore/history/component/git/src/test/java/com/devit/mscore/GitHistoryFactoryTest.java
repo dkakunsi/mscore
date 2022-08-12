@@ -30,26 +30,21 @@ public class GitHistoryFactoryTest {
 
     private static final String TOPICS = "topic1,topic2";
 
-    private ApplicationContext context;
-
     private Configuration configuration;
 
     private GitHistoryFactory historyManagerFactory;
 
     @Before
     public void setup() throws ConfigException {
-        this.context = mock(ApplicationContext.class);
-        doReturn("deddy.kakunsi").when(this.context).getRequestedBy();
-
         this.configuration = mock(Configuration.class);
         doReturn("history").when(this.configuration).getServiceName();
-        doReturn(Optional.of(HOST_NAME)).when(this.configuration).getConfig(this.context, "services.history.git.hostName");
-        doReturn(Optional.of(HOST_KEY)).when(this.configuration).getConfig(this.context, "services.history.git.hostKey");
-        doReturn(Optional.of("git@github.com:dkakunsi/git-test.git")).when(this.configuration).getConfig(this.context, "services.history.git.url");
-        doReturn(Optional.of(REPO_LOCATION)).when(this.configuration).getConfig(this.context, "services.history.git.dir");
-        doReturn(Optional.of(PRIVATE_KEY)).when(this.configuration).getConfig(this.context, "services.history.git.key");
-        doReturn(Optional.of("test")).when(this.configuration).getConfig(this.context, "services.history.git.passPhrase");
-        doReturn(Optional.of(TOPICS)).when(this.configuration).getConfig(this.context, "services.history.topics");
+        doReturn(Optional.of(HOST_NAME)).when(this.configuration).getConfig("services.history.git.hostName");
+        doReturn(Optional.of(HOST_KEY)).when(this.configuration).getConfig("services.history.git.hostKey");
+        doReturn(Optional.of("git@github.com:dkakunsi/git-test.git")).when(this.configuration).getConfig("services.history.git.url");
+        doReturn(Optional.of(REPO_LOCATION)).when(this.configuration).getConfig("services.history.git.dir");
+        doReturn(Optional.of(PRIVATE_KEY)).when(this.configuration).getConfig("services.history.git.key");
+        doReturn(Optional.of("test")).when(this.configuration).getConfig("services.history.git.passPhrase");
+        doReturn(Optional.of(TOPICS)).when(this.configuration).getConfig("services.history.topics");
     }
 
     @After
@@ -62,22 +57,22 @@ public class GitHistoryFactoryTest {
 
     @Test
     public void testCreateGitHistory() throws ConfigException {
-        this.historyManagerFactory = GitHistoryFactory.of(this.context, this.configuration);
-        var gitHistory = this.historyManagerFactory.historyManager(this.context);
+        this.historyManagerFactory = GitHistoryFactory.of(this.configuration);
+        var gitHistory = this.historyManagerFactory.historyManager();
         assertNotNull(gitHistory);
     }
 
     @Test
     public void testOpenGit() throws ConfigException, IllegalStateException, GitAPIException {
         Git.init().setDirectory(Paths.get(REPO_LOCATION).toFile()).call();
-        this.historyManagerFactory = GitHistoryFactory.of(this.context, this.configuration);
-        var gitHistory = this.historyManagerFactory.historyManager(this.context);
+        this.historyManagerFactory = GitHistoryFactory.of(this.configuration);
+        var gitHistory = this.historyManagerFactory.historyManager();
         assertNotNull(gitHistory);
     }
 
     @Test
     public void testException() throws ConfigException {
-        doReturn(Optional.of("/ :")).when(this.configuration).getConfig(this.context, "services.history.git.dir");
-        assertThrows(ConfigException.class, () -> this.historyManagerFactory = GitHistoryFactory.of(this.context, this.configuration));
+        doReturn(Optional.of("/ :")).when(this.configuration).getConfig("services.history.git.dir");
+        assertThrows(ConfigException.class, () -> this.historyManagerFactory = GitHistoryFactory.of(this.configuration));
     }
 }

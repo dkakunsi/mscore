@@ -1,7 +1,6 @@
 package com.devit.mscore.synchronization;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -14,7 +13,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Schema;
 import com.devit.mscore.Synchronizer;
 import com.devit.mscore.exception.ResourceException;
@@ -31,14 +29,10 @@ public class SynchronizationsExecutorTest {
 
     private Synchronizer synchronizer;
 
-    private ApplicationContext context;
-
     @Before
     public void setup() {
         this.executor = new SynchronizationsExecutor();
         this.synchronizer = mock(Synchronizer.class);
-        this.context = mock(ApplicationContext.class);
-        doReturn("breadcrumbId").when(this.context).getBreadcrumbId();
     }
 
     @Test
@@ -47,9 +41,9 @@ public class SynchronizationsExecutorTest {
         this.executor.add(synchronization);
 
         var json = "{\"domain\":\"domain\",\"id\":\"id\"}";
-        this.executor.execute(this.context, new JSONObject(json));
+        this.executor.execute(new JSONObject(json));
 
-        verify(this.synchronizer, times(1)).synchronize(any(ApplicationContext.class), anyString(), anyString());
+        verify(this.synchronizer, times(1)).synchronize(anyString(), anyString());
     }
 
     @Test
@@ -58,21 +52,21 @@ public class SynchronizationsExecutorTest {
         this.executor.add(synchronization);
 
         var json = "{\"id\":\"id\"}";
-        this.executor.execute(this.context, new JSONObject(json));
+        this.executor.execute(new JSONObject(json));
 
-        verify(this.synchronizer, times(0)).synchronize(any(ApplicationContext.class), anyString(), anyString());
+        verify(this.synchronizer, times(0)).synchronize(anyString(), anyString());
     }
 
     @Test
     public void testSynchronize_ThrowException() throws SynchronizationException {
-        doThrow(new SynchronizationException("")).when(this.synchronizer).synchronize(any(ApplicationContext.class), anyString(), anyString());
+        doThrow(new SynchronizationException("")).when(this.synchronizer).synchronize(anyString(), anyString());
         var synchronization = new DefaultSynchronization(synchronizer, "domain", "attribute");
         this.executor.add(synchronization);
 
         var json = "{\"domain\":\"domain\",\"id\":\"id\"}";
-        this.executor.execute(this.context, new JSONObject(json));
+        this.executor.execute(new JSONObject(json));
 
-        verify(this.synchronizer, times(1)).synchronize(any(ApplicationContext.class), anyString(), anyString());
+        verify(this.synchronizer, times(1)).synchronize(anyString(), anyString());
     }
 
     @Test

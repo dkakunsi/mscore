@@ -5,8 +5,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.devit.mscore.ApplicationContext;
-import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.Index;
 import com.devit.mscore.exception.IndexingException;
 
@@ -19,19 +17,19 @@ public class IndexingObserverTest {
     public void testNotify_NullIndex() throws IndexingException {
         var index = mock(Index.class);
         var indexingObserver = new IndexingObserver(index);
-        indexingObserver.notify(DefaultApplicationContext.of("test"), new JSONObject());
+        indexingObserver.notify(new JSONObject());
 
-        verify(index).index(any(ApplicationContext.class), any(JSONObject.class));
+        verify(index).index(any(JSONObject.class));
     }
 
     @Test
     public void testNotify_ExceptionThrown() throws Exception {
         var index = mock(Index.class);
-        doThrow(IndexingException.class).when(index).index(any(), any(JSONObject.class));
+        doThrow(IndexingException.class).when(index).index(any(JSONObject.class));
 
         var indexingObserver = new IndexingObserver(index);
-        indexingObserver.notify(DefaultApplicationContext.of("test"), new JSONObject());
+        indexingObserver.notify(new JSONObject());
 
-        verify(index).index(any(ApplicationContext.class), any(JSONObject.class));
+        verify(index).index(any(JSONObject.class));
     }
 }

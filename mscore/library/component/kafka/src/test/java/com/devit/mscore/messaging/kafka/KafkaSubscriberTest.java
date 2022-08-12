@@ -6,13 +6,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-
-import com.devit.mscore.ApplicationContext;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -39,8 +36,7 @@ public class KafkaSubscriberTest {
 
     @Test
     public void testSubscribe() {
-        java.util.function.BiConsumer<ApplicationContext, JSONObject> consumer = (context, json) -> {
-        };
+        java.util.function.Consumer<JSONObject> consumer = json -> {};
         this.subscriber.subscribe("topic", consumer);
         var topics = this.subscriber.getChannel();
         assertThat(topics, is("topic"));
@@ -50,9 +46,8 @@ public class KafkaSubscriberTest {
     @Test
     public void testConsume() throws InterruptedException {
         var result = new JSONObject();
-        var spiedResult = spy(result);
 
-        java.util.function.BiConsumer<ApplicationContext, JSONObject> localConsumer = (context, json) -> spiedResult.put("json", json);
+        java.util.function.Consumer<JSONObject> localConsumer = json -> result.put("json", json);
         this.subscriber.subscribe("topic", localConsumer);
         var topics = this.subscriber.getChannel();
         assertThat(topics, is("topic"));
@@ -84,7 +79,7 @@ public class KafkaSubscriberTest {
         Thread.sleep(1000);
         this.subscriber.stop();
 
-        assertNotNull(spiedResult.get("json"));
-        assertThat(spiedResult.getJSONObject("json").getString("id"), is("id"));
+        assertNotNull(result.get("json"));
+        assertThat(result.getJSONObject("json").getString("id"), is("id"));
     }
 }

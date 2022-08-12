@@ -27,20 +27,18 @@ public interface Executor<T> {
      * The objects will be executed on demand
      * </p>
      * 
-     * @param context application context.
      * @param data    to execute.
      * @throws ApplicationRuntimeException error in execution.
      */
-    void execute(ApplicationContext context, JSONObject data) throws ApplicationRuntimeException;
+    void execute(JSONObject data) throws ApplicationRuntimeException;
 
     /**
      * Execute objects on {@code jsons} data.
      * 
-     * @param context application context.
      * @param dataArray   to execute.
      * @throws ApplicationRuntimeException error in execution.
      */
-    default void execute(ApplicationContext context, JSONArray dataArray) throws ApplicationRuntimeException {
-        dataArray.forEach(data -> execute(context, (JSONObject) data));
+    default void execute(JSONArray dataArray) throws ApplicationRuntimeException {
+        dataArray.forEach(data -> execute((JSONObject) data));
     }
 }

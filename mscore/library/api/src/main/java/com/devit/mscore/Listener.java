@@ -3,8 +3,6 @@ package com.devit.mscore;
 import com.devit.mscore.exception.ApplicationException;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Root of event listener.
@@ -12,8 +10,6 @@ import org.slf4j.LoggerFactory;
  * @author dkakunsi
  */
 public abstract class Listener implements Starter {
-
-    private static final Logger LOG = LoggerFactory.getLogger(Listener.class);
 
     protected Subscriber subscriber;
 
@@ -24,15 +20,15 @@ public abstract class Listener implements Starter {
     /**
      * Consume the message.
      * 
-     * @param context applicationContext.
      * @param message to synchronize.
      */
-    protected abstract void consume(ApplicationContext context, JSONObject message);
+    protected abstract void consume(JSONObject message);
 
     /**
      * Listen for incoming synchronization message.
+     * @throws ApplicationException
      */
-    public void listen(String... topics) {
+    public void listen(String... topics) throws ApplicationException {
         for (var topic : topics) {
             this.subscriber.subscribe(topic, this::consume);
         }
@@ -41,12 +37,8 @@ public abstract class Listener implements Starter {
     }
 
     @Override
-    public void start() {
-        try {
-            this.subscriber.start();
-        } catch (ApplicationException ex) {
-            LOG.error("Cannot start consumer.", ex);
-        }
+    public void start() throws ApplicationException {
+        this.subscriber.start();
     }
 
     @Override

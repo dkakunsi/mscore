@@ -16,14 +16,14 @@
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>
-        <api.version>[2.0,)</api.version>
+        <logger.version>${revision}</logger.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.devit.mscore</groupId>
-            <artifactId>api</artifactId>
-            <version>${api.version}</version>
+            <artifactId>log4j</artifactId>
+            <version>${logger.version}</version>
         </dependency>
     </dependencies>
 

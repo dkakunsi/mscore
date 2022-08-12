@@ -18,8 +18,6 @@ import static org.mockito.Mockito.verify;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.devit.mscore.ApplicationContext;
-import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.exception.DataDuplicationException;
 import com.devit.mscore.exception.DataException;
 import com.mongodb.DuplicateKeyException;
@@ -44,8 +42,6 @@ public class MongoRepositoryTest {
 
     private MongoCollection<Document> collection;
 
-    private ApplicationContext context;
-
     @SuppressWarnings("unchecked")
     @Before
     public void setup() {
@@ -61,7 +57,6 @@ public class MongoRepositoryTest {
         doReturn(listIndeces).when(this.collection).listIndexes();
 
         this.repository = new MongoRepository(this.collection, List.of("id", "code"));
-        this.context = DefaultApplicationContext.of("test");
     }
 
     @Test
@@ -81,7 +76,7 @@ public class MongoRepositoryTest {
                 any(ReplaceOptions.class));
 
         var json = "{\"id\":\"603aed537004b70c47368fd9\",\"domain\":\"domain\",\"name\":\"name\"}";
-        var result = this.repository.save(this.context, new JSONObject(json));
+        var result = this.repository.save(new JSONObject(json));
 
         assertNotNull(result);
         assertThat(getId(result), is("603aed537004b70c47368fd9"));
@@ -99,7 +94,7 @@ public class MongoRepositoryTest {
                 any(ReplaceOptions.class));
 
         var json = "{\"domain\":\"domain\",\"name\":\"name\"}";
-        var result = this.repository.save(this.context, new JSONObject(json));
+        var result = this.repository.save(new JSONObject(json));
 
         assertNotNull(result);
         assertTrue(StringUtils.isNotBlank(getId(result)));
@@ -121,7 +116,7 @@ public class MongoRepositoryTest {
 
         var json = "{\"id\":\"603aed537004b70c47368fd9\",\"domain\":\"domain\",\"name\":\"name\"}";
 
-        var ex = assertThrows(DataDuplicationException.class, () -> this.repository.save(this.context, new JSONObject(json)));
+        var ex = assertThrows(DataDuplicationException.class, () -> this.repository.save(new JSONObject(json)));
         assertThat(ex.getMessage(), is("Key is duplicated"));
         assertThat(ex.getCause(), instanceOf(DuplicateKeyException.class));
     }
@@ -141,14 +136,14 @@ public class MongoRepositoryTest {
                 any(Document.class), any(ReplaceOptions.class));
 
         var json = "{\"id\":\"603aed537004b70c47368fd9\",\"domain\":\"domain\",\"name\":\"name\"}";
-        var ex = assertThrows(DataException.class, () -> this.repository.save(this.context, new JSONObject(json)));
+        var ex = assertThrows(DataException.class, () -> this.repository.save(new JSONObject(json)));
         assertThat(ex.getMessage(), is("Exception message"));
         assertThat(ex.getCause(), instanceOf(Exception.class));
     }
 
     @Test
     public void testDelete() {
-        this.repository.delete(this.context, "603aed537004b70c47368fd9");
+        this.repository.delete("603aed537004b70c47368fd9");
         verify(this.collection).deleteOne(any(Document.class));
     }
 
@@ -158,7 +153,7 @@ public class MongoRepositoryTest {
         doReturn(null).when(findResult).first();
         doReturn(findResult).when(this.collection).find(any(Document.class));
 
-        var result = this.repository.find(this.context, "603aed537004b70c47368fd9");
+        var result = this.repository.find("603aed537004b70c47368fd9");
         assertTrue(result.isEmpty());
     }
 
@@ -179,7 +174,7 @@ public class MongoRepositoryTest {
         doCallRealMethod().when(findResult).forEach(any(Consumer.class));
         doReturn(findResult).when(this.collection).find(any(Document.class));
 
-        var result = this.repository.find(this.context, "field", "value");
+        var result = this.repository.find("field", "value");
         assertTrue(result.isPresent());
         assertThat(result.get().length(), is(1));
         assertThat(result.get().getJSONObject(0).getString("id"), is("603aed537004b70c47368fd9"));
@@ -195,7 +190,7 @@ public class MongoRepositoryTest {
         doReturn(iterator).when(findResult).iterator();
         doReturn(findResult).when(this.collection).find(any(Document.class));
 
-        var result = this.repository.find(this.context, List.of("603aed537004b70c47368fd9"));
+        var result = this.repository.find(List.of("603aed537004b70c47368fd9"));
         assertTrue(result.isEmpty());
     }
 
@@ -207,7 +202,7 @@ public class MongoRepositoryTest {
         doReturn(iterator).when(findResult).iterator();
         doReturn(findResult).when(this.collection).find();
 
-        var result = this.repository.all(this.context);
+        var result = this.repository.all();
         assertTrue(result.isEmpty());
     }
 }

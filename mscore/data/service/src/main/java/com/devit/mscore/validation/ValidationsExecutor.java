@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Executor;
 import com.devit.mscore.Validation;
 import com.devit.mscore.exception.ApplicationRuntimeException;
@@ -41,19 +40,19 @@ public class ValidationsExecutor implements Executor<Validation> {
     }
 
     @Override
-    public void execute(ApplicationContext context, JSONObject json) {
-        if (!valid(context, this.validations.get(ALL), json) || !valid(context, this.validations.get(getDomain(json)), json)) {
+    public void execute(JSONObject json) {
+        if (!valid(this.validations.get(ALL), json) || !valid(this.validations.get(getDomain(json)), json)) {
             throw new ApplicationRuntimeException(new ValidationException(INVALID_DATA));
         }
     }
 
-    private static boolean valid(ApplicationContext context, List<Validation> validations, JSONObject json) {
+    private static boolean valid(List<Validation> validations, JSONObject json) {
         if (validations == null) {
             return true;
         }
         if (json == null) {
             return false;
         }
-        return validations.stream().allMatch(v -> v.validate(context, json));
+        return validations.stream().allMatch(v -> v.validate(json));
     }
 }

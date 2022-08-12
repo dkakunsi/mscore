@@ -12,10 +12,9 @@ public interface Publisher {
     /**
      * Publish message to broker on the provided channel.
      * 
-     * @param context application context.
      * @param json to publish.
      */
-    void publish(ApplicationContext context, JSONObject json);
+    void publish(JSONObject json);
 
     /**
      * 

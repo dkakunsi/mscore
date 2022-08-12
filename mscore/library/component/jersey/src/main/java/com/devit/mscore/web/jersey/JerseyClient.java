@@ -6,11 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Logger;
+import com.devit.mscore.logging.ApplicationLogger;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -21,7 +20,7 @@ import jakarta.ws.rs.core.Response;
 
 public class JerseyClient implements com.devit.mscore.web.Client, Requester {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JerseyClient.class);
+    private static final Logger LOG = new ApplicationLogger(JerseyClient.class);
 
     private Client client;
 
@@ -35,44 +34,44 @@ public class JerseyClient implements com.devit.mscore.web.Client, Requester {
     }
 
     @Override
-    public JSONObject delete(ApplicationContext context, String uri) {
-        LOG.debug("BreadcrumbId: {}. Sending DELETE {}", context.getBreadcrumbId(), uri);
-        var response = request(context, uri, new HashMap<>(), new HashMap<>()).delete();
+    public JSONObject delete(String uri) {
+        LOG.debug("Sending DELETE {}", uri);
+        var response = request(uri, new HashMap<>(), new HashMap<>()).delete();
         return buildResponse(uri, response);
     }
 
     @Override
-    public JSONObject get(ApplicationContext context, String uri, Map<String, String> params) {
-        LOG.debug("BreadcrumbId: {}. Sending GET {}. Entity: {}", context.getBreadcrumbId(), uri, params);
-        var response = request(context, uri, params, new HashMap<>()).get();
+    public JSONObject get(String uri, Map<String, String> params) {
+        LOG.debug("Sending GET {}. Entity: {}", uri, params);
+        var response = request(uri, params, new HashMap<>()).get();
         return buildResponse(uri, response);
     }
 
     @Override
-    public JSONObject post(ApplicationContext context, String uri, Optional<JSONObject> payload) {
-        LOG.debug("BreadcrumbId: {}. Sending POST {}. Entity: {}", context.getBreadcrumbId(), uri, payload);
+    public JSONObject post(String uri, Optional<JSONObject> payload) {
+        LOG.debug("Sending POST {}. Entity: {}", uri, payload);
         Response response;
         if (payload.isPresent()) {
-            response = request(context, uri, new HashMap<>(), new HashMap<>()).post(Entity.json(payload.get().toString()));
+            response = request(uri, new HashMap<>(), new HashMap<>()).post(Entity.json(payload.get().toString()));
         } else {
-            response = request(context, uri, new HashMap<>(), new HashMap<>()).post(null);
+            response = request(uri, new HashMap<>(), new HashMap<>()).post(null);
         }
         return buildResponse(uri, response);
     }
 
     @Override
-    public JSONObject put(ApplicationContext context, String uri, Optional<JSONObject> payload) {
-        LOG.debug("BreadcrumbId: {}. Sending PUT {}. Entity: {}", context.getBreadcrumbId(), uri, payload);
+    public JSONObject put(String uri, Optional<JSONObject> payload) {
+        LOG.debug("Sending PUT {}. Entity: {}", uri, payload);
         Response response;
         if (payload.isPresent()) {
-            response = request(context, uri, new HashMap<>(), new HashMap<>()).put(Entity.json(payload.get().toString()));
+            response = request(uri, new HashMap<>(), new HashMap<>()).put(Entity.json(payload.get().toString()));
         } else {
-            response = request(context, uri, new HashMap<>(), new HashMap<>()).put(null);
+            response = request(uri, new HashMap<>(), new HashMap<>()).put(null);
         }
         return buildResponse(uri, response);
     }
 
-    private Builder request(ApplicationContext context, String uri, Map<String, String> params,
+    private Builder request(String uri, Map<String, String> params,
             Map<String, String> headers) {
 
         var target = this.client.target(uri);
@@ -80,7 +79,7 @@ public class JerseyClient implements com.devit.mscore.web.Client, Requester {
             params.forEach(target::queryParam);
         }
 
-        var builtHeaders = buildRequestHeader(context, headers);
+        var builtHeaders = buildRequestHeader(headers);
         var builder = target.request();
         if (builtHeaders != null) {
             builtHeaders.forEach(builder::header);

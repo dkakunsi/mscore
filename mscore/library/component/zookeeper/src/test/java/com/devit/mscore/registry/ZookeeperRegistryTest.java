@@ -5,19 +5,25 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
+import java.util.List;
 
-import com.devit.mscore.ApplicationContext;
-import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.exception.RegistryException;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.api.ExistsBuilder;
+import org.apache.curator.framework.api.GetChildrenBuilder;
+import org.apache.curator.framework.api.GetDataBuilder;
+import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.retry.RetryNTimes;
 import org.apache.curator.test.TestingServer;
+import org.apache.zookeeper.data.Stat;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,8 +34,6 @@ public class ZookeeperRegistryTest {
 
     private static ZookeeperRegistry registry;
 
-    private static ApplicationContext context;
-
     @BeforeClass
     public static void startServer() throws Exception {
         zookeeperServer = new TestingServer(4000);
@@ -38,11 +42,10 @@ public class ZookeeperRegistryTest {
         var sleepMsBetweenRetries = 100;
         var maxRetries = 3;
         var retryPolicy = new RetryNTimes(maxRetries, sleepMsBetweenRetries);
-        
+
         var client = CuratorFrameworkFactory.newClient("127.0.0.1:4000", retryPolicy);
-        
-        context = DefaultApplicationContext.of("test");
-        registry = new ZookeeperRegistry(context, "curator", client);
+
+        registry = new ZookeeperRegistry("curator", client);
         registry.open();
     }
 
@@ -55,37 +58,48 @@ public class ZookeeperRegistryTest {
     @Test
     public void test_Found() throws RegistryException {
         var key = "/service/domain/address";
-        registry.add(context, key, "domain-address");
-        var value = registry.get(context, key);
+        registry.add(key, "domain-address");
+        var value = registry.get(key);
 
         assertThat(value, is("domain-address"));
     }
 
     @Test
     public void test_NotFound() throws RegistryException {
-        var value = registry.get(context, "/notexists");
+        var value = registry.get("/notexists");
         assertNull(value);
     }
 
     @Test
-    public void testAdd_ThrowException() throws RegistryException {
+    public void testAdd_ThrowException() throws Exception {
+        var mockedExistsBuilder = mock(ExistsBuilder.class);
+        doReturn(new Stat()).when(mockedExistsBuilder).forPath(anyString());
+        var mockedGetDataBuilder = mock(GetDataBuilder.class);
+        doReturn(null).when(mockedGetDataBuilder).forPath(anyString());
+        var mockedGetChildrenBuilder = mock(GetChildrenBuilder.class);
+        doReturn(List.of()).when(mockedGetChildrenBuilder).forPath(anyString());
+
         var mockedClient = mock(CuratorFramework.class);
+        doReturn(mockedExistsBuilder).when(mockedClient).checkExists();
+        doReturn(mockedGetDataBuilder).when(mockedClient).getData();
+        doReturn(mockedGetChildrenBuilder).when(mockedClient).getChildren();
+        doReturn(CuratorFrameworkState.STARTED).when(mockedClient).getState();
         doThrow(IllegalArgumentException.class).when(mockedClient).create();
         
         var localRegistry = new ZookeeperRegistry("name", mockedClient);
-        assertThrows(RegistryException.class, () -> localRegistry.add(context, "key", "value"));
+        assertThrows(RegistryException.class, () -> localRegistry.add("key", "value"));
     }
 
     @Test
     public void dummyTest() throws RegistryException {
         var name = registry.getName();
-        registry.all(context);
+        registry.all();
         assertThat(name, is("curator"));
 
-        var values = registry.values(context);
+        var values = registry.values();
         assertNotNull(values);
 
-        var keys = registry.keys(context);
+        var keys = registry.keys();
         assertNotNull(keys);
     }
 

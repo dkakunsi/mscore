@@ -10,8 +10,6 @@ import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.ResourceException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Interface to manage system resource.
@@ -19,8 +17,6 @@ import org.slf4j.LoggerFactory;
  * @author dkakunsi
  */
 public abstract class ResourceManager extends Manager {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceManager.class);
 
     protected Registry registry;
 
@@ -35,45 +31,40 @@ public abstract class ResourceManager extends Manager {
     /**
      * Register the resource.
      * 
-     * @param context of the request.
      * @throws RegistryException
      * @throws ResourceException
      */
-    public void registerResources(ApplicationContext context) throws ResourceException {
+    public void registerResources() throws ResourceException {
         try {
-            var location = getResourceLocation(context);
+            var location = getResourceLocation();
             if (StringUtils.isBlank(location)) {
-                LOGGER.info("BreadcrumbdId: {}. No resource config found", context.getBreadcrumbId());
                 return;
             }
 
             var directory = Paths.get(location).toFile();
             if (!directory.exists()) {
-                LOGGER.info("BreadcrumbdId: {}. No resource found in '{}'", context.getBreadcrumbId(), location);
                 return;
             }
 
             for (var resourceFile : Resource.getFiles(directory)) {
-                registerResource(context, resourceFile);
+                registerResource(resourceFile);
             }
         } catch (RegistryException | ConfigException ex) {
             throw new ResourceException("Cannot register resource.", ex);
         }
     }
 
-    private void registerResource(ApplicationContext context, File resourceFile) throws ResourceException, RegistryException {
+    private void registerResource(File resourceFile) throws ResourceException, RegistryException {
         var resource = createResource(resourceFile);
-        LOGGER.debug("BreadcrumbId: {}. Registering resource: {}", context.getBreadcrumbId(), resource);
         var message = resource.getMessage();
-        this.registry.add(context, getName(message), message.toString());
-        LOGGER.info("BreadcrumbId: {}. Resource {} is added to registry.", context.getBreadcrumbId(), resource.getName());
+        this.registry.add(getName(message), message.toString());
     }
 
     public String getType() {
         return this.resourceType;
     }
 
-    protected abstract String getResourceLocation(ApplicationContext context) throws ConfigException;
+    protected abstract String getResourceLocation() throws ConfigException;
 
     protected abstract Resource createResource(File file) throws ResourceException;
 }

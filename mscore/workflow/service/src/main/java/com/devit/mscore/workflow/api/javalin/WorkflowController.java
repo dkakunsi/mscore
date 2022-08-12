@@ -7,7 +7,6 @@ import java.util.Optional;
 
 import com.devit.mscore.Service;
 import com.devit.mscore.exception.ApplicationException;
-import com.devit.mscore.web.javalin.JavalinApplicationContext;
 import com.devit.mscore.web.javalin.JavalinController;
 import com.devit.mscore.WorkflowProcess;
 
@@ -42,11 +41,10 @@ public class WorkflowController extends JavalinController {
                 throw new ApplicationException(NO_WORKFLOW);
             }
 
-            var applicationContext = JavalinApplicationContext.of(ctx);
             var processDefinitionId = ctx.pathParam(DEFINITION_ID);
             var entity = new JSONObject(ctx.body());
             var variables = ctx.header(VARIABLE) != null ? new JSONObject(ctx.header(VARIABLE)).toMap() : new HashMap<String, Object>();
-            var processInstance = this.workflowProcess.get().createInstance(applicationContext, processDefinitionId, entity, variables);
+            var processInstance = this.workflowProcess.get().createInstance(processDefinitionId, entity, variables);
 
             ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(new JSONObject().put("instanceId", processInstance.getId()).toString());
         };
@@ -58,11 +56,10 @@ public class WorkflowController extends JavalinController {
                 throw new ApplicationException(NO_WORKFLOW);
             }
 
-            var applicationContext = JavalinApplicationContext.of(ctx);
             var action = ctx.pathParam(ACTION);
             var entity = new JSONObject(ctx.body());
             var variables = ctx.header(VARIABLE) != null ? new JSONObject(ctx.header(VARIABLE)).toMap() : new HashMap<String, Object>();
-            var processInstance = this.workflowProcess.get().createInstanceByAction(applicationContext, action, entity, variables);
+            var processInstance = this.workflowProcess.get().createInstanceByAction(action, entity, variables);
 
             ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(new JSONObject().put("instanceId", processInstance.getId()).toString());
         };
@@ -74,10 +71,9 @@ public class WorkflowController extends JavalinController {
                 throw new ApplicationException(NO_WORKFLOW);
             }
 
-            var applicationContext = JavalinApplicationContext.of(ctx);
             var taskId = ctx.pathParam(TASK_ID);
             var taskResponse = ctx.body();
-            this.workflowProcess.get().completeTask(applicationContext, taskId, new JSONObject(taskResponse));
+            this.workflowProcess.get().completeTask(taskId, new JSONObject(taskResponse));
 
             ctx.status(SUCCESS);
         };

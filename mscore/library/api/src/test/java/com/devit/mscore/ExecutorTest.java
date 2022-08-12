@@ -26,9 +26,9 @@ public class ExecutorTest {
         jsons.put(new JSONObject());
         assertThat(jsons.length(), is(3));
 
-        spiedExecutor.execute(DefaultApplicationContext.of("test"), jsons);
+        spiedExecutor.execute(jsons);
 
-        verify(spiedExecutor, times(3)).execute(any(ApplicationContext.class), any(JSONObject.class));
+        verify(spiedExecutor, times(3)).execute(any(JSONObject.class));
     }
 
     public class ExecutorImpl implements Executor<Object> {
@@ -38,7 +38,7 @@ public class ExecutorTest {
         }
 
         @Override
-        public void execute(ApplicationContext context, JSONObject json) throws ApplicationRuntimeException {
+        public void execute(JSONObject json) throws ApplicationRuntimeException {
         }
 
     }

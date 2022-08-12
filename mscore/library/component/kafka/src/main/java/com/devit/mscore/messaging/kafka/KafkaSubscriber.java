@@ -1,26 +1,27 @@
 package com.devit.mscore.messaging.kafka;
 
+import static com.devit.mscore.ApplicationContext.setContext;
+
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Logger;
 import com.devit.mscore.Subscriber;
+import com.devit.mscore.logging.ApplicationLogger;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class KafkaSubscriber implements Subscriber {
 
-    private static final Logger LOG = LoggerFactory.getLogger(KafkaSubscriber.class);
+    private static final Logger LOG = new ApplicationLogger(KafkaSubscriber.class);
 
     private static final Duration POLL_DURATION = Duration.ofMillis(10000);
 
     private Consumer<String, String> consumer;
 
-    private Map<String, java.util.function.BiConsumer<ApplicationContext, JSONObject>> topics;
+    private Map<String, java.util.function.Consumer<JSONObject>> topics;
 
     private boolean consuming;
 
@@ -35,13 +36,14 @@ public class KafkaSubscriber implements Subscriber {
     }
 
     @Override
-    public void subscribe(String topic, java.util.function.BiConsumer<ApplicationContext, JSONObject> consumer) {
+    public void subscribe(String topic, java.util.function.Consumer<JSONObject> consumer) {
         LOG.info("Registering kafka consumer for topic {}", topic);
         this.topics.put(topic, consumer);
     }
 
     @Override
     public void start() {
+        // TODO: need to refactor. Each topic should have it's own consumer
         this.consumer.subscribe(this.topics.keySet());
         this.consuming = true;
 
@@ -50,10 +52,14 @@ public class KafkaSubscriber implements Subscriber {
                 var records = this.consumer.poll(POLL_DURATION);
 
                 records.forEach(consumerRecord -> {
-                    LOG.debug(String.format("Receiving message from topic '%s', partition '%s', offset '%s': %s",
-                            consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset(), consumerRecord.value()));
+                    new Thread(() -> {
 
-                    this.topics.get(consumerRecord.topic()).accept(KafkaApplicationContext.of(consumerRecord.headers()), new JSONObject(consumerRecord.value()));
+                        LOG.debug(String.format("Receiving message from topic '%s', partition '%s', offset '%s': %s",
+                            consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset(), consumerRecord.value()));
+                        setContext(KafkaApplicationContext.of(consumerRecord.headers()));
+
+                        this.topics.get(consumerRecord.topic()).accept(new JSONObject(consumerRecord.value()));
+                    }).run();
                 });
             }
         }).start();

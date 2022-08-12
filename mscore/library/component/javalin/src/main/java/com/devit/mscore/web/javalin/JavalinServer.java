@@ -1,5 +1,6 @@
 package com.devit.mscore.web.javalin;
 
+import static com.devit.mscore.ApplicationContext.setContext;
 import static com.devit.mscore.util.JsonUtils.isNotJsonString;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Logger;
 import com.devit.mscore.Validation;
 import com.devit.mscore.exception.ApplicationException;
 import com.devit.mscore.exception.ApplicationRuntimeException;
@@ -24,13 +25,12 @@ import com.devit.mscore.exception.SynchronizationException;
 import com.devit.mscore.exception.TransformationException;
 import com.devit.mscore.exception.ValidationException;
 import com.devit.mscore.exception.WebClientException;
+import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.web.Endpoint;
 import com.devit.mscore.web.Server;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.javalin.Javalin;
 import io.javalin.core.JavalinConfig;
@@ -43,7 +43,7 @@ import io.javalin.http.ExceptionHandler;
  */
 public final class JavalinServer extends Server {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JavalinServer.class);
+    private static final Logger LOG = new ApplicationLogger(JavalinServer.class);
 
     private static final String AUTHORIZATION = "Authorization";
 
@@ -126,8 +126,9 @@ public final class JavalinServer extends Server {
                 }
 
                 var applicationContext = JavalinApplicationContext.of(ctx);
+                setContext(applicationContext);
                 var sessionKey = ctx.header(AUTHORIZATION);
-                var principal = this.authenticationProvider.verify(applicationContext, sessionKey);
+                var principal = this.authenticationProvider.verify(sessionKey);
                 if (principal == null) {
                     throw new AuthenticationException("Not authenticated.");
                 }
@@ -135,7 +136,7 @@ public final class JavalinServer extends Server {
                 ctx.req.setAttribute(PRINCIPAL, principal.toString());
                 ctx.req.setAttribute(BREADCRUMB_ID, applicationContext.getBreadcrumbId());
                 applicationContext = JavalinApplicationContext.of(ctx);
-                LOG.debug("BreadcrumbId: {}. {}", applicationContext.getBreadcrumbId(), applicationContext);
+                setContext(applicationContext);
                 var requiredRole = getRequiredRole(role, ctx.method());
                 if (StringUtils.isNotBlank(requiredRole) && !applicationContext.hasRole(requiredRole)) {
                     throw new AuthorizationException("Not authorized.");
@@ -174,7 +175,7 @@ public final class JavalinServer extends Server {
                 throw new ValidationException("Unexpected format.");
             }
 
-            if (!isValid(applicationContext, this.validations, new JSONObject(body))) {
+            if (!isValid(this.validations, new JSONObject(body))) {
                 throw new ValidationException("Invalid data. Please check log for detail.");
             }
         });
@@ -192,8 +193,8 @@ public final class JavalinServer extends Server {
         return true;
     }
 
-    private static boolean isValid(ApplicationContext context, List<Validation> validations, JSONObject json) {
-        return validations == null || validations.stream().allMatch(validation -> validation.validate(context, json));
+    private static boolean isValid(List<Validation> validations, JSONObject json) {
+        return validations == null || validations.stream().allMatch(validation -> validation.validate(json));
     }
 
     private void initEndpoint() {

@@ -6,7 +6,6 @@ import static org.junit.Assert.assertThrows;
 
 import java.io.File;
 
-import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.exception.ConfigException;
 
 import org.junit.Test;
@@ -29,7 +28,7 @@ public class FileConfigurationTest {
     public void testGetConfig_ApplicationContext() throws ConfigException {
         var configLocation = getLocation("config");
         var configuration = new FileConfiguration(configLocation);
-        var configValue = configuration.getConfig(DefaultApplicationContext.of("test"), "platform.mongo.host");
+        var configValue = configuration.getConfig("platform.mongo.host");
         assertThat(configValue.isPresent(), is(true));
         assertThat(configValue.get(), is("mongo-host"));
     }

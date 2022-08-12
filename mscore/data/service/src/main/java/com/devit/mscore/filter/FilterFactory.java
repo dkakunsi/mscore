@@ -2,16 +2,14 @@ package com.devit.mscore.filter;
 
 import java.util.List;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
+import com.devit.mscore.Logger;
 import com.devit.mscore.exception.ConfigException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.devit.mscore.logging.ApplicationLogger;
 
 public class FilterFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FilterFactory.class);
+    private static final Logger LOGGER = new ApplicationLogger(FilterFactory.class);
 
     private static final String REMOVING = "services.%s.filter.remove";
     
@@ -19,22 +17,22 @@ public class FilterFactory {
         return new FilterFactory();
     }
 
-    public FiltersExecutor filters(ApplicationContext context, Configuration configuration) {
+    public FiltersExecutor filters(Configuration configuration) {
         var executors = new FiltersExecutor();
-        addRemovingFilter(context, configuration, executors);
+        addRemovingFilter(configuration, executors);
         return executors;
     }
 
-    private void addRemovingFilter(ApplicationContext context, Configuration configuration, FiltersExecutor executors) {
+    private void addRemovingFilter(Configuration configuration, FiltersExecutor executors) {
         var configName = String.format(REMOVING, configuration.getServiceName());
         try {
-            var removingAttributes = configuration.getConfig(context, configName);
+            var removingAttributes = configuration.getConfig(configName);
             removingAttributes.ifPresent(removingAttribute -> {
                 var attributes = List.of(removingAttribute.split(","));
                 executors.add(new RemovingFilter(attributes));
             });
         } catch (ConfigException ex) {
-            LOGGER.warn("BreadcrumbId: {}. Cannot add removing filter.", context.getBreadcrumbId(), ex);
+            LOGGER.warn("Cannot add removing filter.", ex);
         }
     }
 }

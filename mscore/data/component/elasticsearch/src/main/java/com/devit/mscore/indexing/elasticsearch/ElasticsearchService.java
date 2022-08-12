@@ -16,15 +16,14 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
-import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Logger;
 import com.devit.mscore.exception.IndexingException;
+import com.devit.mscore.logging.ApplicationLogger;
 
 /**
  * Index implementation using elasticsearch.
@@ -33,7 +32,7 @@ import com.devit.mscore.exception.IndexingException;
  */
 public class ElasticsearchService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ElasticsearchService.class);
+    private static final Logger LOG = new ApplicationLogger(ElasticsearchService.class);
 
     private RestHighLevelClient client;
 
@@ -44,44 +43,44 @@ public class ElasticsearchService {
         this.indexCreated = false;
     }
 
-    void createIndex(ApplicationContext context, Map<String, String> map) {
+    void createIndex(Map<String, String> map) {
 
         if (indexCreated) {
             return;
         }
 
         map.forEach((indexName, mapping) -> {
-            buildIndex(context, indexName, mapping);
+            buildIndex(indexName, mapping);
         });
     }
 
-    void buildIndex(ApplicationContext context, String indexName, String mapping) {
-        LOG.info("BreadcrumbdId: {}. Building index {}.", context.getBreadcrumbId(), indexName);
+    void buildIndex(String indexName, String mapping) {
+        LOG.info("Building index {}.", indexName);
 
         try {
-            if (indexExists(context, indexName)) {
-                LOG.trace("BreadcrumbdId: {}. Index {} is exist. Trying to update it.", context.getBreadcrumbId(), indexName);
-                updateIndex(context, indexName, mapping);
+            if (indexExists(indexName)) {
+                LOG.trace("Index {} is exist. Trying to update it.", indexName);
+                updateIndex(indexName, mapping);
             } else {
-                LOG.trace("BreadcrumbdId: {}. Index {} is not exist. Trying to create it.", context.getBreadcrumbId(), indexName);
-                createIndex(context, indexName, mapping);
+                LOG.trace("Index {} is not exist. Trying to create it.", indexName);
+                createIndex(indexName, mapping);
             }
         } catch (IndexingException ex) {
-            LOG.error("BreadcrumbdId: {}. Cannot build index: {}. Reason: {}", context.getBreadcrumbId(), indexName, ex.getMessage(), ex);
+            LOG.error("Cannot build index: {}. Reason: {}", ex, indexName, ex.getMessage());
         }
     }
 
-    private boolean indexExists(ApplicationContext context, String indexName) throws IndexingException {
+    private boolean indexExists(String indexName) throws IndexingException {
         var request = new GetIndexRequest(indexName);
         try {
             return client.indices().exists(request, RequestOptions.DEFAULT);
         } catch (IOException ex) {
-            LOG.error("BreadcrumbId: {}. Fail checking index {}.", context.getBreadcrumbId(), indexName);
+            LOG.error("Fail checking index {}.", ex, indexName);
             throw new IndexingException("Cannot check index mapping: " + indexName, ex);
         }
     }
 
-    private void createIndex(ApplicationContext context, String indexName, String mapping) throws IndexingException {
+    private void createIndex(String indexName, String mapping) throws IndexingException {
         var request = new CreateIndexRequest(indexName);
         request.mapping(mapping, XContentType.JSON);
 
@@ -89,18 +88,18 @@ public class ElasticsearchService {
             var response = this.client.indices().create(request, RequestOptions.DEFAULT);
 
             if (response.isAcknowledged()) {
-                LOG.info("BreadcrumbId: {}. Index mapping {} is created.", context.getBreadcrumbId(), indexName);
+                LOG.info("Index mapping {} is created.", indexName);
             } else {
-                LOG.error("BreadcrumbId: {}. Fail creating index {}.", context.getBreadcrumbId(), indexName);
+                LOG.error("Fail creating index {}.", indexName);
                 throw new IndexingException("Create index mapping is not acknowledge: " + indexName);
             }
         } catch (IOException ex) {
-            LOG.error("BreadcrumbId: {}. Fail creating index {}.", context.getBreadcrumbId(), indexName);
+            LOG.error("Fail creating index {}.", ex, indexName);
             throw new IndexingException("Cannot create index mapping: " + indexName, ex);
         }
     }
 
-    private void updateIndex(ApplicationContext context, String indexName, String mapping) throws IndexingException {
+    private void updateIndex(String indexName, String mapping) throws IndexingException {
         var request = new PutMappingRequest(indexName);
         request.source(mapping, XContentType.JSON);
 
@@ -108,38 +107,38 @@ public class ElasticsearchService {
             var putMappingResponse = client.indices().putMapping(request, RequestOptions.DEFAULT);
 
             if (putMappingResponse.isAcknowledged()) {
-                LOG.info("BreadcrumbId: {}. Index mapping {} is updated.", context.getBreadcrumbId(), indexName);
+                LOG.info("Index mapping {} is updated.", indexName);
             } else {
-                LOG.error("BreadcrumbId: {}. Fail updating index {}.", context.getBreadcrumbId(), indexName);
+                LOG.error("Fail updating index {}.", indexName);
                 throw new IndexingException("Update index mapping is not acknowledge: " + indexName);
             }
         } catch (IOException ex) {
-            LOG.error("BreadcrumbId: {}. Fail updating index {}.", context.getBreadcrumbId(), indexName);
+            LOG.error("Fail updating index {}.", ex, indexName);
             throw new IndexingException("Cannot update index mapping: " + indexName, ex);
         }
     }
 
-    String index(ApplicationContext context, String indexName, JSONObject json) throws IndexingException {
-        LOG.info("BreadcrumbId: {}. Indexing document to {} domain: {}", context.getBreadcrumbId(), indexName, json);
+    String index(String indexName, JSONObject json) throws IndexingException {
+        LOG.info("Indexing document to {} domain: {}", indexName, json);
 
         var id = getId(json);
 
         try {
-            if (exists(context, indexName, id)) {
-                return update(context, indexName, json, id);
+            if (exists(indexName, id)) {
+                return update(indexName, json, id);
             }
-            return insert(context, indexName, json, id);
+            return insert(indexName, json, id);
         } finally {
-            LOG.debug("BreadcrumbId: {}. Document {} is indexed.", context.getBreadcrumbId(), id);
+            LOG.debug("Document {} is indexed.", id);
         }
     }
 
-    private boolean exists(ApplicationContext context, String indexName, String id) throws IndexingException {
-        return get(context, indexName, id).isPresent();
+    private boolean exists(String indexName, String id) throws IndexingException {
+        return get(indexName, id).isPresent();
     }
 
-    private String update(ApplicationContext context, String indexName, JSONObject object, String id) throws IndexingException {
-        LOG.debug("BreadcrumbId: {}. Updating document in {}: {}", context.getBreadcrumbId(), indexName, object);
+    private String update(String indexName, JSONObject object, String id) throws IndexingException {
+        LOG.debug("Updating document in {}: {}", indexName, object);
 
         var request = new UpdateRequest(indexName, object.toString()).id(id);
         request.doc(object.toString(), XContentType.JSON);
@@ -148,13 +147,13 @@ public class ElasticsearchService {
             var response = this.client.update(request, RequestOptions.DEFAULT);
             return response.getId();
         } catch (IOException ex) {
-            LOG.error("BreadcrumbId: {}. Fail updating document in index {}.", context.getBreadcrumbId(), indexName);
+            LOG.error("Fail updating document in index {}.", ex, indexName);
             throw new IndexingException("Failed updating document in index: " + indexName, ex);
         }
     }
 
-    private String insert(ApplicationContext context, String indexName, JSONObject object, String id) throws IndexingException {
-        LOG.debug("BreadcrumbId: {}. Indexing document into {}: {}", context.getBreadcrumbId(), indexName, object);
+    private String insert(String indexName, JSONObject object, String id) throws IndexingException {
+        LOG.debug("Indexing document into {}: {}", indexName, object);
 
         var request = new IndexRequest(indexName).id(id);
         request.source(object.toString(), XContentType.JSON);
@@ -163,13 +162,13 @@ public class ElasticsearchService {
             var response = this.client.index(request, RequestOptions.DEFAULT);
             return response.getId();
         } catch (IOException ex) {
-            LOG.error("BreadcrumbId: {}. Fail indexing document in index {}.", context.getBreadcrumbId(), indexName);
+            LOG.error("Fail indexing document in index {}.", ex, indexName);
             throw new IndexingException("Failed indexing document in index: " + indexName, ex);
         }
     }
 
-    Optional<JSONObject> get(ApplicationContext context, String indexName, String id) throws IndexingException {
-        LOG.debug("BreadcrumbId: {}. Loading indexed document in {} with id: {}", context.getBreadcrumbId(), indexName, id);
+    Optional<JSONObject> get(String indexName, String id) throws IndexingException {
+        LOG.debug("Loading indexed document in {} with id: {}", indexName, id);
 
         var str = "{\"criteria\":[{\"attribute\":\"id\",\"operator\":\"equals\",\"value\":\"" + id + "\"}],\"page\":0,\"size\":1}";
         var query = new JSONObject(str);
@@ -178,16 +177,16 @@ public class ElasticsearchService {
         searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH);
         searchRequest.source(new SearchSourceBuilder().postFilter(ElasticsearchQueryHelper.createQuery(query)));
 
-        var array = search(context, indexName, query);
+        var array = search(indexName, query);
         if (array.isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(array.get().getJSONObject(0));
     }
 
-    Optional<JSONArray> search(ApplicationContext context, String indexName, JSONObject query) throws IndexingException {
+    Optional<JSONArray> search(String indexName, JSONObject query) throws IndexingException {
         var queryBuilder = ElasticsearchQueryHelper.createQuery(query);
-        LOG.debug("BreadcrumbId: {}. Executing: {}", context.getBreadcrumbId(), queryBuilder);
+        LOG.debug("Executing: {}", queryBuilder);
 
         var queryPage = query.getInt("page");
         var querySize = query.getInt("size");
@@ -201,16 +200,16 @@ public class ElasticsearchService {
         searchRequest.source(ssb);
 
         try {
-            LOG.debug("BreadcrumbId: {}. Searching index: {}", context.getBreadcrumbId(), indexName);
+            LOG.debug("Searching index: {}", indexName);
             var response = this.client.search(searchRequest, RequestOptions.DEFAULT);
-            return extractResponse(context, response);
+            return extractResponse(response);
         } catch (IOException ex) {
-            LOG.error("BreadcrumbId: {}. Fail searching document in index {}.", context.getBreadcrumbId(), indexName);
+            LOG.error("Fail searching document in index {}.", ex, indexName);
             throw new IndexingException("Fail to search index.", ex);
         }
     }
 
-    private Optional<JSONArray> extractResponse(ApplicationContext context, SearchResponse response) {
+    private Optional<JSONArray> extractResponse(SearchResponse response) {
         var hits = response.getHits().getHits();
         if (hits.length <= 0) {
             return Optional.empty();
@@ -221,7 +220,7 @@ public class ElasticsearchService {
             array.put(new JSONObject(hit.getSourceAsMap()));
         }
 
-        LOG.debug("BreadcrumbId: {}. Returning hit document: {}", context.getBreadcrumbId(), array);
+        LOG.debug("Returning hit document: {}", array);
         return Optional.of(array);
     }
 }

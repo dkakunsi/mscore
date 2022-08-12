@@ -28,7 +28,7 @@ public class SynchronizationTest {
         }
 
         @Override
-        public void synchronize(ApplicationContext context, String id) throws SynchronizationException {
+        public void synchronize(String id) throws SynchronizationException {
         }
     }
 }

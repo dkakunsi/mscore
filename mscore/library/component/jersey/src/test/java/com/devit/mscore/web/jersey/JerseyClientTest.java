@@ -13,12 +13,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.devit.mscore.ApplicationContext;
-import com.devit.mscore.DefaultApplicationContext;
-
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
+import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.DefaultApplicationContext;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.Invocation.Builder;
@@ -48,7 +50,7 @@ public class JerseyClientTest {
 
         this.webClient = new JerseyClient(client);
 
-        var contextData = new HashMap<String, Object>(); 
+        var contextData = new HashMap<String, Object>();
         contextData.put("principal", new JSONObject("{\"requestedBy\":\"requestedBy\",\"role\":[\"user\"]}"));
         this.context = DefaultApplicationContext.of("test", contextData);
     }
@@ -61,12 +63,16 @@ public class JerseyClientTest {
         doReturn(200).when(response).getStatus();
         doReturn(response).when(this.builder).delete();
 
-        var result = this.webClient.delete(this.context, "uri");
+        try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+            utilities.when(() -> ApplicationContext.getContext())
+                    .thenReturn(this.context);
+            var result = this.webClient.delete("uri");
 
-        assertNotNull(result);
-        assertThat(result.length(), is(2));
-        assertThat(result.getInt("code"), is(200));
-        assertThat(result.getString("payload"), is("deleted"));
+            assertNotNull(result);
+            assertThat(result.length(), is(2));
+            assertThat(result.getInt("code"), is(200));
+            assertThat(result.getString("payload"), is("deleted"));
+        }
     }
 
     @Test
@@ -76,7 +82,7 @@ public class JerseyClientTest {
         doReturn(404).when(response).getStatus();
         doReturn(response).when(this.builder).get();
 
-        var result = this.webClient.get(this.context, "uri", Map.of("Authorization", "auth"));
+        var result = this.webClient.get("uri", Map.of("Authorization", "auth"));
 
         assertNotNull(result);
         assertThat(result.length(), is(2));
@@ -92,7 +98,7 @@ public class JerseyClientTest {
         doReturn(500).when(response).getStatus();
         doReturn(response).when(this.builder).post(any());
 
-        var result = this.webClient.post(this.context, "uri", Optional.of(new JSONObject()));
+        var result = this.webClient.post("uri", Optional.of(new JSONObject()));
 
         assertNotNull(result);
         assertThat(result.length(), is(2));
@@ -108,7 +114,7 @@ public class JerseyClientTest {
         doReturn(500).when(response).getStatus();
         doReturn(response).when(this.builder).post(any());
 
-        var result = this.webClient.post(this.context, "uri", Optional.of(new JSONObject()));
+        var result = this.webClient.post("uri", Optional.of(new JSONObject()));
 
         assertNotNull(result);
         assertThat(result.length(), is(2));
@@ -124,7 +130,7 @@ public class JerseyClientTest {
         doReturn(400).when(response).getStatus();
         doReturn(response).when(this.builder).put(any());
 
-        var result = this.webClient.put(this.context, "uri", Optional.of(new JSONObject()));
+        var result = this.webClient.put("uri", Optional.of(new JSONObject()));
 
         assertNotNull(result);
         assertThat(result.length(), is(2));
@@ -140,7 +146,7 @@ public class JerseyClientTest {
         doReturn(400).when(response).getStatus();
         doReturn(response).when(this.builder).put(any());
 
-        var result = this.webClient.put(this.context, "uri", Optional.of(new JSONObject()));
+        var result = this.webClient.put("uri", Optional.of(new JSONObject()));
 
         assertNotNull(result);
         assertThat(result.length(), is(2));

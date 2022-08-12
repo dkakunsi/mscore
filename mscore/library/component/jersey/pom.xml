@@ -21,6 +21,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${logger.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-client</artifactId>
             <version>${jersey.version}</version>

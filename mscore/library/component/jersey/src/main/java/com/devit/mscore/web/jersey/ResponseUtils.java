@@ -1,18 +1,18 @@
 package com.devit.mscore.web.jersey;
 
+import com.devit.mscore.Logger;
+import com.devit.mscore.logging.ApplicationLogger;
 import com.sun.jersey.api.client.ClientResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jakarta.ws.rs.core.Response;
 
 public class ResponseUtils {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ResponseUtils.class);
+    private static final Logger LOG = new ApplicationLogger(ResponseUtils.class);
 
     static JSONObject buildResponse(String uri, Response response) {
         var output = response.hasEntity() ? response.getEntity().toString(): "";

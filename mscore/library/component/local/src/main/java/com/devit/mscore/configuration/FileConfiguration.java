@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.exception.ConfigException;
 
@@ -67,7 +66,7 @@ public class FileConfiguration implements Configuration {
     }
 
     @Override
-    public Optional<String> getConfig(ApplicationContext context, String key) throws ConfigException {
+    public Optional<String> getConfig(String key) throws ConfigException {
         var value = this.configs.get(key);
         return StringUtils.isNotBlank(value) ? Optional.of(value) : Optional.empty();
     }

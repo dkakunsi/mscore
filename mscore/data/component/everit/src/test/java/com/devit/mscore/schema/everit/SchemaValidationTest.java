@@ -5,7 +5,6 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -14,8 +13,6 @@ import static org.mockito.Mockito.mock;
 import java.io.File;
 import java.net.URISyntaxException;
 
-import com.devit.mscore.ApplicationContext;
-import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.Registry;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.RegistryException;
@@ -29,12 +26,9 @@ public class SchemaValidationTest {
 
     private Registry registry;
 
-    private ApplicationContext context;
-
     @Before
     public void setup() {
         this.registry = mock(Registry.class);
-        this.context = DefaultApplicationContext.of("test");
     }
 
     @Test
@@ -45,13 +39,13 @@ public class SchemaValidationTest {
             .put("id", "id")
             .put("name", "name")
             .put("content", new JSONSchema(resourceFile).getContent());
-        doReturn(schema.toString()).when(this.registry).get(any(ApplicationContext.class), anyString());
+        doReturn(schema.toString()).when(this.registry).get(anyString());
         // @formatter:on
 
         var validation = new SchemaValidation(this.registry);
         var input = "{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\",\"reference1\":{\"domain\":\"referenceDomain1\",\"id\":\"referenceId1\"}}";
 
-        var result = validation.validate(this.context, new JSONObject(input));
+        var result = validation.validate(new JSONObject(input));
         assertTrue(result);
     }
 
@@ -63,25 +57,25 @@ public class SchemaValidationTest {
             .put("id", "id")
             .put("name", "name")
             .put("content", new JSONSchema(resourceFile).getContent());
-        doReturn(schema.toString()).when(this.registry).get(any(ApplicationContext.class), anyString());
+        doReturn(schema.toString()).when(this.registry).get(anyString());
         // @formatter:on
 
         var validation = new SchemaValidation(this.registry);
         var input = "{\"domain\":\"unknown\",\"id\":\"toolongid\",\"name\":\"toolongname\"}";
 
-        var result = validation.validate(this.context, new JSONObject(input));
+        var result = validation.validate(new JSONObject(input));
         assertFalse(result);
     }
 
     @Test
     public void testValidate_NoSchema() throws URISyntaxException, ResourceException, RegistryException {
-        doThrow(RegistryException.class).when(this.registry).get(any(ApplicationContext.class), anyString());
+        doThrow(RegistryException.class).when(this.registry).get(anyString());
 
         var validation = new SchemaValidation(this.registry);
         var input = "{\"domain\":\"unknown\",\"id\":\"toolongid\",\"name\":\"toolongname\"}";
 
         var json = new JSONObject(input);
-        var ex = assertThrows(ApplicationRuntimeException.class, () -> validation.validate(this.context, json));
+        var ex = assertThrows(ApplicationRuntimeException.class, () -> validation.validate(json));
         assertThat(ex.getCause(), instanceOf(RegistryException.class));
     }
 

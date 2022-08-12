@@ -1,18 +1,17 @@
 package com.devit.mscore.observer;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Index;
+import com.devit.mscore.Logger;
 import com.devit.mscore.exception.IndexingException;
+import com.devit.mscore.logging.ApplicationLogger;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class IndexingObserver implements PostProcessObserver {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IndexingObserver.class);
+    private static final Logger LOG = new ApplicationLogger(IndexingObserver.class);
 
-    private static final String INDEXING_ERROR = "BreadcrumbId: {}. Indexing document failed.";
+    private static final String INDEXING_ERROR = "Indexing document failed.";
 
     protected Index index;
 
@@ -21,17 +20,17 @@ public class IndexingObserver implements PostProcessObserver {
     }
 
     @Override
-    public void notify(ApplicationContext context, JSONObject json) {
+    public void notify(JSONObject json) {
         if (this.index == null) {
-            LOG.warn("BreadcrumbId: {}. Index is not provided. By pass indexing.", context.getBreadcrumbId());
+            LOG.warn("Index is not provided. By pass indexing.");
             return;
         }
 
         try {
-            LOG.debug("BreadcrumbId: {}. Indexing document: {}.", context.getBreadcrumbId(), json);
-            this.index.index(context, json);
+            LOG.debug("Indexing document: {}.", json);
+            this.index.index(json);
         } catch (IndexingException ex) {
-            LOG.error(INDEXING_ERROR, context.getBreadcrumbId(), ex);
+            LOG.error(INDEXING_ERROR, ex);
         }
     }
 }

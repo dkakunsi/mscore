@@ -1,6 +1,5 @@
 package com.devit.mscore.gateway.api;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.AuthenticationProvider;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.gateway.service.ResourceService;
@@ -11,12 +10,12 @@ import com.devit.mscore.web.javalin.JavalinApiFactory;
 
 public class ApiFactory extends JavalinApiFactory {
 
-    private ApiFactory(ApplicationContext context, Configuration configuration) {
-        super(context, configuration);
+    private ApiFactory(Configuration configuration) {
+        super(configuration);
     }
 
-    public static ApiFactory of(ApplicationContext context, Configuration configuration, AuthenticationProvider authenticationProvider) {
-        var manager = new ApiFactory(context, configuration);
+    public static ApiFactory of(Configuration configuration, AuthenticationProvider authenticationProvider) {
+        var manager = new ApiFactory(configuration);
         manager.authenticationProvider = authenticationProvider;
         return manager;
     }

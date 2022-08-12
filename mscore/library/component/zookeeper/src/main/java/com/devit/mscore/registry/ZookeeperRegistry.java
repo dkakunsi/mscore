@@ -5,19 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Logger;
 import com.devit.mscore.Registry;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.RegistryException;
+import com.devit.mscore.logging.ApplicationLogger;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ZookeeperRegistry implements Registry {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperRegistry.class);
+    private static final Logger LOG = new ApplicationLogger(ZookeeperRegistry.class);
 
     private static final String ROOT_PATH = "/";
 
@@ -27,37 +26,31 @@ public class ZookeeperRegistry implements Registry {
 
     private Map<String, String> cache;
 
-    // TODO: deprecate the name parameter. Not used anymore.
-    public ZookeeperRegistry(String name, CuratorFramework client) {
+    public ZookeeperRegistry(String name, CuratorFramework client) throws RegistryException {
         this.name = name;
         this.client = client;
         this.cache = new HashMap<>();
+        init();
     }
 
-    public ZookeeperRegistry(ApplicationContext context, String name, CuratorFramework client) throws RegistryException {
-        this(name, client);
-        init(context);
-    }
-
-    public void init(ApplicationContext context) throws RegistryException {
+    public void init() throws RegistryException {
         open();
-        load(context, ROOT_PATH);
+        load(ROOT_PATH);
     }
 
-    private void load(ApplicationContext context, String path) throws RegistryException {
+    private void load(String path) throws RegistryException {
         // get will put the value into cache
-        get(context, path);
-
-        loadChildren(context, path);
+        get(path);
+        loadChildren(path);
     }
 
-    private void loadChildren(ApplicationContext context, String parentPath) throws RegistryException {
+    private void loadChildren(String parentPath) throws RegistryException {
         try {
             var children = this.client.getChildren().forPath(parentPath);
             for (var child : children) {
                 var format = parentPath.equals(ROOT_PATH) ? "%s%s" : "%s/%s";
                 var key = String.format(format, parentPath, child);
-                load(context, key);
+                load(key);
             }
         } catch (Exception ex) {
             throw new RegistryException(ex);
@@ -70,7 +63,7 @@ public class ZookeeperRegistry implements Registry {
     }
 
     @Override
-    public void add(ApplicationContext context, String key, String value) throws RegistryException {
+    public void add(String key, String value) throws RegistryException {
         try {
             var stat = this.client.checkExists().forPath(key);
             if (stat == null) {
@@ -99,14 +92,14 @@ public class ZookeeperRegistry implements Registry {
     }
 
     @Override
-    public String get(ApplicationContext context, String registryKey) throws RegistryException {
+    public String get(String registryKey) throws RegistryException {
         var cacheKey = getCacheKey(registryKey);
 
         this.cache.computeIfAbsent(cacheKey, key -> {
             try {
                 var stat = this.client.checkExists().forPath(registryKey);
                 if (stat == null) {
-                    LOGGER.warn("BreadcrumbdId: {}. No configuration value for key: {}.", context.getBreadcrumbId(), registryKey);
+                    LOG.warn("No configuration value for key: {}.", registryKey);
                     return null;
                 }
                 var value = this.client.getData().forPath(registryKey);
@@ -120,7 +113,7 @@ public class ZookeeperRegistry implements Registry {
     }
 
     @Override
-    public Map<String, String> all(ApplicationContext context) {
+    public Map<String, String> all() {
         return this.cache;
     }
 
@@ -141,12 +134,12 @@ public class ZookeeperRegistry implements Registry {
     }
 
     @Override
-    public List<String> values(ApplicationContext context) throws RegistryException {
+    public List<String> values() throws RegistryException {
         return new ArrayList<>(this.cache.values());
     }
 
     @Override
-    public List<String> keys(ApplicationContext context) throws RegistryException {
+    public List<String> keys() throws RegistryException {
         return new ArrayList<>(this.cache.keySet());
     }
 }

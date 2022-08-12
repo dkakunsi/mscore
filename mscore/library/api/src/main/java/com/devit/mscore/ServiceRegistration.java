@@ -8,17 +8,12 @@ import java.util.function.Supplier;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Register a service into the platform registry.
  * 
  * @author dkakunsi
  */
 public class ServiceRegistration {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceRegistration.class);
 
     private static final String REGISTRY_STATIC = "platform.service.registry.static";
 
@@ -44,60 +39,53 @@ public class ServiceRegistration {
     /**
      * Register a service to platform registry. Register with it's domain name.
      * 
-     * @param context application context.
      * @param service service to register.
      * @throws RegistryException cannot register service.
      */
-    public void register(ApplicationContext context, Service service) throws RegistryException {
-        register(context, service.getDomain());
+    public void register(Service service) throws RegistryException {
+        register(service.getDomain());
     }
 
     /**
      * Register domain address to platform registry.
      * 
-     * @param context application context.
      * @param domain  domain name to register.
      * @throws ConfigException cannot register service.
      */
-    public void register(ApplicationContext context, String domain) throws RegistryException {
+    public void register(String domain) throws RegistryException {
         try {
-            executeRegister(context, domain);
+            executeRegister(domain);
         } catch (ConfigException ex) {
             throw new RegistryException(ex);
         }
     }
 
-    private void executeRegister(ApplicationContext context, String domain) throws ConfigException, RegistryException {
-        LOG.trace("BreadcrumbId: {}. Registering {} service to platform registry.", context.getBreadcrumbId(), domain);
-
-        var useStaticAddressOptional = this.configuration.getConfig(context, REGISTRY_STATIC).orElse("false");
+    private void executeRegister(String domain) throws ConfigException, RegistryException {
+        var useStaticAddressOptional = this.configuration.getConfig(REGISTRY_STATIC).orElse("false");
         var useStaticAddress = Boolean.parseBoolean(useStaticAddressOptional);
-        var address = getAddress(context, useStaticAddress, domain);
+        var address = getAddress(useStaticAddress, domain);
         var key = getKey(domain);
-        this.registry.add(context, key, address);
-
-        LOG.info("BreadcrumbId: {}. '{}' service is registered to platform registry as {}.", context.getBreadcrumbId(),
-                domain, address);
+        this.registry.add(key, address);
     }
 
-    private String getAddress(ApplicationContext context, boolean useStaticAddress, String domain)
+    private String getAddress(boolean useStaticAddress, String domain)
             throws ConfigException, RegistryException {
         if (useStaticAddress) {
             var configKey = String.format(REGISTRY_ADDRESS, this.configuration.getServiceName());
             Supplier<ConfigException> throwingElse = () -> new ConfigException("No config for registry address.");
-            var baseAddress = this.configuration.getConfig(context, configKey).orElseThrow(throwingElse);
+            var baseAddress = this.configuration.getConfig(configKey).orElseThrow(throwingElse);
             return String.format("%s/%s", baseAddress, domain);
         } else {
             Supplier<ConfigException> throwingElse = () -> new ConfigException("No config for web port.");
-            var protocol = getProtocol(context, this.configuration);
+            var protocol = getProtocol(this.configuration);
             var localAddress = getLocalAddress();
-            var port = this.configuration.getConfig(context, WEB_PORT).orElseThrow(throwingElse);
+            var port = this.configuration.getConfig( WEB_PORT).orElseThrow(throwingElse);
             return String.format("%s://%s:%s/%s", protocol, localAddress, port, domain);
         }
     }
 
-    public String get(ApplicationContext context, String domain) throws RegistryException {
-        return this.registry.get(context, getKey(domain));
+    public String get(String domain) throws RegistryException {
+        return this.registry.get(getKey(domain));
     }
 
     private static String getKey(String domain) {
@@ -112,8 +100,8 @@ public class ServiceRegistration {
         }
     }
 
-    private static String getProtocol(ApplicationContext context, Configuration configuration) throws ConfigException {
-        return configuration.getConfig(context, REGISTRY_PROTOCOL).orElse(DEFAULT_PROTOCOL);
+    private static String getProtocol(Configuration configuration) throws ConfigException {
+        return configuration.getConfig(REGISTRY_PROTOCOL).orElse(DEFAULT_PROTOCOL);
     }
 
     public void open() {

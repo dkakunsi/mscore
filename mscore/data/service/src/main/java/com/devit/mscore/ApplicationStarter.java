@@ -21,6 +21,7 @@ import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.ResourceException;
 import com.devit.mscore.filter.FilterFactory;
 import com.devit.mscore.indexing.elasticsearch.ElasticsearchIndexFactory;
+import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.messaging.kafka.KafkaMessagingFactory;
 import com.devit.mscore.observer.IndexingObserver;
 import com.devit.mscore.observer.PublishingObserver;
@@ -35,12 +36,10 @@ import com.devit.mscore.util.DateUtils;
 import com.devit.mscore.validation.ValidationsExecutor;
 import com.devit.mscore.web.javalin.JavalinApiFactory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ApplicationStarter implements Starter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationStarter.class);
+    private static final Logger LOGGER = ApplicationLogger.getLogger(ApplicationStarter.class);
 
     private static final String DEPENDENCY = "services.%s.kafka.topic.dependency";
 
@@ -68,25 +67,21 @@ public class ApplicationStarter implements Starter {
 
     private SynchronizationsExecutor synchronizationsExecutor;
 
-    private ApplicationContext context;
-
     public ApplicationStarter(String[] args) throws ConfigException {
         this(FileConfigurationUtils.load(args));
     }
 
     public ApplicationStarter(FileConfiguration fileConfiguration) throws ConfigException {
-        this.context = DefaultApplicationContext.of("starter");
-
         try {
             var registryFactory = ZookeeperRegistryFactory.of(fileConfiguration);
-            var zookeeperRegistry = registryFactory.registry(this.context, "platformConfig");
+            var zookeeperRegistry = registryFactory.registry("platformConfig");
             zookeeperRegistry.open();
-            this.configuration = new ZookeeperConfiguration(this.context, zookeeperRegistry, fileConfiguration.getServiceName());
+            this.configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
             this.serviceRegistry = zookeeperRegistry;
         } catch (RegistryException ex) {
             throw new ConfigException(ex);
         }
-        DateUtils.setZoneId(this.configuration.getConfig(this.context, TIMEZONE).orElse(DEFAULT_ZONE_ID));
+        DateUtils.setZoneId(this.configuration.getConfig(TIMEZONE).orElse(DEFAULT_ZONE_ID));
 
         // Create registry
         this.schemaRegistry = new MemoryRegistry(SCHEMA);
@@ -121,32 +116,32 @@ public class ApplicationStarter implements Starter {
     public void start() throws ApplicationException {
         // Register resources
         var schemaManager = SchemaManager.of(this.configuration, this.schemaRegistry);
-        registerResource(schemaManager, this.context);
+        registerResource(schemaManager);
 
         var indexFactory = ElasticsearchIndexFactory.of(this.configuration, this.indexMapRegistry);
-        registerResource(indexFactory, this.context);
+        registerResource(indexFactory);
 
         // Create authentication
-        var authentication = JWTAuthenticationProvider.of(this.context, this.configuration);
+        var authentication = JWTAuthenticationProvider.of(this.configuration);
 
         // Create component factories
         var repositoryFactory = MongoDatabaseFactory.of(this.configuration);
-        var messagingFactory = KafkaMessagingFactory.of(this.context, this.configuration);
-        var apiFactory = JavalinApiFactory.of(this.context, this.configuration, authentication, this.webValidations);
+        var messagingFactory = KafkaMessagingFactory.of(this.configuration);
+        var apiFactory = JavalinApiFactory.of(this.configuration, authentication, this.webValidations);
         var filterFactory = FilterFactory.of();
 
-        var filter = filterFactory.filters(this.context, this.configuration);
+        var filter = filterFactory.filters(this.configuration);
         var registration = new ServiceRegistration(this.serviceRegistry, this.configuration);
 
         // Generate service and it's dependencies from schema.
         var delay = getPublishingDelay();
         for (var schema : schemaManager.getSchemas()) {
-            var index = indexFactory.index(this.context, schema.getDomain());
-            this.indices.put(schema.getDomain(), index.build(this.context));
+            var index = indexFactory.index(schema.getDomain());
+            this.indices.put(schema.getDomain(), index.build());
 
             createEnrichment(schema, this.enrichmentsExecutor, this.indices);
 
-            var repository = repositoryFactory.repository(this.context, schema);
+            var repository = repositoryFactory.repository(schema);
             var publisher = messagingFactory.publisher(schema.getDomain());
             var indexingObserver = new IndexingObserver(index);
             var publishingObserver = new PublishingObserver(publisher, delay);
@@ -155,13 +150,13 @@ public class ApplicationStarter implements Starter {
                     .addObserver(publishingObserver);
 
             apiFactory.add(service);
-            registration.register(this.context, service);
+            registration.register(service);
 
             this.synchronizationsExecutor.add(service);
         }
 
         // Create listener
-        var syncTopics = messagingFactory.getTopics(this.context, String.format(DEPENDENCY, configuration.getServiceName()));
+        var syncTopics = messagingFactory.getTopics(String.format(DEPENDENCY, configuration.getServiceName()));
         if (syncTopics.isPresent()) {
             var subscriber = messagingFactory.subscriber();
             var syncListener = new SynchronizationListener(subscriber, this.synchronizationsExecutor);
@@ -169,13 +164,13 @@ public class ApplicationStarter implements Starter {
         }
 
         // Start API server
-        apiFactory.server(this.context).start();
+        apiFactory.server().start();
 
         this.serviceRegistry.close();
     }
 
     private Long getPublishingDelay() throws ConfigException {
-        var wait = this.configuration.getConfig(this.context, PUBLISHING_DELAY).orElse("0");
+        var wait = this.configuration.getConfig(PUBLISHING_DELAY).orElse("0");
         try {
             return Long.parseLong(wait);
         } catch (NumberFormatException ex) {
@@ -189,13 +184,12 @@ public class ApplicationStarter implements Starter {
         }
     }
 
-    private static void registerResource(ResourceManager resourceManager, ApplicationContext context) {
-        LOGGER.info("BreadcrumbId: {}. Register resource: {}.", context.getBreadcrumbId(), resourceManager.getType());
+    private static void registerResource(ResourceManager resourceManager) {
+        LOGGER.info("Register resource: {}.", resourceManager.getType());
         try {
-            resourceManager.registerResources(context);
+            resourceManager.registerResources();
         } catch (ResourceException ex) {
-            LOGGER.warn("BreadcrumbId: {}. Cannot register resource {}.", context.getBreadcrumbId(),
-                    resourceManager.getType(), ex);
+            LOGGER.warn("Cannot register resource {}.", resourceManager.getType(), ex);
         }
     }
 

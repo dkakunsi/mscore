@@ -16,4 +16,12 @@
     <properties>
         <revision>1.0-SNAPSHOT</revision>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${logger.version}</version>
+        </dependency>
+    </dependencies>
 </project>

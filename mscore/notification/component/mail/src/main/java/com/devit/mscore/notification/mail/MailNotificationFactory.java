@@ -1,6 +1,5 @@
 package com.devit.mscore.notification.mail;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Registry;
 import com.devit.mscore.Template;
@@ -29,9 +28,9 @@ public class MailNotificationFactory {
         return new MailNotificationFactory(configuration, registry, template);
     }
 
-    public MailNotification mailNotification(ApplicationContext context) throws ConfigException {
-        var sendInfo = new SendInfo(context, this.configuration);
-        var possibleAttributes = this.configuration.getConfig(context, POSSIBLE_ATTRIBUTES).orElseThrow(() -> new ConfigException("No possible attribute is configured"));
+    public MailNotification mailNotification() throws ConfigException {
+        var sendInfo = new SendInfo(this.configuration);
+        var possibleAttributes = this.configuration.getConfig(POSSIBLE_ATTRIBUTES).orElseThrow(() -> new ConfigException("No possible attribute is configured"));
         return new MailNotification(this.registry, this.sender, this.template, sendInfo).withPossibleAttributes(possibleAttributes);
     }
 }

@@ -15,6 +15,14 @@ import org.junit.Test;
 public class ApplicationContextTest {
 
     @Test
+    public void testContext() {
+        var appContext = DefaultApplicationContext.of("test");
+        ApplicationContext.setContext(appContext);
+        var retrievedContext = ApplicationContext.getContext();
+        assertThat(retrievedContext.getSource(), is(appContext.getSource()));
+    }
+
+    @Test
     public void testDataAvailable() {
         // @formatter:off
         var contextData = Map.of(

@@ -5,7 +5,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -34,8 +33,6 @@ public class ResourceManagerTest {
 
     private Configuration configuration;
 
-    private ApplicationContext context;
-
     private ResourceManager manager;
 
     @Before
@@ -43,7 +40,6 @@ public class ResourceManagerTest {
         this.registry = mock(Registry.class);
         this.configuration = mock(Configuration.class);
         this.manager = new DummyResourceManager(this.configuration, this.registry);
-        this.context = DefaultApplicationContext.of("test");
 
         assertThat(this.manager.getType(), is("dummy"));
     }
@@ -51,12 +47,12 @@ public class ResourceManagerTest {
     @Test
     public void testRegister() throws RegistryException, ResourceException, ConfigException {
         var location = getLocation("resource");
-        doReturn(Optional.of(location)).when(this.configuration).getConfig(any(ApplicationContext.class), eq("location"));
+        doReturn(Optional.of(location)).when(this.configuration).getConfig(eq("location"));
 
-        this.manager.registerResources(this.context);
+        this.manager.registerResources();
 
         var captor = ArgumentCaptor.forClass(String.class);
-        verify(this.registry, times(1)).add(any(ApplicationContext.class), anyString(), captor.capture());
+        verify(this.registry, times(1)).add(anyString(), captor.capture());
 
         var argument = captor.getValue();
         var json = new JSONObject(argument);
@@ -66,22 +62,22 @@ public class ResourceManagerTest {
 
     @Test
     public void testRegister_NoResourceConfig() throws ResourceException, RegistryException, ConfigException {
-        doReturn(Optional.empty()).when(this.configuration).getConfig(any(ApplicationContext.class), eq("location"));
+        doReturn(Optional.empty()).when(this.configuration).getConfig(eq("location"));
 
         var context = mock(ApplicationContext.class);
         doReturn("breadcrumbId").when(context).getBreadcrumbId();
-        this.manager.registerResources(context);
+        this.manager.registerResources();
 
         verifyNoInteractions(this.registry);
     }
 
     @Test
     public void testRegister_NoDirectory() throws ResourceException, RegistryException, ConfigException {
-        doReturn(Optional.of("./nodir")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("location"));
+        doReturn(Optional.of("./nodir")).when(this.configuration).getConfig(eq("location"));
 
         var context = mock(ApplicationContext.class);
         doReturn("breadcrumbId").when(context).getBreadcrumbId();
-        this.manager.registerResources(context);
+        this.manager.registerResources();
 
         verifyNoInteractions(this.registry);
     }
@@ -89,11 +85,10 @@ public class ResourceManagerTest {
     @Test
     public void testRegister_RegistryException() throws ResourceException, RegistryException, ConfigException {
         var location = getLocation("resource");
-        doReturn(Optional.of(location)).when(this.configuration).getConfig(any(ApplicationContext.class), eq("location"));
-        doThrow(new RegistryException("message")).when(this.registry).add(any(ApplicationContext.class),
-                anyString(), anyString());
+        doReturn(Optional.of(location)).when(this.configuration).getConfig(eq("location"));
+        doThrow(new RegistryException("message")).when(this.registry).add(anyString(), anyString());
 
-        var ex = assertThrows(ResourceException.class, () -> this.manager.registerResources(this.context));
+        var ex = assertThrows(ResourceException.class, () -> this.manager.registerResources());
         assertThat(ex.getMessage(), is("Cannot register resource."));
         assertThat(ex.getCause(), instanceOf(RegistryException.class));
     }
@@ -112,8 +107,8 @@ public class ResourceManagerTest {
         }
 
         @Override
-        protected String getResourceLocation(ApplicationContext context) throws ConfigException {
-            return this.configuration.getConfig(context, "location").orElse(null);
+        protected String getResourceLocation() throws ConfigException {
+            return this.configuration.getConfig("location").orElse(null);
         }
 
         @Override

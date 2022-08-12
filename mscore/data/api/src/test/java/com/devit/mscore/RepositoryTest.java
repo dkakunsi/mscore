@@ -20,31 +20,31 @@ public class RepositoryTest {
 
     @Test(expected = DataException.class)
     public void testSave() throws DataException {
-        this.repository.save(DefaultApplicationContext.of("test"), new JSONObject());
+        this.repository.save(new JSONObject());
     }
 
     @Test(expected = DataException.class)
     public void testDelete() throws DataException {
-        this.repository.delete(DefaultApplicationContext.of("test"), "");
+        this.repository.delete("");
     }
 
     @Test(expected = DataException.class)
     public void testFind() throws DataException {
-        this.repository.find(DefaultApplicationContext.of("test"), "");
+        this.repository.find("");
     }
 
     @Test(expected = DataException.class)
     public void testFindList() throws DataException {
-        this.repository.find(DefaultApplicationContext.of("test"), List.of());
+        this.repository.find(List.of());
     }
 
     @Test(expected = DataException.class)
     public void testFindByKey() throws DataException {
-        this.repository.find(DefaultApplicationContext.of("test"), "", "");
+        this.repository.find("", "");
     }
 
     @Test(expected = DataException.class)
     public void testAll() throws DataException {
-        this.repository.all(DefaultApplicationContext.of("test"));
+        this.repository.all();
     }
 }

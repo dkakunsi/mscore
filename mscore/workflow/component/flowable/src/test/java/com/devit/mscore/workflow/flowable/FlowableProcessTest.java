@@ -40,6 +40,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import io.zonky.test.db.postgres.junit.EmbeddedPostgresRules;
 import io.zonky.test.db.postgres.junit.SingleInstancePostgresRule;
@@ -74,21 +76,21 @@ public class FlowableProcessTest {
     @Before
     public void setup() throws RegistryException, ConfigException {
         this.configuration = mock(Configuration.class);
-        doReturn(Optional.of("localhost")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.db.host"));
-        doReturn(Optional.of("5432")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.db.port"));
-        doReturn(Optional.of("flowable")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.db.name"));
-        doReturn(Optional.of("process")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.db.schema"));
-        doReturn(Optional.of("postgres")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.db.username"));
-        doReturn(Optional.of("postgres")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.db.password"));
-        doReturn(Optional.of(TASK_INDEX)).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.index.task"));
-        doReturn(Optional.of(INSTANCE_INDEX)).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.index.instance"));
-        doReturn(Optional.of("definition")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("process.definition.location"));
+        doReturn(Optional.of("localhost")).when(this.configuration).getConfig(eq("process.db.host"));
+        doReturn(Optional.of("5432")).when(this.configuration).getConfig(eq("process.db.port"));
+        doReturn(Optional.of("flowable")).when(this.configuration).getConfig(eq("process.db.name"));
+        doReturn(Optional.of("process")).when(this.configuration).getConfig(eq("process.db.schema"));
+        doReturn(Optional.of("postgres")).when(this.configuration).getConfig(eq("process.db.username"));
+        doReturn(Optional.of("postgres")).when(this.configuration).getConfig(eq("process.db.password"));
+        doReturn(Optional.of(TASK_INDEX)).when(this.configuration).getConfig(eq("process.index.task"));
+        doReturn(Optional.of(INSTANCE_INDEX)).when(this.configuration).getConfig(eq("process.index.instance"));
+        doReturn(Optional.of("definition")).when(this.configuration).getConfig(eq("process.definition.location"));
         doReturn(true).when(this.configuration).has("workflow.definition.location");
 
         this.serviceRegistration = mock(ServiceRegistration.class);
-        doReturn("http://data/domain").when(this.serviceRegistration).get(any(ApplicationContext.class), anyString());
-        doReturn("http://data/workflow").when(this.serviceRegistration).get(any(ApplicationContext.class), eq("workflow"));
-        doReturn("http://data/task").when(this.serviceRegistration).get(any(ApplicationContext.class), eq("task"));
+        doReturn("http://data/domain").when(this.serviceRegistration).get(anyString());
+        doReturn("http://data/workflow").when(this.serviceRegistration).get(eq("workflow"));
+        doReturn("http://data/task").when(this.serviceRegistration).get(eq("task"));
 
         this.client = mock(Client.class);
         doReturn(this.client).when(this.client).createNew();
@@ -106,7 +108,7 @@ public class FlowableProcessTest {
         this.context = DefaultApplicationContext.of("test", map);
 
         // only for coverage
-        this.dataClient.getDomainUri(this.context, "domain");
+        this.dataClient.getDomainUri("domain");
         this.process.getDomain();
         this.process.stop();
     }
@@ -131,13 +133,13 @@ public class FlowableProcessTest {
         var definition = getResource("invalid.definition.1.bpmn20.xml");
         var flowableDefinition = new FlowableDefinition(definition);
 
-        var ex = assertThrows(ProcessException.class, ()-> this.process.deployDefinition(this.context, flowableDefinition));
+        var ex = assertThrows(ProcessException.class, () -> this.process.deployDefinition(flowableDefinition));
         assertThat(ex.getMessage(), is("Definition deployment failed."));
     }
 
     @Test
     public void testFlowableProcess_RegistryFailure() throws Exception {
-        doThrow(new RegistryException("message")).when(this.registry).add(any(ApplicationContext.class), anyString(), anyString());
+        doThrow(new RegistryException("message")).when(this.registry).add(anyString(), anyString());
 
         // Start process engine
         this.process.start();
@@ -146,13 +148,13 @@ public class FlowableProcessTest {
         var definition = getResource("definition/domain.action.1.bpmn20.xml");
         var flowableDefinition = new FlowableDefinition(definition);
 
-        var ex = assertThrows(ProcessException.class, ()-> this.process.deployDefinition(this.context, flowableDefinition));
+        var ex = assertThrows(ProcessException.class, () -> this.process.deployDefinition(flowableDefinition));
         assertThat(ex.getMessage(), is("Cannot register process deployment."));
     }
 
     @Test
     public void testFlowableProcess_WebClientException_OnInstanceCreation() throws Exception {
-        doThrow(new WebClientException("message")).when(this.client).post(any(ApplicationContext.class), anyString(), any());
+        doThrow(new WebClientException("message")).when(this.client).post(anyString(), any());
         var argumentCaptor = ArgumentCaptor.forClass(String.class);
 
         // Start process engine
@@ -161,10 +163,10 @@ public class FlowableProcessTest {
         // Deploy definition
         var definition = getResource("definition/domain.action.1.bpmn20.xml");
         var flowableDefinition = new FlowableDefinition(definition);
-        this.process.deployDefinition(this.context, flowableDefinition);
+        this.process.deployDefinition(flowableDefinition);
 
         // Verify that deployed definition is added to registry
-        verify(this.registry, times(1)).add(any(ApplicationContext.class), anyString(), argumentCaptor.capture());
+        verify(this.registry, times(1)).add(anyString(), argumentCaptor.capture());
         var argumentObject = new JSONObject(argumentCaptor.getValue());
         assertThat(argumentObject.length(), is(4));
         assertThat(argumentObject.getString("name"), is("domain.action"));
@@ -173,221 +175,233 @@ public class FlowableProcessTest {
         assertTrue(StringUtils.isNotBlank(argumentObject.getString("content")));
 
         // Create instance
-        this.process.createInstance(this.context, argumentObject.getString("workflow"), new JSONObject(VARIABLES).toMap());
+        this.process.createInstance(argumentObject.getString("workflow"), new JSONObject(VARIABLES).toMap());
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testFlowableProcess_WebClientException_OnTaskCompletion() throws Exception {
-        var response = new JSONObject("{\"code\":200,\"payload\":\"success\"}");
-        when(this.client.post(any(ApplicationContext.class), anyString(), any())).thenReturn(response).thenThrow(new WebClientException("message"));
-        var resourceArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        var taskArgumentCaptor = ArgumentCaptor.forClass(Optional.class);
-        var instanceArgumentCaptor = ArgumentCaptor.forClass(Optional.class);
+        try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+            utilities.when(() -> ApplicationContext.getContext())
+                    .thenReturn(this.context);
 
-        // Start process engine
-        this.process.start();
+            var response = new JSONObject("{\"code\":200,\"payload\":\"success\"}");
+            when(this.client.post(anyString(), any())).thenReturn(response)
+                    .thenThrow(new WebClientException("message"));
+            var resourceArgumentCaptor = ArgumentCaptor.forClass(String.class);
+            var taskArgumentCaptor = ArgumentCaptor.forClass(Optional.class);
+            var instanceArgumentCaptor = ArgumentCaptor.forClass(Optional.class);
 
-        // Deploy definition
-        var definition = getResource("definition/domain.action.1.bpmn20.xml");
-        var flowableDefinition = new FlowableDefinition(definition);
-        this.process.deployDefinition(this.context, flowableDefinition);
+            // Start process engine
+            this.process.start();
 
-        // Verify that deployed definition is added to registry
-        verify(this.registry, times(1)).add(any(ApplicationContext.class), anyString(), resourceArgumentCaptor.capture());
-        var argumentObject = new JSONObject(resourceArgumentCaptor.getValue());
-        assertThat(argumentObject.length(), is(4));
-        assertThat(argumentObject.getString("name"), is("domain.action"));
-        assertThat(argumentObject.getString("resourceName"), is("domain.action.1.bpmn20.xml"));
-        assertTrue(StringUtils.isNotBlank(argumentObject.getString("workflow")));
-        assertTrue(StringUtils.isNotBlank(argumentObject.getString("content")));
+            // Deploy definition
+            var definition = getResource("definition/domain.action.1.bpmn20.xml");
+            var flowableDefinition = new FlowableDefinition(definition);
+            this.process.deployDefinition(flowableDefinition);
 
-        // Create instance
-        var processInstance = this.process.createInstance(this.context, argumentObject.getString("workflow"),
-                new JSONObject(VARIABLES).toMap());
-        assertNotNull(processInstance);
+            // Verify that deployed definition is added to registry
+            verify(this.registry, times(1)).add(anyString(), resourceArgumentCaptor.capture());
+            var argumentObject = new JSONObject(resourceArgumentCaptor.getValue());
+            assertThat(argumentObject.length(), is(4));
+            assertThat(argumentObject.getString("name"), is("domain.action"));
+            assertThat(argumentObject.getString("resourceName"), is("domain.action.1.bpmn20.xml"));
+            assertTrue(StringUtils.isNotBlank(argumentObject.getString("workflow")));
+            assertTrue(StringUtils.isNotBlank(argumentObject.getString("content")));
 
-        // Verify instance is indexed
-        verify(this.client, times(1)).post(any(ApplicationContext.class), eq("http://data/workflow"), instanceArgumentCaptor.capture());
-        argumentObject = (JSONObject) instanceArgumentCaptor.getValue().get();
-        assertFalse(argumentObject.isEmpty());
-        assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
-        assertThat(argumentObject.getJSONObject("entity").getString("id"), is("entityid"));
-        assertThat(argumentObject.getString("name"), is("name"));
-        assertThat(argumentObject.getString("createdBy"), is("createdBy"));
-        assertThat(argumentObject.getString("status"), is("Active"));
+            // Create instance
+            var processInstance = this.process.createInstance(argumentObject.getString("workflow"),
+                    new JSONObject(VARIABLES).toMap());
+            assertNotNull(processInstance);
 
-        // verify task is indexed
-        verify(this.client, times(1)).post(any(ApplicationContext.class), eq("http://data/task"), taskArgumentCaptor.capture());
-        argumentObject = (JSONObject) taskArgumentCaptor.getValue().get();
-        assertFalse(argumentObject.isEmpty());
-        assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
-        assertThat(argumentObject.getString("name"), is("Test Approve"));
-        assertThat(argumentObject.getString("assignee"), is("approver"));
-        assertThat(argumentObject.getString("status"), is("Active"));
+            // Verify instance is indexed
+            verify(this.client, times(1)).post(eq("http://data/workflow"), instanceArgumentCaptor.capture());
+            argumentObject = (JSONObject) instanceArgumentCaptor.getValue().get();
+            assertFalse(argumentObject.isEmpty());
+            assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
+            assertThat(argumentObject.getJSONObject("entity").getString("id"), is("entityid"));
+            assertThat(argumentObject.getString("name"), is("name"));
+            assertThat(argumentObject.getString("createdBy"), is("createdBy"));
+            assertThat(argumentObject.getString("status"), is("Active"));
 
-        var refProcessInstance = argumentObject.getJSONObject("processInstance");
-        assertThat(refProcessInstance.getString("domain"), is("workflow"));
-        assertThat(refProcessInstance.getString("id"), is(processInstance.getId()));
+            // verify task is indexed
+            verify(this.client, times(1)).post(eq("http://data/task"), taskArgumentCaptor.capture());
+            argumentObject = (JSONObject) taskArgumentCaptor.getValue().get();
+            assertFalse(argumentObject.isEmpty());
+            assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
+            assertThat(argumentObject.getString("name"), is("Test Approve"));
+            assertThat(argumentObject.getString("assignee"), is("approver"));
+            assertThat(argumentObject.getString("status"), is("Active"));
 
-        // Get tasks
-        var tasks = this.process.getTasks(this.context, processInstance.getId());
-        assertThat(tasks.size(), is(1));
-        var task = tasks.get(0);
-        assertThat(task.getName(), is("Test Approve"));
+            var refProcessInstance = argumentObject.getJSONObject("processInstance");
+            assertThat(refProcessInstance.getString("domain"), is("workflow"));
+            assertThat(refProcessInstance.getString("id"), is(processInstance.getId()));
 
-        // Complete task and get next task
-        var taskResponse = "{\"approved\":true}";
-        this.process.completeTask(this.context, task.getId(), new JSONObject(taskResponse));
+            // Get tasks
+            var tasks = this.process.getTasks(processInstance.getId());
+            assertThat(tasks.size(), is(1));
+            var task = tasks.get(0);
+            assertThat(task.getName(), is("Test Approve"));
+
+            // Complete task and get next task
+            var taskResponse = "{\"approved\":true}";
+            this.process.completeTask(task.getId(), new JSONObject(taskResponse));
+        }
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testFlowableProcess() throws Exception {
-        var response = new JSONObject("{\"code\":200,\"payload\":\"success\"}");
-        when(this.client.post(any(ApplicationContext.class), anyString(), any()))
-                .thenReturn(response)
-                .thenReturn(response)
-                .thenThrow(new WebClientException("message"));
+        try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+            utilities.when(() -> ApplicationContext.getContext())
+                    .thenReturn(this.context);
 
-        var registryArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        var taskArgumentCaptor = ArgumentCaptor.forClass(Optional.class);
-        var instanceArgumentCaptor = ArgumentCaptor.forClass(Optional.class);
+            var response = new JSONObject("{\"code\":200,\"payload\":\"success\"}");
+            when(this.client.post(anyString(), any()))
+                    .thenReturn(response)
+                    .thenReturn(response)
+                    .thenThrow(new WebClientException("message"));
 
-        // Start process engine
-        this.process.start();
+            var registryArgumentCaptor = ArgumentCaptor.forClass(String.class);
+            var taskArgumentCaptor = ArgumentCaptor.forClass(Optional.class);
+            var instanceArgumentCaptor = ArgumentCaptor.forClass(Optional.class);
 
-        // Deploy definition
-        var definition = getResource("definition/domain.action.1.bpmn20.xml");
-        var flowableDefinition = new FlowableDefinition(definition);
-        this.process.deployDefinition(this.context, flowableDefinition);
+            // Start process engine
+            this.process.start();
 
-        // Verify that deployed definition is added to registry
-        verify(this.registry, times(1)).add(any(ApplicationContext.class), anyString(), registryArgumentCaptor.capture());
-        var argumentObject = new JSONObject(registryArgumentCaptor.getValue());
-        assertThat(argumentObject.length(), is(4));
-        assertThat(argumentObject.getString("name"), is("domain.action"));
-        assertThat(argumentObject.getString("resourceName"), is("domain.action.1.bpmn20.xml"));
-        assertTrue(StringUtils.isNotBlank(argumentObject.getString("workflow")));
-        assertTrue(StringUtils.isNotBlank(argumentObject.getString("content")));
+            // Deploy definition
+            var definition = getResource("definition/domain.action.1.bpmn20.xml");
+            var flowableDefinition = new FlowableDefinition(definition);
+            this.process.deployDefinition(flowableDefinition);
 
-        doReturn(argumentObject.toString()).when(this.registry).get(any(ApplicationContext.class), eq("domain.action"));
+            // Verify that deployed definition is added to registry
+            verify(this.registry, times(1)).add(anyString(), registryArgumentCaptor.capture());
+            var argumentObject = new JSONObject(registryArgumentCaptor.getValue());
+            assertThat(argumentObject.length(), is(4));
+            assertThat(argumentObject.getString("name"), is("domain.action"));
+            assertThat(argumentObject.getString("resourceName"), is("domain.action.1.bpmn20.xml"));
+            assertTrue(StringUtils.isNotBlank(argumentObject.getString("workflow")));
+            assertTrue(StringUtils.isNotBlank(argumentObject.getString("content")));
 
-        // Create instance
-        var processInstance = this.process.createInstanceByAction(this.context, argumentObject.getString("name"),
-                new JSONObject(ENTITY), new JSONObject(VARIABLES).toMap());
-        assertNotNull(processInstance);
+            doReturn(argumentObject.toString()).when(this.registry).get(eq("domain.action"));
 
-        // Verify task is created
-        var tasks = this.process.getTasks(this.context, processInstance.getId());
-        assertThat(tasks.size(), is(1));
-        var task = tasks.get(0);
-        assertThat(task.getName(), is("Test Approve"));
+            // Create instance
+            var processInstance = this.process.createInstanceByAction(argumentObject.getString("name"),
+                    new JSONObject(ENTITY), new JSONObject(VARIABLES).toMap());
+            assertNotNull(processInstance);
 
-        // Verify instance is indexed
-        verify(this.client, times(1)).post(any(ApplicationContext.class), eq("http://data/workflow"), instanceArgumentCaptor.capture());
-        argumentObject = (JSONObject) instanceArgumentCaptor.getValue().get();
-        assertFalse(argumentObject.isEmpty());
-        assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
-        assertThat(argumentObject.getJSONObject("entity").getString("id"), is("entityid"));
-        assertThat(argumentObject.getString("name"), is("name"));
-        assertThat(argumentObject.getString("createdBy"), is("createdBy"));
-        assertThat(argumentObject.getString("status"), is("Active"));
+            // Verify task is created
+            var tasks = this.process.getTasks(processInstance.getId());
+            assertThat(tasks.size(), is(1));
+            var task = tasks.get(0);
+            assertThat(task.getName(), is("Test Approve"));
 
-        // Verify task is indexed
-        verify(this.client, times(1)).post(any(ApplicationContext.class), eq("http://data/task"), taskArgumentCaptor.capture());
-        argumentObject = (JSONObject) taskArgumentCaptor.getValue().get();
-        assertFalse(argumentObject.isEmpty());
-        assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
-        assertThat(argumentObject.getString("name"), is("Test Approve"));
-        assertThat(argumentObject.getString("assignee"), is("approver"));
-        assertThat(argumentObject.getString("status"), is("Active"));
+            // Verify instance is indexed
+            verify(this.client, times(1)).post(eq("http://data/workflow"), instanceArgumentCaptor.capture());
+            argumentObject = (JSONObject) instanceArgumentCaptor.getValue().get();
+            assertFalse(argumentObject.isEmpty());
+            assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
+            assertThat(argumentObject.getJSONObject("entity").getString("id"), is("entityid"));
+            assertThat(argumentObject.getString("name"), is("name"));
+            assertThat(argumentObject.getString("createdBy"), is("createdBy"));
+            assertThat(argumentObject.getString("status"), is("Active"));
 
-        var refProcessInstance = argumentObject.getJSONObject("processInstance");
-        assertThat(refProcessInstance.getString("domain"), is("workflow"));
-        assertThat(refProcessInstance.getString("id"), is(processInstance.getId()));
+            // Verify task is indexed
+            verify(this.client, times(1)).post(eq("http://data/task"), taskArgumentCaptor.capture());
+            argumentObject = (JSONObject) taskArgumentCaptor.getValue().get();
+            assertFalse(argumentObject.isEmpty());
+            assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
+            assertThat(argumentObject.getString("name"), is("Test Approve"));
+            assertThat(argumentObject.getString("assignee"), is("approver"));
+            assertThat(argumentObject.getString("status"), is("Active"));
 
-        // Complete task and get next task
-        var taskResponse = "{\"approved\":true}";
-        this.process.completeTask(this.context, task.getId(), new JSONObject(taskResponse));
+            var refProcessInstance = argumentObject.getJSONObject("processInstance");
+            assertThat(refProcessInstance.getString("domain"), is("workflow"));
+            assertThat(refProcessInstance.getString("id"), is(processInstance.getId()));
 
-        // Verify next task is created
-        tasks = this.process.getTasks(this.context, processInstance.getId());
-        assertThat(tasks.size(), is(1));
-        task = tasks.get(0);
-        assertThat(task.getName(), is("Test Approved"));
+            // Complete task and get next task
+            var taskResponse = "{\"approved\":true}";
+            this.process.completeTask(task.getId(), new JSONObject(taskResponse));
 
-        // Verify indexing
-        verify(this.client, times(3)).post(any(ApplicationContext.class), eq("http://data/task"), taskArgumentCaptor.capture());
-        var arguments = taskArgumentCaptor.getAllValues();
-        assertThat(arguments.size(), is(4));
+            // Verify next task is created
+            tasks = this.process.getTasks(processInstance.getId());
+            assertThat(tasks.size(), is(1));
+            task = tasks.get(0);
+            assertThat(task.getName(), is("Test Approved"));
 
-        // Verify current task index is updated
-        argumentObject = (JSONObject) arguments.get(2).get();
-        assertFalse(argumentObject.isEmpty());
-        assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
-        assertThat(argumentObject.getString("name"), is("Test Approve"));
-        assertThat(argumentObject.getString("assignee"), is("approver"));
-        assertThat(argumentObject.getString("status"), is("Complete"));
+            // Verify indexing
+            verify(this.client, times(3)).post(eq("http://data/task"), taskArgumentCaptor.capture());
+            var arguments = taskArgumentCaptor.getAllValues();
+            assertThat(arguments.size(), is(4));
 
-        refProcessInstance = argumentObject.getJSONObject("processInstance");
-        assertThat(refProcessInstance.getString("domain"), is("workflow"));
-        assertThat(refProcessInstance.getString("id"), is(processInstance.getId()));
+            // Verify current task index is updated
+            argumentObject = (JSONObject) arguments.get(2).get();
+            assertFalse(argumentObject.isEmpty());
+            assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
+            assertThat(argumentObject.getString("name"), is("Test Approve"));
+            assertThat(argumentObject.getString("assignee"), is("approver"));
+            assertThat(argumentObject.getString("status"), is("Complete"));
 
-        // Verify next task is indexed
-        argumentObject = (JSONObject) arguments.get(3).get();
-        assertFalse(argumentObject.isEmpty());
-        assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
-        assertThat(argumentObject.getString("name"), is("Test Approved"));
-        assertThat(argumentObject.getString("assignee"), is("assignee"));
-        assertThat(argumentObject.getString("status"), is("Active"));
+            refProcessInstance = argumentObject.getJSONObject("processInstance");
+            assertThat(refProcessInstance.getString("domain"), is("workflow"));
+            assertThat(refProcessInstance.getString("id"), is(processInstance.getId()));
 
-        refProcessInstance = argumentObject.getJSONObject("processInstance");
-        assertThat(refProcessInstance.getString("domain"), is("workflow"));
-        assertThat(refProcessInstance.getString("id"), is(processInstance.getId()));
+            // Verify next task is indexed
+            argumentObject = (JSONObject) arguments.get(3).get();
+            assertFalse(argumentObject.isEmpty());
+            assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
+            assertThat(argumentObject.getString("name"), is("Test Approved"));
+            assertThat(argumentObject.getString("assignee"), is("assignee"));
+            assertThat(argumentObject.getString("status"), is("Active"));
 
-        // Verify that Java Delegate is called
-        // verify(this.repository, times(1)).hashCode();
+            refProcessInstance = argumentObject.getJSONObject("processInstance");
+            assertThat(refProcessInstance.getString("domain"), is("workflow"));
+            assertThat(refProcessInstance.getString("id"), is(processInstance.getId()));
 
-        // Complete final task
-        this.process.completeTask(this.context, task.getId(), new JSONObject());
+            // Verify that Java Delegate is called
+            // verify(this.repository, times(1)).hashCode();
 
-        // Verify current index is updated
-        verify(this.client, times(4)).post(any(ApplicationContext.class), eq("http://data/task"), taskArgumentCaptor.capture());
-        argumentObject = (JSONObject) taskArgumentCaptor.getValue().get();
-        assertFalse(argumentObject.isEmpty());
-        assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
-        assertThat(argumentObject.getString("name"), is("Test Approved"));
-        assertThat(argumentObject.getString("assignee"), is("assignee"));
-        assertThat(argumentObject.getString("status"), is("Complete"));
+            // Complete final task
+            this.process.completeTask(task.getId(), new JSONObject());
 
-        refProcessInstance = argumentObject.getJSONObject("processInstance");
-        assertThat(refProcessInstance.getString("domain"), is("workflow"));
-        assertThat(refProcessInstance.getString("id"), is(processInstance.getId()));
+            // Verify current index is updated
+            verify(this.client, times(4)).post(eq("http://data/task"), taskArgumentCaptor.capture());
+            argumentObject = (JSONObject) taskArgumentCaptor.getValue().get();
+            assertFalse(argumentObject.isEmpty());
+            assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
+            assertThat(argumentObject.getString("name"), is("Test Approved"));
+            assertThat(argumentObject.getString("assignee"), is("assignee"));
+            assertThat(argumentObject.getString("status"), is("Complete"));
 
-        // Verify all task is completed
-        tasks = this.process.getTasks(this.context, processInstance.getId());
-        assertThat(tasks.size(), is(0));
+            refProcessInstance = argumentObject.getJSONObject("processInstance");
+            assertThat(refProcessInstance.getString("domain"), is("workflow"));
+            assertThat(refProcessInstance.getString("id"), is(processInstance.getId()));
 
-        // Verify the process instance is completed
-        var processInstanceId = processInstance.getId();
-        processInstance = this.process.getInstance(this.context, processInstanceId);
-        assertNull(processInstance);
+            // Verify all task is completed
+            tasks = this.process.getTasks(processInstance.getId());
+            assertThat(tasks.size(), is(0));
 
-        // Verify process instance is moved to history
-        var historicProcessInstance = this.process.getHistoricInstance(processInstanceId);
-        assertNotNull(historicProcessInstance);
+            // Verify the process instance is completed
+            var processInstanceId = processInstance.getId();
+            processInstance = this.process.getInstance(processInstanceId);
+            assertNull(processInstance);
 
-        // Verify instance index is updated
-        // verify(this.instanceIndex, times(2)).index(any(ApplicationContext.class), instanceArgumentCaptor.capture());
-        // argument = instanceArgumentCaptor.getValue();
-        // assertFalse(argument.isEmpty());
-        // assertTrue(StringUtils.isNotBlank(argument.getString("id")));
-        // assertThat(argument.getJSONObject("entity").getString("id"), is("entityid"));
-        // // assertThat(argument.getJSONObject("entity").getString("domain"), is("domain"));
-        // assertThat(argument.getString("name"), is("name"));
-        // assertThat(argument.getString("createdBy"), is("createdBy"));
-        // assertThat(argument.getString("owner"), is("owner"));
-        // assertThat(argument.getString("status"), is("Complete"));
+            // Verify process instance is moved to history
+            var historicProcessInstance = this.process.getHistoricInstance(processInstanceId);
+            assertNotNull(historicProcessInstance);
+
+            // Verify instance index is updated
+            // verify(this.instanceIndex, times(2)).index(instanceArgumentCaptor.capture());
+            // argument = instanceArgumentCaptor.getValue();
+            // assertFalse(argument.isEmpty());
+            // assertTrue(StringUtils.isNotBlank(argument.getString("id")));
+            // assertThat(argument.getJSONObject("entity").getString("id"), is("entityid"));
+            // // assertThat(argument.getJSONObject("entity").getString("domain"),
+            // is("domain"));
+            // assertThat(argument.getString("name"), is("name"));
+            // assertThat(argument.getString("createdBy"), is("createdBy"));
+            // assertThat(argument.getString("owner"), is("owner"));
+            // assertThat(argument.getString("status"), is("Complete"));
+        }
     }
 }

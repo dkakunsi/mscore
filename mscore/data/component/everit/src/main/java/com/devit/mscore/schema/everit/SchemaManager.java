@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
+import com.devit.mscore.Logger;
 import com.devit.mscore.Registry;
 import com.devit.mscore.Resource;
 import com.devit.mscore.ResourceManager;
@@ -13,15 +13,14 @@ import com.devit.mscore.Schema;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.ResourceException;
+import com.devit.mscore.logging.ApplicationLogger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SchemaManager extends ResourceManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SchemaManager.class);
+    private static final Logger LOG = new ApplicationLogger(SchemaManager.class);
 
     private static final String LOCATION = "services.%s.schema.resource.location";
 
@@ -37,10 +36,10 @@ public class SchemaManager extends ResourceManager {
     }
 
     @Override
-    protected String getResourceLocation(ApplicationContext context) {
+    protected String getResourceLocation() {
         var configName = String.format(LOCATION, this.configuration.getServiceName());
         try {
-            return this.configuration.getConfig(context, configName).orElse(null);
+            return this.configuration.getConfig(configName).orElse(null);
         } catch (ConfigException ex) {
             return null;
         }
@@ -56,16 +55,15 @@ public class SchemaManager extends ResourceManager {
     /**
      * Load schema from registry.
      * 
-     * @param context of the request.
      * @param domain  name.
      * @return domain schema.
      * @throws JSONException     cannot parse JSON content.
      * @throws RegistryException cannotconnect to registry.
      */
-    public JSONSchema getSchema(ApplicationContext context, String domain) throws JSONException, RegistryException {
-        LOG.info("BreadcrumbId: {}. Loading schema: {}", context.getBreadcrumbId(), domain);
-        var schema = this.registry.get(context, domain);
-        LOG.info("BreadcrumbId: {}. Retrieved schema: {}", context.getBreadcrumbId(), schema);
+    public JSONSchema getSchema(String domain) throws JSONException, RegistryException {
+        LOG.info("Loading schema: {}", domain);
+        var schema = this.registry.get(domain);
+        LOG.info("Retrieved schema: {}", schema);
         return new JSONSchema(new JSONObject(schema));
     }
 

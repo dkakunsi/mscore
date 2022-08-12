@@ -1,6 +1,5 @@
 package com.devit.mscore.synchronization;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Synchronization;
 import com.devit.mscore.Synchronizer;
 import com.devit.mscore.exception.SynchronizationException;
@@ -23,7 +22,7 @@ public class DefaultSynchronization extends Synchronization {
     }
 
     @Override
-    public void synchronize(ApplicationContext context, String referenceId) throws SynchronizationException {
-        this.synchronizer.synchronize(context, getSearchAttribute(), referenceId);
+    public void synchronize(String referenceId) throws SynchronizationException {
+        this.synchronizer.synchronize(getSearchAttribute(), referenceId);
     }
 }

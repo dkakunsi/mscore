@@ -16,8 +16,6 @@ import java.util.function.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class that encapsulate system information.
@@ -26,11 +24,11 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ApplicationContext {
 
+    private static ThreadLocal<ApplicationContext> context = new ThreadLocal<>();
+
     private static final String UNKNOWN = "UNKNOWN";
 
     private static final String EMPTY = "";
-
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected Map<String, Object> contextData;
 
@@ -40,6 +38,14 @@ public abstract class ApplicationContext {
         } else {
             this.contextData = new HashMap<>();
         }
+    }
+
+    public static ApplicationContext getContext() {
+        return context.get();
+    }
+
+    public static void setContext(ApplicationContext appContext) {
+        context.set(appContext);
     }
 
     /**

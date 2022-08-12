@@ -1,20 +1,19 @@
 package com.devit.mscore.history;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.HistoryException;
 import com.devit.mscore.History;
 import com.devit.mscore.Listener;
+import com.devit.mscore.Logger;
 import com.devit.mscore.Subscriber;
+import com.devit.mscore.logging.ApplicationLogger;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EventListener extends Listener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EventListener.class);
+    private static final Logger LOGGER = ApplicationLogger.getLogger(EventListener.class);
 
-    private History historyManager;
+    private History history;
 
     private EventListener(Subscriber subscriber) {
         super(subscriber);
@@ -24,22 +23,22 @@ public class EventListener extends Listener {
         return new EventListener(subscriber);
     }
 
-    public static EventListener of(Subscriber subscriber, History historyManager) {
-        return new EventListener(subscriber).with(historyManager);
+    public static EventListener of(Subscriber subscriber, History history) {
+        return new EventListener(subscriber).with(history);
     }
 
-    public EventListener with(History historyManager) {
-        this.historyManager = historyManager;
+    public EventListener with(History history) {
+        this.history = history;
         return this;
     }
 
     @Override
-    public void consume(ApplicationContext context, JSONObject message) {
-        LOGGER.debug("BreadcrumbId: {}. Receive event message: {}", context.getBreadcrumbId(), message);
+    public void consume(JSONObject message) {
+        LOGGER.debug("Receive event message: {}", message);
         try {
-            this.historyManager.create(context, message);
+            this.history.create(message);
         } catch (HistoryException ex) {
-            LOGGER.error("BreadcrumbId: {}. Failed to create history", context.getBreadcrumbId(), ex);
+            LOGGER.error("Failed to create history", ex);
         }
     }
 }

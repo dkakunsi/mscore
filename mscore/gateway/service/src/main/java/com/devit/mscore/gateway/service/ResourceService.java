@@ -10,20 +10,19 @@ import static com.devit.mscore.web.WebUtils.getMessageType;
 import java.util.Map;
 import java.util.Optional;
 
-import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Logger;
 import com.devit.mscore.ServiceRegistration;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.WebClientException;
+import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.web.Client;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ResourceService extends AbstractGatewayService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceService.class);
+    private static final Logger LOGGER = ApplicationLogger.getLogger(ResourceService.class);
 
     private final Boolean useWorkflow;
 
@@ -40,17 +39,17 @@ public class ResourceService extends AbstractGatewayService {
         return "api/resource";
     }
 
-    public JSONObject post(ApplicationContext context, String domain, JSONObject payload) throws WebClientException {
+    public JSONObject post(String domain, JSONObject payload) throws WebClientException {
         try {
-            var uri = getUri(context, domain);
-            var result = this.client.post(context, uri, Optional.of(payload));
+            var uri = getUri(domain);
+            var result = this.client.post(uri, Optional.of(payload));
             if (BooleanUtils.isTrue(this.useWorkflow) && isSuccess(result.getInt("code"))) {
-                LOGGER.info("BreadcrumbId: {}. Executing workflow.", context.getBreadcrumbId());
-                executeWorkflow(context, payload, result);
+                LOGGER.info("Executing workflow.");
+                executeWorkflow(payload, result);
             }
             return result;
         } catch (ApplicationRuntimeException ex) {
-            LOGGER.error("BreadcrumbId: {}. Cannot POST a resource.", context.getBreadcrumbId());
+            LOGGER.error("Cannot POST a resource.");
             throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
         }
     }
@@ -59,75 +58,75 @@ public class ResourceService extends AbstractGatewayService {
         return SUCCESS.equals(getMessageType(responseCode));
     }
 
-    private void executeWorkflow(ApplicationContext context, JSONObject payload, JSONObject result) {
+    private void executeWorkflow(JSONObject payload, JSONObject result) {
         var resultId = result.getJSONObject(PAYLOAD).getString(ID);
         payload.put(ID, resultId);
 
         try {
-            this.workflowService.createInstance(context, payload);
+            this.workflowService.createInstance(payload);
         } catch (WebClientException ex) {
-            LOGGER.error("BreadcrumbId: {}. Cannot start a workflow instance.", context.getBreadcrumbId(), ex);
+            LOGGER.error("Cannot start a workflow instance.", ex);
         }
     }
 
-    public JSONObject put(ApplicationContext context, String domain, String id, JSONObject payload) throws WebClientException {
+    public JSONObject put(String domain, String id, JSONObject payload) throws WebClientException {
         try {
-            var uri = String.format("%s/%s", getUri(context, domain), id);
-            return this.client.put(context, uri, Optional.of(payload));
+            var uri = String.format("%s/%s", getUri(domain), id);
+            return this.client.put(uri, Optional.of(payload));
         } catch (ApplicationRuntimeException ex) {
             throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
         }
     }
 
-    public JSONObject getById(ApplicationContext context, String domain, String id) throws WebClientException {
+    public JSONObject getById(String domain, String id) throws WebClientException {
         try {
-            var uri = String.format("%s/%s", getUri(context, domain), id);
-            return this.client.get(context, uri, Map.of());
+            var uri = String.format("%s/%s", getUri(domain), id);
+            return this.client.get(uri, Map.of());
         } catch (ApplicationRuntimeException ex) {
             throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
         }
     }
 
-    public JSONObject getByCode(ApplicationContext context, String domain, String code) throws WebClientException {
+    public JSONObject getByCode(String domain, String code) throws WebClientException {
         try {
-            var uri = String.format("%s/code/%s", getUri(context, domain), code);
-            return this.client.get(context, uri, null);
+            var uri = String.format("%s/code/%s", getUri(domain), code);
+            return this.client.get(uri, null);
         } catch (ApplicationRuntimeException ex) {
             throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
         }
     }
 
-    public JSONObject getMany(ApplicationContext context, String domain, String ids) throws WebClientException {
+    public JSONObject getMany(String domain, String ids) throws WebClientException {
         try {
-            var uri = String.format("%s/keys", getUri(context, domain));
-            return this.client.get(context, uri, Map.of("ids", ids));
+            var uri = String.format("%s/keys", getUri(domain));
+            return this.client.get(uri, Map.of("ids", ids));
         } catch (ApplicationRuntimeException ex) {
             throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
         }
     }
 
-    public JSONObject sync(ApplicationContext context, String domain) throws WebClientException {
+    public JSONObject sync(String domain) throws WebClientException {
         try {
-            var uri = String.format("%s/sync", getUri(context, domain));
-            return this.client.post(context, uri, Optional.empty());
+            var uri = String.format("%s/sync", getUri(domain));
+            return this.client.post(uri, Optional.empty());
         } catch (ApplicationRuntimeException ex) {
             throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
         }
     }
 
-    public JSONObject syncById(ApplicationContext context, String domain, String id) throws WebClientException {
+    public JSONObject syncById(String domain, String id) throws WebClientException {
         try {
-            var uri = String.format("%s/%s/sync", getUri(context, domain), id);
-            return this.client.post(context, uri, Optional.empty());
+            var uri = String.format("%s/%s/sync", getUri(domain), id);
+            return this.client.post(uri, Optional.empty());
         } catch (ApplicationRuntimeException ex) {
             throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
         }
     }
 
-    public JSONObject search(ApplicationContext context, String domain, JSONObject criteria) throws WebClientException {
+    public JSONObject search(String domain, JSONObject criteria) throws WebClientException {
         try {
-            var uri = String.format("%s/search", getUri(context, domain));
-            return this.client.post(context, uri, Optional.of(criteria));
+            var uri = String.format("%s/search", getUri(domain));
+            return this.client.post(uri, Optional.of(criteria));
         } catch (ApplicationRuntimeException ex) {
             throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
         }

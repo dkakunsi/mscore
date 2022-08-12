@@ -5,16 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Logger;
 import com.devit.mscore.Registry;
 import com.devit.mscore.exception.RegistryException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.devit.mscore.logging.ApplicationLogger;
 
 public class MemoryRegistry implements Registry {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MemoryRegistry.class);
+    private static final Logger LOG = new ApplicationLogger(MemoryRegistry.class);
 
     private String name;
 
@@ -36,31 +34,30 @@ public class MemoryRegistry implements Registry {
     }
 
     @Override
-    public void add(ApplicationContext context, String key, String value) throws RegistryException {
+    public void add(String key, String value) throws RegistryException {
         this.register.put(key, value);
-        LOG.debug("BreadcrumbId: {}. Object is added to memory register: {}", context.getBreadcrumbId(), value);
+        LOG.debug("Object is added to memory register: {}", value);
     }
 
     @Override
-    public Map<String, String> all(ApplicationContext context) throws RegistryException {
-        LOG.debug("BreadcrumbId: {}. Retrieving all value from memory register", context.getBreadcrumbId());
+    public Map<String, String> all() throws RegistryException {
+        LOG.debug("Retrieving all value from memory register");
         return this.register;
     }
 
     @Override
-    public List<String> values(ApplicationContext context) throws RegistryException {
+    public List<String> values() throws RegistryException {
         return new ArrayList<>(this.register.values());
     }
 
     @Override
-    public List<String> keys(ApplicationContext context) throws RegistryException {
+    public List<String> keys() throws RegistryException {
         return new ArrayList<>(this.register.keySet());
     }
 
     @Override
-    public String get(ApplicationContext context, String key) throws RegistryException {
-        LOG.debug("BreadcrumbId: {}. Retrieving value from memory register with key: {}", context.getBreadcrumbId(),
-                key);
+    public String get(String key) throws RegistryException {
+        LOG.debug("Retrieving value from memory register with key: {}", key);
         return this.register.get(key);
     }
 

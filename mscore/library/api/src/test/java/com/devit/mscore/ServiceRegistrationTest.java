@@ -4,7 +4,6 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThrows;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -33,31 +32,28 @@ public class ServiceRegistrationTest {
 
     private ServiceRegistration serviceRegistration;
 
-    private ApplicationContext context;
-
     @Before
     public void setup() {
         this.configuration = mock(Configuration.class);
         doReturn("data").when(this.configuration).getServiceName();
         this.registry = mock(Registry.class);
         this.serviceRegistration = new ServiceRegistration(registry, configuration);
-        this.context = DefaultApplicationContext.of("test");
     }
 
     @Test
     public void testRegister_Service() throws RegistryException, ConfigException {
-        doReturn(Optional.of("true")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.service.registry.static"));
-        doReturn(Optional.of("static-address")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("services.data.registry.address"));
+        doReturn(Optional.of("true")).when(this.configuration).getConfig(eq("platform.service.registry.static"));
+        doReturn(Optional.of("static-address")).when(this.configuration).getConfig(eq("services.data.registry.address"));
 
         var service = mock(Service.class);
         doReturn("domain").when(service).getDomain();
 
         var spiedRegistration = spy(this.serviceRegistration);
-        spiedRegistration.register(this.context, service);
+        spiedRegistration.register(service);
 
         var keyCaptor = ArgumentCaptor.forClass(String.class);
         var valueCaptor = ArgumentCaptor.forClass(String.class);
-        verify(this.registry, times(1)).add(any(ApplicationContext.class), keyCaptor.capture(), valueCaptor.capture());
+        verify(this.registry, times(1)).add(keyCaptor.capture(), valueCaptor.capture());
 
         var key = keyCaptor.getValue();
         assertThat(key, is("/services/endpoint/domain/url"));
@@ -67,15 +63,15 @@ public class ServiceRegistrationTest {
 
     @Test
     public void testRegister_StaticAddress() throws RegistryException, ConfigException {
-        doReturn(Optional.of("true")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.service.registry.static"));
-        doReturn(Optional.of("static-address")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("services.data.registry.address"));
+        doReturn(Optional.of("true")).when(this.configuration).getConfig(eq("platform.service.registry.static"));
+        doReturn(Optional.of("static-address")).when(this.configuration).getConfig(eq("services.data.registry.address"));
 
         var spiedRegistration = spy(this.serviceRegistration);
-        spiedRegistration.register(this.context, "domain");
+        spiedRegistration.register("domain");
 
         var keyCaptor = ArgumentCaptor.forClass(String.class);
         var valueCaptor = ArgumentCaptor.forClass(String.class);
-        verify(this.registry, times(1)).add(any(ApplicationContext.class), keyCaptor.capture(), valueCaptor.capture());
+        verify(this.registry, times(1)).add(keyCaptor.capture(), valueCaptor.capture());
 
         var key = keyCaptor.getValue();
         assertThat(key, is("/services/endpoint/domain/url"));
@@ -85,18 +81,18 @@ public class ServiceRegistrationTest {
 
     @Test
     public void testRegister_DynamicAddress() throws RegistryException, UnknownHostException, ConfigException {
-        doReturn(Optional.empty()).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.sewrvice.registry.static"));
-        doReturn(Optional.of("http")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("services.data.registry.protocol"));
-        doReturn(Optional.of("2000")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.service.web.port"));
+        doReturn(Optional.empty()).when(this.configuration).getConfig(eq("platform.sewrvice.registry.static"));
+        doReturn(Optional.of("http")).when(this.configuration).getConfig(eq("services.data.registry.protocol"));
+        doReturn(Optional.of("2000")).when(this.configuration).getConfig(eq("platform.service.web.port"));
 
         var currentAddress = Inet4Address.getLocalHost().getHostAddress();
 
         var spiedRegistration = spy(this.serviceRegistration);
-        spiedRegistration.register(this.context, "domain");
+        spiedRegistration.register("domain");
 
         var keyCaptor = ArgumentCaptor.forClass(String.class);
         var valueCaptor = ArgumentCaptor.forClass(String.class);
-        verify(this.registry, times(1)).add(any(ApplicationContext.class), keyCaptor.capture(), valueCaptor.capture());
+        verify(this.registry, times(1)).add(keyCaptor.capture(), valueCaptor.capture());
 
         var key = keyCaptor.getValue();
         assertThat(key, is("/services/endpoint/domain/url"));
@@ -106,8 +102,8 @@ public class ServiceRegistrationTest {
 
     @Test
     public void testRegister_ThrowException() throws RegistryException, UnknownHostException, ConfigException {
-        doThrow(new ConfigException("Error message.")).when(this.configuration).getConfig(any(ApplicationContext.class), eq("platform.service.registry.static"));
-        var ex = assertThrows(RegistryException.class, () -> this.serviceRegistration.register(this.context, "domain"));
+        doThrow(new ConfigException("Error message.")).when(this.configuration).getConfig(eq("platform.service.registry.static"));
+        var ex = assertThrows(RegistryException.class, () -> this.serviceRegistration.register("domain"));
 
         var actualEx = ex.getCause();
         assertThat(actualEx, instanceOf(ConfigException.class));
@@ -117,8 +113,8 @@ public class ServiceRegistrationTest {
     @Test
     public void testGet() throws RegistryException {
         var domain = "domain";
-        this.serviceRegistration.get(this.context, domain);
-        verify(this.registry).get(any(ApplicationContext.class), anyString());
+        this.serviceRegistration.get(domain);
+        verify(this.registry).get(anyString());
     }
 
     @Test

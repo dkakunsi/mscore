@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Executor;
 import com.devit.mscore.Filter;
 
@@ -37,7 +36,7 @@ public final class FiltersExecutor implements Executor<Filter> {
     }
 
     @Override
-    public void execute(ApplicationContext context, JSONObject json) {
+    public void execute(JSONObject json) {
         filter(this.filters.get(ALL), json);
         filter(this.filters.get(getDomain(json)), json);
     }

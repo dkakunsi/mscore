@@ -12,10 +12,11 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Logger;
 import com.devit.mscore.Repository;
 import com.devit.mscore.exception.DataDuplicationException;
 import com.devit.mscore.exception.DataException;
+import com.devit.mscore.logging.ApplicationLogger;
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -27,8 +28,6 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Root class of mongo repository implementation.
@@ -37,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MongoRepository implements Repository {
 
-    protected final Logger LOG = LoggerFactory.getLogger(getClass());
+    protected final Logger LOG = new ApplicationLogger(getClass());
 
     protected static final String KEY_NOT_SUPPLIED = "The key is not supplied.";
 
@@ -72,13 +71,13 @@ public class MongoRepository implements Repository {
     }
 
     @Override
-    public JSONObject save(ApplicationContext context, JSONObject json) throws DataException {
-        this.LOG.trace("BreadcrumbId: {}. Saving entity to MongoDB: {}", context.getBreadcrumbId(), getCode(json));
+    public JSONObject save(JSONObject json) throws DataException {
+        this.LOG.trace("Saving entity to MongoDB: {}", getCode(json));
 
         try {
 
             var id = getOrCreateId(json);
-            var target = find(context, id, false).orElse(new JSONObject());
+            var target = find(id, false).orElse(new JSONObject());
             copy(target, json);
 
             var document = toDocument(target);
@@ -117,18 +116,18 @@ public class MongoRepository implements Repository {
     }
 
     @Override
-    public void delete(ApplicationContext context, String id) {
-        this.LOG.debug("BreadcrumbId: {}. Deleting entity from MongoDB: {}", context.getBreadcrumbId(), id);
+    public void delete(String id) {
+        this.LOG.debug("Deleting entity from MongoDB: {}", id);
         this.collection.deleteOne(new Document(ID, id));
     }
 
     @Override
-    public Optional<JSONObject> find(ApplicationContext context, String id) {
-        return find(context, id, true);
+    public Optional<JSONObject> find(String id) {
+        return find(id, true);
     }
 
-    public Optional<JSONObject> find(ApplicationContext context, String id, boolean removeMongoId) {
-        LOG.trace("BreadcrumbId: {}. Finding data {}", context.getBreadcrumbId(), id);
+    public Optional<JSONObject> find(String id, boolean removeMongoId) {
+        LOG.trace("Finding data {}", id);
         var result = this.collection.find(new Document(ID, id));
         var document = result.first();
         if (document == null) {
@@ -138,20 +137,20 @@ public class MongoRepository implements Repository {
     }
 
     @Override
-    public Optional<JSONArray> find(ApplicationContext context, String field, Object value) {
+    public Optional<JSONArray> find(String field, Object value) {
         var result = this.collection.find(new Document(field, value));
         return loadResult(result);
     }
 
     @Override
-    public Optional<JSONArray> find(ApplicationContext context, List<String> keys) {
+    public Optional<JSONArray> find(List<String> keys) {
         var query = new Document(ID, keys);
         var result = this.collection.find(query);
         return loadResult(result);
     }
 
     @Override
-    public Optional<JSONArray> all(ApplicationContext context) {
+    public Optional<JSONArray> all() {
         var result = this.collection.find();
         return loadResult(result);
     }

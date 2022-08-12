@@ -52,7 +52,7 @@ public abstract class Synchronization {
      * @param context     application context.
      * @param referenceId to synchronize.
      */
-    public abstract void synchronize(ApplicationContext context, String referenceId) throws SynchronizationException;
+    public abstract void synchronize(String referenceId) throws SynchronizationException;
 
     protected String getSearchAttribute() {
         return String.format("%s.id", this.referenceAttribute);

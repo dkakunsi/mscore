@@ -27,16 +27,16 @@ public class RegistryTest {
         }
 
         @Override
-        public void add(ApplicationContext context, String key, String value) {
+        public void add(String key, String value) {
         }
 
         @Override
-        public String get(ApplicationContext context, String key) {
+        public String get(String key) {
             return null;
         }
 
         @Override
-        public Map<String, String> all(ApplicationContext context) throws RegistryException {
+        public Map<String, String> all() throws RegistryException {
             return null;
         }
 
@@ -53,12 +53,12 @@ public class RegistryTest {
         }
 
         @Override
-        public List<String> values(ApplicationContext context) throws RegistryException {
+        public List<String> values() throws RegistryException {
             return null;
         }
 
         @Override
-        public List<String> keys(ApplicationContext context) throws RegistryException {
+        public List<String> keys() throws RegistryException {
             return null;
         }
     }

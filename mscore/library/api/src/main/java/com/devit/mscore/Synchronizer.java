@@ -33,12 +33,11 @@ public interface Synchronizer {
      * Synchronize object with the given <code>id</code>.
      * </p>
      * 
-     * @param context application context.
      * @param id      id of object to sync.
      * 
      * @throws SynchronizationException
      */
-    void synchronize(ApplicationContext context, String id) throws SynchronizationException;
+    void synchronize(String id) throws SynchronizationException;
 
     /**
      * <p>
@@ -46,22 +45,19 @@ public interface Synchronizer {
      * <code>value</code>.
      * </p>
      * 
-     * @param context         application context.
      * @param searchAttribute attribute to meet.
      * @param value           value of attribute to search.
      * 
      * @throws SynchronizationException
      */
-    void synchronize(ApplicationContext context, String searchAttribute, String value) throws SynchronizationException;
+    void synchronize(String searchAttribute, String value) throws SynchronizationException;
 
     /**
      * <p>
      * Synchronize all object in database.
      * </p>
      * 
-     * @param context application context.
-     * 
      * @throws SynchronizationException
      */
-    void synchronize(ApplicationContext context) throws SynchronizationException;
+    void synchronize() throws SynchronizationException;
 }

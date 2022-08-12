@@ -3,7 +3,6 @@ package com.devit.mscore.workflow.flowable;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.ServiceRegistration;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.RegistryException;
@@ -33,22 +32,22 @@ public class DataClient {
         return this.client.createNew();
     }
 
-    public String getWorkflowUri(ApplicationContext context) {
-        return getUri(context, this.workflowDomain);
+    public String getWorkflowUri() {
+        return getUri(this.workflowDomain);
     }
 
-    public String getTaskUri(ApplicationContext context) {
-        return getUri(context, this.workflowTaskDomain);
+    public String getTaskUri() {
+        return getUri(this.workflowTaskDomain);
     }
 
-    public String getDomainUri(ApplicationContext context, String domain) {
-        return getUri(context, domain);
+    public String getDomainUri(String domain) {
+        return getUri(domain);
     }
 
-    private String getUri(ApplicationContext context, String domain) {
+    private String getUri(String domain) {
         this.uriCache.computeIfAbsent(domain, key -> {
             try {
-                return this.serviceRegistration.get(context, key);
+                return this.serviceRegistration.get(key);
             } catch (RegistryException ex) {
                 throw new ApplicationRuntimeException(ex);
             }

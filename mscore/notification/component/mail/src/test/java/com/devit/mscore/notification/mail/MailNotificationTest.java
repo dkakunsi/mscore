@@ -22,6 +22,8 @@ import com.devit.mscore.exception.RegistryException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import jakarta.mail.MessagingException;
 
@@ -55,13 +57,14 @@ public class MailNotificationTest {
         this.sendInfo.setPassword("password");
         this.sendInfo.setSubject("Subject");
 
-        this.notification = new MailNotification(this.registry, this.sender, this.template, this.sendInfo).withPossibleAttributes("email");
+        this.notification = new MailNotification(this.registry, this.sender, this.template, this.sendInfo)
+                .withPossibleAttributes("email");
     }
 
     @Test
     public void testSend() throws RegistryException, NotificationException, MessagingException {
         var template = new JSONObject("{\"content\":\"Template name: %s\"}");
-        doReturn(template.toString()).when(this.registry).get(eq(this.context), eq("action"));
+        doReturn(template.toString()).when(this.registry).get(eq("action"));
 
         var json = new JSONObject();
         json.put("action", "action");
@@ -69,15 +72,23 @@ public class MailNotificationTest {
         json.put("id", "123454321");
         json.put("name", "Name");
 
-        this.notification.send(this.context, json);
+        try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+            utilities.when(() -> ApplicationContext.getContext()).thenReturn(this.context);
 
-        verify(this.sender).send(eq(this.sendInfo), eq("recipient@email.com"), eq("Subject | Name"), eq("Template name: 123454321"));
+            this.notification.send(json);
+            verify(this.sender).send(eq(this.sendInfo), eq("recipient@email.com"), eq("Subject | Name"),
+                    eq("Template name: 123454321"));
+        }
     }
 
     @Test
     public void testSend_NoRecipientEmail() throws NotificationException, MessagingException {
-        this.notification.send(this.context, new JSONObject());
-        verify(this.sender, never()).send(any(), anyString(), anyString(), anyString());
+        try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+            utilities.when(() -> ApplicationContext.getContext()).thenReturn(this.context);
+
+            this.notification.send(new JSONObject());
+            verify(this.sender, never()).send(any(), anyString(), anyString(), anyString());
+        }
     }
 
     @Test
@@ -85,21 +96,29 @@ public class MailNotificationTest {
         var json = new JSONObject();
         json.put("email", "recipient@email.com");
 
-        var ex = assertThrows(NotificationException.class, () -> this.notification.send(this.context, json));
-        assertThat(ex.getMessage(), is("Cannot send notification. No email template found in request."));
+        try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+            utilities.when(() -> ApplicationContext.getContext()).thenReturn(this.context);
+
+            var ex = assertThrows(NotificationException.class, () -> this.notification.send(json));
+            assertThat(ex.getMessage(), is("Cannot send notification. No email template found in request."));
+        }
     }
 
     @Test
     public void testSend_RegistryException() throws NotificationException, RegistryException {
-        doThrow(new RegistryException("")).when(this.registry).get(eq(this.context), eq("action"));
+        doThrow(new RegistryException("")).when(this.registry).get(eq("action"));
 
         var json = new JSONObject();
         json.put("action", "action");
         json.put("email", "recipient@email.com");
 
-        var ex = assertThrows(NotificationException.class, () -> this.notification.send(this.context, json));
-        assertThat(ex.getMessage(), is("Cannot load email template."));
-        assertThat(ex.getCause(), instanceOf(RegistryException.class));
+        try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+            utilities.when(() -> ApplicationContext.getContext()).thenReturn(this.context);
+
+            var ex = assertThrows(NotificationException.class, () -> this.notification.send(json));
+            assertThat(ex.getMessage(), is("Cannot load email template."));
+            assertThat(ex.getCause(), instanceOf(RegistryException.class));
+        }
     }
 
     @Test
@@ -108,7 +127,7 @@ public class MailNotificationTest {
                 eq("Template name: 123454321"));
 
         var template = new JSONObject("{\"content\":\"Template name: %s\"}");
-        doReturn(template.toString()).when(this.registry).get(eq(this.context), eq("action"));
+        doReturn(template.toString()).when(this.registry).get(eq("action"));
 
         var json = new JSONObject();
         json.put("action", "action");
@@ -116,8 +135,13 @@ public class MailNotificationTest {
         json.put("id", "123454321");
         json.put("name", "Name");
 
-        var ex = assertThrows(NotificationException.class, () -> this.notification.send(this.context, json));
-        assertThat(ex.getMessage(), is("Cannot send email."));
-        assertThat(ex.getCause(), instanceOf(MessagingException.class));
+        try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+            utilities.when(() -> ApplicationContext.getContext()).thenReturn(this.context);
+            
+            var ex = assertThrows(NotificationException.class, () -> this.notification.send(json));
+            assertThat(ex.getMessage(), is("Cannot send email."));
+            assertThat(ex.getCause(), instanceOf(MessagingException.class));
+        }
+
     }
 }

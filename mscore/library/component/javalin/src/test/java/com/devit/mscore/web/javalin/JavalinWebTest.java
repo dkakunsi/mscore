@@ -18,10 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.AuthenticationProvider;
 import com.devit.mscore.Configuration;
-import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.Service;
 import com.devit.mscore.Synchronizer;
 import com.devit.mscore.exception.ApplicationException;
@@ -59,14 +57,10 @@ public class JavalinWebTest {
 
     private static JavalinServer server;
 
-    private static ApplicationContext context;
-
     @BeforeClass
     public static void setup() throws Exception {
-        context = DefaultApplicationContext.of("test");
-
         configuration = mock(Configuration.class);
-        doReturn(Optional.of("2220")).when(configuration).getConfig(any(ApplicationContext.class), eq("platform.service.web.port"));
+        doReturn(Optional.of("2220")).when(configuration).getConfig(eq("platform.service.web.port"));
         doReturn("test").when(configuration).getServiceName();
 
         principal = new JSONObject();
@@ -76,9 +70,9 @@ public class JavalinWebTest {
         authentication = mock(AuthenticationProvider.class);
         var roles = Map.of("/domain/*", "user", "/secure*", Map.of("POST", "admin"), "/secure/*", Map.of("PUT", "admin"), "/secure/*/sync", "admin", "/secure/sync", "admin");
         doReturn(roles).when(authentication).getUri();
-        doReturn(principal).when(authentication).verify(any(JavalinApplicationContext.class), anyString());
+        doReturn(principal).when(authentication).verify(anyString());
 
-        var apiFactory = JavalinApiFactory.of(context, configuration, authentication, null);
+        var apiFactory = JavalinApiFactory.of(configuration, authentication, null);
 
         service = mock(Service.class);
         doReturn("domain").when(service).getDomain();
@@ -99,7 +93,7 @@ public class JavalinWebTest {
         var anotherEndpoint = new JavalinEndpoint(anotherService);
 
         apiFactory.add(anotherEndpoint);
-        server = (JavalinServer) apiFactory.server(context);
+        server = (JavalinServer) apiFactory.server();
         server.start();
     }
 
@@ -111,13 +105,13 @@ public class JavalinWebTest {
     @Deprecated
     @Test
     public void dummyTest() {
-        var factory = JavalinApiFactory.of(context, configuration, authentication, null);
+        var factory = JavalinApiFactory.of(configuration, authentication, null);
         assertNotNull(factory);
     }
 
     @Test
     public void testSave() throws ApplicationException {
-        doReturn("id").when(service).save(any(ApplicationContext.class), any(JSONObject.class));
+        doReturn("id").when(service).save(any(JSONObject.class));
 
         var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
         var response = Unirest.post(BASE_URL).body(body).asString();
@@ -133,7 +127,7 @@ public class JavalinWebTest {
 
     @Test
     public void testPut() throws ApplicationException {
-        doReturn("id").when(service).save(any(ApplicationContext.class), any(JSONObject.class));
+        doReturn("id").when(service).save(any(JSONObject.class));
 
         var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
         var response = Unirest.put(BASE_URL + "/id").header("Authorization", "JWT Token").body(body).asString();
@@ -152,7 +146,7 @@ public class JavalinWebTest {
         var body = "{\"name\":\"name\"}";
         Unirest.post(BASE_URL).body(body).asString();
 
-        verify(service, atLeastOnce()).save(any(ApplicationContext.class), any(JSONObject.class));
+        verify(service, atLeastOnce()).save(any(JSONObject.class));
     }
 
     @Test
@@ -165,7 +159,7 @@ public class JavalinWebTest {
     @Test
     public void testSave_ThrowValidationException() throws ApplicationException {
         var ex = new ValidationException("Validation message");
-        doThrow(ex).when(service).save(any(ApplicationContext.class), any(JSONObject.class));
+        doThrow(ex).when(service).save(any(JSONObject.class));
 
         var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
         var response = Unirest.post(BASE_URL).body(body).asString();
@@ -176,7 +170,7 @@ public class JavalinWebTest {
     @Test
     public void testSave_ThrowDataException() throws ApplicationException {
         var ex = new DataException("Data message");
-        doThrow(ex).when(service).save(any(ApplicationContext.class), any(JSONObject.class));
+        doThrow(ex).when(service).save(any(JSONObject.class));
 
         var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
         var response = Unirest.post(BASE_URL).body(body).asString();
@@ -187,7 +181,7 @@ public class JavalinWebTest {
     @Test
     public void testSave_ThrowDataNotFoundException() throws ApplicationException {
         var ex = new DataNotFoundException("Data not found message");
-        doThrow(ex).when(service).save(any(ApplicationContext.class), any(JSONObject.class));
+        doThrow(ex).when(service).save(any(JSONObject.class));
 
         var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
         var response = Unirest.post(BASE_URL).body(body).asString();
@@ -198,7 +192,7 @@ public class JavalinWebTest {
     @Test
     public void testSave_ThrowDataDuplicationException() throws ApplicationException {
         var ex = new DataDuplicationException("Data duplication message");
-        doThrow(ex).when(service).save(any(ApplicationContext.class), any(JSONObject.class));
+        doThrow(ex).when(service).save(any(JSONObject.class));
 
         var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
         var response = Unirest.post(BASE_URL).body(body).asString();
@@ -209,7 +203,7 @@ public class JavalinWebTest {
     @Test
     public void testGetOne() throws ApplicationException {
         var json = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\"}");
-        doReturn(json).when(service).find(any(ApplicationContext.class), eq("id"));
+        doReturn(json).when(service).find(eq("id"));
 
         var response = Unirest.get(BASE_URL + "/id").header("Authorization", "JWT Token").asString();
 
@@ -227,7 +221,7 @@ public class JavalinWebTest {
     @Test
     public void testGetOneByCode() throws ApplicationException {
         var json = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\"}");
-        doReturn(json).when(service).findByCode(any(ApplicationContext.class), eq("code"));
+        doReturn(json).when(service).findByCode(eq("code"));
 
         var response = Unirest.get(BASE_URL + "/code/code").header("Authorization", "JWT Token").asString();
 
@@ -245,7 +239,7 @@ public class JavalinWebTest {
     @Test
     public void testGetMany() throws ApplicationException {
         var json = new JSONArray("[{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\"}]");
-        doReturn(json).when(service).find(any(ApplicationContext.class), anyList());
+        doReturn(json).when(service).find(anyList());
 
         var response = Unirest.get(BASE_URL + "/keys").header("Authorization", "JWT Token").queryString(Map.of("ids", "id1")).asString();
 
@@ -266,7 +260,7 @@ public class JavalinWebTest {
     @Test
     public void testGet_NotFound() throws ApplicationException {
         var json = new JSONObject();
-        doReturn(json).when(service).find(any(ApplicationContext.class), eq("id"));
+        doReturn(json).when(service).find(eq("id"));
 
         var response = Unirest.get(BASE_URL + "/id").header("Authorization", "JWT Token").asString();
 
@@ -301,7 +295,7 @@ public class JavalinWebTest {
 
     @Test
     public void testSearch() throws ApplicationException {
-        doReturn(new JSONArray("[{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"Family Name\"}]")).when(service).search(any(ApplicationContext.class), any(JSONObject.class));
+        doReturn(new JSONArray("[{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"Family Name\"}]")).when(service).search(any(JSONObject.class));
 
         var body = "{\"criteria\": [{\"attribute\": \"name\",\"value\": \"Family\",\"operator\": \"contains\"}]}";
         var response = Unirest.post(BASE_URL + "/search").header("Authorization", "JWT Token").body(body).asString();
@@ -322,7 +316,7 @@ public class JavalinWebTest {
 
     @Test
     public void testSearch_NotFound() throws ApplicationException {
-        doReturn(new JSONArray()).when(service).search(any(ApplicationContext.class), any(JSONObject.class));
+        doReturn(new JSONArray()).when(service).search(any(JSONObject.class));
 
         var body = "{\"criteria\": [{\"attribute\": \"name\",\"value\": \"Family\",\"operator\": \"contains\"}]}";
         var response = Unirest.post(BASE_URL + "/search").header("Authorization", "JWT Token").body(body).asString();
@@ -376,7 +370,7 @@ public class JavalinWebTest {
     
     @Test
     public void testSecureSave() throws ApplicationException {
-        doReturn("id").when(secureService).save(any(ApplicationContext.class), any(JSONObject.class));
+        doReturn("id").when(secureService).save(any(JSONObject.class));
 
         var body = "{\"domain\":\"secure\",\"name\":\"name\"}";
         var response = Unirest.post(BASE_SECURE_URL).header("Authorization", "JWT Token").body(body).asString();
@@ -386,7 +380,7 @@ public class JavalinWebTest {
 
     @Test
     public void testSecureSave_WithoutToken() throws ApplicationException {
-        doReturn("id").when(secureService).save(any(ApplicationContext.class), any(JSONObject.class));
+        doReturn("id").when(secureService).save(any(JSONObject.class));
 
         var body = "{\"domain\":\"secure\",\"name\":\"name\"}";
         var response = Unirest.post(BASE_SECURE_URL).body(body).asString();
@@ -396,7 +390,7 @@ public class JavalinWebTest {
 
     @Test
     public void testSecurePut() throws ApplicationException {
-        doReturn("id").when(secureService).save(any(ApplicationContext.class), any(JSONObject.class));
+        doReturn("id").when(secureService).save(any(JSONObject.class));
 
         var body = "{\"domain\":\"secure\",\"name\":\"name\"}";
         var response = Unirest.put(BASE_SECURE_URL + "/id").header("Authorization", "JWT Token").body(body).asString();
@@ -407,7 +401,7 @@ public class JavalinWebTest {
     @Test
     public void testSecure_GetOne() throws ApplicationException {
         var json = new JSONObject("{\"domain\":\"secure\",\"id\":\"id\",\"name\":\"name\"}");
-        doReturn(json).when(secureService).find(any(ApplicationContext.class), eq("id"));
+        doReturn(json).when(secureService).find(eq("id"));
 
         var response = Unirest.get(BASE_SECURE_URL + "/id").header("Authorization", "JWT Token").asString();
 
@@ -425,7 +419,7 @@ public class JavalinWebTest {
     @Test
     public void testSecure_GetOneByCode() throws ApplicationException {
         var json = new JSONObject("{\"domain\":\"secure\",\"id\":\"id\",\"name\":\"name\"}");
-        doReturn(json).when(secureService).findByCode(any(ApplicationContext.class), eq("code"));
+        doReturn(json).when(secureService).findByCode(eq("code"));
 
         var response = Unirest.get(BASE_SECURE_URL + "/code/code").header("Authorization", "JWT Token").asString();
 
@@ -443,7 +437,7 @@ public class JavalinWebTest {
     @Test
     public void testSecure_GetMany() throws ApplicationException {
         var json = new JSONArray("[{\"domain\":\"secure\",\"id\":\"id\",\"name\":\"name\"}]");
-        doReturn(json).when(secureService).find(any(ApplicationContext.class), anyList());
+        doReturn(json).when(secureService).find(anyList());
 
         var response = Unirest.get(BASE_SECURE_URL + "/keys").header("Authorization", "JWT Token").queryString(Map.of("ids", "id1")).asString();
 

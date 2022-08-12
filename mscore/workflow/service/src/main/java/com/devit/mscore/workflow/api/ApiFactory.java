@@ -1,6 +1,5 @@
 package com.devit.mscore.workflow.api;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.AuthenticationProvider;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Service;
@@ -10,12 +9,12 @@ import com.devit.mscore.workflow.api.javalin.WorkflowEndpoint;
 
 public class ApiFactory extends JavalinApiFactory {
 
-    private ApiFactory(ApplicationContext context, Configuration configuration) {
-        super(context, configuration);
+    private ApiFactory(Configuration configuration) {
+        super(configuration);
     }
 
-    public static ApiFactory of(ApplicationContext context, Configuration configuration, AuthenticationProvider authenticationProvider) {
-        var factory = new ApiFactory(context, configuration);
+    public static ApiFactory of(Configuration configuration, AuthenticationProvider authenticationProvider) {
+        var factory = new ApiFactory(configuration);
         factory.authenticationProvider = authenticationProvider;
         return factory;
     }

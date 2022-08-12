@@ -1,5 +1,6 @@
 package com.devit.mscore;
 
+import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.util.AttributeConstants.getDomain;
 import static com.devit.mscore.util.AttributeConstants.getId;
 
@@ -15,12 +16,12 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.devit.mscore.logging.ApplicationLogger;
 
 public class GitHistory implements History {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GitHistory.class);
+    private static final Logger LOGGER = ApplicationLogger.getLogger(GitHistory.class);
 
     private Git repository;
 
@@ -35,41 +36,42 @@ public class GitHistory implements History {
     }
 
     @Override
-    public void create(ApplicationContext context, JSONObject message) throws HistoryException {
-        LOGGER.info("BreadcrumbId: {}. Creating history of '{}'", context.getBreadcrumbId(), getId(message));
+    public void create(JSONObject message) throws HistoryException {
+        LOGGER.info("Creating history of '{}'", getId(message));
         try {
-            LOGGER.debug("BreadcrumbId: {}. Checkout master branch", context.getBreadcrumbId());
+            LOGGER.debug("Checkout master branch");
             this.repository.checkout().setName("master").call();
 
-            LOGGER.debug("BreadcrumbId: {}. Pulling from remote repository", context.getBreadcrumbId());
+            LOGGER.debug("Pulling from remote repository");
             this.repository.pull().setTransportConfigCallback(transportConfigCallback).call();
 
-            LOGGER.debug("BreadcrumbId: {}. Writing file to local repository", context.getBreadcrumbId());
-            writeFile(context, message);
+            LOGGER.debug("Writing file to local repository");
+            writeFile(message);
 
-            LOGGER.debug("BreadcrumbId: {}. Add file to Git index", context.getBreadcrumbId());
+            LOGGER.debug("Add file to Git index");
             this.repository.add().addFilepattern(getFilename(message)).call();
 
-            LOGGER.debug("BreadcrumbId: {}. Committing changes", context.getBreadcrumbId());
-            var committer = getCommitter(context);
+            LOGGER.debug("Committing changes");
+            var committer = getCommitter();
             var commitMessage = String.format("Changes to '%s' by '%s'", getFilename(message), committer);
             this.repository.commit().setMessage(commitMessage).setAuthor(committer, committer).call();
 
-            LOGGER.debug("BreadcrumbId: {}. Pushing to remote repository", context.getBreadcrumbId());
+            LOGGER.debug("Pushing to remote repository");
             this.repository.push().setTransportConfigCallback(transportConfigCallback).call();
 
-            LOGGER.info("BreadcrumbId: {}. Finish creating history of '{}'", context.getBreadcrumbId(), getId(message));
+            LOGGER.info("Finish creating history of '{}'", getId(message));
         } catch (GitAPIException ex) {
-            LOGGER.error("BreadcrumbId: {}. Error creating history of '{}'", context.getBreadcrumbId(), getId(message));
+            LOGGER.error("Error creating history of '{}'", getId(message));
             throw new HistoryException(ex);
         }
     }
 
-    private static String getCommitter(ApplicationContext context) {
+    private static String getCommitter() {
+        var context = getContext();
         return StringUtils.isNotBlank(context.getRequestedBy()) ? context.getRequestedBy() : "NONE";
     }
 
-    private void writeFile(ApplicationContext context, JSONObject message) throws HistoryException {
+    private void writeFile(JSONObject message) throws HistoryException {
         var filePath = getFilePath(message);
 
         try {
@@ -82,7 +84,7 @@ public class GitHistory implements History {
         }
 
         try (var writer = new FileWriter(filePath.toFile(), StandardCharsets.UTF_8)) {
-            LOGGER.debug("BreadcrumbId: {}. Writing file to '{}'", context.getBreadcrumbId(), filePath);
+            LOGGER.debug("Writing file to '{}'", filePath);
             writer.write(message.toString(2));
         } catch (IOException ex) {
             throw new HistoryException(ex);

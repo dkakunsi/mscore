@@ -2,7 +2,6 @@ package com.devit.mscore.template.pebble;
 
 import java.io.File;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Registry;
 import com.devit.mscore.Resource;
@@ -27,10 +26,10 @@ public class PebbleTemplateFactory extends ResourceManager {
     }
 
     @Override
-    protected String getResourceLocation(ApplicationContext context) {
+    protected String getResourceLocation() {
         var configName = String.format(LOCATION, this.configuration.getServiceName());
         try {
-            return this.configuration.getConfig(context, configName).orElse(null);
+            return this.configuration.getConfig(configName).orElse(null);
         } catch (ConfigException ex) {
             return null;
         }

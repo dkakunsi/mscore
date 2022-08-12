@@ -4,7 +4,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -16,9 +15,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Optional;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
-import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.Registry;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
@@ -38,8 +35,6 @@ public class SchemaManagerTest {
 
     private SchemaManager manager;
 
-    private ApplicationContext context;
-
     @Before
     public void setup() {
         this.registry = mock(Registry.class);
@@ -47,21 +42,20 @@ public class SchemaManagerTest {
         doReturn("data").when(this.configuration).getServiceName();
         doReturn(true).when(this.configuration).has("services.data.schema.resource.location");
         this.manager = SchemaManager.of(this.configuration, this.registry);
-        this.context = DefaultApplicationContext.of("test");
     }
 
     @Test
     public void testRegisterSchema() throws ConfigException, URISyntaxException, ResourceException, RegistryException {
         var location = getLocation("registration");
-        doReturn(Optional.of(location)).when(this.configuration).getConfig(any(ApplicationContext.class), eq("services.data.schema.resource.location"));
+        doReturn(Optional.of(location)).when(this.configuration).getConfig(eq("services.data.schema.resource.location"));
 
-        this.manager.registerResources(this.context);
+        this.manager.registerResources();
 
         assertThat(this.manager.getSchemas().size(), is(1));
         assertThat(this.manager.getSchemas().get(0).getDomain(), is("resource"));
 
         var captor = ArgumentCaptor.forClass(String.class);
-        verify(this.registry, times(1)).add(any(ApplicationContext.class), anyString(), captor.capture());
+        verify(this.registry, times(1)).add(anyString(), captor.capture());
 
         var argument = new JSONObject(captor.getValue());
         assertThat(argument.getString("name"), is("resource"));
@@ -74,9 +68,9 @@ public class SchemaManagerTest {
         var content = new JSONSchema(resourceFile).getContent();
 
         var mockedSchema = new JSONObject().put("id", "id").put("name", "name").put("content", content);
-        doReturn(mockedSchema.toString()).when(this.registry).get(any(ApplicationContext.class), eq("domain"));
+        doReturn(mockedSchema.toString()).when(this.registry).get(eq("domain"));
 
-        var schema = this.manager.getSchema(this.context, "domain");
+        var schema = this.manager.getSchema("domain");
         assertThat(schema.getDomain(), is("name"));
         assertThat(schema.getName(), is("name"));
         assertTrue(StringUtils.isNotBlank(schema.getContent()));

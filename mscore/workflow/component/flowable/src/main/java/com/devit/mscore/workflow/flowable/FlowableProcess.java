@@ -1,5 +1,6 @@
 package com.devit.mscore.workflow.flowable;
 
+import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.util.AttributeConstants.getId;
 import static com.devit.mscore.util.AttributeConstants.getName;
 import static com.devit.mscore.web.WebUtils.INFORMATION;
@@ -8,7 +9,7 @@ import static com.devit.mscore.workflow.flowable.FlowableDefinition.PROCESS;
 import static com.devit.mscore.workflow.flowable.FlowableDefinition.WORKFLOW;
 import static org.flowable.engine.ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE;
 
-import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Logger;
 import com.devit.mscore.Registry;
 import com.devit.mscore.Service;
 import com.devit.mscore.WorkflowProcess;
@@ -17,6 +18,7 @@ import com.devit.mscore.WorkflowObject;
 import com.devit.mscore.exception.ProcessException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.WebClientException;
+import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.util.AttributeConstants;
 import com.devit.mscore.web.WebUtils;
 
@@ -38,12 +40,10 @@ import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.impl.cfg.StandaloneProcessEngineConfiguration;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FlowableProcess implements WorkflowProcess, Service {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FlowableProcess.class);
+    private static final Logger LOGGER = ApplicationLogger.getLogger(FlowableProcess.class);
 
     private final DataSource dataSource;
 
@@ -96,15 +96,15 @@ public class FlowableProcess implements WorkflowProcess, Service {
     }
 
     @Override
-    public void deployDefinition(ApplicationContext context, WorkflowDefinition workflowDefinition)
+    public void deployDefinition(WorkflowDefinition workflowDefinition)
             throws ProcessException {
-        LOGGER.info("BreadcrumbId: {}. Deploying definition: {}", context.getBreadcrumbId(), workflowDefinition);
+        LOGGER.info("Deploying definition: {}", workflowDefinition);
 
         try {
             if (isDefinitionExists(workflowDefinition)) {
                 // since the registry is in memory, we need to populate the existing definition
-                registerWorkflow(context, workflowDefinition);
-                LOGGER.info("BreadcrumbId: {}. Definition {} is not deployed. It is exists.", context.getBreadcrumbId(),
+                registerWorkflow(workflowDefinition);
+                LOGGER.info("Definition {} is not deployed. It is exists.",
                         workflowDefinition.getResourceName());
                 return;
             }
@@ -112,8 +112,8 @@ public class FlowableProcess implements WorkflowProcess, Service {
             this.repositoryService.createDeployment()
                     .addString(workflowDefinition.getResourceName(), workflowDefinition.getContent()).deploy();
 
-            registerWorkflow(context, workflowDefinition);
-            LOGGER.debug("BreadcrumbId: {}. Definition {} is deployed.", context.getBreadcrumbId(), workflowDefinition);
+            registerWorkflow(workflowDefinition);
+            LOGGER.debug("Definition {} is deployed.", workflowDefinition);
         } catch (RegistryException ex) {
             throw new ProcessException("Cannot register process deployment.", ex);
         } catch (Exception ex) {
@@ -132,16 +132,16 @@ public class FlowableProcess implements WorkflowProcess, Service {
      * @param workflowDefinition to update
      * @throws RegistryException error when updating registry
      */
-    private void registerWorkflow(ApplicationContext context, WorkflowDefinition workflowDefinition)
+    private void registerWorkflow(WorkflowDefinition workflowDefinition)
             throws RegistryException {
         var processDefinition = getProcessDefinition(workflowDefinition.getResourceName());
         if (processDefinition == null) {
-            LOGGER.warn("BreadcrumbId: {}. Workflof did not registered: No process definition was found.", context.getBreadcrumbId());
+            LOGGER.warn("Workflof did not registered: No process definition was found.");
             return;
         }
         var workflowRegister = workflowDefinition.getMessage(processDefinition.getId());
         var workflowRegisterName = getName(workflowRegister);
-        this.registry.add(context, workflowRegisterName, workflowRegister.toString());
+        this.registry.add(workflowRegisterName, workflowRegister.toString());
 
         LOGGER.info("Workflow {} is added to registry. {}", workflowDefinition, workflowRegister);
     }
@@ -154,33 +154,33 @@ public class FlowableProcess implements WorkflowProcess, Service {
     }
 
     @Override
-    public FlowableProcessInstance createInstanceByAction(ApplicationContext context, String action, JSONObject entity,
+    public FlowableProcessInstance createInstanceByAction(String action, JSONObject entity,
             Map<String, Object> variables) throws ProcessException {
 
         try {
-            var definition = this.registry.get(context, action);
-            return createInstance(context, new JSONObject(definition).getString(WORKFLOW), entity, variables);
+            var definition = this.registry.get(action);
+            return createInstance(new JSONObject(definition).getString(WORKFLOW), entity, variables);
         } catch (RegistryException ex) {
-            LOGGER.error("BreadcrumbId: {}. Cannot create instance. Definition is not found for action '{}'",
-                    context.getBreadcrumbId(), action);
+            LOGGER.error("Cannot create instance. Definition is not found for action '{}'", action);
             throw new ProcessException(String.format("Process definition is not found for action '%s'", action), ex);
         }
     }
 
     @Override
-    public FlowableProcessInstance createInstance(ApplicationContext context, String processDefinitionId,
+    public FlowableProcessInstance createInstance(String processDefinitionId,
             JSONObject entity, Map<String, Object> variables) throws ProcessException {
 
+        var context = getContext();
         variables.put("entity", entity.toString());
         variables.put("domain", AttributeConstants.getDomain(entity));
         variables.put("businessKey", getId(entity));
         variables.put("name", getName(entity));
         variables.put("createdBy", context.getRequestedBy());
 
-        return createInstance(context, processDefinitionId, variables);
+        return createInstance(processDefinitionId, variables);
     }
 
-    public synchronized FlowableProcessInstance createInstance(ApplicationContext context, String processDefinitionId,
+    public synchronized FlowableProcessInstance createInstance(String processDefinitionId,
             Map<String, Object> variables) {
 
         try {
@@ -205,8 +205,8 @@ public class FlowableProcess implements WorkflowProcess, Service {
             }
 
             var flowableInstance = new FlowableProcessInstance(this.runtimeService, processInstance);
-            syncProcessInstance(context, flowableInstance);
-            syncCreatedTask(context, processInstance.getProcessInstanceId());
+            syncProcessInstance(flowableInstance);
+            syncCreatedTask(processInstance.getProcessInstanceId());
             return flowableInstance;
         } finally {
             // nothing
@@ -214,7 +214,7 @@ public class FlowableProcess implements WorkflowProcess, Service {
     }
 
     @Override
-    public FlowableProcessInstance getInstance(ApplicationContext context, String processInstanceId) {
+    public FlowableProcessInstance getInstance(String processInstanceId) {
         var processInstance = this.runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId)
                 .singleResult();
 
@@ -227,13 +227,13 @@ public class FlowableProcess implements WorkflowProcess, Service {
     }
 
     @Override
-    public List<WorkflowObject> getTasks(ApplicationContext context, String processInstanceId) {
+    public List<WorkflowObject> getTasks(String processInstanceId) {
         var tasks = this.taskService.createTaskQuery().processInstanceId(processInstanceId).list();
         return (tasks == null) ? null : tasks.stream().map(task -> new FlowableTask(task, this.historyService)).collect(Collectors.toList());
     }
 
     @Override
-    public void completeTask(ApplicationContext context, String taskId, JSONObject taskResponse)
+    public void completeTask(String taskId, JSONObject taskResponse)
             throws ProcessException {
         var task = getTask(taskId);
         if (task == null) {
@@ -241,13 +241,15 @@ public class FlowableProcess implements WorkflowProcess, Service {
             return;
         }
 
-        var processInstance = getInstance(task.getProcessInstanceId());
+        var processInstance = getInstanceById(task.getProcessInstanceId());
+
+        var context = getContext();
         taskResponse.put("breadcrumbId", context.getBreadcrumbId());
         this.taskService.complete(taskId, taskResponse.toMap());
 
-        syncCompletedTask(context, taskId);
-        syncCreatedTask(context, task.getProcessInstanceId());
-        syncCompletableProcessInstance(context, processInstance);
+        syncCompletedTask(taskId);
+        syncCreatedTask(task.getProcessInstanceId());
+        syncCompletableProcessInstance(processInstance);
     }
 
     private FlowableTask getTask(String taskId) {
@@ -255,12 +257,12 @@ public class FlowableProcess implements WorkflowProcess, Service {
         return task == null ? null : new FlowableTask(task, this.historyService);
     }
 
-    private FlowableProcessInstance getInstance(String processInstanceId) {
+    public FlowableProcessInstance getInstanceById(String processInstanceId) {
         var processInstance = this.runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
         return new FlowableProcessInstance(this.runtimeService, processInstance);
     }
 
-    private void syncCompletableProcessInstance(ApplicationContext context, FlowableProcessInstance flowableInstance) {
+    private void syncCompletableProcessInstance(FlowableProcessInstance flowableInstance) {
         var historicProcessInstance = this.historyService.createHistoricProcessInstanceQuery()
                 .processInstanceId(flowableInstance.getProcessInstanceId()).finished().singleResult();
 
@@ -269,57 +271,57 @@ public class FlowableProcess implements WorkflowProcess, Service {
         }
 
         flowableInstance.complete();
-        syncProcessInstance(context, flowableInstance);
+        syncProcessInstance(flowableInstance);
     }
 
-    private void syncProcessInstance(ApplicationContext context, FlowableProcessInstance flowableInstance) {
+    private void syncProcessInstance(FlowableProcessInstance flowableInstance) {
         var client = this.dataClient.getClient();
-        var uri = this.dataClient.getWorkflowUri(context);
+        var uri = this.dataClient.getWorkflowUri();
 
         var instanceJson = flowableInstance.toJson();
-        LOGGER.debug("BreadcrumbdId: {}. Synchronizing workflow instance: {}", context.getBreadcrumbId(), instanceJson);
+        LOGGER.debug("Synchronizing workflow instance: {}", instanceJson);
         try {
-            var response = client.post(context, uri, Optional.of(instanceJson));
+            var response = client.post(uri, Optional.of(instanceJson));
             var responseType = WebUtils.getMessageType(response.getInt("code"));
             if (!StringUtils.equalsAny(responseType, INFORMATION, SUCCESS)) {
-                LOGGER.error("BreadcrumbId: {}. Cannot synchronize workflow instance: {}.", context.getBreadcrumbId(), response.getJSONObject("payload"));
+                LOGGER.error("Cannot synchronize workflow instance: {}.", response.getJSONObject("payload"));
             }
         } catch (WebClientException ex) {
-            LOGGER.error("BreadcrumbId: {}. Cannot synchronize workflow instance: {}.", context.getBreadcrumbId(), flowableInstance);
+            LOGGER.error("Cannot synchronize workflow instance: {}.", flowableInstance);
         }
     }
 
-    private void syncCreatedTask(ApplicationContext context, String processInstanceId) {
+    private void syncCreatedTask(String processInstanceId) {
         var tasks = this.taskService.createTaskQuery().processInstanceId(processInstanceId).list();
         if (tasks == null || tasks.isEmpty()) {
             return;
         }
 
         var flowableTask = new FlowableTask(tasks.get(0), this.historyService);
-        syncTask(context, flowableTask);
+        syncTask(flowableTask);
     }
 
-    private void syncCompletedTask(ApplicationContext context, String taskId) {
+    private void syncCompletedTask(String taskId) {
         var historicTaskInstance = this.historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
         var flowableTask = new FlowableTask(historicTaskInstance, this.historyService);
         flowableTask.complete();
-        syncTask(context, flowableTask);
+        syncTask(flowableTask);
     }
 
-    private void syncTask(ApplicationContext context, FlowableTask flowableTask) {
+    private void syncTask(FlowableTask flowableTask) {
         var client = this.dataClient.getClient();
-        var uri = this.dataClient.getTaskUri(context);
+        var uri = this.dataClient.getTaskUri();
 
         var taskJson = flowableTask.toJson();
-        LOGGER.debug("BreadcrumbdId: {}. Synchronizing workflow task: {}", context.getBreadcrumbId(), taskJson);
+        LOGGER.debug("Synchronizing workflow task: {}", taskJson);
         try {
-            var response = client.post(context, uri, Optional.of(taskJson));
+            var response = client.post(uri, Optional.of(taskJson));
             var responseType = WebUtils.getMessageType(response.getInt("code"));
             if (!StringUtils.equalsAny(responseType, INFORMATION, SUCCESS)) {
-                LOGGER.error("BreadcrumbId: {}. Cannot synchronize workflow task: {}.", context.getBreadcrumbId(), response.getJSONObject("payload"));
+                LOGGER.error("Cannot synchronize workflow task: {}.", response.getJSONObject("payload"));
             }
         } catch (WebClientException ex) {
-            LOGGER.error("BreadcrumbId: {}. Cannot synchronize workflow task: {}.", context.getBreadcrumbId(), flowableTask);
+            LOGGER.error("Cannot synchronize workflow task: {}.", flowableTask);
         }
     }
 }

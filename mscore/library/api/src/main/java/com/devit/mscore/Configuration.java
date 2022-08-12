@@ -29,24 +29,12 @@ public interface Configuration {
     Map<String, String> getConfigs();
 
     /**
-     * @deprecated use {@link #getConfig(ApplicationContext, String)}
      * 
-     * @param key name
-     * @return config for key
-     */
-    @Deprecated(forRemoval = true)
-    default String getConfig(String key) {
-        return null;
-    }
-
-    /**
-     * 
-     * @param context of the request.
      * @param key to search.
      * @return configuration value.
      * @throws ConfigException cannot get the value.
      */
-    default Optional<String> getConfig(ApplicationContext context, String key) throws ConfigException {
+    default Optional<String> getConfig(String key) throws ConfigException {
         return Optional.empty();
     }
 
@@ -58,7 +46,7 @@ public interface Configuration {
      * @return optional value
      * @throws ConfigException cannot get the value.
      */
-    default Optional<String> getConfig(ApplicationContext context, String type, String service, String key) throws ConfigException {
+    default Optional<String> getConfig(String type, String service, String key) throws ConfigException {
         return Optional.empty();
     }
 

@@ -16,6 +16,8 @@ import org.apache.kafka.clients.producer.Producer;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class KafkaPublisherTest {
 
@@ -31,7 +33,7 @@ public class KafkaPublisherTest {
         this.producer = mock(Producer.class);
         this.publisher = new KafkaPublisher("topic", this.producer);
 
-        var contextData = new HashMap<String, Object>(); 
+        var contextData = new HashMap<String, Object>();
         contextData.put("principal", new JSONObject("{\"requestedBy\":\"requestedBy\",\"role\":[\"user\"]}"));
         this.context = DefaultApplicationContext.of("test", contextData);
     }
@@ -43,14 +45,19 @@ public class KafkaPublisherTest {
 
     @Test
     public void testPublish() {
-        var message = "{\"id\":\"id\"}";
-        this.publisher.publish(this.context, new JSONObject(message));
-        verify(this.producer, times(1)).send(any());
+        try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+            utilities.when(() -> ApplicationContext.getContext())
+                    .thenReturn(this.context);
+
+            var message = "{\"id\":\"id\"}";
+            this.publisher.publish(new JSONObject(message));
+            verify(this.producer, times(1)).send(any());
+        }
     }
 
     @Test
     public void testPublish_EmptyJson() {
-        this.publisher.publish(this.context, new JSONObject());
+        this.publisher.publish(new JSONObject());
         verify(this.producer, times(0)).send(any());
     }
 
@@ -58,7 +65,7 @@ public class KafkaPublisherTest {
     public void testPublish_EmptyTopic() {
         var publisher = new KafkaPublisher("", this.producer);
         var message = "{\"id\":\"id\"}";
-        publisher.publish(this.context, new JSONObject(message));
+        publisher.publish(new JSONObject(message));
         verify(this.producer, times(0)).send(any());
     }
 }

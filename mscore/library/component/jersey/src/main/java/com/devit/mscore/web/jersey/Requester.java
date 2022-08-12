@@ -1,5 +1,6 @@
 package com.devit.mscore.web.jersey;
 
+import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.util.Utils.ACTION;
 import static com.devit.mscore.util.Utils.AUTHORIZATION;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
@@ -7,11 +8,10 @@ import static com.devit.mscore.util.Utils.PRINCIPAL;
 
 import java.util.Map;
 
-import com.devit.mscore.ApplicationContext;
-
 public interface Requester {
 
-    default Map<String, String> buildRequestHeader(ApplicationContext context, Map<String, String> headers) {
+    default Map<String, String> buildRequestHeader(Map<String, String> headers) {
+        var context = getContext();
         if (context == null) {
             return headers;
         }

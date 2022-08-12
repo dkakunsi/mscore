@@ -8,17 +8,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Executor;
+import com.devit.mscore.Logger;
 import com.devit.mscore.Schema;
 import com.devit.mscore.Synchronization;
 import com.devit.mscore.Synchronizer;
 import com.devit.mscore.exception.SynchronizationException;
+import com.devit.mscore.logging.ApplicationLogger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class SynchronizationsExecutor implements Executor<Synchronization> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SynchronizationsExecutor.class);
+    private static final Logger LOG = ApplicationLogger.getLogger(SynchronizationsExecutor.class);
 
     private Map<String, List<Synchronization>> synchronizations;
 
@@ -73,26 +72,26 @@ public final class SynchronizationsExecutor implements Executor<Synchronization>
      * @param json object that changes and trigger the synchronization.
      */
     @Override
-    public void execute(ApplicationContext context, JSONObject json) {
+    public void execute(JSONObject json) {
         var referenceDomain = getDomain(json);
         var referenceId = getId(json);
         if (StringUtils.isEmpty(referenceDomain)) {
-            LOG.warn("BreadcrumbId: {}. Fail to synchronize object {}. Domain is not provided.", context.getBreadcrumbId(), referenceId);
+            LOG.warn("Fail to synchronize object {}. Domain is not provided.", referenceId);
             return;
         }
-        synchronize(context, this.synchronizations.get(referenceDomain), referenceId);
+        synchronize(this.synchronizations.get(referenceDomain), referenceId);
     }
 
-    private static void synchronize(ApplicationContext context, List<Synchronization> synchronizations, String referenceId) {
+    private static void synchronize(List<Synchronization> synchronizations, String referenceId) {
         if (synchronizations == null || StringUtils.isBlank(referenceId)) {
             return;
         }
 
         synchronizations.forEach(s -> {
             try {
-                s.synchronize(context, referenceId);
+                s.synchronize(referenceId);
             } catch (SynchronizationException ex) {
-                LOG.error("BreadcrumbId: {}. Cannot synchronize object {}", context.getBreadcrumbId(), referenceId, ex);
+                LOG.error("Cannot synchronize object {}", referenceId, ex);
             }
         });
     }

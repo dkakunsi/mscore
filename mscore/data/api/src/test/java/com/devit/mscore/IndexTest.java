@@ -23,24 +23,22 @@ public class IndexTest {
 
         var index = new Index("indexName") {
             @Override
-            public String index(ApplicationContext context, JSONObject json) throws IndexingException {
+            public String index(JSONObject json) throws IndexingException {
                 return AttributeConstants.getId(json);
             }
 
             @Override
-            public Optional<JSONArray> search(ApplicationContext context, JSONObject criteria) throws IndexingException {
+            public Optional<JSONArray> search(JSONObject criteria) throws IndexingException {
                 return null;
             }
 
             @Override
-            public Optional<JSONObject> get(ApplicationContext context, String id) throws IndexingException {
+            public Optional<JSONObject> get(String id) throws IndexingException {
                 return null;
             }
         };
 
-        var context = DefaultApplicationContext.of("test");
-
-        var indices = index.index(context, jsons);
+        var indices = index.index(jsons);
         assertThat(indices.size(), is(3));
         assertThat(indices.get(0), is("id1"));
         assertThat(indices.get(1), is("id2"));

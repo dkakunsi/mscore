@@ -25,36 +25,36 @@ public class ServiceTest {
 
     @Test(expected = ImplementationException.class)
     public void testSave() throws ApplicationException {
-        this.service.save(DefaultApplicationContext.of("test"), new JSONObject());
+        this.service.save(new JSONObject());
     }
 
     @Test(expected = ImplementationException.class)
     public void testDelete() throws ApplicationException {
-        this.service.delete(DefaultApplicationContext.of("test"), "id");
+        this.service.delete("id");
     }
 
     @Test(expected = ImplementationException.class)
     public void testFindId() throws ApplicationException {
-        this.service.find(DefaultApplicationContext.of("test"), "id");
+        this.service.find("id");
     }
 
     @Test(expected = ImplementationException.class)
     public void testFindCode() throws ApplicationException {
-        this.service.findByCode(DefaultApplicationContext.of("test"), "code");
+        this.service.findByCode("code");
     }
 
     @Test(expected = ImplementationException.class)
     public void testFindList() throws ApplicationException {
-        this.service.find(DefaultApplicationContext.of("test"), List.of());
+        this.service.find(List.of());
     }
 
     @Test(expected = ImplementationException.class)
     public void testAll() throws ApplicationException {
-        this.service.all(DefaultApplicationContext.of("test"));
+        this.service.all();
     }
 
     @Test(expected = ImplementationException.class)
     public void testSearch() throws ApplicationException {
-        this.service.search(DefaultApplicationContext.of("test"), new JSONObject());
+        this.service.search(new JSONObject());
     }
 }

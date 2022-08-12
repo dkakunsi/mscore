@@ -12,7 +12,7 @@ public class ValidationTest {
     public void testGetDomain() {
         var validation = new Validation() {
             @Override
-            public boolean validate(ApplicationContext context, JSONObject json) {
+            public boolean validate(JSONObject json) {
                 return false;
             }
         };

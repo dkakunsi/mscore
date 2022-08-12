@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Schema;
 import com.devit.mscore.exception.ApplicationRuntimeException;
@@ -57,83 +56,83 @@ public class MongoDatabaseFactory {
         return new MongoDatabaseFactory(configuration);
     }
 
-    public MongoRepository repository(ApplicationContext context, Schema schema) {
+    public MongoRepository repository(Schema schema) {
         var domain = schema.getDomain();
-        this.repositories.computeIfAbsent(domain, key -> new MongoRepository(collection(context, domain), schema.getUniqueAttributes()));
+        this.repositories.computeIfAbsent(domain, key -> new MongoRepository(collection(domain), schema.getUniqueAttributes()));
         return this.repositories.get(domain);
     }
 
-    public MongoCollection<Document> collection(ApplicationContext context, String collection) {
+    public MongoCollection<Document> collection(String collection) {
         try {
-            return database(context).getCollection(collection);
+            return database().getCollection(collection);
         } catch (ConfigException ex) {
             throw new ApplicationRuntimeException(ex);
         }
     }
 
-    public MongoDatabase database(ApplicationContext context) throws ConfigException {
+    public MongoDatabase database() throws ConfigException {
         if (this.mongoDatabase == null) {
-            var databaseName = getDatabaseName(context);
-            this.mongoDatabase = mongoClient(context).getDatabase(databaseName);
+            var databaseName = getDatabaseName();
+            this.mongoDatabase = mongoClient().getDatabase(databaseName);
         }
         return this.mongoDatabase;
     }
 
-    public MongoClient mongoClient(ApplicationContext context) throws ConfigException {
+    public MongoClient mongoClient() throws ConfigException {
         if (this.client != null) {
             return this.client;
         }
 
-        var databaseName = getDatabaseName(context);
+        var databaseName = getDatabaseName();
         var settingsBuilder = MongoClientSettings.builder();
-        applyAuthentication(context, settingsBuilder, databaseName, createConnectionString(context));
+        applyAuthentication(settingsBuilder, databaseName, createConnectionString());
         this.client = MongoClients.create(settingsBuilder.build());
         return this.client;
     }
 
-    private String getDatabaseName(ApplicationContext context) throws ConfigException {
-        return getConfig(context, DATABASE).orElseThrow(() -> new ConfigException("Mongo database is not configured."));
+    private String getDatabaseName() throws ConfigException {
+        return getConfig(DATABASE).orElseThrow(() -> new ConfigException("Mongo database is not configured."));
     }
 
-    protected ConnectionString createConnectionString(ApplicationContext context) throws ConfigException {
-        var hostname = getHost(context);
-        var portNum = getPort(context);
+    protected ConnectionString createConnectionString() throws ConfigException {
+        var hostname = getHost();
+        var portNum = getPort();
         return new ConnectionString(String.format("mongodb://%s:%s", hostname, portNum));
     }
 
-    private String getHost(ApplicationContext context) throws ConfigException {
-        return getConfig(context, HOST).orElseThrow(() -> new ConfigException("Mongo host is not configured."));
+    private String getHost() throws ConfigException {
+        return getConfig(HOST).orElseThrow(() -> new ConfigException("Mongo host is not configured."));
     }
 
-    private String getPort(ApplicationContext context) throws ConfigException {
-        return getConfig(context, PORT).orElseThrow(() -> new ConfigException("Mongo port is not configured."));
+    private String getPort() throws ConfigException {
+        return getConfig(PORT).orElseThrow(() -> new ConfigException("Mongo port is not configured."));
     }
 
-    protected void applyAuthentication(ApplicationContext context, Builder builder, String databaseName, ConnectionString connectionString) throws ConfigException {
-        var isSecure = getIsSecure(context);
+    protected void applyAuthentication(Builder builder, String databaseName, ConnectionString connectionString) throws ConfigException {
+        var isSecure = getIsSecure();
         if (Boolean.parseBoolean(isSecure)) {
-            var username = getUsername(context);
-            var password = getPassword(context);
+            var username = getUsername();
+            var password = getPassword();
             var credential = MongoCredential.createCredential(username, databaseName, password.toCharArray());
             builder.applyConnectionString(connectionString).credential(credential);
         }
     }
 
-    private String getIsSecure(ApplicationContext context) throws ConfigException {
-        return getConfig(context, SECURE).orElse("false");
+    private String getIsSecure() throws ConfigException {
+        return getConfig(SECURE).orElse("false");
     }
 
-    private String getUsername(ApplicationContext context) throws ConfigException {
-        return getConfig(context, USERNAME).orElseThrow(() -> new ConfigException("Mongo username is not provided."));
+    private String getUsername() throws ConfigException {
+        return getConfig(USERNAME).orElseThrow(() -> new ConfigException("Mongo username is not provided."));
     }
 
-    private String getPassword(ApplicationContext context) throws ConfigException {
-        return getConfig(context, PASSWORD).orElseThrow(() -> new ConfigException("Mongo password is not provided."));
+    private String getPassword() throws ConfigException {
+        return getConfig(PASSWORD).orElseThrow(() -> new ConfigException("Mongo password is not provided."));
     }
 
-    private Optional<String> getConfig(ApplicationContext context, String key) throws ConfigException {
+    private Optional<String> getConfig(String key) throws ConfigException {
         var configName = String.format(CONFIG_TEMPLATE, key);
-        return this.configuration.getConfig(context, configName);
+        return this.configuration.getConfig(configName);
     }
 
     // TODO remove this after implementing embedded-mongo for testing.

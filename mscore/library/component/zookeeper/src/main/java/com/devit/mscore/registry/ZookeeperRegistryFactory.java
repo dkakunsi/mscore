@@ -2,7 +2,6 @@ package com.devit.mscore.registry;
 
 import java.util.Optional;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
@@ -32,38 +31,38 @@ public class ZookeeperRegistryFactory {
         return new ZookeeperRegistryFactory(configuration);
     }
 
-    public ZookeeperRegistry registry(ApplicationContext context, String registryName) throws RegistryException {
-        var sleepMsBetweenRetries = getSleepBetweenRetry(context, configuration);
-        var maxRetries = getMaxRetry(context, configuration);
+    public ZookeeperRegistry registry(String registryName) throws RegistryException {
+        var sleepMsBetweenRetries = getSleepBetweenRetry(configuration);
+        var maxRetries = getMaxRetry(configuration);
         var retryPolicy = new RetryNTimes(maxRetries, sleepMsBetweenRetries);
 
-        var client = CuratorFrameworkFactory.newClient(getZookeeperHost(context, configuration), retryPolicy);
+        var client = CuratorFrameworkFactory.newClient(getZookeeperHost(configuration), retryPolicy);
         return new ZookeeperRegistry(registryName, client);
     }
 
-    static String getZookeeperHost(ApplicationContext context, Configuration configuration)
+    static String getZookeeperHost(Configuration configuration)
             throws RegistryException {
         try {
-            var zookeperHost = configuration.getConfig(context, ZOOKEEPER_HOST);
+            var zookeperHost = configuration.getConfig(ZOOKEEPER_HOST);
             return zookeperHost.orElseThrow(() -> new RegistryException("No zookeeper host was configured."));
         } catch (ConfigException ex) {
             throw new RegistryException(ex);
         }
     }
 
-    static Integer getSleepBetweenRetry(ApplicationContext context, Configuration configuration)
+    static Integer getSleepBetweenRetry(Configuration configuration)
             throws RegistryException {
         try {
-            var configuredSleepBetweenRetry = configuration.getConfig(context, SLEEP_BETWEEN_RETRY);
+            var configuredSleepBetweenRetry = configuration.getConfig(SLEEP_BETWEEN_RETRY);
             return getOrDefault(configuredSleepBetweenRetry, DEFAULT_SLEEP_BETWEEN_RESTART);
         } catch (ConfigException ex) {
             throw new RegistryException(ex);
         }
     }
 
-    static Integer getMaxRetry(ApplicationContext context, Configuration configuration) throws RegistryException {
+    static Integer getMaxRetry(Configuration configuration) throws RegistryException {
         try {
-            var configuredMaxRetry = configuration.getConfig(context, MAX_RETRY);
+            var configuredMaxRetry = configuration.getConfig(MAX_RETRY);
             return getOrDefault(configuredMaxRetry, DEFAULT_MAX_RETRY);
         } catch (ConfigException ex) {
             throw new RegistryException(ex);

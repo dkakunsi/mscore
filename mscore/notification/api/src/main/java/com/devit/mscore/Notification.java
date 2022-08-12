@@ -21,8 +21,7 @@ public interface Notification {
     /**
      * Build and send notification about {@code entity} changes.
      * 
-     * @param context of the request.
      * @param entity  to notify about.
      */
-    void send(ApplicationContext context, JSONObject entity) throws NotificationException;
+    void send(JSONObject entity) throws NotificationException;
 }

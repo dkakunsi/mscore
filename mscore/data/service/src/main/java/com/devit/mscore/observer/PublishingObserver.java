@@ -1,17 +1,16 @@
 package com.devit.mscore.observer;
 
-import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Logger;
 import com.devit.mscore.Publisher;
+import com.devit.mscore.logging.ApplicationLogger;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PublishingObserver implements PostProcessObserver {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PublishingObserver.class);
+    private static final Logger LOG = new ApplicationLogger(PublishingObserver.class);
 
-    private static final String PUBLISHING_ERROR = "BreadcrumbId: {}. Publishing message failed.";
+    private static final String PUBLISHING_ERROR = "Publishing message failed.";
 
     protected Publisher publisher;
 
@@ -23,9 +22,9 @@ public class PublishingObserver implements PostProcessObserver {
     }
 
     @Override
-    public void notify(ApplicationContext context, JSONObject json) {
+    public void notify(JSONObject json) {
         if (this.publisher == null) {
-            LOG.warn("BreadcrumbId: {}. Publisher is not provided. By pass publishing.", context.getBreadcrumbId());
+            LOG.warn("Publisher is not provided. By pass publishing.");
             return;
         }
 
@@ -35,11 +34,10 @@ public class PublishingObserver implements PostProcessObserver {
                 Thread.sleep(this.delay);
             }
 
-            LOG.debug("BreadcrumbId: {}. Publishing message to topic {}: {}.", context.getBreadcrumbId(),
-                    this.publisher.getChannel(), json);
-            this.publisher.publish(context, json);
+            LOG.debug("Publishing message to topic {}: {}.", this.publisher.getChannel(), json);
+            this.publisher.publish(json);
         } catch (InterruptedException ex) {
-            LOG.error(PUBLISHING_ERROR, context.getBreadcrumbId(), ex);
+            LOG.error(PUBLISHING_ERROR, ex);
         }
     }
 }

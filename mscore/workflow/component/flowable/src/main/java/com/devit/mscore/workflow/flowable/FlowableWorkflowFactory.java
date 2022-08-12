@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Registry;
 import com.devit.mscore.Resource;
@@ -46,8 +45,8 @@ public class FlowableWorkflowFactory extends ResourceManager {
         return new FlowableWorkflowFactory(configuration, registry);
     }
 
-    public WorkflowProcess workflowProcess(ApplicationContext context, Registry registry, DataClient dataClient) throws ConfigException {
-        var dataSource = getDataSource(context);
+    public WorkflowProcess workflowProcess(Registry registry, DataClient dataClient) throws ConfigException {
+        var dataSource = getDataSource();
         return workflowProcess(dataSource, registry, dataClient);
     }
 
@@ -55,36 +54,36 @@ public class FlowableWorkflowFactory extends ResourceManager {
         return new FlowableProcess(dataSource, registry, dataClient);
     }
 
-    private DataSource getDataSource(ApplicationContext context) throws ConfigException {
+    private DataSource getDataSource() throws ConfigException {
         var serviceName = this.configuration.getServiceName();
 
         var dataSource = new PGSimpleDataSource();
-        dataSource.setServerNames(this.configuration.getConfig(context, DB_HOST).orElseThrow(() -> new ConfigException("No psql host provided")).split(","));
-        dataSource.setPortNumbers(getPorts(context));
-        dataSource.setUser(this.configuration.getConfig(context, DB_USERNAME).orElseThrow(() -> new ConfigException("No psql user provided")));
-        dataSource.setPassword(this.configuration.getConfig(context, DB_PASSWORD).orElseThrow(() -> new ConfigException("No psql password provided")));
-        dataSource.setCurrentSchema(this.configuration.getConfig(context, String.format(DB_SCHEMA, serviceName)).orElseThrow(() -> new ConfigException("No psql schema configured")));
-        dataSource.setDatabaseName(this.configuration.getConfig(context, String.format(DB_NAME, serviceName)).orElseThrow(() -> new ConfigException("No psql database configured")));
+        dataSource.setServerNames(this.configuration.getConfig(DB_HOST).orElseThrow(() -> new ConfigException("No psql host provided")).split(","));
+        dataSource.setPortNumbers(getPorts());
+        dataSource.setUser(this.configuration.getConfig(DB_USERNAME).orElseThrow(() -> new ConfigException("No psql user provided")));
+        dataSource.setPassword(this.configuration.getConfig(DB_PASSWORD).orElseThrow(() -> new ConfigException("No psql password provided")));
+        dataSource.setCurrentSchema(this.configuration.getConfig(String.format(DB_SCHEMA, serviceName)).orElseThrow(() -> new ConfigException("No psql schema configured")));
+        dataSource.setDatabaseName(this.configuration.getConfig(String.format(DB_NAME, serviceName)).orElseThrow(() -> new ConfigException("No psql database configured")));
         return dataSource;
     }
 
-    private int[] getPorts(ApplicationContext context) throws ConfigException {
-        var ports = this.configuration.getConfig(context, DB_PORT).orElse(DEFAULT_PORT).split(",");
+    private int[] getPorts() throws ConfigException {
+        var ports = this.configuration.getConfig(DB_PORT).orElse(DEFAULT_PORT).split(",");
         return Arrays.stream(ports).mapToInt(Integer::parseInt).toArray();
     }
 
-    public List<WorkflowDefinition> getDefinitions(ApplicationContext context) throws RegistryException {
-        var registeredDefinitions = this.registry.values(context);
+    public List<WorkflowDefinition> getDefinitions() throws RegistryException {
+        var registeredDefinitions = this.registry.values();
         var definitions = new ArrayList<WorkflowDefinition>();
         registeredDefinitions.forEach(definition -> definitions.add(new FlowableDefinition(definition)));
         return definitions;
     }
 
     @Override
-    protected String getResourceLocation(ApplicationContext context) {
+    protected String getResourceLocation() {
         var configName = String.format(LOCATION, this.configuration.getServiceName());
         try {
-            return this.configuration.getConfig(context, configName).orElse(null);
+            return this.configuration.getConfig(configName).orElse(null);
         } catch (ConfigException ex) {
             return null;
         }

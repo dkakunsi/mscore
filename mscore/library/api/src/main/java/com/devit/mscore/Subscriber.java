@@ -1,6 +1,6 @@
 package com.devit.mscore;
 
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import org.json.JSONObject;
 
@@ -17,7 +17,7 @@ public interface Subscriber extends Starter {
      * @param channel  could be topic or queue.
      * @param consumer function to be executed after receiving message.
      */
-    void subscribe(String channel, BiConsumer<ApplicationContext, JSONObject> consumer);
+    void subscribe(String channel, Consumer<JSONObject> consumer);
 
     /**
      * 

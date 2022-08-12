@@ -2,8 +2,6 @@ package com.devit.mscore.enrichment;
 
 import static org.junit.Assert.assertTrue;
 
-import com.devit.mscore.DefaultApplicationContext;
-
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +22,7 @@ public class NoopEnrichmentTest {
 
     @Test
     public void testLoadFromDataStore() {
-        var result = this.enrichment.loadFromDataStore(DefaultApplicationContext.of("test"), "domain", "id");
+        var result = this.enrichment.loadFromDataStore("domain", "id");
         assertTrue(result.isEmpty());
     }
 }

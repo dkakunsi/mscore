@@ -16,6 +16,7 @@
     <properties>
         <revision>1.0-SNAPSHOT</revision>
         <api.version>${revision}</api.version>
+        <logger.version>${revision}</logger.version>
         <minimum.class.line.coverage>0.75</minimum.class.line.coverage>
         <minimum.bundle.line.coverage>0.90</minimum.bundle.line.coverage>
     </properties>
@@ -25,13 +26,6 @@
             <groupId>com.devit.mscore</groupId>
             <artifactId>api</artifactId>
             <version>${api.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -85,6 +79,7 @@
     </reporting>
 
     <modules>
+        <module>log4j</module>
         <module>authentication</module>
         <module>local</module>
         <module>zookeeper</module>

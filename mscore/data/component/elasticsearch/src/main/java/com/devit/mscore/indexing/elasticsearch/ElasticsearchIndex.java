@@ -2,7 +2,6 @@ package com.devit.mscore.indexing.elasticsearch;
 
 import java.util.Optional;
 
-import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Index;
 import com.devit.mscore.exception.IndexingException;
 import com.devit.mscore.exception.RegistryException;
@@ -24,23 +23,23 @@ public class ElasticsearchIndex extends Index {
     }
 
     @Override
-    public String index(ApplicationContext context, JSONObject json) throws IndexingException {
-        return this.service.index(context, this.indexName, json);
+    public String index(JSONObject json) throws IndexingException {
+        return this.service.index(this.indexName, json);
     }
 
     @Override
-    public Optional<JSONArray> search(ApplicationContext context, JSONObject criteria) throws IndexingException {
-        return this.service.search(context, this.indexName, criteria);
+    public Optional<JSONArray> search(JSONObject criteria) throws IndexingException {
+        return this.service.search(this.indexName, criteria);
     }
 
     @Override
-    public Optional<JSONObject> get(ApplicationContext context, String id) throws IndexingException {
-        return this.service.get(context, this.indexName, id);
+    public Optional<JSONObject> get(String id) throws IndexingException {
+        return this.service.get(this.indexName, id);
     }
 
-    public Index build(ApplicationContext context) throws JSONException, RegistryException {
+    public Index build() throws JSONException, RegistryException {
         var content = this.mapping.getString("content");
-        this.service.buildIndex(context, this.indexName, content);
+        this.service.buildIndex(this.indexName, content);
         return this;
     }
 }
