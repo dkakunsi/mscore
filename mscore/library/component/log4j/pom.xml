@@ -15,19 +15,14 @@
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>
-        <api.version>${revision}</api.version>
+        <log4j.version>2.18.0</log4j.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>api</artifactId>
-            <version>${api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>${log4j.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

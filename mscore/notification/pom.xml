@@ -6,6 +6,7 @@
     <version>${revision}</version>
     <packaging>pom</packaging>
     <name>MSCore :: Notification Platform</name>
+    <description>This is just a utility maven project to make build of multiple project easier</description>
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>

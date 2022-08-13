@@ -11,33 +11,30 @@
 
     <artifactId>history</artifactId>
     <version>${revision}</version>
-    <name>MSCore :: History</name>
+    <name>MSCore :: History Service</name>
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>
-        <assembly.mainClass>com.devit.mscore.Main</assembly.mainClass>
-        <local.version>[2.0,)</local.version>
-        <zookeeper.version>[2.0,)</zookeeper.version>
-        <kafka.version>[2.0,)</kafka.version>
+        <library.version>[2.0,)</library.version>
 
-        <history.version>[,2.0)</history.version>
+        <assembly.mainClass>com.devit.mscore.Main</assembly.mainClass>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>local</artifactId>
-            <version>${local.version}</version>
+            <version>${library.version}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>zookeeper</artifactId>
-            <version>${zookeeper.version}</version>
+            <version>${library.version}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>kafka</artifactId>
-            <version>${kafka.version}</version>
+            <version>${library.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-api</artifactId>
@@ -48,7 +45,7 @@
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>git</artifactId>
-            <version>${history.version}</version>
+            <version>${revision}</version>
         </dependency>
     </dependencies>
 

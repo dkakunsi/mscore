@@ -9,8 +9,6 @@ import com.devit.mscore.Logger;
 
 public class ApplicationLogger implements Logger {
 
-    private static final String MESSAGE_FORMAT = "BreadcrumbId: {}. {}";
-
     private final org.slf4j.Logger logger;
 
     public ApplicationLogger(Class<?> clazz) {
@@ -32,7 +30,7 @@ public class ApplicationLogger implements Logger {
 
     @Override
     public void debug(String message) {
-        debug(MESSAGE_FORMAT, getBreadcrumbId(), message);
+        debug("{}", message);
     }
 
     @Override
@@ -47,13 +45,13 @@ public class ApplicationLogger implements Logger {
     }
 
     @Override
-    public void error(String message, String arg) {
-        error(message, null, arg);
+    public void error(String format, String arg) {
+        error(format, null, arg);
     }
 
     @Override
     public void error(String message, Throwable ex) {
-        error(MESSAGE_FORMAT, ex, getBreadcrumbId(), message);
+        error("{}", message);
     }
 
     @Override
@@ -63,40 +61,40 @@ public class ApplicationLogger implements Logger {
 
     @Override
     public void error(String format, Throwable ex, Object...args) {
-        var messageFormat = "BreadcrumbId: {}. " + format;
-        this.logger.error(messageFormat, getBreadcrumbId(), args, ex);
+        this.logger.error(getMessageFormat(format), getBreadcrumbId(), args, ex);
     }
 
     @Override
     public void info(String message) {
-        info(MESSAGE_FORMAT, getBreadcrumbId(), message);
+        info("{}", message);
     }
 
     @Override
     public void info(String format, Object...args) {
-        var messageFormat = "BreadcrumbId: {}. " + format;
-        this.logger.info(messageFormat, getBreadcrumbId(), args);
+        this.logger.info(getMessageFormat(format), getBreadcrumbId(), args);
     }
 
     @Override
     public void trace(String message) {
-        trace(MESSAGE_FORMAT, getBreadcrumbId(), message);
+        trace("{}", message);
     }
 
     @Override
     public void trace(String format, Object...args) {
-        var messageFormat = "BreadcrumbId: {}. " + format;
-        this.logger.trace(messageFormat, getBreadcrumbId(), args);
+        this.logger.trace(getMessageFormat(format), getBreadcrumbId(), args);
     }
 
     @Override
     public void warn(String message) {
-        warn(MESSAGE_FORMAT, getBreadcrumbId(), message);
+        warn("{}", getBreadcrumbId(), message);
     }
 
     @Override
     public void warn(String format, Object...args) {
-        var messageFormat = "BreadcrumbId: {}. " + format;
-        this.logger.warn(messageFormat, getBreadcrumbId(), args);
+        this.logger.warn(getMessageFormat(format), getBreadcrumbId(), args);
+    }
+
+    private static String getMessageFormat(String originalFormat) {
+        return "BreadcrumbId: {}. " + originalFormat;
     }
 }

@@ -11,7 +11,7 @@
 
     <artifactId>zookeeper</artifactId>
     <packaging>jar</packaging>
-    <name>MS Core :: Zookeeper Configuration</name>
+    <name>MS Core :: Configuration :: Zookeeper</name>
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>log4j</artifactId>
-            <version>${logger.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.curator</groupId>

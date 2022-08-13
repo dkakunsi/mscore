@@ -11,7 +11,7 @@
     <artifactId>everit</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
-    <name>MS Core :: JSON Schema :: Everit Implementation</name>
+    <name>MS Core :: JSON Schema :: Everit</name>
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>

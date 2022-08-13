@@ -9,7 +9,7 @@
 
     <artifactId>main</artifactId>
     <packaging>pom</packaging>
-    <name>MS Core :: Main</name>
+    <name>MS Core :: Main :: Parent</name>
     <description>Parent for aggregator project</description>
 
     <properties>
@@ -25,14 +25,6 @@
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
         <docker-maven-plugin.version>0.38.0</docker-maven-plugin.version>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-    </dependencies>
 
     <build>
         <pluginManagement>
@@ -137,6 +129,32 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>${maven-eclipse-plugin.version}</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-dependency-plugin</artifactId>
+                                        <versionRange>[1.0,)</versionRange>
+                                        <goals>
+                                            <goal>unpack</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <execute />
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>

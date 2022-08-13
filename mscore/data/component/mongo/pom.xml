@@ -11,7 +11,7 @@
     <artifactId>mongo</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
-    <name>MS Core :: Database :: MongoDB Implementation</name>
+    <name>MS Core :: Database :: MongoDB</name>
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>

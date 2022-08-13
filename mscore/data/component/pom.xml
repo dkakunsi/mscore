@@ -11,11 +11,12 @@
     <artifactId>data-component</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
-    <name>MSCore :: Data Component</name>
+    <name>MSCore :: Data :: Parent Component</name>
     
     <properties>
         <revision>1.0-SNAPSHOT</revision>
-        <data-api.version>${revision}</data-api.version>
+        <library.version>[2.0,)</library.version>
+
         <minimum.class.line.coverage>0.75</minimum.class.line.coverage>
         <minimum.bundle.line.coverage>0.90</minimum.bundle.line.coverage>
     </properties>
@@ -24,7 +25,12 @@
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>data-api</artifactId>
-            <version>${data-api.version}</version>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${library.version}</version>
         </dependency>
     </dependencies>
 

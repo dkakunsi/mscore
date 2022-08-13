@@ -15,66 +15,62 @@
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>
+        <library.version>[2.0,)</library.version>
+
         <assembly.mainClass>com.devit.mscore.Main</assembly.mainClass>
-
-        <mscore-kafka.version>[2.0,)</mscore-kafka.version>
-        <mscore-javalin.version>[2.0,)</mscore-javalin.version>
-        <mscore-jersey.version>[2.0,)</mscore-jersey.version>
-        <mscore-authentication.version>[2.0,)</mscore-authentication.version>
-        <mscore-local.version>[2.0,)</mscore-local.version>
-        <mscore-zk.version>[2.0,)</mscore-zk.version>
-
-        <mscore-mongo.version>${revision}</mscore-mongo.version>
-        <mscore-elasticsearch.version>${revision}</mscore-elasticsearch.version>
-        <mscore-everit.version>${revision}</mscore-everit.version>
-        <mscore-data-common.version>${revision}</mscore-data-common.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>mongo</artifactId>
-            <version>${mscore-mongo.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
-            <artifactId>kafka</artifactId>
-            <version>${mscore-kafka.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
-            <artifactId>javalin</artifactId>
-            <version>${mscore-javalin.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
-            <artifactId>elasticsearch</artifactId>
-            <version>${mscore-elasticsearch.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
-            <artifactId>local</artifactId>
-            <version>${mscore-local.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
-            <artifactId>zookeeper</artifactId>
-            <version>${mscore-zk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
-            <artifactId>jersey</artifactId>
-            <version>${mscore-jersey.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>everit</artifactId>
-            <version>${mscore-everit.version}</version>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>kafka</artifactId>
+            <version>${library.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>javalin</artifactId>
+            <version>${library.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>local</artifactId>
+            <version>${library.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>${library.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>jersey</artifactId>
+            <version>${library.version}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>authentication</artifactId>
-            <version>${mscore-authentication.version}</version>
+            <version>${library.version}</version>
         </dependency>
     </dependencies>
 

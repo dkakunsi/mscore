@@ -11,49 +11,45 @@
 
     <artifactId>gateway</artifactId>
     <version>${revision}</version>
-    <name>MSCore :: Gateway</name>
+    <name>MSCore :: Gateway Service</name>
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>
+        <library.version>[2.0,)</library.version>
+
         <assembly.mainClass>com.devit.mscore.gateway.Main</assembly.mainClass>
-        <javalin.version>[2.0,)</javalin.version>
-        <zk.version>[2.0,)</zk.version>
-        <local.version>[2.0,)</local.version>
-        <authentication.version>[2.0,)</authentication.version>
-        <jersey.version>[2.0,)</jersey.version>
-        <logger.version>[2.0,)</logger.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>javalin</artifactId>
-            <version>${javalin.version}</version>
+            <version>${library.version}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>zookeeper</artifactId>
-            <version>${zk.version}</version>
+            <version>${library.version}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>local</artifactId>
-            <version>${local.version}</version>
+            <version>${library.version}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>authentication</artifactId>
-            <version>${authentication.version}</version>
+            <version>${library.version}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>jersey</artifactId>
-            <version>${jersey.version}</version>
+            <version>${library.version}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>log4j</artifactId>
-            <version>${logger.version}</version>
+            <version>${library.version}</version>
         </dependency>
     </dependencies>
 

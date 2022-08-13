@@ -15,58 +15,57 @@
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>
+        <library.version>[2.0,)</library.version>
+
         <assembly.mainClass>com.devit.mscore.workflow.Main</assembly.mainClass>
-
-        <javalin.version>[2.0,)</javalin.version>
-        <jersey.version>[2.0,)</jersey.version>
-        <kafka.version>[2.0,)</kafka.version>
-        <auth.version>[2.0,)</auth.version>
-        <local.version>[2.0,)</local.version>
-        <zk.version>[2.0,)</zk.version>
-
-        <flowable.version>${revision}</flowable.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>flowable</artifactId>
-            <version>${flowable.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
-            <artifactId>javalin</artifactId>
-            <version>${javalin.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>flowable-delegate</artifactId>
-            <version>${flowable.version}</version>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.devit.mscore</groupId>
+            <artifactId>javalin</artifactId>
+            <version>${library.version}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>jersey</artifactId>
-            <version>${jersey.version}</version>
+            <version>${library.version}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>kafka</artifactId>
-            <version>${kafka.version}</version>
+            <version>${library.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>authentication</artifactId>
-            <version>${auth.version}</version>
+            <version>${library.version}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>local</artifactId>
-            <version>${local.version}</version>
+            <version>${library.version}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>zookeeper</artifactId>
-            <version>${zk.version}</version>
+            <version>${library.version}</version>
         </dependency>
     </dependencies>
 

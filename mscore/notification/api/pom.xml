@@ -12,18 +12,18 @@
     <artifactId>notification-api</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
-    <name>MS Core :: Notification API</name>
+    <name>MS Core :: Notification :: API</name>
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>
-        <api.version>[2.0,)</api.version>
+        <library.version>[2.0,)</library.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>api</artifactId>
-            <version>${api.version}</version>
+            <version>${library.version}</version>
         </dependency>
     </dependencies>
 

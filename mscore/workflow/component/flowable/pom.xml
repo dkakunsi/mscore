@@ -11,7 +11,7 @@
     <artifactId>flowable</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
-    <name>MS Core :: Workflow Engine :: Flowable Implementation</name>
+    <name>MS Core :: Workflow Engine :: Flowable</name>
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>
@@ -19,14 +19,13 @@
         <liquibase.version>4.11.0</liquibase.version>
         <postgres.version>42.4.0</postgres.version>
         <embedded-postgres.version>1.3.1</embedded-postgres.version>
-        <workflow-api.version>${revision}</workflow-api.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>workflow-api</artifactId>
-            <version>${workflow-api.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>org.flowable</groupId>

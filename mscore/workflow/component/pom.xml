@@ -11,12 +11,12 @@
     <artifactId>workflow-component</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
-    <name>MSCore :: Workflow Component</name>
+    <name>MSCore :: Workflow :: Parent Component</name>
     
     <properties>
         <revision>1.0-SNAPSHOT</revision>
-        <workflow-api.version>${revision}</workflow-api.version>
-        <logger.version>${revision}</logger.version>
+        <library.version>[2.0,)</library.version>
+
         <minimum.class.line.coverage>0.75</minimum.class.line.coverage>
         <minimum.bundle.line.coverage>0.90</minimum.bundle.line.coverage>
     </properties>
@@ -25,12 +25,12 @@
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>workflow-api</artifactId>
-            <version>${workflow-api.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>log4j</artifactId>
-            <version>${logger.version}</version>
+            <version>${library.version}</version>
         </dependency>
     </dependencies>
 

@@ -11,7 +11,7 @@
 
     <artifactId>javalin</artifactId>
     <packaging>jar</packaging>
-    <name>MS Core :: Web :: Javalin Implementation</name>
+    <name>MS Core :: Web :: Javalin</name>
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>com.devit.mscore</groupId>
             <artifactId>log4j</artifactId>
-            <version>${logger.version}</version>
+            <version>${revision}</version>
         </dependency>
         <dependency>
             <groupId>io.javalin</groupId>

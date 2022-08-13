@@ -11,7 +11,7 @@
     <artifactId>elasticsearch</artifactId>
     <version>${revision}</version>
     <packaging>jar</packaging>
-    <name>MS Core :: Indexing :: Elasticsearch Implementation</name>
+    <name>MS Core :: Indexing :: Elasticsearch</name>
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>
@@ -23,15 +23,10 @@
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
             <version>${elasticsearch.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.elasticsearch.client</groupId>
-            <artifactId>elasticsearch-rest-client</artifactId>
-            <version>${elasticsearch.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

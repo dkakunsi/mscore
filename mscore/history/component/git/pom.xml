@@ -10,11 +10,10 @@
 
   <artifactId>git</artifactId>
   <packaging>jar</packaging>
-  <name>MS Core :: History :: Git Implementation</name>
+  <name>MS Core :: History :: Git</name>
 
   <properties>
     <revision>1.0-SNAPSHOT</revision>
-    <history-api.version>${revision}</history-api.version>
     <jgit.version>6.0.0.202111291000-r</jgit.version>
     <jsch.version>0.1.72</jsch.version>
     <commons-io.version>2.11.0</commons-io.version>

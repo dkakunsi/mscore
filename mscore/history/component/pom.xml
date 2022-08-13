@@ -11,12 +11,12 @@
   <artifactId>history-component</artifactId>
   <version>${revision}</version>
   <packaging>pom</packaging>
-  <name>MSCore :: History Component</name>
+  <name>MSCore :: History :: Parent Component</name>
 
   <properties>
     <revision>1.0-SNAPSHOT</revision>
-    <history-api.version>${revision}</history-api.version>
-    <logger.version>${revision}</logger.version>
+    <library.version>[2.0,)</library.version>
+
     <minimum.class.line.coverage>0.75</minimum.class.line.coverage>
     <minimum.bundle.line.coverage>0.90</minimum.bundle.line.coverage>
   </properties>
@@ -25,12 +25,12 @@
     <dependency>
       <groupId>com.devit.mscore</groupId>
       <artifactId>history-api</artifactId>
-      <version>${history-api.version}</version>
+      <version>${revision}</version>
     </dependency>
     <dependency>
       <groupId>com.devit.mscore</groupId>
       <artifactId>log4j</artifactId>
-      <version>${logger.version}</version>
+      <version>${library.version}</version>
     </dependency>
   </dependencies>
 
