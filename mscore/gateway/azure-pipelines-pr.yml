@@ -13,10 +13,18 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- task: MavenAuthenticate@0
-  displayName: 'Maven Authenticate'
+# used for mscore profile
+# - task: MavenAuthenticate@0
+#   displayName: 'Maven Authenticate'
+#   inputs:
+#     artifactsFeeds: mscore
+
+# used for myMavenRepo profile
+- task: DownloadSecureFile@1
+  displayName: 'Download maven settings file'
+  name: 'mavenSettingsFile'
   inputs:
-    artifactsFeeds: mscore
+    secureFile: 'settings.xml'
 
 - task: Maven@3
   displayName: 'Maven build'
@@ -29,4 +37,5 @@ steps:
     publishJUnitResults: true
     testResultsFiles: 'mscore/gateway/**/surefire-reports/TEST-*.xml'
     goals: 'install'
-    options: -Drevision=$(Build.BuildNumber)
+#    options: -Drevision=$(Build.BuildNumber) -Pmscore
+    options:  -Drevision=$(Build.BuildNumber) -PmyMavenRepo

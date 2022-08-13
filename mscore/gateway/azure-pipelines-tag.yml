@@ -25,12 +25,21 @@ steps:
     targetType: 'inline'
     script: 'echo "$(Version.tag)"'
 
-- task: MavenAuthenticate@0
-  displayName: 'Maven Authenticate'
+# used for mscore profile
+# - task: MavenAuthenticate@0
+#   displayName: 'Maven Authenticate'
+#   inputs:
+#     artifactsFeeds: mscore
+
+# used for myMavenRepo profile
+- task: DownloadSecureFile@1
+  displayName: 'Download maven settings file'
+  name: 'mavenSettingsFile'
   inputs:
-    artifactsFeeds: mscore
+    secureFile: 'settings.xml'
 
 - task: Maven@3
+  displayName: 'Maven build'
   inputs:
     mavenPomFile: 'mscore/gateway/pom.xml'
     mavenOptions: '-Xmx3072m'
@@ -40,7 +49,8 @@ steps:
     publishJUnitResults: true
     testResultsFiles: 'mscore/gateway/**/surefire-reports/TEST-*.xml'
     goals: 'deploy'
-    options: -Drevision=$(Version.tag)
+#    options: -Drevision=$(Version.tag) -Pmscore
+    options: -Drevision=$(Version.tag).$(revision) -s $(mavenSettingsFile.secureFilePath) -PmyMavenRepo
 
 - task: Docker@2
   displayName: 'Docker build & push'
