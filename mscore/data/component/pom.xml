@@ -4,15 +4,15 @@
     <parent>
         <groupId>com.devit.mscore</groupId>
         <artifactId>parent</artifactId>
-        <version>2.0</version>
-        <relativePath/>
+        <version>2.0.21</version>
+        <relativePath>../../common/pom.xml</relativePath>
     </parent>
 
     <artifactId>data-component</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
     <name>MSCore :: Data :: Parent Component</name>
-    
+
     <properties>
         <revision>1.0-SNAPSHOT</revision>
         <library.version>[2.0,)</library.version>
@@ -88,17 +88,4 @@
         <module>everit</module>
         <module>mongo</module>
     </modules>
-
-    <repositories>
-        <repository>
-            <id>mscore</id>
-            <url>https://pkgs.dev.azure.com/iddevit/mscore/_packaging/mscore/maven/v1</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 </project>
