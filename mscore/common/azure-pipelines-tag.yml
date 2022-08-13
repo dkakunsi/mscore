@@ -39,7 +39,6 @@ steps:
 #    options: -Pmscore
     options: -s $(mavenSettingsFile.secureFilePath) -PmyMavenRepo
 
-steps:
 - task: Bash@3
   name: 'Version'
   displayName: 'Set docker version from pom version'
