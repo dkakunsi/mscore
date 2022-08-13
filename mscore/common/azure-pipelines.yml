@@ -31,13 +31,6 @@ steps:
   inputs:
     secureFile: 'settings.xml'
 
-- task: Bash@3
-  name: 'Version'
-  displayName: 'Set docker version from pom version'
-  inputs:
-    targetType: 'inline'
-    script: 'echo "##vso[task.setvariable variable=docker;isOutput=true]$(mvn help:evaluate -f ./mscore/common/pom.xml -Dexpression=project.version)"'
-
 - task: Maven@3
   displayName: 'Maven build'
   inputs:
@@ -61,4 +54,4 @@ steps:
     Dockerfile: 'mscore/common/**/docker/Dockerfile'
     tags: |
       latest
-      $(Version.docker)
+      $(Build.BuildNumber)
