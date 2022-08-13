@@ -37,5 +37,5 @@ steps:
     publishJUnitResults: true
     testResultsFiles: 'mscore/common/**/surefire-reports/TEST-*.xml'
     goals: 'install'
-#    options: -Drevision=$(Build.BuildNumber) -Pmscore
-    options:  -Drevision=$(Build.BuildNumber) -PmyMavenRepo
+#    options: -Pmscore
+    options:  -PmyMavenRepo

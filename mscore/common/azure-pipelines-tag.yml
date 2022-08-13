@@ -12,19 +12,6 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- task: Bash@3
-  name: 'Version'
-  displayName: 'Set Tag'
-  inputs:
-    targetType: 'inline'
-    script: 'echo "##vso[task.setvariable variable=tag;isOutput=true]$(git describe --tags --abbrev=0)"'
-
-- task: Bash@3
-  displayName: 'Print Version'
-  inputs:
-    targetType: 'inline'
-    script: 'echo "$(Version.tag)"'
-
 # used for mscore profile
 # - task: MavenAuthenticate@0
 #   displayName: 'Maven Authenticate'
@@ -49,8 +36,8 @@ steps:
     publishJUnitResults: true
     testResultsFiles: 'mscore/common/**/surefire-reports/TEST-*.xml'
     goals: 'deploy'
-#    options: -Drevision=$(Version.tag) -Pmscore
-    options: -Drevision=$(Version.tag).$(revision) -s $(mavenSettingsFile.secureFilePath) -PmyMavenRepo
+#    options: -Pmscore
+    options: -s $(mavenSettingsFile.secureFilePath) -PmyMavenRepo
 
 - task: Docker@2
   displayName: 'Docker build & push'

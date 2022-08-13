@@ -50,7 +50,7 @@ steps:
     testResultsFiles: 'mscore/notification/**/surefire-reports/TEST-*.xml'
     goals: 'deploy'
 #    options: -Drevision=$(Version.tag) -Pmscore
-    options: -Drevision=$(Version.tag).$(revision) -s $(mavenSettingsFile.secureFilePath) -PmyMavenRepo
+    options: -Drevision=$(Version.tag) -s $(mavenSettingsFile.secureFilePath) -PmyMavenRepo
 
 - task: Docker@2
   displayName: 'Docker build & push notification image'

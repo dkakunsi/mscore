@@ -50,4 +50,4 @@ steps:
     testResultsFiles: 'mscore/library/**/surefire-reports/TEST-*.xml'
     goals: 'deploy'
 #    options: -Drevision=$(Version.tag) -Pmscore
-    options: -Drevision=$(Version.tag).$(revision) -s $(mavenSettingsFile.secureFilePath) -PmyMavenRepo
+    options: -Drevision=$(Version.tag) -s $(mavenSettingsFile.secureFilePath) -PmyMavenRepo

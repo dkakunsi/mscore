@@ -4,15 +4,11 @@
     <parent>
         <groupId>com.devit.mscore</groupId>
         <artifactId>parent</artifactId>
-        <version>${revision}</version>
+        <version>2.0.22</version>
     </parent>
     <artifactId>docker</artifactId>
     <packaging>jar</packaging>
     <name>MS Core :: Docker Template</name>
-
-    <properties>
-        <revision>1.0-SNAPSHOT</revision>
-    </properties>
 
     <build>
         <plugins>
