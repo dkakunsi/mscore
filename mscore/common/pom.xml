@@ -397,32 +397,54 @@
         </plugins>
     </build>
 
-    <!-- Where to upload Actif Artifacts -->
-    <distributionManagement>
-        <repository>
+    <profiles>
+        <profile>
+            <id>myMavenRepo</id>
+            <repositories>
+                <repository>
+                    <id>myMavenRepo.read</id>
+                    <url>${myMavenRepo.read.url}</url>
+                </repository>
+            </repositories>
+            <distributionManagement>
+                <repository>
+                    <id>myMavenRepo.write</id>
+                    <url>${myMavenRepo.write.url}</url>
+                </repository>
+                <snapshotRepository>
+                    <id>myMavenRepo.write</id>
+                    <url>${myMavenRepo.write.url}</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+        <profile>
             <id>mscore</id>
-            <url>https://pkgs.dev.azure.com/iddevit/mscore/_packaging/mscore/maven/v1</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </distributionManagement>
-
-    <repositories>
-        <repository>
-            <id>mscore</id>
-            <url>https://pkgs.dev.azure.com/iddevit/mscore/_packaging/mscore/maven/v1</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+            <repositories>
+                <repository>
+                    <id>mscore</id>
+                    <url>https://pkgs.dev.azure.com/iddevit/mscore/_packaging/mscore/maven/v1</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <distributionManagement>
+                <repository>
+                    <id>mscore</id>
+                    <url>https://pkgs.dev.azure.com/iddevit/mscore/_packaging/mscore/maven/v1</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 
     <modules>
         <module>docker</module>
