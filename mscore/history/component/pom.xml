@@ -4,8 +4,8 @@
   <parent>
     <groupId>com.devit.mscore</groupId>
     <artifactId>parent</artifactId>
-    <version>2.0</version>
-    <relativePath />
+    <version>2.0.22</version>
+    <relativePath>../../common/pom.xml</relativePath>
   </parent>
 
   <artifactId>history-component</artifactId>
@@ -35,7 +35,8 @@
   </dependencies>
 
   <build>
-    <plugins> <!-- Enforcer plugin for Maven and Java version -->
+    <plugins>
+      <!-- Enforcer plugin for Maven and Java version -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -79,17 +80,4 @@
   <modules>
     <module>git</module>
   </modules>
-
-  <repositories>
-    <repository>
-      <id>mscore</id>
-      <url>https://pkgs.dev.azure.com/iddevit/mscore/_packaging/mscore/maven/v1</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 </project>

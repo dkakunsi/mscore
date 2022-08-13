@@ -4,15 +4,15 @@
     <parent>
         <groupId>com.devit.mscore</groupId>
         <artifactId>parent</artifactId>
-        <version>2.0</version>
-        <relativePath/>
+        <version>2.0.22</version>
+        <relativePath>../../common/pom.xml</relativePath>
     </parent>
 
     <artifactId>notification-component</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
     <name>MSCore :: Notification :: Parent Component</name>
-    
+
     <properties>
         <revision>1.0-SNAPSHOT</revision>
         <library.version>[2.0,)</library.version>
@@ -87,17 +87,4 @@
         <module>mail</module>
         <module>pebble</module>
     </modules>
-
-    <repositories>
-        <repository>
-            <id>mscore</id>
-            <url>https://pkgs.dev.azure.com/iddevit/mscore/_packaging/mscore/maven/v1</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 </project>
