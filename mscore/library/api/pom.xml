@@ -5,7 +5,7 @@
         <groupId>com.devit.mscore</groupId>
         <artifactId>parent</artifactId>
         <version>2.0.21</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <artifactId>api</artifactId>
@@ -70,4 +70,53 @@
             </plugin>
         </plugins>
     </reporting>
+
+    <profiles>
+        <profile>
+            <id>myMavenRepo</id>
+            <repositories>
+                <repository>
+                    <id>myMavenRepo.read</id>
+                    <url>${myMavenRepo.read.url}</url>
+                </repository>
+            </repositories>
+            <distributionManagement>
+                <repository>
+                    <id>myMavenRepo.write</id>
+                    <url>${myMavenRepo.write.url}</url>
+                </repository>
+                <snapshotRepository>
+                    <id>myMavenRepo.write</id>
+                    <url>${myMavenRepo.write.url}</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>mscore</id>
+            <repositories>
+                <repository>
+                    <id>mscore</id>
+                    <url>https://pkgs.dev.azure.com/iddevit/mscore/_packaging/mscore/maven/v1</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <distributionManagement>
+                <repository>
+                    <id>mscore</id>
+                    <url>https://pkgs.dev.azure.com/iddevit/mscore/_packaging/mscore/maven/v1</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 </project>
