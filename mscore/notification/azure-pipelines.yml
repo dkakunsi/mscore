@@ -21,7 +21,7 @@ variables:
   - name: buildNumber
     value: 0
   - name: revision
-    value: $[counter(variables['buildNumber'], 1)]
+    value: $[counter(variables['notification21'], 1)]
 
 steps:
 - task: Bash@3
