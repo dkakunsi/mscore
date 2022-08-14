@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.devit.mscore</groupId>
-        <artifactId>parent</artifactId>
+        <artifactId>component-parent</artifactId>
         <version>2.1</version>
-        <relativePath>../../common/pom.xml</relativePath>
+        <relativePath>../../common/component/pom.xml</relativePath>
     </parent>
 
     <artifactId>notification-component</artifactId>
@@ -16,9 +16,6 @@
     <properties>
         <revision>1.0-SNAPSHOT</revision>
         <library.version>[2.0,)</library.version>
-
-        <minimum.class.line.coverage>0.75</minimum.class.line.coverage>
-        <minimum.bundle.line.coverage>0.90</minimum.bundle.line.coverage>
     </properties>
 
     <dependencies>
@@ -33,55 +30,6 @@
             <version>${library.version}</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <!-- Enforcer plugin for Maven and Java version -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-            </plugin>
-            <!-- Compiler pluggin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-            <!-- Checkstyle plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-            </plugin>
-            <!-- PMD plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-            </plugin>
-            <!-- SpotBugs plugin -->
-            <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
-            </plugin>
-            <!-- Surefire plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-            <!-- Jacoco plugin -->
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </reporting>
 
     <modules>
         <module>mail</module>

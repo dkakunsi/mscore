@@ -13,7 +13,6 @@
     <description>Parent for aggregator project</description>
 
     <properties>
-        <revision>1.0-SNAPSHOT</revision>
         <assembly.mainClass>provided by children</assembly.mainClass>
 
         <group.name>mscore</group.name>
