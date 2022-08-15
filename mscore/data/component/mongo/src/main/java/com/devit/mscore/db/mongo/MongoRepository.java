@@ -36,7 +36,7 @@ import org.json.JSONObject;
  */
 public class MongoRepository implements Repository {
 
-    protected final Logger LOG = new ApplicationLogger(getClass());
+    protected static final Logger LOG = new ApplicationLogger(MongoRepository.class);
 
     protected static final String KEY_NOT_SUPPLIED = "The key is not supplied.";
 
@@ -72,7 +72,7 @@ public class MongoRepository implements Repository {
 
     @Override
     public JSONObject save(JSONObject json) throws DataException {
-        this.LOG.trace("Saving entity to MongoDB: {}", getCode(json));
+        LOG.trace("Saving entity to MongoDB: {}", getCode(json));
 
         try {
 
@@ -117,7 +117,7 @@ public class MongoRepository implements Repository {
 
     @Override
     public void delete(String id) {
-        this.LOG.debug("Deleting entity from MongoDB: {}", id);
+        LOG.debug("Deleting entity from MongoDB: {}", id);
         this.collection.deleteOne(new Document(ID, id));
     }
 

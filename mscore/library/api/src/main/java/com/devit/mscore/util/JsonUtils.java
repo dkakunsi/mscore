@@ -38,17 +38,10 @@ public final class JsonUtils {
     }
 
     private static boolean isEmpty(Object value) {
-        if (JSONObject.NULL.equals(value)) {
-            return true;
-        } else if (value instanceof String && (StringUtils.isBlank((String) value)) || "null".equals(value)) {
-            return true;
-        } else if (value instanceof JSONObject && ((JSONObject) value).isEmpty()) {
-            return true;
-        } else if (value instanceof JSONArray && ((JSONArray) value).isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return JSONObject.NULL.equals(value)
+                || value instanceof String && (StringUtils.isBlank((String) value)) || "null".equals(value)
+                || value instanceof JSONObject && ((JSONObject) value).isEmpty()
+                || value instanceof JSONArray && ((JSONArray) value).isEmpty();
     }
 
     public static boolean isNotJsonString(String str) {

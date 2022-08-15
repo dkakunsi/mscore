@@ -76,21 +76,21 @@ public class FlowableProcessTest {
     @Before
     public void setup() throws RegistryException, ConfigException {
         this.configuration = mock(Configuration.class);
-        doReturn(Optional.of("localhost")).when(this.configuration).getConfig(eq("process.db.host"));
-        doReturn(Optional.of("5432")).when(this.configuration).getConfig(eq("process.db.port"));
-        doReturn(Optional.of("flowable")).when(this.configuration).getConfig(eq("process.db.name"));
-        doReturn(Optional.of("process")).when(this.configuration).getConfig(eq("process.db.schema"));
-        doReturn(Optional.of("postgres")).when(this.configuration).getConfig(eq("process.db.username"));
-        doReturn(Optional.of("postgres")).when(this.configuration).getConfig(eq("process.db.password"));
-        doReturn(Optional.of(TASK_INDEX)).when(this.configuration).getConfig(eq("process.index.task"));
-        doReturn(Optional.of(INSTANCE_INDEX)).when(this.configuration).getConfig(eq("process.index.instance"));
-        doReturn(Optional.of("definition")).when(this.configuration).getConfig(eq("process.definition.location"));
+        doReturn(Optional.of("localhost")).when(this.configuration).getConfig("process.db.host");
+        doReturn(Optional.of("5432")).when(this.configuration).getConfig("process.db.port");
+        doReturn(Optional.of("flowable")).when(this.configuration).getConfig("process.db.name");
+        doReturn(Optional.of("process")).when(this.configuration).getConfig("process.db.schema");
+        doReturn(Optional.of("postgres")).when(this.configuration).getConfig("process.db.username");
+        doReturn(Optional.of("postgres")).when(this.configuration).getConfig("process.db.password");
+        doReturn(Optional.of(TASK_INDEX)).when(this.configuration).getConfig("process.index.task");
+        doReturn(Optional.of(INSTANCE_INDEX)).when(this.configuration).getConfig("process.index.instance");
+        doReturn(Optional.of("definition")).when(this.configuration).getConfig("process.definition.location");
         doReturn(true).when(this.configuration).has("workflow.definition.location");
 
         this.serviceRegistration = mock(ServiceRegistration.class);
         doReturn("http://data/domain").when(this.serviceRegistration).get(anyString());
-        doReturn("http://data/workflow").when(this.serviceRegistration).get(eq("workflow"));
-        doReturn("http://data/task").when(this.serviceRegistration).get(eq("task"));
+        doReturn("http://data/workflow").when(this.serviceRegistration).get("workflow");
+        doReturn("http://data/task").when(this.serviceRegistration).get("task");
 
         this.client = mock(Client.class);
         doReturn(this.client).when(this.client).createNew();
@@ -283,7 +283,7 @@ public class FlowableProcessTest {
             assertTrue(StringUtils.isNotBlank(argumentObject.getString("workflow")));
             assertTrue(StringUtils.isNotBlank(argumentObject.getString("content")));
 
-            doReturn(argumentObject.toString()).when(this.registry).get(eq("domain.action"));
+            doReturn(argumentObject.toString()).when(this.registry).get("domain.action");
 
             // Create instance
             var processInstance = this.process.createInstanceByAction(argumentObject.getString("name"),

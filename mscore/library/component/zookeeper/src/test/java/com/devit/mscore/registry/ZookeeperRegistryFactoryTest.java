@@ -5,7 +5,6 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -50,9 +49,9 @@ public class ZookeeperRegistryFactoryTest {
 
     @Test
     public void testGetZookeeperRegistry() throws RegistryException, ConfigException {
-        doReturn(Optional.of("127.0.0.1:4000")).when(this.configuration).getConfig(eq("zookeeper.host"));
-        doReturn(Optional.of("50")).when(this.configuration).getConfig(eq("zookeeper.retry.sleep"));
-        doReturn(Optional.of("1")).when(this.configuration).getConfig(eq("zookeeper.retry.max"));
+        doReturn(Optional.of("127.0.0.1:4000")).when(this.configuration).getConfig("zookeeper.host");
+        doReturn(Optional.of("50")).when(this.configuration).getConfig("zookeeper.retry.sleep");
+        doReturn(Optional.of("1")).when(this.configuration).getConfig("zookeeper.retry.max");
 
         var domainRegistry = this.factory.registry("domain");
 
@@ -61,7 +60,7 @@ public class ZookeeperRegistryFactoryTest {
 
     @Test
     public void testGetZookeeperRegistry_UseDefaultValues() throws RegistryException, ConfigException {
-        doReturn(Optional.of("127.0.0.1:4000")).when(this.configuration).getConfig(eq("zookeeper.host"));
+        doReturn(Optional.of("127.0.0.1:4000")).when(this.configuration).getConfig("zookeeper.host");
         var domainRegistry = this.factory.registry("domain");
         assertNotNull(domainRegistry);
     }

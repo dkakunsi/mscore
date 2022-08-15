@@ -25,7 +25,7 @@ public class ResourceController extends JavalinController {
 
     @Override
     public Handler post() {
-        return (ctx) -> {
+        return ctx -> {
             var domain = ctx.queryParam(DOMAIN);
             var payload = ctx.body();
             var response = this.resourceService.post(domain, new JSONObject(payload));
@@ -36,7 +36,7 @@ public class ResourceController extends JavalinController {
 
     @Override
     public Handler put() {
-        return (ctx) -> {
+        return ctx -> {
             var domain = ctx.queryParam(DOMAIN);
             var id = ctx.pathParam(ID);
             var payload = ctx.body();
@@ -48,7 +48,7 @@ public class ResourceController extends JavalinController {
 
     @Override
     public Handler getOne() {
-        return (ctx) -> {
+        return ctx -> {
             var domain = ctx.queryParam(DOMAIN);
             var id = ctx.pathParam(ID);
             var response = this.resourceService.getById(domain, id);
@@ -59,7 +59,7 @@ public class ResourceController extends JavalinController {
 
     @Override
     public Handler getOneByCode() {
-        return (ctx) -> {
+        return ctx -> {
             var domain = ctx.queryParam(DOMAIN);
             var code = ctx.pathParam(CODE);
             var response = this.resourceService.getByCode(domain, code);
@@ -70,7 +70,7 @@ public class ResourceController extends JavalinController {
 
     @Override
     public Handler getMany() {
-        return (ctx) -> {
+        return ctx -> {
             var domain = ctx.queryParam(DOMAIN);
             var ids = ctx.queryParam("ids");
             var response = this.resourceService.getMany(domain, ids);
@@ -81,7 +81,7 @@ public class ResourceController extends JavalinController {
 
     @Override
     public Handler syncById() {
-        return (ctx) -> {
+        return ctx -> {
             var domain = ctx.queryParam(DOMAIN);
             var id = ctx.pathParam(ID);
             var response = this.resourceService.syncById(domain, id);
@@ -92,7 +92,7 @@ public class ResourceController extends JavalinController {
 
     @Override
     public Handler syncAll() {
-        return (ctx) -> {
+        return ctx -> {
             var domain = ctx.queryParam(DOMAIN);
             var response = this.resourceService.sync(domain);
 

@@ -2,7 +2,6 @@ package com.devit.mscore.history;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -22,7 +21,7 @@ public class ApplicationStarterTest {
     public void setup() throws ConfigException {
         this.configuration = mock(Configuration.class);
         doReturn("history").when(this.configuration).getServiceName();
-        doReturn(Optional.of("topic1,topic2")).when(this.configuration).getConfig(eq("services.history.topics"));
+        doReturn(Optional.of("topic1,topic2")).when(this.configuration).getConfig("services.history.topics");
     }
 
     @Test

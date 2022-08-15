@@ -36,22 +36,12 @@ public class ElasticsearchService {
 
     private RestHighLevelClient client;
 
-    private boolean indexCreated;
-
     public ElasticsearchService(RestHighLevelClient client) {
         this.client = client;
-        this.indexCreated = false;
     }
 
     void createIndex(Map<String, String> map) {
-
-        if (indexCreated) {
-            return;
-        }
-
-        map.forEach((indexName, mapping) -> {
-            buildIndex(indexName, mapping);
-        });
+        map.forEach(this::buildIndex);
     }
 
     void buildIndex(String indexName, String mapping) {

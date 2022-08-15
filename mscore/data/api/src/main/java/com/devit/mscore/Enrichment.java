@@ -117,9 +117,11 @@ public abstract class Enrichment {
                 LOG.info("No entity found for reference {} in index {}",
                         refId, refDomain);
             }
-        } catch (DataException | JSONException | InterruptedException ex) {
+        } catch (DataException | JSONException ex) {
             LOG.error("Cannot enrich object.");
             throw new EnrichmentException("Cannot enrich object.", ex);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
         }
     }
 

@@ -88,13 +88,13 @@ public class ElasticsearchIndexFactory extends ResourceManager {
         final var credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
 
-        restClientBuilder.setHttpClientConfigCallback(httpClientBuilder -> {
-            return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-        });
+        restClientBuilder.setHttpClientConfigCallback(
+                httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
     }
 
     protected HttpHost[] getHost() throws ConfigException {
-        var addresses = this.configuration.getConfig(getConfigName(HOST)).orElseThrow(() -> new ConfigException("No ES host is configured.")).split(",");
+        var addresses = this.configuration.getConfig(getConfigName(HOST))
+                .orElseThrow(() -> new ConfigException("No ES host is configured.")).split(",");
         var hosts = new HttpHost[addresses.length];
 
         LOG.debug("Trying to connect to ES host: {}", (Object[]) addresses);

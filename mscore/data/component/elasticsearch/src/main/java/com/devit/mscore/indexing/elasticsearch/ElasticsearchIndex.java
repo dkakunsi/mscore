@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import com.devit.mscore.Index;
 import com.devit.mscore.exception.IndexingException;
-import com.devit.mscore.exception.RegistryException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,7 +36,7 @@ public class ElasticsearchIndex extends Index {
         return this.service.get(this.indexName, id);
     }
 
-    public Index build() throws JSONException, RegistryException {
+    public Index build() throws JSONException {
         var content = this.mapping.getString("content");
         this.service.buildIndex(this.indexName, content);
         return this;

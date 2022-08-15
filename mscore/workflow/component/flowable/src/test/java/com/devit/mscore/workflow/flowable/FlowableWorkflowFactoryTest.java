@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -46,12 +45,12 @@ public class FlowableWorkflowFactoryTest {
     @Before
     public void setup() throws RegistryException, ConfigException {
         this.configuration = mock(Configuration.class);
-        doReturn(Optional.of("localhost")).when(this.configuration).getConfig(eq("platform.postgres.host"));
-        doReturn(Optional.of("5432")).when(this.configuration).getConfig(eq("platform.postgres.port"));
-        doReturn(Optional.of("postgres")).when(this.configuration).getConfig(eq("platform.postgres.username"));
-        doReturn(Optional.of("postgres")).when(this.configuration).getConfig(eq("platform.postgres.password"));
-        doReturn(Optional.of("flowable")).when(this.configuration).getConfig(eq("services.workflow.db.name"));
-        doReturn(Optional.of("process")).when(this.configuration).getConfig(eq("services.workflow.db.schema"));
+        doReturn(Optional.of("localhost")).when(this.configuration).getConfig("platform.postgres.host");
+        doReturn(Optional.of("5432")).when(this.configuration).getConfig("platform.postgres.port");
+        doReturn(Optional.of("postgres")).when(this.configuration).getConfig("platform.postgres.username");
+        doReturn(Optional.of("postgres")).when(this.configuration).getConfig("platform.postgres.password");
+        doReturn(Optional.of("flowable")).when(this.configuration).getConfig("services.workflow.db.name");
+        doReturn(Optional.of("process")).when(this.configuration).getConfig("services.workflow.db.schema");
         doReturn(true).when(this.configuration).has("services.workflow.definition.location");
         doReturn("workflow").when(this.configuration).getServiceName();
 
@@ -70,7 +69,7 @@ public class FlowableWorkflowFactoryTest {
     @Test
     public void testRegisterDefinition() throws ResourceException, RegistryException, ConfigException {
         var location = getLocation("definition");
-        doReturn(Optional.of(location)).when(this.configuration).getConfig(eq("services.workflow.definition.location"));
+        doReturn(Optional.of(location)).when(this.configuration).getConfig("services.workflow.definition.location");
 
         this.factory.registerResources();
         verify(this.registry, times(1)).add(anyString(), anyString());
@@ -78,7 +77,7 @@ public class FlowableWorkflowFactoryTest {
 
     @Test
     public void testRegisterDefinition_NoDefinitionConfig() throws ResourceException, RegistryException, ConfigException {
-        doReturn(Optional.empty()).when(this.configuration).getConfig(eq("services.workflow.definition.location"));
+        doReturn(Optional.empty()).when(this.configuration).getConfig("services.workflow.definition.location");
 
         this.factory.registerResources();
         verifyNoInteractions(this.registry);
@@ -86,7 +85,7 @@ public class FlowableWorkflowFactoryTest {
 
     @Test
     public void testRegisterDefinition_NoDirectory() throws ResourceException, RegistryException, ConfigException {
-        doReturn(Optional.of("./nodir")).when(this.configuration).getConfig(eq("services.workflow.definition.location"));
+        doReturn(Optional.of("./nodir")).when(this.configuration).getConfig("services.workflow.definition.location");
 
         this.factory.registerResources();
         verifyNoInteractions(this.registry);

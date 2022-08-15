@@ -11,27 +11,40 @@ public class ApplicationException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    protected String type;
+    protected final String type;
 
     public ApplicationException(String message) {
         super(message);
+        this.type = null;
+    }
+
+    public ApplicationException(String message, String type) {
+        super(message);
+        this.type = type;
     }
 
     public ApplicationException(Throwable cause) {
         super(cause);
+        this.type = null;
+    }
+
+    public ApplicationException(Throwable cause, String type) {
+        super(cause);
+        this.type = type;
     }
 
     public ApplicationException(String message, Throwable cause) {
         super(message, cause);
+        this.type = null;
+    }
+
+    public ApplicationException(String message, Throwable cause, String type) {
+        super(message, cause);
+        this.type = type;
     }
 
     public String getType() {
         return this.type;
-    }
-
-    public ApplicationException withType(String type) {
-        this.type = type;
-        return this;
     }
 
     @Override

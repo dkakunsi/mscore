@@ -53,9 +53,9 @@ public final class SynchronizationsExecutor implements Executor<Synchronization>
         }
 
         var schema = (Schema) resource;
-        schema.getReferences().forEach((referenceAttribute, referenceDomains) -> {
-            referenceDomains.forEach(referenceDomain -> add(new DefaultSynchronization(synchronizer, referenceDomain, referenceAttribute)));
-        });
+        schema.getReferences().forEach((referenceAttribute, referenceDomains) ->
+            referenceDomains.forEach(referenceDomain -> add(new DefaultSynchronization(synchronizer, referenceDomain, referenceAttribute)))
+        );
     }
 
     @Override

@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -60,7 +59,7 @@ public class JavalinWebTest {
     @BeforeClass
     public static void setup() throws Exception {
         configuration = mock(Configuration.class);
-        doReturn(Optional.of("2220")).when(configuration).getConfig(eq("platform.service.web.port"));
+        doReturn(Optional.of("2220")).when(configuration).getConfig("platform.service.web.port");
         doReturn("test").when(configuration).getServiceName();
 
         principal = new JSONObject();
@@ -203,7 +202,7 @@ public class JavalinWebTest {
     @Test
     public void testGetOne() throws ApplicationException {
         var json = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\"}");
-        doReturn(json).when(service).find(eq("id"));
+        doReturn(json).when(service).find("id");
 
         var response = Unirest.get(BASE_URL + "/id").header("Authorization", "JWT Token").asString();
 
@@ -221,7 +220,7 @@ public class JavalinWebTest {
     @Test
     public void testGetOneByCode() throws ApplicationException {
         var json = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\"}");
-        doReturn(json).when(service).findByCode(eq("code"));
+        doReturn(json).when(service).findByCode("code");
 
         var response = Unirest.get(BASE_URL + "/code/code").header("Authorization", "JWT Token").asString();
 
@@ -260,7 +259,7 @@ public class JavalinWebTest {
     @Test
     public void testGet_NotFound() throws ApplicationException {
         var json = new JSONObject();
-        doReturn(json).when(service).find(eq("id"));
+        doReturn(json).when(service).find("id");
 
         var response = Unirest.get(BASE_URL + "/id").header("Authorization", "JWT Token").asString();
 
@@ -401,7 +400,7 @@ public class JavalinWebTest {
     @Test
     public void testSecure_GetOne() throws ApplicationException {
         var json = new JSONObject("{\"domain\":\"secure\",\"id\":\"id\",\"name\":\"name\"}");
-        doReturn(json).when(secureService).find(eq("id"));
+        doReturn(json).when(secureService).find("id");
 
         var response = Unirest.get(BASE_SECURE_URL + "/id").header("Authorization", "JWT Token").asString();
 
@@ -419,7 +418,7 @@ public class JavalinWebTest {
     @Test
     public void testSecure_GetOneByCode() throws ApplicationException {
         var json = new JSONObject("{\"domain\":\"secure\",\"id\":\"id\",\"name\":\"name\"}");
-        doReturn(json).when(secureService).findByCode(eq("code"));
+        doReturn(json).when(secureService).findByCode("code");
 
         var response = Unirest.get(BASE_SECURE_URL + "/code/code").header("Authorization", "JWT Token").asString();
 

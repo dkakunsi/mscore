@@ -58,11 +58,4 @@ public class MemoryRegistryTest {
         var keys = this.registry.keys();
         assertThat(keys.get(0), is("domain"));
     }
-
-    @Test
-    public void dummyTest() {
-        this.registry.getName();
-        this.registry.open();
-        this.registry.close();
-    }
 }

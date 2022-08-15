@@ -47,6 +47,10 @@ public final class JavalinServer extends Server {
 
     private static final String AUTHORIZATION = "Authorization";
 
+    private static final String[] MUTATION_REQUEST_METHOD = { "post", "put" };
+
+    private static final String[] NON_CRUD_REQUEST_PATH = { "search", "sync" };
+
     private Javalin app;
 
     private Consumer<JavalinConfig> configurer;
@@ -81,7 +85,8 @@ public final class JavalinServer extends Server {
     public <T extends Exception> void addExceptionHandler(Class<T> type, int statusCode) {
         addExceptionHandler(type, (ex, ctx) -> {
             LOG.error(ex.getMessage(), ex);
-            ctx.status(statusCode).contentType("application/json").result(createResponseMessage(ex, statusCode).toString());
+            ctx.status(statusCode).contentType("application/json")
+                    .result(createResponseMessage(ex, statusCode).toString());
         });
     }
 
@@ -121,28 +126,27 @@ public final class JavalinServer extends Server {
         }
 
         secureUri.forEach((uri, role) -> this.app.before(uri, ctx -> {
-                if (isPreflightRequest(ctx.method())) {
-                    return;
-                }
+            if (isPreflightRequest(ctx.method())) {
+                return;
+            }
 
-                var applicationContext = JavalinApplicationContext.of(ctx);
-                setContext(applicationContext);
-                var sessionKey = ctx.header(AUTHORIZATION);
-                var principal = this.authenticationProvider.verify(sessionKey);
-                if (principal == null) {
-                    throw new AuthenticationException("Not authenticated.");
-                }
+            var applicationContext = JavalinApplicationContext.of(ctx);
+            setContext(applicationContext);
+            var sessionKey = ctx.header(AUTHORIZATION);
+            var principal = this.authenticationProvider.verify(sessionKey);
+            if (principal == null) {
+                throw new AuthenticationException("Not authenticated.");
+            }
 
-                ctx.req.setAttribute(PRINCIPAL, principal.toString());
-                ctx.req.setAttribute(BREADCRUMB_ID, applicationContext.getBreadcrumbId());
-                applicationContext = JavalinApplicationContext.of(ctx);
-                setContext(applicationContext);
-                var requiredRole = getRequiredRole(role, ctx.method());
-                if (StringUtils.isNotBlank(requiredRole) && !applicationContext.hasRole(requiredRole)) {
-                    throw new AuthorizationException("Not authorized.");
-                }
-            })
-        );
+            ctx.req.setAttribute(PRINCIPAL, principal.toString());
+            ctx.req.setAttribute(BREADCRUMB_ID, applicationContext.getBreadcrumbId());
+            applicationContext = JavalinApplicationContext.of(ctx);
+            setContext(applicationContext);
+            var requiredRole = getRequiredRole(role, ctx.method());
+            if (StringUtils.isNotBlank(requiredRole) && !applicationContext.hasRole(requiredRole)) {
+                throw new AuthorizationException("Not authorized.");
+            }
+        }));
     }
 
     private static boolean isPreflightRequest(String method) {
@@ -182,15 +186,15 @@ public final class JavalinServer extends Server {
     }
 
     private static boolean isValidatable(String method, String path) {
-        if (!StringUtils.equalsAnyIgnoreCase(method, "post", "put")) {
-            // Only POST & PUT has body.
-            return false;
-        }
-        if (StringUtils.containsAny(path.toLowerCase(), "search", "sync")) {
-            // Do not validate search and sync operation
-            return false;            
-        }
-        return true;
+        return isMutationRequest(method) && isCrudRequest(path);
+    }
+
+    private static boolean isMutationRequest(String method) {
+        return StringUtils.equalsAnyIgnoreCase(method, MUTATION_REQUEST_METHOD);
+    }
+
+    private static boolean isCrudRequest(String path) {
+        return !StringUtils.containsAny(path.toLowerCase(), NON_CRUD_REQUEST_PATH);
     }
 
     private static boolean isValid(List<Validation> validations, JSONObject json) {

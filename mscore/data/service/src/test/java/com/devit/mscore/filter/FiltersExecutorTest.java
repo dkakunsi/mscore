@@ -1,7 +1,6 @@
 package com.devit.mscore.filter;
 
 import static org.junit.Assert.assertFalse;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -26,7 +25,7 @@ public class FiltersExecutorTest {
 
     @Test
     public void testFilter_Password() throws ConfigException {
-        doReturn(Optional.of("password")).when(this.configuration).getConfig(eq("services.data.filter.remove"));
+        doReturn(Optional.of("password")).when(this.configuration).getConfig("services.data.filter.remove");
         var factory = FilterFactory.of();
         var executors = factory.filters(this.configuration);
         var json = new JSONObject("{\"domain\":\"domain\",\"password\":\"abcd\"}");
@@ -37,7 +36,7 @@ public class FiltersExecutorTest {
 
     @Test
     public void testFilter_DocumentField() throws ConfigException {
-        doReturn(Optional.of("document")).when(this.configuration).getConfig(eq("services.data.filter.remove"));
+        doReturn(Optional.of("document")).when(this.configuration).getConfig("services.data.filter.remove");
         var factory = FilterFactory.of();
         var executors = factory.filters(this.configuration);
         var json = new JSONObject("{\"domain\":\"domain\",\"document\":\"abcd\",\"documentation\":\"12345\"}");

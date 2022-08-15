@@ -3,7 +3,6 @@ package com.devit.mscore.template.pebble;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -45,7 +44,7 @@ public class PebbleTemplateFactoryTest {
 
     @Test
     public void testGetResourceLocation() throws ConfigException {
-        doReturn(Optional.of("./template")).when(this.configuration).getConfig(eq("services.notification.template.resource.location"));
+        doReturn(Optional.of("./template")).when(this.configuration).getConfig("services.notification.template.resource.location");
 
         var location = this.factory.getResourceLocation();
         assertThat(location, is("./template"));

@@ -22,7 +22,7 @@ public class ApplicationStarter implements Starter {
 
     private static final Logger LOGGER = ApplicationLogger.getLogger(ApplicationStarter.class);
 
-    private static final String TOPICS = "services.%s.topics";
+    private static final String TOPICS_KEY = "services.%s.topics";
 
     private Configuration configuration;
 
@@ -46,7 +46,7 @@ public class ApplicationStarter implements Starter {
 
     static List<String> getTopicsToListen(Configuration configuration)
             throws ConfigException {
-        var topicConfigName = String.format(TOPICS, configuration.getServiceName());
+        var topicConfigName = String.format(TOPICS_KEY, configuration.getServiceName());
         var topics = configuration.getConfig(topicConfigName)
                 .orElseThrow(() -> new ConfigException("No topic provided."));
         return Stream.of(topics.split(",")).collect(Collectors.toList());

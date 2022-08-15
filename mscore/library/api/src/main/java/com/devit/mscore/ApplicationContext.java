@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -33,11 +32,7 @@ public abstract class ApplicationContext {
     protected Map<String, Object> contextData;
 
     protected ApplicationContext(Map<String, Object> contextData) {
-        if (contextData != null) {
-            this.contextData = contextData;
-        } else {
-            this.contextData = new HashMap<>();
-        }
+        this.contextData = contextData != null ? contextData : new HashMap<>();
     }
 
     public static ApplicationContext getContext() {
@@ -46,6 +41,10 @@ public abstract class ApplicationContext {
 
     public static void setContext(ApplicationContext appContext) {
         context.set(appContext);
+    }
+
+    public static void close() {
+        context.remove();
     }
 
     /**
@@ -70,12 +69,21 @@ public abstract class ApplicationContext {
      * @return authenticated user.
      */
     public String getRequestedBy() {
-        return hasRequestedBy() ? getPrincipal().get().getString(REQUESTED_BY) : UNKNOWN;
+        var principal = getPrincipal();
+        return hasRequestedBy(principal) ? principal.get().getString(REQUESTED_BY) : UNKNOWN;
     }
 
     protected boolean hasRequestedBy() {
         var principal = getPrincipal();
-        return principal.isPresent() && principal.get().has(REQUESTED_BY);
+        return principal.isPresent() && hasRequestedBy(principal.get());
+    }
+
+    private boolean hasRequestedBy(Optional<JSONObject> principal) {
+        return principal.isPresent() && hasRequestedBy(principal.get());
+    }
+
+    private boolean hasRequestedBy(JSONObject principal) {
+        return principal.has(REQUESTED_BY);
     }
 
     /**
@@ -84,12 +92,21 @@ public abstract class ApplicationContext {
      * @return roles.
      */
     public List<Object> getUserRoles() {
-        return hasUserRoles() ? getPrincipal().get().getJSONArray(ROLE).toList() : List.of();
+        var principal = getPrincipal();
+        return hasUserRoles(principal) ? principal.get().getJSONArray(ROLE).toList() : List.of();
     }
 
     protected boolean hasUserRoles() {
         var principal = getPrincipal();
         return principal.isPresent() && principal.get().has(ROLE);
+    }
+
+    private boolean hasUserRoles(Optional<JSONObject> principal) {
+        return principal.isPresent() && hasUserRoles(principal.get());
+    }
+
+    private boolean hasUserRoles(JSONObject principal) {
+        return principal.has(ROLE);
     }
 
     /**
@@ -153,8 +170,7 @@ public abstract class ApplicationContext {
         var anyRequiredRolesExists = false;
         if (hasUserRoles()) {
             var currentUserRoles = getUserRoles();
-            Predicate<Object> matchRequiredRoles = currentUserRole -> requiredRoles.contains(currentUserRole);
-            anyRequiredRolesExists = currentUserRoles.stream().anyMatch(matchRequiredRoles);
+            anyRequiredRolesExists = currentUserRoles.stream().anyMatch(requiredRoles::contains);
         }
         return anyRequiredRolesExists;
     }

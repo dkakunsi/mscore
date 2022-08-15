@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -36,7 +35,7 @@ public class KafkaMessagingFactoryTest {
 
     @Test
     public void testGetProperties() throws ConfigException {
-        doReturn(Optional.of("value1")).when(this.configuration).getConfig(eq("platform.kafka.config1"));
+        doReturn(Optional.of("value1")).when(this.configuration).getConfig("platform.kafka.config1");
         var properties = this.factory.getProperties(List.of("config1"));
         assertNotNull(properties);
         assertThat(properties.getProperty("config1"), is("value1"));
@@ -44,7 +43,7 @@ public class KafkaMessagingFactoryTest {
 
     @Test
     public void testGetTemplatedTopics_SingleTopic() throws ConfigException {
-        doReturn(Optional.of("topic")).when(this.configuration).getConfig(eq("platform.kafka.topic.name"));
+        doReturn(Optional.of("topic")).when(this.configuration).getConfig("platform.kafka.topic.name");
         var topics = this.factory.getTemplatedTopics("name");
         assertTrue(topics.isPresent());
         assertThat(topics.get().length, is(1));
@@ -53,7 +52,7 @@ public class KafkaMessagingFactoryTest {
 
     @Test
     public void testGetTemplatedTopics_MultipleTopic() throws ConfigException {
-        doReturn(Optional.of("topic1,topic2")).when(this.configuration).getConfig(eq("platform.kafka.topic.name"));
+        doReturn(Optional.of("topic1,topic2")).when(this.configuration).getConfig("platform.kafka.topic.name");
         var topics = this.factory.getTemplatedTopics("name");
         assertTrue(topics.isPresent());
         assertThat(topics.get().length, is(2));
@@ -63,14 +62,14 @@ public class KafkaMessagingFactoryTest {
 
     @Test
     public void testGetTemplatedTopics_Empty() throws ConfigException {
-        doReturn(Optional.empty()).when(this.configuration).getConfig(eq("platform.kafka.topic.name"));
+        doReturn(Optional.empty()).when(this.configuration).getConfig("platform.kafka.topic.name");
         var topics = this.factory.getTemplatedTopics("name");
         assertTrue(topics.isEmpty());
     }
 
     @Test
     public void testGetTopics() throws ConfigException {
-        doReturn(Optional.of("topic1,topic2")).when(this.configuration).getConfig(eq("services.data.kafka.topic.dependency"));
+        doReturn(Optional.of("topic1,topic2")).when(this.configuration).getConfig("services.data.kafka.topic.dependency");
         var key = "services.data.kafka.topic.dependency";
         var topics = this.factory.getTopics(key);
         assertThat(topics.get().length, is(2));
@@ -79,7 +78,7 @@ public class KafkaMessagingFactoryTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetPublisher() throws ConfigException {
-        doReturn(Optional.of("topic.name")).when(this.configuration).getConfig(eq("platform.kafka.topic.name"));
+        doReturn(Optional.of("topic.name")).when(this.configuration).getConfig("platform.kafka.topic.name");
         var producer = mock(Producer.class);
         this.factory.setProducer(producer);
         var publisher = this.factory.publisher("name");

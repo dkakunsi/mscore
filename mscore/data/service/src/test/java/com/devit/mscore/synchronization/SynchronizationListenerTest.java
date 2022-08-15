@@ -1,6 +1,5 @@
 package com.devit.mscore.synchronization;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -24,6 +23,6 @@ public class SynchronizationListenerTest {
         var listener = new SynchronizationListener(null, syncExecutor);
         listener.consume(new JSONObject("{\"domain\":\"referenceDomain\",\"id\":\"id\"}"));
 
-        verify(spiedSynchronization, times(1)).synchronize(eq("id"));
+        verify(spiedSynchronization, times(1)).synchronize("id");
     }
 }

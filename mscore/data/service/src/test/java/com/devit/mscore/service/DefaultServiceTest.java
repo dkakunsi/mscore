@@ -113,7 +113,7 @@ public class DefaultServiceTest {
     @Test
     public void testDelete() throws ApplicationException {
         this.service.delete("id");
-        verify(this.repository, times(1)).delete(eq("id"));
+        verify(this.repository, times(1)).delete("id");
     }
 
     @Test
@@ -125,7 +125,7 @@ public class DefaultServiceTest {
     @Test
     public void testFindId() throws ApplicationException {
         var result = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\"}");
-        doReturn(Optional.of(result)).when(this.repository).find(eq("id"));
+        doReturn(Optional.of(result)).when(this.repository).find("id");
         var json = this.service.find("id");
         assertThat(json.getString("id"), is("id"));
         assertThat(json.getString("domain"), is("domain"));
@@ -133,7 +133,7 @@ public class DefaultServiceTest {
 
     @Test
     public void testFindId_EmptyResult() throws ApplicationException {
-        doReturn(Optional.empty()).when(this.repository).find(eq("id"));
+        doReturn(Optional.empty()).when(this.repository).find("id");
         var json = this.service.find("id");
         assertTrue(json.isEmpty());
     }
@@ -148,7 +148,7 @@ public class DefaultServiceTest {
     public void testFindCode() throws ApplicationException {
         var object = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"code\":\"code\"}");
         var result = new JSONArray().put(object);
-        doReturn(Optional.of(result)).when(this.repository).find(eq("code"), eq("code"));
+        doReturn(Optional.of(result)).when(this.repository).find("code", "code");
         var json = this.service.findByCode("code");
         assertThat(json.getString("id"), is("id"));
         assertThat(json.getString("domain"), is("domain"));
@@ -157,7 +157,7 @@ public class DefaultServiceTest {
 
     @Test
     public void testFindCode_EmptyResult() throws ApplicationException {
-        doReturn(Optional.empty()).when(this.repository).find(eq("code"), eq("code"));
+        doReturn(Optional.empty()).when(this.repository).find("code", "code");
         var json = this.service.findByCode("code");
         assertTrue(json.isEmpty());
     }
@@ -211,7 +211,7 @@ public class DefaultServiceTest {
     @Test
     public void testSynchronizeId() throws SynchronizationException, DataException {
         var result = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"code\":\"code\"}");
-        doReturn(Optional.of(result)).when(this.repository).find(eq("id"));
+        doReturn(Optional.of(result)).when(this.repository).find("id");
         doReturn(result).when(this.repository).save(any(JSONObject.class));
         this.service.synchronize("id");
 
@@ -220,7 +220,7 @@ public class DefaultServiceTest {
 
     @Test
     public void testSynchronizeId_EmptyResult() throws SynchronizationException, DataException {
-        doReturn(Optional.empty()).when(this.repository).find(eq("id"));
+        doReturn(Optional.empty()).when(this.repository).find("id");
         this.service.synchronize("id");
 
         verify(this.repository, never()).save(any(JSONObject.class));
@@ -228,7 +228,7 @@ public class DefaultServiceTest {
 
     @Test
     public void testSynchronizeId_ThrowsDataException() throws SynchronizationException, DataException {
-        doThrow(new DataException("")).when(this.repository).find(eq("id"));
+        doThrow(new DataException("")).when(this.repository).find("id");
         var ex = assertThrows(SynchronizationException.class, () -> this.service.synchronize("id"));
         assertThat(ex.getMessage(), is("Synchronization failed."));
         assertThat(ex.getCause(), instanceOf(DataException.class));
@@ -236,8 +236,7 @@ public class DefaultServiceTest {
 
     @Test
     public void testSynchronizeAttributeValue_ThrowsDataException() throws SynchronizationException, DataException {
-        doThrow(new DataException("")).when(this.repository).find(eq("attribute"),
-                eq("id"));
+        doThrow(new DataException("")).when(this.repository).find("attribute", "id");
         var ex = assertThrows(SynchronizationException.class, () -> this.service.synchronize("attribute", "id"));
         assertThat(ex.getMessage(), is("Synchronization failed."));
         assertThat(ex.getCause(), instanceOf(DataException.class));

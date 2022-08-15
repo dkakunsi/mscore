@@ -53,7 +53,7 @@ public class ElasticsearchIndexTest {
 
     @Test
     public void testGet() throws IndexingException {
-        doReturn(Optional.of(new JSONObject())).when(this.service).get(eq("indexName"), eq("id"));
+        doReturn(Optional.of(new JSONObject())).when(this.service).get("indexName", "id");
         var result = this.index.get("id");
         assertTrue(result.isPresent());
     }

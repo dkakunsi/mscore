@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -56,10 +55,10 @@ public class JWTAuthenticationProviderTest {
     @Before
     public void setup() throws ApplicationException {
         this.configuration = mock(Configuration.class);
-        doReturn(Optional.of(KEYCLOAK_PUBLIC_KEY)).when(this.configuration).getConfig(eq("platform.keycloak.public.key"));
+        doReturn(Optional.of(KEYCLOAK_PUBLIC_KEY)).when(this.configuration).getConfig("platform.keycloak.public.key");
         doReturn("data").when(this.configuration).getServiceName();
         doReturn(true).when(this.configuration).has("services.data.secure.uri");
-        doReturn(Optional.of(SECURITY_CONFIG)).when(this.configuration).getConfig(eq("services.data.secure.uri"));
+        doReturn(Optional.of(SECURITY_CONFIG)).when(this.configuration).getConfig("services.data.secure.uri");
         this.provider = JWTAuthenticationProvider.of(this.configuration);
 
         try {
@@ -72,8 +71,8 @@ public class JWTAuthenticationProviderTest {
         var configuration = mock(Configuration.class);
         doReturn(true).when(configuration).has("services.data.secure.uri");
         doReturn("data").when(configuration).getServiceName();
-        doReturn(Optional.of("invalid")).when(configuration).getConfig(eq("services.data.secure.uri"));
-        doReturn(Optional.of(PUBLIC_KEY)).when(configuration).getConfig(eq("platform.keycloak.public.key"));
+        doReturn(Optional.of("invalid")).when(configuration).getConfig("services.data.secure.uri");
+        doReturn(Optional.of(PUBLIC_KEY)).when(configuration).getConfig("platform.keycloak.public.key");
 
         var ex = assertThrows(ConfigException.class, () -> JWTAuthenticationProvider.of(configuration));
         assertThat(ex.getMessage(), is("Invalid security configuration."));
@@ -84,7 +83,7 @@ public class JWTAuthenticationProviderTest {
     public void testNoSecurityConfig() throws ApplicationException {
         var configuration = mock(Configuration.class);
         doReturn(false).when(configuration).has("services.data.secure.uri");
-        doReturn(Optional.of(PUBLIC_KEY)).when(configuration).getConfig(eq("platform.keycloak.public.key"));
+        doReturn(Optional.of(PUBLIC_KEY)).when(configuration).getConfig("platform.keycloak.public.key");
         var auth = JWTAuthenticationProvider.of(configuration);
         assertTrue(auth.getUri().isEmpty());
     }
@@ -93,15 +92,15 @@ public class JWTAuthenticationProviderTest {
     public void testEmptySecurityConfig() throws ApplicationException {
         var configuration = mock(Configuration.class);
         doReturn(true).when(configuration).has("services.data.secure.uri");
-        doReturn(Optional.empty()).when(configuration).getConfig(eq("services.data.secure.uri"));
-        doReturn(Optional.of(PUBLIC_KEY)).when(configuration).getConfig(eq("platform.keycloak.public.key"));
+        doReturn(Optional.empty()).when(configuration).getConfig("services.data.secure.uri");
+        doReturn(Optional.of(PUBLIC_KEY)).when(configuration).getConfig("platform.keycloak.public.key");
         var auth = JWTAuthenticationProvider.of(configuration);
         assertTrue(auth.getUri().isEmpty());
     }
 
     @Test
     public void testInvalidKey() throws ApplicationException {
-        doReturn(Optional.of("asd")).when(this.configuration).getConfig(eq("platform.keycloak.public.key"));
+        doReturn(Optional.of("asd")).when(this.configuration).getConfig("platform.keycloak.public.key");
 
         var ex = assertThrows(ApplicationException.class, () -> JWTAuthenticationProvider.of(this.configuration));
         assertThat(ex.getMessage(), is("Cannot create RSA key for authentication."));
@@ -110,7 +109,7 @@ public class JWTAuthenticationProviderTest {
 
     @Test
     public void testKeyNotProvided() throws ApplicationException {
-        doReturn(Optional.empty()).when(this.configuration).getConfig(eq("platform.keycloak.public.key"));
+        doReturn(Optional.empty()).when(this.configuration).getConfig("platform.keycloak.public.key");
 
         var ex = assertThrows(ApplicationException.class, () -> JWTAuthenticationProvider.of(this.configuration));
         assertThat(ex.getMessage(), is("Public key is not configured correctly."));
@@ -129,7 +128,7 @@ public class JWTAuthenticationProviderTest {
     @Test
     public void testVerify() throws ApplicationException, NoSuchAlgorithmException, InvalidKeySpecException {
         var token = createToken();
-        doReturn(Optional.of(PUBLIC_KEY)).when(this.configuration).getConfig(eq("platform.keycloak.public.key"));
+        doReturn(Optional.of(PUBLIC_KEY)).when(this.configuration).getConfig("platform.keycloak.public.key");
         provider = JWTAuthenticationProvider.of(this.configuration);
         var principal = provider.verify(token);
         assertNotNull(principal);

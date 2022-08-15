@@ -6,7 +6,6 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -47,7 +46,7 @@ public class ResourceManagerTest {
     @Test
     public void testRegister() throws RegistryException, ResourceException, ConfigException {
         var location = getLocation("resource");
-        doReturn(Optional.of(location)).when(this.configuration).getConfig(eq("location"));
+        doReturn(Optional.of(location)).when(this.configuration).getConfig("location");
 
         this.manager.registerResources();
 
@@ -62,7 +61,7 @@ public class ResourceManagerTest {
 
     @Test
     public void testRegister_NoResourceConfig() throws ResourceException, RegistryException, ConfigException {
-        doReturn(Optional.empty()).when(this.configuration).getConfig(eq("location"));
+        doReturn(Optional.empty()).when(this.configuration).getConfig("location");
 
         var context = mock(ApplicationContext.class);
         doReturn("breadcrumbId").when(context).getBreadcrumbId();
@@ -73,7 +72,7 @@ public class ResourceManagerTest {
 
     @Test
     public void testRegister_NoDirectory() throws ResourceException, RegistryException, ConfigException {
-        doReturn(Optional.of("./nodir")).when(this.configuration).getConfig(eq("location"));
+        doReturn(Optional.of("./nodir")).when(this.configuration).getConfig("location");
 
         var context = mock(ApplicationContext.class);
         doReturn("breadcrumbId").when(context).getBreadcrumbId();
@@ -85,7 +84,7 @@ public class ResourceManagerTest {
     @Test
     public void testRegister_RegistryException() throws ResourceException, RegistryException, ConfigException {
         var location = getLocation("resource");
-        doReturn(Optional.of(location)).when(this.configuration).getConfig(eq("location"));
+        doReturn(Optional.of(location)).when(this.configuration).getConfig("location");
         doThrow(new RegistryException("message")).when(this.registry).add(anyString(), anyString());
 
         var ex = assertThrows(ResourceException.class, () -> this.manager.registerResources());

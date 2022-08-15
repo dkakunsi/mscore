@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -47,7 +46,7 @@ public class SchemaManagerTest {
     @Test
     public void testRegisterSchema() throws ConfigException, URISyntaxException, ResourceException, RegistryException {
         var location = getLocation("registration");
-        doReturn(Optional.of(location)).when(this.configuration).getConfig(eq("services.data.schema.resource.location"));
+        doReturn(Optional.of(location)).when(this.configuration).getConfig("services.data.schema.resource.location");
 
         this.manager.registerResources();
 
@@ -68,7 +67,7 @@ public class SchemaManagerTest {
         var content = new JSONSchema(resourceFile).getContent();
 
         var mockedSchema = new JSONObject().put("id", "id").put("name", "name").put("content", content);
-        doReturn(mockedSchema.toString()).when(this.registry).get(eq("domain"));
+        doReturn(mockedSchema.toString()).when(this.registry).get("domain");
 
         var schema = this.manager.getSchema("domain");
         assertThat(schema.getDomain(), is("name"));

@@ -20,6 +20,10 @@ public class JSONSchema extends Schema {
 
     private static final String PROPERTIES = "properties";
 
+    private static final String CONST = "const";
+
+    private static final String ONE_OF = "oneOf";
+
     private Map<String, List<String>> references;
 
     JSONSchema(File resourceFile) throws ResourceException {
@@ -87,10 +91,10 @@ public class JSONSchema extends Schema {
         var properties = json.getJSONObject(PROPERTIES);
         if (properties.has("domain")) {
             var domain = properties.getJSONObject("domain");
-            if (domain.has("const")) {
-                domains.add(domain.getString("const"));
-            } else if (domain.has("oneOf")) {
-                domains = getMultipleDomains(domain.getJSONArray("oneOf"));
+            if (domain.has(CONST)) {
+                domains.add(domain.getString(CONST));
+            } else if (domain.has(ONE_OF)) {
+                domains = getMultipleDomains(domain.getJSONArray(ONE_OF));
             }
         }
 
@@ -101,19 +105,19 @@ public class JSONSchema extends Schema {
         var domains = new ArrayList<String>();
         for (var object : array) {
             var json = (JSONObject) object;
-            if (json.has("const")) {
-                domains.add(json.getString("const"));
+            if (json.has(CONST)) {
+                domains.add(json.getString(CONST));
             }
         }
         return domains;
     }
 
     private Optional<List<String>> getNullableReferenceDomain(JSONObject json) {
-        if (!json.has("oneOf")) {
+        if (!json.has(ONE_OF)) {
             return Optional.empty();
         }
 
-        var array = json.getJSONArray("oneOf");
+        var array = json.getJSONArray(ONE_OF);
         for (var object : array) {
             var value = getReferenceDomain((JSONObject) object);
             if (value.isPresent()) {

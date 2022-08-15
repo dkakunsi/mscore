@@ -36,7 +36,7 @@ public class WorkflowController extends JavalinController {
     }
 
     public Handler createInstance() {
-        return (ctx) -> {
+        return ctx -> {
             if (this.workflowProcess.isEmpty()) {
                 throw new ApplicationException(NO_WORKFLOW);
             }
@@ -51,7 +51,7 @@ public class WorkflowController extends JavalinController {
     }
 
     public Handler createInstanceByAction() {
-        return (ctx) -> {
+        return ctx -> {
             if (this.workflowProcess.isEmpty()) {
                 throw new ApplicationException(NO_WORKFLOW);
             }
@@ -66,7 +66,7 @@ public class WorkflowController extends JavalinController {
     }
 
     public Handler completeTask() {
-        return (ctx) -> {
+        return ctx -> {
             if (this.workflowProcess.isEmpty()) {
                 throw new ApplicationException(NO_WORKFLOW);
             }

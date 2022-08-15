@@ -77,6 +77,18 @@ public class FileConfigurationUtilsTest {
         assertThat(ex.getMessage(), is("Cannot read invalid config"));
     }
 
+    @Test
+    public void testLoad_ReturnNonNull() throws ConfigException {
+        var ex = assertThrows(ConfigException.class, () -> FileConfigurationUtils.load(""));
+        assertThat(ex.getMessage(), is("Cannot read invalid config"));
+    }
+
+    @Test
+    public void testLoadNullArgs_ReturnNonNull() throws ConfigException {
+        var ex = assertThrows(ConfigException.class, () -> FileConfigurationUtils.load("", ""));
+        assertThat(ex.getMessage(), is("Cannot read invalid config"));
+    }
+
     private String getLocation(String location) {
         var classLoader = getClass().getClassLoader();
         var resource = classLoader.getResource(location);

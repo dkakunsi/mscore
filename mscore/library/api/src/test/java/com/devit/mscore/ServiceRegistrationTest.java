@@ -5,7 +5,6 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThrows;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -42,8 +41,8 @@ public class ServiceRegistrationTest {
 
     @Test
     public void testRegister_Service() throws RegistryException, ConfigException {
-        doReturn(Optional.of("true")).when(this.configuration).getConfig(eq("platform.service.registry.static"));
-        doReturn(Optional.of("static-address")).when(this.configuration).getConfig(eq("services.data.registry.address"));
+        doReturn(Optional.of("true")).when(this.configuration).getConfig("platform.service.registry.static");
+        doReturn(Optional.of("static-address")).when(this.configuration).getConfig("services.data.registry.address");
 
         var service = mock(Service.class);
         doReturn("domain").when(service).getDomain();
@@ -63,8 +62,8 @@ public class ServiceRegistrationTest {
 
     @Test
     public void testRegister_StaticAddress() throws RegistryException, ConfigException {
-        doReturn(Optional.of("true")).when(this.configuration).getConfig(eq("platform.service.registry.static"));
-        doReturn(Optional.of("static-address")).when(this.configuration).getConfig(eq("services.data.registry.address"));
+        doReturn(Optional.of("true")).when(this.configuration).getConfig("platform.service.registry.static");
+        doReturn(Optional.of("static-address")).when(this.configuration).getConfig("services.data.registry.address");
 
         var spiedRegistration = spy(this.serviceRegistration);
         spiedRegistration.register("domain");
@@ -81,9 +80,9 @@ public class ServiceRegistrationTest {
 
     @Test
     public void testRegister_DynamicAddress() throws RegistryException, UnknownHostException, ConfigException {
-        doReturn(Optional.empty()).when(this.configuration).getConfig(eq("platform.sewrvice.registry.static"));
-        doReturn(Optional.of("http")).when(this.configuration).getConfig(eq("services.data.registry.protocol"));
-        doReturn(Optional.of("2000")).when(this.configuration).getConfig(eq("platform.service.web.port"));
+        doReturn(Optional.empty()).when(this.configuration).getConfig("platform.sewrvice.registry.static");
+        doReturn(Optional.of("http")).when(this.configuration).getConfig("services.data.registry.protocol");
+        doReturn(Optional.of("2000")).when(this.configuration).getConfig("platform.service.web.port");
 
         var currentAddress = Inet4Address.getLocalHost().getHostAddress();
 
@@ -102,7 +101,7 @@ public class ServiceRegistrationTest {
 
     @Test
     public void testRegister_ThrowException() throws RegistryException, UnknownHostException, ConfigException {
-        doThrow(new ConfigException("Error message.")).when(this.configuration).getConfig(eq("platform.service.registry.static"));
+        doThrow(new ConfigException("Error message.")).when(this.configuration).getConfig("platform.service.registry.static");
         var ex = assertThrows(RegistryException.class, () -> this.serviceRegistration.register("domain"));
 
         var actualEx = ex.getCause();

@@ -11,6 +11,7 @@ import com.devit.mscore.Subscriber;
 import com.devit.mscore.logging.ApplicationLogger;
 
 import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.json.JSONObject;
 
 public class KafkaSubscriber implements Subscriber {
@@ -50,18 +51,17 @@ public class KafkaSubscriber implements Subscriber {
         new Thread(() -> {
             while (consuming) {
                 var records = this.consumer.poll(POLL_DURATION);
-
-                records.forEach(consumerRecord -> {
-                    new Thread(() -> {
-
-                        LOG.debug(String.format("Receiving message from topic '%s', partition '%s', offset '%s': %s",
-                            consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset(), consumerRecord.value()));
-                        setContext(KafkaApplicationContext.of(consumerRecord.headers()));
-
-                        this.topics.get(consumerRecord.topic()).accept(new JSONObject(consumerRecord.value()));
-                    }).run();
-                });
+                records.forEach(this::handleMessage);
             }
+        }).start();
+    }
+
+    private void handleMessage(ConsumerRecord<String, String> message) {
+        new Thread(() -> {
+            LOG.debug(String.format("Receiving message from topic '%s', partition '%s', offset '%s': %s",
+                    message.topic(), message.partition(), message.offset(), message.value()));
+            setContext(KafkaApplicationContext.of(message.headers()));
+            this.topics.get(message.topic()).accept(new JSONObject(message.value()));
         }).start();
     }
 

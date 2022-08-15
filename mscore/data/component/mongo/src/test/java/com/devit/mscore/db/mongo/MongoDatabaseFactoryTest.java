@@ -2,7 +2,6 @@ package com.devit.mscore.db.mongo;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -50,7 +49,7 @@ public class MongoDatabaseFactoryTest {
         doReturn(List.of("id")).when(schema).getUniqueAttributes();
 
         var document = mock(Document.class);
-        doReturn("_id").when(document).get(eq("name"));
+        doReturn("_id").when(document).get("name");
         var mongoCursor = mock(MongoCursor.class);
         doReturn(document).when(mongoCursor).next();
         doReturn(true, false).when(mongoCursor).hasNext();
@@ -62,7 +61,7 @@ public class MongoDatabaseFactoryTest {
         doReturn(collection).when(database).getCollection("domain");
 
         doReturn(database).when(this.client).getDatabase("database");
-        doReturn(Optional.of("database")).when(this.configuration).getConfig(eq("platform.mongo.database"));
+        doReturn(Optional.of("database")).when(this.configuration).getConfig("platform.mongo.database");
 
         var repository = this.factory.repository(schema);
         assertNotNull(repository);
@@ -70,8 +69,8 @@ public class MongoDatabaseFactoryTest {
 
     @Test
     public void testCreateConnectionString() throws ConfigException {
-        doReturn(Optional.of("mongo")).when(this.configuration).getConfig(eq("platform.mongo.host"));
-        doReturn(Optional.of("1000")).when(this.configuration).getConfig(eq("platform.mongo.port"));
+        doReturn(Optional.of("mongo")).when(this.configuration).getConfig("platform.mongo.host");
+        doReturn(Optional.of("1000")).when(this.configuration).getConfig("platform.mongo.port");
 
         var connectionString = this.factory.createConnectionString();
         assertNotNull(connectionString);
@@ -79,9 +78,9 @@ public class MongoDatabaseFactoryTest {
 
     @Test
     public void testApplyAuthentication() throws ConfigException {
-        doReturn(Optional.of("true")).when(this.configuration).getConfig(eq("platform.mongo.secure"));
-        doReturn(Optional.of("username")).when(this.configuration).getConfig(eq("platform.mongo.username"));
-        doReturn(Optional.of("password")).when(this.configuration).getConfig(eq("platform.mongo.password"));
+        doReturn(Optional.of("true")).when(this.configuration).getConfig("platform.mongo.secure");
+        doReturn(Optional.of("username")).when(this.configuration).getConfig("platform.mongo.username");
+        doReturn(Optional.of("password")).when(this.configuration).getConfig("platform.mongo.password");
 
         var builder = mock(Builder.class);
         var connectionString = mock(ConnectionString.class);

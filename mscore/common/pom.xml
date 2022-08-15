@@ -43,6 +43,7 @@
         <junit.version>4.13.2</junit.version>
         <mockito.version>4.1.0</mockito.version>
         <hamcrest.version>2.0.0.0</hamcrest.version>
+        <awaitality.version>4.2.0</awaitality.version>
 
         <!-- Distribution Management URLS -->
         <maven.repo>http://128.199.213.91:1200/repository</maven.repo>
@@ -87,6 +88,12 @@
                 <version>${hamcrest.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>${awaitality.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -111,6 +118,10 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>java-hamcrest</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
         </dependency>
     </dependencies>
 

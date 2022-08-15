@@ -242,15 +242,4 @@ public class FlowableProcessInstance implements WorkflowObject, ProcessInstance 
     public String toString() {
         return toJson().toString();
     }
-
-    /**
-     * @deprecated
-     */
-    @Deprecated(forRemoval = true)
-    public FlowableProcessInstance(RuntimeService runtimeService, ProcessInstance processInstance, boolean completed) {
-        this(runtimeService, processInstance);
-        if (completed) {
-            complete();
-        }
-    }
 }

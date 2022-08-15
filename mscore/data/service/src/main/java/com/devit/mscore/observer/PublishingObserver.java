@@ -28,16 +28,17 @@ public class PublishingObserver implements PostProcessObserver {
             return;
         }
 
-        try {
-            if (this.delay != null) {
+        if (this.delay != null) {
+            try {
                 // Without delay the synchronization chain will not get the correct data.
                 Thread.sleep(this.delay);
+            } catch (InterruptedException ex) {
+                LOG.error(PUBLISHING_ERROR, ex);
+                Thread.currentThread().interrupt();
             }
-
-            LOG.debug("Publishing message to topic {}: {}.", this.publisher.getChannel(), json);
-            this.publisher.publish(json);
-        } catch (InterruptedException ex) {
-            LOG.error(PUBLISHING_ERROR, ex);
         }
+
+        LOG.debug("Publishing message to topic {}: {}.", this.publisher.getChannel(), json);
+        this.publisher.publish(json);
     }
 }

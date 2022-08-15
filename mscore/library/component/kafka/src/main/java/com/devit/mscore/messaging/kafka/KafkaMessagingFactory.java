@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.UUID;
 
 import com.devit.mscore.Configuration;
 import com.devit.mscore.exception.ApplicationRuntimeException;
@@ -71,7 +72,7 @@ public class KafkaMessagingFactory {
     }
 
     private String getClientIdConfig(String groupIdConfig) {
-        return String.format("%s-%s", groupIdConfig, String.valueOf(Math.random()));
+        return String.format("%s-%s", groupIdConfig, UUID.randomUUID());
     }
 
     public static KafkaMessagingFactory of(Configuration configuration) throws ConfigException {

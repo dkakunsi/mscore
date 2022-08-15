@@ -14,6 +14,9 @@ public class WebUtils {
 
     public static final String ERROR = "ERROR";
 
+    private WebUtils() {
+    }
+
     public static String getMessageType(int statusCode) {
         if (inRange(statusCode, 100, 200)) {
             return INFORMATION;

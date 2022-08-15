@@ -1,5 +1,6 @@
 package com.devit.mscore.messaging.kafka;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -10,6 +11,7 @@ import static org.mockito.Mockito.mock;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -76,7 +78,11 @@ public class KafkaSubscriberTest {
         doReturn(records).when(this.consumer).poll(any(Duration.class));
 
         this.subscriber.start();
-        Thread.sleep(1000);
+        await().until(new Callable<Boolean>() {
+            public Boolean call() throws Exception {
+                return result.has("json");
+            };
+        });
         this.subscriber.stop();
 
         assertNotNull(result.get("json"));

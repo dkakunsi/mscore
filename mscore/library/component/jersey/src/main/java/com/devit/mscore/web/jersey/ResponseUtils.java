@@ -14,6 +14,9 @@ public class ResponseUtils {
 
     private static final Logger LOG = new ApplicationLogger(ResponseUtils.class);
 
+    private ResponseUtils() {
+    }
+
     static JSONObject buildResponse(String uri, Response response) {
         var output = response.hasEntity() ? response.getEntity().toString(): "";
         var status = response.getStatus();
