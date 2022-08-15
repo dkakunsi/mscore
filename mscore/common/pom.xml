@@ -35,6 +35,7 @@
         <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
         <flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
+        <sonar-maven-plugin.version>3.4.0.905</sonar-maven-plugin.version>
 
         <!-- Common Dependency Versions -->
         <json.version>20210307</json.version>
@@ -200,7 +201,7 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jxr-plugin</artifactId>
                     <version>${maven-jxr-plugin.version}</version>
-                </plugin>        
+                </plugin>
                 <!-- SpotBugs plugin -->
                 <plugin>
                     <groupId>com.github.spotbugs</groupId>
@@ -342,6 +343,12 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <!-- Sonarqube -->
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${sonar-maven-plugin.version}</version>
                 </plugin>
 
                 <!-- Maven lifecycles -->

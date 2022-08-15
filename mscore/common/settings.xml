@@ -1,0 +1,38 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                              https://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+  <!--
+  <servers>
+    <server>
+      <id>mscore</id>
+      <username>iddevit</username>
+      <password>zmkarx55n75ywfxfabx3yk5aaf7khewlonchlonw2y3kcsfknl3q</password>
+    </server>
+  </servers>
+  -->
+
+  <profiles>
+    <profile>
+      <id>myMavenRepo</id>
+      <!-- To always active
+      <activation>
+        <property>
+          <name>!doNotUseMyMavenRepo</name>
+        </property>
+      </activation>
+    -->
+      <properties>
+        <myMavenRepo.read.url>https://mymavenrepo.com/repo/lIQa1bSYM6xkqtAks7cN/</myMavenRepo.read.url>
+        <myMavenRepo.write.url>https://mymavenrepo.com/repo/UgceKfiYA8D2Xg29hHDs/</myMavenRepo.write.url>
+      </properties>
+    </profile>
+    <profile>
+      <id>useSonar</id>
+      <properties>
+        <!-- this is default. but let's put it just FYI -->
+        <sonar.host.url>http://localhost:9000</sonar.host.url>
+        <sonar.login>squ_9f3d0908feb1a9df182b56400bc014f7a91590eb</sonar.login>
+      </properties>
+    </profile>
+  </profiles>
+</settings>
