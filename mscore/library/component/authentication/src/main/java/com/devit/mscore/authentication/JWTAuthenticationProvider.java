@@ -40,19 +40,19 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
     private RSAPublicKey publicKey;
 
     protected JWTAuthenticationProvider(String publicKey, Map<String, Object> uri)
-            throws ApplicationException {
+            throws ConfigException {
         this.publicKey = publicKey(publicKey.getBytes());
         this.uri = uri;
     }
 
-    private static RSAPublicKey publicKey(byte[] byteKey) throws ApplicationException {
+    private static RSAPublicKey publicKey(byte[] byteKey) throws ConfigException {
         try {
             var keySpec = new X509EncodedKeySpec(decode(byteKey));
             var keyFactory = KeyFactory.getInstance("RSA");
             return (RSAPublicKey) keyFactory.generatePublic(keySpec);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             LOG.error("Failed to create RSA public key.");
-            throw new ApplicationException("Cannot create RSA key for authentication.", ex);
+            throw new ConfigException("Cannot create RSA key for authentication.", ex);
         }
     }
 
@@ -105,7 +105,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
         return this.uri;
     }
 
-    public static JWTAuthenticationProvider of(Configuration configuration) throws ApplicationException {
+    public static JWTAuthenticationProvider of(Configuration configuration) throws ConfigException {
         var secureUri = String.format(SECURE_URI, configuration.getServiceName());
         var publicKey = configuration.getConfig(PUBLIC_KEY).orElseThrow(() -> new ConfigException("Public key is not configured correctly."));
         try {

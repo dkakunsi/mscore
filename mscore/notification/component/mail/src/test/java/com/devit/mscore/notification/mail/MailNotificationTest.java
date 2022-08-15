@@ -106,7 +106,7 @@ public class MailNotificationTest {
 
     @Test
     public void testSend_RegistryException() throws NotificationException, RegistryException {
-        doThrow(new RegistryException("")).when(this.registry).get(eq("action"));
+        doThrow(new RegistryException("")).when(this.registry).get("action");
 
         var json = new JSONObject();
         json.put("action", "action");
@@ -127,7 +127,7 @@ public class MailNotificationTest {
                 eq("Template name: 123454321"));
 
         var template = new JSONObject("{\"content\":\"Template name: %s\"}");
-        doReturn(template.toString()).when(this.registry).get(eq("action"));
+        doReturn(template.toString()).when(this.registry).get("action");
 
         var json = new JSONObject();
         json.put("action", "action");

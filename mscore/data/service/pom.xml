@@ -16,8 +16,6 @@
     <properties>
         <revision>1.0-SNAPSHOT</revision>
         <library.version>[2.1,)</library.version>
-
-        <assembly.mainClass>com.devit.mscore.Main</assembly.mainClass>
     </properties>
 
     <dependencies>

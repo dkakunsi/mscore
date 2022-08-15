@@ -13,7 +13,7 @@
     <description>Parent for aggregator project</description>
 
     <properties>
-        <assembly.mainClass>provided by children</assembly.mainClass>
+        <assembly.mainClass>com.devit.mscore.Main</assembly.mainClass>
 
         <group.name>mscore</group.name>
         <component.name>${project.artifactId}</component.name>

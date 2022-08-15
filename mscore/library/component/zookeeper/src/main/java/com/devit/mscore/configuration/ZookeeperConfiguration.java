@@ -5,21 +5,21 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.devit.mscore.Configuration;
+import com.devit.mscore.Registry;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
-import com.devit.mscore.registry.ZookeeperRegistry;
 
 import org.apache.commons.lang3.StringUtils;
 
 public class ZookeeperConfiguration implements Configuration {
 
-    private ZookeeperRegistry registry;
+    private Registry registry;
 
     private Map<String, String> configs;
 
     private String serviceName;
 
-    public ZookeeperConfiguration(ZookeeperRegistry registry, String serviceName) throws ConfigException {
+    public ZookeeperConfiguration(Registry registry, String serviceName) throws ConfigException {
         this.registry = registry;
         this.serviceName = serviceName;
         init();
@@ -27,7 +27,6 @@ public class ZookeeperConfiguration implements Configuration {
 
     private void init() throws ConfigException {
         try {
-            this.registry.init();
             this.configs = this.registry.all();
         } catch (RegistryException ex) {
             this.configs = new HashMap<>();

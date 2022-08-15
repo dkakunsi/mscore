@@ -45,13 +45,13 @@ public class FlowableWorkflowFactory extends ResourceManager {
         return new FlowableWorkflowFactory(configuration, registry);
     }
 
-    public WorkflowProcess workflowProcess(Registry registry, DataClient dataClient) throws ConfigException {
+    public WorkflowProcess workflowProcess(DataClient dataClient) throws ConfigException {
         var dataSource = getDataSource();
-        return workflowProcess(dataSource, registry, dataClient);
+        return workflowProcess(dataSource, dataClient);
     }
 
-    public WorkflowProcess workflowProcess(DataSource dataSource, Registry registry, DataClient dataClient) {
-        return new FlowableProcess(dataSource, registry, dataClient);
+    public WorkflowProcess workflowProcess(DataSource dataSource, DataClient dataClient) {
+        return new FlowableProcess(dataSource, this.registry, dataClient);
     }
 
     private DataSource getDataSource() throws ConfigException {

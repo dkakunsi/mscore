@@ -26,7 +26,9 @@ public class ApplicationStarter implements Starter {
 
     private Configuration configuration;
 
-    private List<String> topics;
+    private KafkaMessagingFactory messagingFactory;
+
+    private GitHistoryFactory historyFactory;
 
     public ApplicationStarter(String[] args) throws ConfigException {
         this(FileConfigurationUtils.load(args));
@@ -38,15 +40,16 @@ public class ApplicationStarter implements Starter {
             var zookeeperRegistry = registryFactory.registry("platformConfig");
             zookeeperRegistry.open();
             this.configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
-            this.topics = getTopicsToListen(configuration);
+
+            this.messagingFactory = KafkaMessagingFactory.of(this.configuration);
+            this.historyFactory = GitHistoryFactory.of(this.configuration);
         } catch (RegistryException ex) {
             throw new ConfigException(ex);
         }
     }
 
-    static List<String> getTopicsToListen(Configuration configuration)
-            throws ConfigException {
-        var topicConfigName = String.format(TOPICS_KEY, configuration.getServiceName());
+    private List<String> getTopicsToListen() throws ConfigException {
+        var topicConfigName = String.format(TOPICS_KEY, this.configuration.getServiceName());
         var topics = configuration.getConfig(topicConfigName)
                 .orElseThrow(() -> new ConfigException("No topic provided."));
         return Stream.of(topics.split(",")).collect(Collectors.toList());
@@ -54,15 +57,13 @@ public class ApplicationStarter implements Starter {
 
     @Override
     public void start() throws ApplicationException {
-        var messagingFactory = KafkaMessagingFactory.of(this.configuration);
-        var subscriber = messagingFactory.subscriber();
-        var historyFactory = GitHistoryFactory.of(this.configuration);
-
-        if (this.topics.isEmpty()) {
-            LOGGER.warn("No topics to listen to");
+        var topics = getTopicsToListen();
+        if (!topics.isEmpty()) {
+            EventListener.of(messagingFactory.subscriber())
+                    .with(historyFactory.historyManager())
+                    .listen(topics.toArray(new String[0]));
         } else {
-            var listener = EventListener.of(subscriber).with(historyFactory.historyManager());
-            listener.listen(this.topics.toArray(new String[0]));
+            LOGGER.warn("No topics to listen to");
         }
     }
 

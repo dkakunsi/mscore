@@ -116,7 +116,7 @@ public class FlowableProcessTest {
     private FlowableProcess getProcess() {
         var dataSource = this.pgRule.getEmbeddedPostgres().getPostgresDatabase();
         var manager = FlowableWorkflowFactory.of(this.configuration, this.registry);
-        return (FlowableProcess) manager.workflowProcess(dataSource, this.registry, this.dataClient);
+        return (FlowableProcess) manager.workflowProcess(dataSource, this.dataClient);
     }
 
     private File getResource(String resourceName) throws URISyntaxException {

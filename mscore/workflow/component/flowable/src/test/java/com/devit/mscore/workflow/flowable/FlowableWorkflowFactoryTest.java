@@ -62,7 +62,7 @@ public class FlowableWorkflowFactoryTest {
         this.registry = mock(Registry.class);
 
         this.factory = FlowableWorkflowFactory.of(this.configuration, this.registry);
-        var workflowProcess = factory.workflowProcess(this.registry, this.dataClient);
+        var workflowProcess = factory.workflowProcess(this.dataClient);
         assertNotNull(workflowProcess);
     }
 

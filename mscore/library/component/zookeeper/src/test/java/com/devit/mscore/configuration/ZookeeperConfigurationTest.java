@@ -12,9 +12,9 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Map;
 
+import com.devit.mscore.Registry;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
-import com.devit.mscore.registry.ZookeeperRegistry;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,11 +22,11 @@ import org.mockito.ArgumentCaptor;
 
 public class ZookeeperConfigurationTest {
 
-    private ZookeeperRegistry registry;
+    private Registry registry;
 
     @Before
     public void setup() {
-        this.registry = mock(ZookeeperRegistry.class);
+        this.registry = mock(Registry.class);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class ZookeeperConfigurationTest {
     }
 
     @Test
-    public void testGetAll() throws ConfigException {
+    public void testGetAll() throws ConfigException, RegistryException {
         doReturn(Map.of("key", "value")).when(this.registry).all();
 
         var configuration = new ZookeeperConfiguration(this.registry, "test");
@@ -66,7 +66,7 @@ public class ZookeeperConfigurationTest {
 
     @Test
     public void testInit_Fail() throws RegistryException {
-        doThrow(RegistryException.class).when(this.registry).init();
+        doThrow(RegistryException.class).when(this.registry).all();
 
         var ex = assertThrows(ConfigException.class, () -> new ZookeeperConfiguration(this.registry, "test"));
         var actualEx = ex.getCause();
