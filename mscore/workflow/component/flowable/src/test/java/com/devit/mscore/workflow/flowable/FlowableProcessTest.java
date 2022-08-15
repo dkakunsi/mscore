@@ -27,6 +27,7 @@ import com.devit.mscore.Configuration;
 import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.Registry;
 import com.devit.mscore.ServiceRegistration;
+import com.devit.mscore.WorkflowObject;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.ProcessException;
 import com.devit.mscore.exception.RegistryException;
@@ -54,7 +55,7 @@ public class FlowableProcessTest {
 
     private static final String VARIABLES = "{\"assignee\":\"assignee\",\"approver\":\"approver\",\"createdBy\":\"createdBy\",\"owner\":\"owner\",\"businessKey\":\"entityid\",\"name\":\"name\",\"domain\":\"domain\"}";
 
-    private static final String ENTITY = "{\"id\":\"entityid\",\"name\":\"name\"}";
+    private static final String ENTITY = "{\"id\":\"entityid\",\"name\":\"name\",\"domain\":\"domain\"}";
 
     @Rule
     public SingleInstancePostgresRule pgRule = EmbeddedPostgresRules.singleInstance();
@@ -273,15 +274,9 @@ public class FlowableProcessTest {
             var definition = getResource("definition/domain.action.1.bpmn20.xml");
             var flowableDefinition = new FlowableDefinition(definition);
             this.process.deployDefinition(flowableDefinition);
-
-            // Verify that deployed definition is added to registry
             verify(this.registry, times(1)).add(anyString(), registryArgumentCaptor.capture());
             var argumentObject = new JSONObject(registryArgumentCaptor.getValue());
-            assertThat(argumentObject.length(), is(4));
-            assertThat(argumentObject.getString("name"), is("domain.action"));
-            assertThat(argumentObject.getString("resourceName"), is("domain.action.1.bpmn20.xml"));
-            assertTrue(StringUtils.isNotBlank(argumentObject.getString("workflow")));
-            assertTrue(StringUtils.isNotBlank(argumentObject.getString("content")));
+            verifyDeployedDefinitionIsAddedToRegistry(argumentObject);
 
             doReturn(argumentObject.toString()).when(this.registry).get("domain.action");
 
@@ -290,73 +285,27 @@ public class FlowableProcessTest {
                     new JSONObject(ENTITY), new JSONObject(VARIABLES).toMap());
             assertNotNull(processInstance);
 
-            // Verify task is created
-            var tasks = this.process.getTasks(processInstance.getId());
-            assertThat(tasks.size(), is(1));
-            var task = tasks.get(0);
-            assertThat(task.getName(), is("Test Approve"));
-
-            // Verify instance is indexed
             verify(this.client, times(1)).post(eq("http://data/workflow"), instanceArgumentCaptor.capture());
             argumentObject = (JSONObject) instanceArgumentCaptor.getValue().get();
-            assertFalse(argumentObject.isEmpty());
-            assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
-            assertThat(argumentObject.getJSONObject("entity").getString("id"), is("entityid"));
-            assertThat(argumentObject.getString("name"), is("name"));
-            assertThat(argumentObject.getString("createdBy"), is("createdBy"));
-            assertThat(argumentObject.getString("status"), is("Active"));
+            verifyProcessInstanceIndexIsUpdated(argumentObject, "Active");
 
-            // Verify task is indexed
             verify(this.client, times(1)).post(eq("http://data/task"), taskArgumentCaptor.capture());
             argumentObject = (JSONObject) taskArgumentCaptor.getValue().get();
-            assertFalse(argumentObject.isEmpty());
-            assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
-            assertThat(argumentObject.getString("name"), is("Test Approve"));
-            assertThat(argumentObject.getString("assignee"), is("approver"));
-            assertThat(argumentObject.getString("status"), is("Active"));
-
-            var refProcessInstance = argumentObject.getJSONObject("processInstance");
-            assertThat(refProcessInstance.getString("domain"), is("workflow"));
-            assertThat(refProcessInstance.getString("id"), is(processInstance.getId()));
+            var task = verifyTaskIsCreatedAndIndexed(processInstance, argumentObject, "Test Approve", "approver", "Active");
 
             // Complete task and get next task
             var taskResponse = "{\"approved\":true}";
             this.process.completeTask(task.getId(), new JSONObject(taskResponse));
 
-            // Verify next task is created
-            tasks = this.process.getTasks(processInstance.getId());
-            assertThat(tasks.size(), is(1));
-            task = tasks.get(0);
-            assertThat(task.getName(), is("Test Approved"));
-
-            // Verify indexing
             verify(this.client, times(3)).post(eq("http://data/task"), taskArgumentCaptor.capture());
             var arguments = taskArgumentCaptor.getAllValues();
             assertThat(arguments.size(), is(4));
 
-            // Verify current task index is updated
             argumentObject = (JSONObject) arguments.get(2).get();
-            assertFalse(argumentObject.isEmpty());
-            assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
-            assertThat(argumentObject.getString("name"), is("Test Approve"));
-            assertThat(argumentObject.getString("assignee"), is("approver"));
-            assertThat(argumentObject.getString("status"), is("Complete"));
+            verifyTaskIndexIsUpdated(processInstance, argumentObject, "Test Approve", "approver", "Complete");
 
-            refProcessInstance = argumentObject.getJSONObject("processInstance");
-            assertThat(refProcessInstance.getString("domain"), is("workflow"));
-            assertThat(refProcessInstance.getString("id"), is(processInstance.getId()));
-
-            // Verify next task is indexed
             argumentObject = (JSONObject) arguments.get(3).get();
-            assertFalse(argumentObject.isEmpty());
-            assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
-            assertThat(argumentObject.getString("name"), is("Test Approved"));
-            assertThat(argumentObject.getString("assignee"), is("assignee"));
-            assertThat(argumentObject.getString("status"), is("Active"));
-
-            refProcessInstance = argumentObject.getJSONObject("processInstance");
-            assertThat(refProcessInstance.getString("domain"), is("workflow"));
-            assertThat(refProcessInstance.getString("id"), is(processInstance.getId()));
+            task = verifyTaskIsCreatedAndIndexed(processInstance, argumentObject, "Test Approved", "assignee", "Active");
 
             // Verify that Java Delegate is called
             // verify(this.repository, times(1)).hashCode();
@@ -367,18 +316,10 @@ public class FlowableProcessTest {
             // Verify current index is updated
             verify(this.client, times(4)).post(eq("http://data/task"), taskArgumentCaptor.capture());
             argumentObject = (JSONObject) taskArgumentCaptor.getValue().get();
-            assertFalse(argumentObject.isEmpty());
-            assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
-            assertThat(argumentObject.getString("name"), is("Test Approved"));
-            assertThat(argumentObject.getString("assignee"), is("assignee"));
-            assertThat(argumentObject.getString("status"), is("Complete"));
-
-            refProcessInstance = argumentObject.getJSONObject("processInstance");
-            assertThat(refProcessInstance.getString("domain"), is("workflow"));
-            assertThat(refProcessInstance.getString("id"), is(processInstance.getId()));
+            verifyTaskIndexIsUpdated(processInstance, argumentObject, "Test Approved", "assignee", "Complete");
 
             // Verify all task is completed
-            tasks = this.process.getTasks(processInstance.getId());
+            var tasks = this.process.getTasks(processInstance.getId());
             assertThat(tasks.size(), is(0));
 
             // Verify the process instance is completed
@@ -391,17 +332,51 @@ public class FlowableProcessTest {
             assertNotNull(historicProcessInstance);
 
             // Verify instance index is updated
-            // verify(this.instanceIndex, times(2)).index(instanceArgumentCaptor.capture());
-            // argument = instanceArgumentCaptor.getValue();
-            // assertFalse(argument.isEmpty());
-            // assertTrue(StringUtils.isNotBlank(argument.getString("id")));
-            // assertThat(argument.getJSONObject("entity").getString("id"), is("entityid"));
-            // // assertThat(argument.getJSONObject("entity").getString("domain"),
-            // is("domain"));
-            // assertThat(argument.getString("name"), is("name"));
-            // assertThat(argument.getString("createdBy"), is("createdBy"));
-            // assertThat(argument.getString("owner"), is("owner"));
-            // assertThat(argument.getString("status"), is("Complete"));
+            verify(this.client, times(2)).post(eq("http://data/workflow"), instanceArgumentCaptor.capture());
+            argumentObject = (JSONObject) instanceArgumentCaptor.getValue().get();
+            verifyProcessInstanceIndexIsUpdated(argumentObject, "Complete");
         }
+    }
+
+    private WorkflowObject verifyTaskIsCreatedAndIndexed(FlowableProcessInstance processInstance, JSONObject argumentObject, String name, String assignee, String status) throws WebClientException {
+        var tasks = this.process.getTasks(processInstance.getId());
+        assertThat(tasks.size(), is(1));
+        var task = tasks.get(0);
+        assertThat(task.getName(), is(name));
+
+        verifyTaskIndexIsUpdated(processInstance, argumentObject, name, assignee, status);
+
+        return task;
+    }
+
+    private void verifyTaskIndexIsUpdated(FlowableProcessInstance processInstance, JSONObject argumentObject, String name, String assignee, String status) throws WebClientException {
+        assertFalse(argumentObject.isEmpty());
+        assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
+        assertThat(argumentObject.getString("name"), is(name));
+        assertThat(argumentObject.getString("assignee"), is(assignee));
+        assertThat(argumentObject.getString("status"), is(status));
+
+        var refProcessInstance = argumentObject.getJSONObject("processInstance");
+        assertThat(refProcessInstance.getString("domain"), is("workflow"));
+        assertThat(refProcessInstance.getString("id"), is(processInstance.getId()));
+    }
+
+    private void verifyProcessInstanceIndexIsUpdated(JSONObject argumentObject, String status) {
+        assertFalse(argumentObject.isEmpty());
+        assertTrue(StringUtils.isNotBlank(argumentObject.getString("id")));
+        assertThat(argumentObject.getJSONObject("entity").getString("id"), is("entityid"));
+        assertThat(argumentObject.getJSONObject("entity").getString("domain"), is("domain"));
+        assertThat(argumentObject.getString("name"), is("name"));
+        assertThat(argumentObject.getString("createdBy"), is("createdBy"));
+        assertThat(argumentObject.getString("owner"), is("owner"));
+        assertThat(argumentObject.getString("status"), is(status));
+    }
+
+    private void verifyDeployedDefinitionIsAddedToRegistry(JSONObject argumentObject) throws RegistryException {
+        assertThat(argumentObject.length(), is(4));
+        assertThat(argumentObject.getString("name"), is("domain.action"));
+        assertThat(argumentObject.getString("resourceName"), is("domain.action.1.bpmn20.xml"));
+        assertTrue(StringUtils.isNotBlank(argumentObject.getString("workflow")));
+        assertTrue(StringUtils.isNotBlank(argumentObject.getString("content")));
     }
 }
