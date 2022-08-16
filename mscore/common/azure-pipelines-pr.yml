@@ -8,6 +8,7 @@ trigger:
     exclude: 
       - mscore/common/README.MD
       - mscore/common/azure-pipelines*
+      - mscore/common/settings.xml
 
 pool:
   vmImage: ubuntu-latest

@@ -29,9 +29,9 @@
     <profile>
       <id>useSonar</id>
       <properties>
-        <!-- this is default. but let's put it just FYI -->
-        <sonar.host.url>http://localhost:9000</sonar.host.url>
-        <sonar.login>squ_9f3d0908feb1a9df182b56400bc014f7a91590eb</sonar.login>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.organization>dev-it</sonar.organization>
+        <sonar.login>e37bdaa5faae706591f83743c9923e4102df8456</sonar.login>
       </properties>
     </profile>
   </profiles>

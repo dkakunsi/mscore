@@ -10,6 +10,7 @@
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>
+        <sonar.projectKey>devit:workflow</sonar.projectKey>
     </properties>
 
     <modules>
