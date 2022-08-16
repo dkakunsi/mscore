@@ -22,30 +22,29 @@ public class KafkaSubscriber implements Subscriber {
 
     private Consumer<String, String> consumer;
 
-    private Map<String, java.util.function.Consumer<JSONObject>> topics;
+    private Map<String, java.util.function.Consumer<JSONObject>> topicHandlers;
 
     private boolean consuming;
 
     KafkaSubscriber(Consumer<String, String> consumer) {
         this.consumer = consumer;
-        this.topics = new HashMap<>();
+        this.topicHandlers = new HashMap<>();
     }
 
     @Override
     public String getChannel() {
-        return String.join(",", this.topics.keySet());
+        return String.join(",", this.topicHandlers.keySet());
     }
 
     @Override
-    public void subscribe(String topic, java.util.function.Consumer<JSONObject> consumer) {
+    public void subscribe(String topic, java.util.function.Consumer<JSONObject> handler) {
         LOG.info("Registering kafka consumer for topic {}", topic);
-        this.topics.put(topic, consumer);
+        this.topicHandlers.put(topic, handler);
     }
 
     @Override
     public void start() {
-        // TODO: need to refactor. Each topic should have it's own consumer
-        this.consumer.subscribe(this.topics.keySet());
+        this.consumer.subscribe(this.topicHandlers.keySet());
         this.consuming = true;
 
         new Thread(() -> {
@@ -61,7 +60,7 @@ public class KafkaSubscriber implements Subscriber {
             LOG.debug(String.format("Receiving message from topic '%s', partition '%s', offset '%s': %s",
                     message.topic(), message.partition(), message.offset(), message.value()));
             setContext(KafkaApplicationContext.of(message.headers()));
-            this.topics.get(message.topic()).accept(new JSONObject(message.value()));
+            this.topicHandlers.get(message.topic()).accept(new JSONObject(message.value()));
         }).start();
     }
 
