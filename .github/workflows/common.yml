@@ -1,4 +1,4 @@
-name: Common action on master branch
+name: Common - Master
 
 on:
   push:
