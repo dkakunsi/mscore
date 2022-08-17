@@ -1,16 +1,16 @@
 package com.devit.mscore;
 
-import static java.net.Inet4Address.getLocalHost;
-
-import java.net.UnknownHostException;
-import java.util.function.Supplier;
+import static java.net.InetAddress.getLocalHost;
 
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 
+import java.net.UnknownHostException;
+import java.util.function.Supplier;
+
 /**
  * Register a service into the platform registry.
- * 
+ *
  * @author dkakunsi
  */
 public class ServiceRegistration {
@@ -38,7 +38,7 @@ public class ServiceRegistration {
 
   /**
    * Register a service to platform registry. Register with it's domain name.
-   * 
+   *
    * @param service service to register.
    * @throws RegistryException cannot register service.
    */
@@ -48,7 +48,7 @@ public class ServiceRegistration {
 
   /**
    * Register domain address to platform registry.
-   * 
+   *
    * @param domain domain name to register.
    * @throws ConfigException cannot register service.
    */

@@ -14,11 +14,11 @@ import org.json.JSONObject;
 
 /**
  * Enrich object using data in Elasticsearch.
- * 
+ *
  * <p>
  * <i>Only use 1-level enrichment. Since data in ES are already enriched.</i>
  * </p>
- * 
+ *
  * @author dkakunsi
  */
 public class IndexEnrichment extends Enrichment {

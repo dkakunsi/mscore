@@ -1,10 +1,10 @@
 package com.devit.mscore;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.HashMap;
 

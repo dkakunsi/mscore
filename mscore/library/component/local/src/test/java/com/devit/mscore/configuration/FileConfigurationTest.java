@@ -1,12 +1,12 @@
 package com.devit.mscore.configuration;
 
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThrows;
 
-import java.io.File;
-
 import com.devit.mscore.exception.ConfigException;
+
+import java.io.File;
 
 import org.junit.Test;
 

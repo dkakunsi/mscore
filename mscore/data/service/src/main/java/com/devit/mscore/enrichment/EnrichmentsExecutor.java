@@ -20,7 +20,7 @@ import org.json.JSONObject;
  * <p>
  * Mediate the execution of {@code enrichments}. It will use it on demand.
  * </p>
- * 
+ *
  * @author dkakunsi
  */
 public final class EnrichmentsExecutor implements Executor<Enrichment> {

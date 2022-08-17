@@ -2,18 +2,18 @@ package com.devit.mscore;
 
 import static com.devit.mscore.util.AttributeConstants.getName;
 
-import java.io.File;
-import java.nio.file.Paths;
-
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.ResourceException;
+
+import java.io.File;
+import java.nio.file.Paths;
 
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * Interface to manage system resource.
- * 
+ *
  * @author dkakunsi
  */
 public abstract class ResourceManager extends Manager {
@@ -30,7 +30,7 @@ public abstract class ResourceManager extends Manager {
 
   /**
    * Register the resource.
-   * 
+   *
    * @throws RegistryException
    * @throws ResourceException
    */

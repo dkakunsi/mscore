@@ -23,7 +23,7 @@ import org.json.JSONObject;
  * <p>
  * Mediate the execution of {@code synchronizations}. It will use it on demand.
  * </p>
- * 
+ *
  * @author dkakunsi
  */
 public final class SynchronizationsExecutor implements Executor<Synchronization> {
@@ -42,7 +42,7 @@ public final class SynchronizationsExecutor implements Executor<Synchronization>
 
   /**
    * Add synchronizations generated from the synchronizer.
-   * 
+   *
    * @param synchronizer service.
    */
   public void add(Synchronizer synchronizer) {
@@ -66,7 +66,7 @@ public final class SynchronizationsExecutor implements Executor<Synchronization>
 
   /**
    * Execute synhronizations associated with the changed {@code json} object.
-   * 
+   *
    * @param context of the request
    * @param json    object that changes and trigger the synchronization.
    */

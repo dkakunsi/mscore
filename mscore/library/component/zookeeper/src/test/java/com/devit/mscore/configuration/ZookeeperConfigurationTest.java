@@ -1,8 +1,8 @@
 package com.devit.mscore.configuration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -10,11 +10,11 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import java.util.Map;
-
 import com.devit.mscore.Registry;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
+
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;

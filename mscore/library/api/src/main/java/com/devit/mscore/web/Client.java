@@ -1,15 +1,15 @@
 package com.devit.mscore.web;
 
+import com.devit.mscore.exception.WebClientException;
+
 import java.util.Map;
 import java.util.Optional;
-
-import com.devit.mscore.exception.WebClientException;
 
 import org.json.JSONObject;
 
 /**
  * Object to communicate with external service using HTTP.
- * 
+ *
  * @author dkakunsi
  */
 public interface Client {

@@ -2,11 +2,12 @@ package com.devit.mscore.web.jersey;
 
 import com.devit.mscore.Logger;
 import com.devit.mscore.logging.ApplicationLogger;
-import com.sun.jersey.api.client.ClientResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.sun.jersey.api.client.ClientResponse;
 
 import jakarta.ws.rs.core.Response;
 

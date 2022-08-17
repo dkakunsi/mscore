@@ -3,8 +3,6 @@ package com.devit.mscore.web.javalin;
 import static com.devit.mscore.util.AttributeConstants.CODE;
 import static com.devit.mscore.util.AttributeConstants.ID;
 
-import java.util.Arrays;
-
 import com.devit.mscore.Logger;
 import com.devit.mscore.Service;
 import com.devit.mscore.Synchronizer;
@@ -12,13 +10,15 @@ import com.devit.mscore.exception.ImplementationException;
 import com.devit.mscore.exception.ValidationException;
 import com.devit.mscore.logging.ApplicationLogger;
 
+import java.util.Arrays;
+
 import org.json.JSONObject;
 
 import io.javalin.http.Handler;
 
 /**
  * Implementation of controller for Javalin framework.
- * 
+ *
  * @author dkakunsi
  */
 public class JavalinController {

@@ -54,7 +54,7 @@ public class SchemaManager extends ResourceManager {
 
   /**
    * Load schema from registry.
-   * 
+   *
    * @param domain name.
    * @return domain schema.
    * @throws JSONException     cannot parse JSON content.

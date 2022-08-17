@@ -11,9 +11,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.function.Consumer;
-
 import com.devit.mscore.exception.ApplicationException;
+
+import java.util.function.Consumer;
 
 import org.json.JSONObject;
 import org.junit.Test;

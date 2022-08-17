@@ -8,7 +8,7 @@ import java.util.UUID;
 
 /**
  * Application context without source of context.
- * 
+ *
  * @author dkakunsi.
  */
 public class DefaultApplicationContext extends ApplicationContext {

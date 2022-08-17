@@ -2,7 +2,7 @@ package com.devit.mscore.exception;
 
 /**
  * Root exception for data issue.
- * 
+ *
  * @author dkakunsi
  */
 public class DataDuplicationException extends DataException {

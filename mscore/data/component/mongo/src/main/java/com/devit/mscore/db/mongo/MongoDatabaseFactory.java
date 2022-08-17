@@ -20,7 +20,7 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
 /**
- * 
+ *
  * @author dkakunsi
  */
 public class MongoDatabaseFactory {

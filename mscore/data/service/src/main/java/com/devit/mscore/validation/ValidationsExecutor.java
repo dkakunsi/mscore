@@ -19,7 +19,7 @@ import org.json.JSONObject;
  * <p>
  * Mediate the execution of {@code validations}. It will execute it on demand.
  * </p>
- * 
+ *
  * @author dkakunsi
  */
 public class ValidationsExecutor implements Executor<Validation> {

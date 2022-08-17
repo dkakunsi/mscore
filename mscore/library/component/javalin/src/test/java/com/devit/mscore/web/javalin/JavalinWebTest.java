@@ -1,8 +1,8 @@
 package com.devit.mscore.web.javalin;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -13,10 +13,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.devit.mscore.AuthenticationProvider;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Service;
@@ -26,6 +22,10 @@ import com.devit.mscore.exception.DataDuplicationException;
 import com.devit.mscore.exception.DataException;
 import com.devit.mscore.exception.DataNotFoundException;
 import com.devit.mscore.exception.ValidationException;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

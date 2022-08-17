@@ -2,7 +2,7 @@ package com.devit.mscore.exception;
 
 /**
  * Application-wide unchecked exception.
- * 
+ *
  * @author dkakunsi
  */
 public class ApplicationRuntimeException extends RuntimeException {

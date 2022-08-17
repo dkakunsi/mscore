@@ -16,11 +16,11 @@ import org.json.JSONObject;
 
 /**
  * Validate json object to it's {@code schema}.
- * 
+ *
  * <p>
  * <i>This filter applies to all domains.</i>
  * </p>
- * 
+ *
  * @author dkakunsi
  */
 public class SchemaValidation implements Validation {

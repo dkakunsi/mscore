@@ -5,11 +5,6 @@ import static com.devit.mscore.util.JsonUtils.isNotJsonString;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-
 import com.devit.mscore.Logger;
 import com.devit.mscore.Validation;
 import com.devit.mscore.exception.ApplicationException;
@@ -29,6 +24,11 @@ import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.web.Endpoint;
 import com.devit.mscore.web.Server;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
@@ -38,7 +38,7 @@ import io.javalin.http.ExceptionHandler;
 
 /**
  * Javalin implementation of web service.
- * 
+ *
  * @author dkakunsi
  */
 public final class JavalinServer extends Server {

@@ -2,7 +2,7 @@ package com.devit.mscore.exception;
 
 /**
  * Exception in notification process.
- * 
+ *
  * @author dkakunsi
  */
 public class NotificationException extends ApplicationException {

@@ -1,9 +1,9 @@
 package com.devit.mscore.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.LocalDateTime;
 import java.time.Month;

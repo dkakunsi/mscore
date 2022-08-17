@@ -1,13 +1,13 @@
 package com.devit.mscore.configuration;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Registry;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 

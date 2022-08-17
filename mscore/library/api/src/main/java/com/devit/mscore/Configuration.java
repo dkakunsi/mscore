@@ -1,35 +1,35 @@
 package com.devit.mscore;
 
+import com.devit.mscore.exception.ConfigException;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import com.devit.mscore.exception.ConfigException;
 
 /**
  * <p>
  * Interface to read configuration. The implementor should handle different type
  * of configuration source.
  * </p>
- * 
+ *
  * @author dkakunsi
  */
 public interface Configuration {
 
   /**
-   * 
+   *
    * @return current service name.
    */
   String getServiceName();
 
   /**
-   * 
+   *
    * @return config mapping.
    */
   Map<String, String> getConfigs();
 
   /**
-   * 
+   *
    * @param key to search.
    * @return configuration value.
    * @throws ConfigException cannot get the value.
@@ -39,7 +39,7 @@ public interface Configuration {
   }
 
   /**
-   * 
+   *
    * @param type    of configuration
    * @param service configuration
    * @param key     of configuration
@@ -51,7 +51,7 @@ public interface Configuration {
   }
 
   /**
-   * 
+   *
    * @param prefix       to load.
    * @param removePrefix remove the prefix in the returned mapping.
    * @return config mapping for specified prefix
@@ -73,14 +73,14 @@ public interface Configuration {
   }
 
   /**
-   * 
+   *
    * @return separator between prefix and config name.
    */
   String getPrefixSeparator();
 
   /**
    * Check whether the config exists.
-   * 
+   *
    * @param configName configuration name.
    * @return true if exists.
    */

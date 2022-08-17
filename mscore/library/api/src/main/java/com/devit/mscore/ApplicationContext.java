@@ -18,7 +18,7 @@ import org.json.JSONObject;
 
 /**
  * Class that encapsulate system information.
- * 
+ *
  * @author dkakunsi
  */
 public abstract class ApplicationContext {
@@ -49,14 +49,14 @@ public abstract class ApplicationContext {
 
   /**
    * Return the source of current request.
-   * 
+   *
    * @return source of current request
    */
   public abstract String getSource();
 
   /**
    * Get breadcrumbId of the request context.
-   * 
+   *
    * @return current breadcrumbId.
    */
   public String getBreadcrumbId() {
@@ -65,7 +65,7 @@ public abstract class ApplicationContext {
 
   /**
    * Get authenticated user that started the request.
-   * 
+   *
    * @return authenticated user.
    */
   public String getRequestedBy() {
@@ -88,7 +88,7 @@ public abstract class ApplicationContext {
 
   /**
    * Get roles of authenticated user.
-   * 
+   *
    * @return roles.
    */
   public List<Object> getUserRoles() {
@@ -111,7 +111,7 @@ public abstract class ApplicationContext {
 
   /**
    * Get authenticated user's principal information.
-   * 
+   *
    * @return authenticated user's info.
    */
   public Optional<JSONObject> getPrincipal() {
@@ -121,7 +121,7 @@ public abstract class ApplicationContext {
   /**
    * Get action. This will be used for notification template name. The value
    * resemblance the workflow id.
-   * 
+   *
    * @return action name.
    */
   public Optional<String> getAction() {
@@ -130,7 +130,7 @@ public abstract class ApplicationContext {
 
   /**
    * Check whether action is available.
-   * 
+   *
    * @return true if available, false otherwise.
    */
   protected boolean hasAction() {
@@ -139,7 +139,7 @@ public abstract class ApplicationContext {
 
   /**
    * Retrieve the authentication token.
-   * 
+   *
    * @return authentication token.
    */
   public Optional<String> getToken() {
@@ -148,7 +148,7 @@ public abstract class ApplicationContext {
 
   /**
    * Check whether the request is authorized with specific {@code requiredRole}.
-   * 
+   *
    * @param requiredRole the required role. Blank means authorize all.
    * @return true if user has the required authorization.
    */
@@ -158,7 +158,7 @@ public abstract class ApplicationContext {
 
   /**
    * Check whether the request is authorized with specific {@code requiredRoles}.
-   * 
+   *
    * @param requiredRoles list of roles. Empty means authorize all.
    * @return true if one of the roles is acceptable, false otherwise.
    */
@@ -197,7 +197,7 @@ public abstract class ApplicationContext {
 
   /**
    * Convert the context to JSON.
-   * 
+   *
    * @return json representation of the context.
    */
   public JSONObject toJson() {

@@ -1,17 +1,17 @@
 package com.devit.mscore.messaging.kafka;
 
 import static com.devit.mscore.ApplicationContext.getContext;
+import static com.devit.mscore.util.AttributeConstants.getId;
 import static com.devit.mscore.util.Utils.ACTION;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
-import static com.devit.mscore.util.AttributeConstants.getId;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import com.devit.mscore.Logger;
 import com.devit.mscore.Publisher;
 import com.devit.mscore.logging.ApplicationLogger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.Producer;

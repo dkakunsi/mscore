@@ -7,7 +7,7 @@ import com.devit.mscore.exception.SynchronizationException;
  * Root class for synchronization process. Sync object that meet search
  * attribute using the given <code>synchronizer</code>
  * </p>
- * 
+ *
  * @author dkakunsi
  */
 public abstract class Synchronization {
@@ -28,7 +28,7 @@ public abstract class Synchronization {
    * <p>
    * Get the reference domain that triggers synchronization.
    * </p>
-   * 
+   *
    * @return reference domain.
    */
   public String getReferenceDomain() {
@@ -39,7 +39,7 @@ public abstract class Synchronization {
    * <p>
    * Get the reference attribute that triggers synchronization.
    * </p>
-   * 
+   *
    * @return reference attribute.
    */
   public String getReferenceAttribute() {
@@ -48,7 +48,7 @@ public abstract class Synchronization {
 
   /**
    * Execute the sync process.
-   * 
+   *
    * @param context     application context.
    * @param referenceId to synchronize.
    */

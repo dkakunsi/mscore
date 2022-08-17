@@ -9,14 +9,14 @@ import org.json.JSONObject;
  * <p>
  * Interface to mediate the interaction with object.
  * </p>
- * 
+ *
  * @author dkakunsi
  */
 public interface Executor<T> {
 
   /**
    * Add object {@code t} to execution list.
-   * 
+   *
    * @param object to add.
    */
   void add(T object);
@@ -26,7 +26,7 @@ public interface Executor<T> {
    * <p>
    * The objects will be executed on demand
    * </p>
-   * 
+   *
    * @param data to execute.
    * @throws ApplicationRuntimeException error in execution.
    */
@@ -34,7 +34,7 @@ public interface Executor<T> {
 
   /**
    * Execute objects on {@code jsons} data.
-   * 
+   *
    * @param dataArray to execute.
    * @throws ApplicationRuntimeException error in execution.
    */

@@ -6,13 +6,13 @@ import static com.devit.mscore.util.AttributeConstants.hasId;
 import static com.devit.mscore.util.JsonUtils.hasValue;
 import static com.devit.mscore.util.Utils.ALL;
 
-import java.util.Optional;
-
 import com.devit.mscore.exception.DataException;
 import com.devit.mscore.exception.EnrichmentException;
 import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.util.AttributeConstants;
 import com.devit.mscore.util.JsonUtils;
+
+import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,12 +23,12 @@ import org.json.JSONObject;
  * Enrich any reference of object loaded from data source. The reference object
  * could be in the same or different data source.
  * </p>
- * 
+ *
  * <p>
  * The implementor of this interface should specified the logic in loading data
  * from it's data source.
  * </p>
- * 
+ *
  * @author dkakunsi
  */
 public abstract class Enrichment {
@@ -49,7 +49,7 @@ public abstract class Enrichment {
   }
 
   /**
-   * 
+   *
    * @return the domain this enrichment applies to.
    */
   public String getDomain() {
@@ -57,7 +57,7 @@ public abstract class Enrichment {
   }
 
   /**
-   * 
+   *
    * @return the attribute this enrichment applies to.
    */
   public String getAttribute() {
@@ -66,7 +66,7 @@ public abstract class Enrichment {
 
   /**
    * Check if the given json has ID and DOMAIN value.
-   * 
+   *
    * @param json to validate.
    * @return true if has ID and DOMAIN value, otherwise false.
    */
@@ -76,7 +76,7 @@ public abstract class Enrichment {
 
   /**
    * Enrich the given json object.
-   * 
+   *
    * @param json object to enrich.
    * @throws EnrichmentException error in enrichment
    */
@@ -140,7 +140,7 @@ public abstract class Enrichment {
 
   /**
    * Load object from data store.
-   * 
+   *
    * @param domain where the data are stored.
    * @param id     of the data.
    * @return complete data.

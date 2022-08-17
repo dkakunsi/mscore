@@ -1,14 +1,14 @@
 package com.devit.mscore.configuration;
 
-import java.io.File;
-
 import com.devit.mscore.exception.ConfigException;
+
+import java.io.File;
 
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * Load service based on configuration.
- * 
+ *
  * @author dkakunsi
  */
 public final class FileConfigurationUtils {

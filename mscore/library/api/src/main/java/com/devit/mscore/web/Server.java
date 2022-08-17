@@ -1,19 +1,19 @@
 package com.devit.mscore.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.devit.mscore.AuthenticationProvider;
 import com.devit.mscore.Starter;
 import com.devit.mscore.Validation;
 import com.devit.mscore.exception.ApplicationException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 /**
  * Server class to create web server.
- * 
+ *
  * @author dkakunsi
  */
 public abstract class Server implements Starter {

@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 /**
  * Root of event listener.
- * 
+ *
  * @author dkakunsi
  */
 public abstract class Listener implements Starter {
@@ -19,14 +19,14 @@ public abstract class Listener implements Starter {
 
   /**
    * Consume the message.
-   * 
+   *
    * @param message to synchronize.
    */
   protected abstract void consume(JSONObject message);
 
   /**
    * Listen for incoming synchronization message.
-   * 
+   *
    * @throws ApplicationException
    */
   public void listen(String... topics) throws ApplicationException {

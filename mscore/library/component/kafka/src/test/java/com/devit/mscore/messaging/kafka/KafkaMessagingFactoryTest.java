@@ -1,18 +1,18 @@
 package com.devit.mscore.messaging.kafka;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.devit.mscore.Configuration;
 import com.devit.mscore.exception.ConfigException;
+
+import java.util.List;
+import java.util.Optional;
 
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.producer.Producer;

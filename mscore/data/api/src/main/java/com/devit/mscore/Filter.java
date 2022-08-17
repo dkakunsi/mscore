@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 /**
  * Interface to filter unneeded data before process it.
- * 
+ *
  * @author dkakunsi
  */
 public abstract class Filter {
@@ -20,7 +20,7 @@ public abstract class Filter {
   }
 
   /**
-   * 
+   *
    * @return domain this filter applies to.
    */
   public String getDomain() {
@@ -29,7 +29,7 @@ public abstract class Filter {
 
   /**
    * Filter the given json.
-   * 
+   *
    * @param json to filter.
    */
   public void filter(JSONObject json) {

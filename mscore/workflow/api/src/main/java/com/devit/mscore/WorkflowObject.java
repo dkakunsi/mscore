@@ -4,7 +4,7 @@ import org.json.JSONObject;
 
 /**
  * Base interface for workflow proxy object.
- * 
+ *
  * @author dkakunsi
  */
 public interface WorkflowObject {

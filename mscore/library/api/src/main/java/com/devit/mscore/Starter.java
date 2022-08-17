@@ -9,14 +9,14 @@ import com.devit.mscore.exception.ApplicationException;
  * <p>
  * This usually works for server or listener
  * </p>
- * 
+ *
  * @author dkakunsi
  */
 public interface Starter {
 
   /**
    * Start the object.
-   * 
+   *
    * @throws ApplicationException failure in system start.
    */
   void start() throws ApplicationException;

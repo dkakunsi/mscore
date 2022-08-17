@@ -27,7 +27,7 @@ import com.devit.mscore.logging.ApplicationLogger;
 
 /**
  * Index implementation using elasticsearch.
- * 
+ *
  * @author dkakunsi
  */
 public class ElasticsearchService {

@@ -1,13 +1,13 @@
 package com.devit.mscore.registry;
 
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.util.HashMap;
-import java.util.Map;
+import static org.hamcrest.core.Is.is;
 
 import com.devit.mscore.Registry;
 import com.devit.mscore.exception.RegistryException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;

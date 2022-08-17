@@ -1,18 +1,18 @@
 package com.devit.mscore;
 
+import com.devit.mscore.exception.ResourceException;
+import com.devit.mscore.exception.ValidationException;
+
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.devit.mscore.exception.ResourceException;
-import com.devit.mscore.exception.ValidationException;
-
 import org.json.JSONObject;
 
 /**
  * Schema object to validate incoming JSON.
- * 
+ *
  * @author dkakunsi
  */
 public abstract class Schema extends Resource {

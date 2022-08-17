@@ -9,7 +9,7 @@ import com.devit.mscore.logging.ApplicationLogger;
 
 /**
  * Delegate that print message to log channle.
- * 
+ *
  * @author dkakunsi
  */
 public class LogDelegate implements JavaDelegate {

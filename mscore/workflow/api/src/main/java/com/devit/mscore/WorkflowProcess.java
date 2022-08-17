@@ -9,14 +9,14 @@ import org.json.JSONObject;
 
 /**
  * Process interface to manage business process workflow.
- * 
+ *
  * @author dkakunsi
  */
 public interface WorkflowProcess extends Starter {
 
   /**
    * Deploy process definition to process engine.
-   * 
+   *
    * @param workflowDefinition definition of the workflow.
    * @throws ProcessException error in process deployment
    */
@@ -24,7 +24,7 @@ public interface WorkflowProcess extends Starter {
 
   /**
    * Create instance of process definition.
-   * 
+   *
    * @param processDefinitionId id
    * @param entity              object to process
    * @param variables           process variables
@@ -36,7 +36,7 @@ public interface WorkflowProcess extends Starter {
 
   /**
    * Create instance for the specified {@code action}.
-   * 
+   *
    * @param action    to applied
    * @param entity    object to process
    * @param variables process variables
@@ -48,7 +48,7 @@ public interface WorkflowProcess extends Starter {
 
   /**
    * Retireve process instance by id.
-   * 
+   *
    * @param processInstanceId id
    * @return proxy of process instance.
    */
@@ -56,7 +56,7 @@ public interface WorkflowProcess extends Starter {
 
   /**
    * Retrieve list of tasks.
-   * 
+   *
    * @param processInstanceId instance id.
    * @return list of task proxies.
    */
@@ -64,7 +64,7 @@ public interface WorkflowProcess extends Starter {
 
   /**
    * Complete the given task and continue the instance.
-   * 
+   *
    * @param taskId       task id
    * @param taskResponse process variables
    * @throws ProcessException error in process update, mostly known issue is in

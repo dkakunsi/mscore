@@ -2,12 +2,12 @@ package com.devit.mscore.web.jersey;
 
 import static com.devit.mscore.web.jersey.ResponseUtils.buildResponse;
 
+import com.devit.mscore.Logger;
+import com.devit.mscore.logging.ApplicationLogger;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import com.devit.mscore.Logger;
-import com.devit.mscore.logging.ApplicationLogger;
 
 import org.json.JSONObject;
 

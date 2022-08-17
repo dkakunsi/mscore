@@ -1,10 +1,5 @@
 package com.devit.mscore.web.javalin;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import com.devit.mscore.AuthenticationProvider;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Service;
@@ -14,10 +9,15 @@ import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.web.Endpoint;
 import com.devit.mscore.web.Server;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+
 import io.javalin.core.JavalinConfig;
 
 /**
- * 
+ *
  * @author dkakunsi
  */
 public class JavalinApiFactory {

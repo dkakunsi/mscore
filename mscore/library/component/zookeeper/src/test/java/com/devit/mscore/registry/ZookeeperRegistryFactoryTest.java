@@ -9,12 +9,12 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
-import java.io.IOException;
-import java.util.Optional;
-
 import com.devit.mscore.Configuration;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
+
+import java.io.IOException;
+import java.util.Optional;
 
 import org.apache.curator.test.TestingServer;
 import org.junit.AfterClass;

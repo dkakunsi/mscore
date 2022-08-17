@@ -8,11 +8,11 @@ import static io.javalin.apibuilder.ApiBuilder.path;
 import static io.javalin.apibuilder.ApiBuilder.post;
 import static io.javalin.apibuilder.ApiBuilder.put;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.devit.mscore.Service;
 import com.devit.mscore.web.Endpoint;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.javalin.apibuilder.EndpointGroup;
 

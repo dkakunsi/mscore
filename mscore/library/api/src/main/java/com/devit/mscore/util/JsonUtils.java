@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 /**
  * Utility class for json processing.
- * 
+ *
  * @author dkakunsi
  */
 public final class JsonUtils {
@@ -16,7 +16,7 @@ public final class JsonUtils {
 
   /**
    * Copy all values from source into destination.
-   * 
+   *
    * @param destination destination object.
    * @param source      source object.
    */

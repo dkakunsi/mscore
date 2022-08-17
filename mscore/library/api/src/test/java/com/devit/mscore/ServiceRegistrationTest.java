@@ -1,9 +1,9 @@
 package com.devit.mscore;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThrows;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -12,12 +12,12 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.devit.mscore.exception.ConfigException;
+import com.devit.mscore.exception.RegistryException;
+
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.Optional;
-
-import com.devit.mscore.exception.ConfigException;
-import com.devit.mscore.exception.RegistryException;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -127,7 +127,7 @@ public class FlowableProcess implements WorkflowProcess, Service {
 
   /**
    * Register the deployed definition id and add to the registry.
-   * 
+   *
    * @param context            of the request
    * @param workflowDefinition to update
    * @throws RegistryException error when updating registry

@@ -1,5 +1,9 @@
 package com.devit.mscore.messaging.kafka;
 
+import com.devit.mscore.Configuration;
+import com.devit.mscore.exception.ApplicationRuntimeException;
+import com.devit.mscore.exception.ConfigException;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -7,10 +11,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
-
-import com.devit.mscore.Configuration;
-import com.devit.mscore.exception.ApplicationRuntimeException;
-import com.devit.mscore.exception.ConfigException;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -21,7 +21,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 /**
- * 
+ *
  * @author dkakunsi
  */
 public class KafkaMessagingFactory {
@@ -132,7 +132,7 @@ public class KafkaMessagingFactory {
 
   /**
    * This will search for `kafka.topic.{@code name}`.
-   * 
+   *
    * @param name topic config name.
    * @return kafka topics.
    * @throws ConfigException

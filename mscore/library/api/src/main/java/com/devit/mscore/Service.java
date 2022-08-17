@@ -1,9 +1,9 @@
 package com.devit.mscore;
 
-import java.util.List;
-
 import com.devit.mscore.exception.ApplicationException;
 import com.devit.mscore.exception.ImplementationException;
+
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,20 +11,20 @@ import org.json.JSONObject;
 /**
  * Object to handle business process of a service and communication to external
  * system.
- * 
+ *
  * @author dkakunsi
  */
 public interface Service {
 
   /**
-   * 
+   *
    * @return domain name.
    */
   String getDomain();
 
   /**
    * Save an object into repository.
-   * 
+   *
    * @param json to be saved.
    * @return id.
    * @throws ApplicationException application rule is not met.
@@ -35,7 +35,7 @@ public interface Service {
 
   /**
    * Delete an object from repository.
-   * 
+   *
    * @param id to delete.
    * @throws ApplicationException application rule is not met.
    */
@@ -45,7 +45,7 @@ public interface Service {
 
   /**
    * Find object by it's id.
-   * 
+   *
    * @param id to find.
    * @return found object.
    * @throws ApplicationException application rule is not met.
@@ -56,7 +56,7 @@ public interface Service {
 
   /**
    * Find object by it's code.
-   * 
+   *
    * @param code to find.
    * @return found objects.
    * @throws ApplicationException application rule is not met.
@@ -67,7 +67,7 @@ public interface Service {
 
   /**
    * Find objects with id in ids.
-   * 
+   *
    * @param ids to find.
    * @return found objects.
    * @throws ApplicationException application rule is not met.
@@ -78,7 +78,7 @@ public interface Service {
 
   /**
    * Load all available object.
-   * 
+   *
    * @return all object.
    * @throws ApplicationException
    */
@@ -88,7 +88,7 @@ public interface Service {
 
   /**
    * Search data based on {@code query}.
-   * 
+   *
    * @param query to search.
    * @return data matching the {@code query}.
    * @throws ApplicationException

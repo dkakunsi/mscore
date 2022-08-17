@@ -1,24 +1,24 @@
 package com.devit.mscore;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.devit.mscore.exception.DataException;
 import com.devit.mscore.exception.ImplementationException;
+
+import java.util.List;
+import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
  * Repository to connect to persistence storage.
- * 
+ *
  * @author dkakunsi
  */
 public interface Repository {
 
   /**
    * Save data to persistence storage.
-   * 
+   *
    * @param json to be saved.
    * @return persisted object.
    * @throws DataException invalid data is provided.
@@ -29,7 +29,7 @@ public interface Repository {
 
   /**
    * Delete data base on it's id.
-   * 
+   *
    * @param id object id.
    * @throws DataException invalid data is provided.
    */
@@ -39,7 +39,7 @@ public interface Repository {
 
   /**
    * Find object by it's id.
-   * 
+   *
    * @param id data id.
    * @return the found data.
    * @throws DataException invalid data is provided.
@@ -50,7 +50,7 @@ public interface Repository {
 
   /**
    * Find data by the given ids.
-   * 
+   *
    * @param ids object ids.
    * @return the found data.
    * @throws DataException invalid data is provided.
@@ -61,7 +61,7 @@ public interface Repository {
 
   /**
    * Find data base on the specified field with value key.
-   * 
+   *
    * @param field the field to be searched.
    * @param key   the value to filter objects.
    * @return data matching search criteria.
@@ -73,7 +73,7 @@ public interface Repository {
 
   /**
    * Load all data from database.
-   * 
+   *
    * @return all data in database.
    * @throws DataException invalid data is provided.
    */

@@ -8,11 +8,11 @@ import com.devit.mscore.exception.SynchronizationException;
  * <p>
  * Synchronization for {@code attribute} of {@code domain}.
  * </p>
- * 
+ *
  * <ul>
  * <li><code>searchAttribute</code> is '<code>domain</code>.id'</li>
  * </ul>
- * 
+ *
  * @author dkakunsi
  */
 public class DefaultSynchronization extends Synchronization {

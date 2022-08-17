@@ -15,7 +15,7 @@ import org.json.JSONObject;
 
 /**
  * Flowable ProcessInstance proxy.
- * 
+ *
  * @author dkakunsi
  */
 public class FlowableProcessInstance implements WorkflowObject, ProcessInstance {

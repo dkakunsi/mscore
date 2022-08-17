@@ -37,9 +37,9 @@ import org.json.JSONObject;
 /**
  * Root class of service implementation. This class provide a generic method of
  * CRUD operation.
- * 
+ *
  * @param <T> managed class.
- * 
+ *
  * @author dkakunsi
  */
 public class DefaultService implements Service, Synchronizer {

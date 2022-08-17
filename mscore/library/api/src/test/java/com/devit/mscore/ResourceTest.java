@@ -1,18 +1,18 @@
 package com.devit.mscore;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
+import com.devit.mscore.exception.ResourceException;
+
 import java.io.File;
 import java.net.URISyntaxException;
-
-import com.devit.mscore.exception.ResourceException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;

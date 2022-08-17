@@ -6,13 +6,13 @@ import org.json.JSONObject;
 
 /**
  * Root for validation process.
- * 
+ *
  * @author dkakunsi
  */
 public interface Validation {
 
   /**
-   * 
+   *
    * @return domain this validation applies to.
    */
   default String getDomain() {
@@ -23,7 +23,7 @@ public interface Validation {
    * <p>
    * Validate json object.
    * </p>
-   * 
+   *
    * @param object to validate.
    * @return true when object is valid, else otherwise.
    */

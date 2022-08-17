@@ -1,17 +1,17 @@
 package com.devit.mscore;
 
+import com.devit.mscore.exception.ResourceException;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-import com.devit.mscore.exception.ResourceException;
-
 import org.json.JSONObject;
 
 /**
  * Object to maintain resource file.
- * 
+ *
  * @author dkakunsi
  */
 public class Resource {
@@ -62,7 +62,7 @@ public class Resource {
 
   /**
    * Create JSON representation for this resource as message.
-   * 
+   *
    * @return resource JSON representation.
    */
   public JSONObject getMessage() {

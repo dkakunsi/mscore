@@ -17,7 +17,7 @@ import org.json.JSONObject;
  * <p>
  * Mediate the execution of {@code filters}. It will use it on demand.
  * </p>
- * 
+ *
  * @author dkakunsi
  */
 public final class FiltersExecutor implements Executor<Filter> {

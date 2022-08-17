@@ -1,9 +1,9 @@
 package com.devit.mscore;
 
-import java.util.List;
-
 import com.devit.mscore.exception.ApplicationException;
 import com.devit.mscore.exception.ImplementationException;
+
+import java.util.List;
 
 import org.json.JSONObject;
 import org.junit.Before;

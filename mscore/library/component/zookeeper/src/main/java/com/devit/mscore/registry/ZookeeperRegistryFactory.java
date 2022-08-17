@@ -1,10 +1,10 @@
 package com.devit.mscore.registry;
 
-import java.util.Optional;
-
 import com.devit.mscore.Configuration;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
+
+import java.util.Optional;
 
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryNTimes;

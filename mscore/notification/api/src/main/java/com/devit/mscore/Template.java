@@ -6,14 +6,14 @@ import org.json.JSONObject;
 
 /**
  * Interface to build message from a template.
- * 
+ *
  * @author dkakunsi
  */
 public interface Template {
 
   /**
    * Build message from {@code template} and {@code object}.
-   * 
+   *
    * @param template message template.
    * @param object   data.
    * @return message.

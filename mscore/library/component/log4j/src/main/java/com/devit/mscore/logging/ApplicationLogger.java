@@ -1,11 +1,11 @@
 package com.devit.mscore.logging;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.LoggerFactory;
-
 import static com.devit.mscore.ApplicationContext.getContext;
 
 import com.devit.mscore.Logger;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 
 public class ApplicationLogger implements Logger {
 

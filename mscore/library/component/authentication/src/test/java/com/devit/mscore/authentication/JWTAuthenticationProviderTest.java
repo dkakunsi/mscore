@@ -2,16 +2,20 @@ package com.devit.mscore.authentication;
 
 import static com.devit.mscore.util.Utils.REQUESTED_BY;
 import static com.devit.mscore.util.Utils.ROLE;
-
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+
+import com.devit.mscore.Configuration;
+import com.devit.mscore.exception.ApplicationException;
+import com.devit.mscore.exception.AuthenticationException;
+import com.devit.mscore.exception.ConfigException;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -25,18 +29,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.devit.mscore.Configuration;
-import com.devit.mscore.exception.ApplicationException;
-import com.devit.mscore.exception.AuthenticationException;
-import com.devit.mscore.exception.ConfigException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 
 public class JWTAuthenticationProviderTest {
 

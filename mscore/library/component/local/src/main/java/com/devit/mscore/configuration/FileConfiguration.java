@@ -1,14 +1,14 @@
 package com.devit.mscore.configuration;
 
+import com.devit.mscore.Configuration;
+import com.devit.mscore.exception.ConfigException;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import com.devit.mscore.Configuration;
-import com.devit.mscore.exception.ConfigException;
 
 import org.apache.commons.lang3.StringUtils;
 

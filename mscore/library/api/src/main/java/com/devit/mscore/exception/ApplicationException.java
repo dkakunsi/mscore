@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Root exception for data issue.
- * 
+ *
  * @author dkakunsi
  */
 public class ApplicationException extends Exception {
