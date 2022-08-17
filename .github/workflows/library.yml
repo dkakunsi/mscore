@@ -83,4 +83,4 @@ jobs:
           ]
 
     - name: Build with Maven
-      run: mvn --file mscore/common/pom.xml -PuseCustomRepo,useSonar deploy sonar:sonar
+      run: mvn --file mscore/library/pom.xml -PuseCustomRepo,useSonar -Drevision=$VERSION_NUMBER deploy sonar:sonar
