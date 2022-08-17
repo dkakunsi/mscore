@@ -14,6 +14,11 @@ on:
         description: 'Release Version'
         required: false
         type: boolean
+  workflow_run:
+    workflows:
+      - "Common - Master"
+    types:
+      - completed
 
 jobs:
   build:
