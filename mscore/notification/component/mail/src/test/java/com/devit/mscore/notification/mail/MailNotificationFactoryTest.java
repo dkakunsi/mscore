@@ -4,11 +4,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import java.util.Optional;
-
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Registry;
 import com.devit.mscore.exception.ConfigException;
+
+import java.util.Optional;
 
 import org.junit.Test;
 

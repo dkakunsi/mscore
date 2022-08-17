@@ -30,12 +30,11 @@ public class SendInfo {
   }
 
   public SendInfo(Configuration configuration) throws ConfigException {
-    var serviceName = configuration.getServiceName();
     this.host = configuration.getConfig(MAIL_HOST).orElseThrow(() -> new ConfigException("No mailing host provided"));
     this.port = configuration.getConfig(MAIL_PORT).orElseThrow(() -> new ConfigException("No mailing port provided"));
     this.from = configuration.getConfig(MAIL_FROM)
         .orElseThrow(() -> new ConfigException("No mailing from address provided"));
-    this.subject = configuration.getConfig(String.format(MAIL_SUBJECT, serviceName))
+    this.subject = configuration.getConfig(String.format(MAIL_SUBJECT, configuration.getServiceName()))
         .orElseThrow(() -> new ConfigException("No mailing subject provided"));
 
   }

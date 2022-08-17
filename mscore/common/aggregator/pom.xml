@@ -13,8 +13,8 @@
   <description>Parent for aggregator project</description>
 
   <properties>
-    <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/main/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-    <sonar.coverage.exclusions>**/*Exception*</sonar.coverage.exclusions>
+    <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/service/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.coverage.exclusions>**/*Exception*,**/ApplicationStarter.java,**/Main.java</sonar.coverage.exclusions>
   </properties>
 
   <build>

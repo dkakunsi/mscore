@@ -17,7 +17,7 @@
 
   <properties>
     <revision>1.0-SNAPSHOT</revision>
-    <sonar.projectKey>devit:test</sonar.projectKey>
+    <sonar.projectKey>devit:library</sonar.projectKey>
     <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/report/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
   </properties>
 

@@ -2,16 +2,17 @@ package com.devit.mscore.template.pebble;
 
 import static com.devit.mscore.util.JsonUtils.flatten;
 
-import java.io.StringWriter;
-
 import com.devit.mscore.Logger;
 import com.devit.mscore.Template;
 import com.devit.mscore.exception.TemplateException;
 import com.devit.mscore.logging.ApplicationLogger;
-import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.loader.StringLoader;
+
+import java.io.StringWriter;
 
 import org.json.JSONObject;
+
+import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.loader.StringLoader;
 
 public class PebbleTemplate implements Template {
 

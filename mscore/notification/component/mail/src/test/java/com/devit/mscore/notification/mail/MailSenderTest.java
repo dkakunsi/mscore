@@ -1,17 +1,17 @@
 package com.devit.mscore.notification.mail;
 
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
-import jakarta.mail.MessagingException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetupTest;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import jakarta.mail.MessagingException;
 
 public class MailSenderTest {
 

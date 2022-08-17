@@ -6,8 +6,6 @@ import static com.devit.mscore.util.AttributeConstants.getName;
 import static com.devit.mscore.util.JsonUtils.flatten;
 import static com.devit.mscore.util.Utils.ACTION;
 
-import java.util.List;
-
 import com.devit.mscore.Logger;
 import com.devit.mscore.Notification;
 import com.devit.mscore.Registry;
@@ -16,6 +14,8 @@ import com.devit.mscore.exception.NotificationException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.TemplateException;
 import com.devit.mscore.logging.ApplicationLogger;
+
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;

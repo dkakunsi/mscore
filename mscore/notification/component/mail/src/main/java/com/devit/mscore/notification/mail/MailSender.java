@@ -2,6 +2,8 @@ package com.devit.mscore.notification.mail;
 
 import static jakarta.mail.Message.RecipientType.TO;
 
+import org.apache.commons.lang3.StringUtils;
+
 import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -10,8 +12,6 @@ import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-
-import org.apache.commons.lang3.StringUtils;
 
 public class MailSender {
 

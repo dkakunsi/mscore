@@ -1,14 +1,14 @@
 package com.devit.mscore.notification;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.devit.mscore.Listener;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Notification;
 import com.devit.mscore.Subscriber;
 import com.devit.mscore.exception.NotificationException;
 import com.devit.mscore.logging.ApplicationLogger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONObject;
 

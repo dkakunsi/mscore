@@ -1,13 +1,13 @@
 package com.devit.mscore.template.pebble;
 
-import java.io.File;
-
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Registry;
 import com.devit.mscore.Resource;
 import com.devit.mscore.ResourceManager;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.ResourceException;
+
+import java.io.File;
 
 public class PebbleTemplateFactory extends ResourceManager {
 
