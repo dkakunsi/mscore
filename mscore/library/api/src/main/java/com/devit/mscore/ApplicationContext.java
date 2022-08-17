@@ -115,7 +115,7 @@ public abstract class ApplicationContext {
    * @return authenticated user's info.
    */
   public Optional<JSONObject> getPrincipal() {
-    return Optional.ofNullable(getJSONObject(PRINCIPAL));
+    return Optional.ofNullable(getJsonObject(PRINCIPAL));
   }
 
   /**
@@ -183,7 +183,7 @@ public abstract class ApplicationContext {
     return has(key) ? get(key).toString() : null;
   }
 
-  private JSONObject getJSONObject(String key) {
+  private JSONObject getJsonObject(String key) {
     return has(key) ? (JSONObject) get(key) : null;
   }
 
