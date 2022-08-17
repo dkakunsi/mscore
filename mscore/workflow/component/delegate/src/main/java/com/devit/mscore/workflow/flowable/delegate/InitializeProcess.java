@@ -6,11 +6,11 @@ import org.flowable.engine.delegate.JavaDelegate;
 
 public class InitializeProcess implements JavaDelegate {
 
-    private Expression organisation;
+  private Expression organisation;
 
-    @Override
-    public void execute(DelegateExecution execution) {
-        var organisationValue = this.organisation.getValue(execution).toString();
-        execution.setVariable("organisation", organisationValue);
-    }
+  @Override
+  public void execute(DelegateExecution execution) {
+    var organisationValue = this.organisation.getValue(execution).toString();
+    execution.setVariable("organisation", organisationValue);
+  }
 }

@@ -20,54 +20,54 @@ import org.json.JSONObject;
 
 public class SchemaManager extends ResourceManager {
 
-    private static final Logger LOG = new ApplicationLogger(SchemaManager.class);
+  private static final Logger LOG = new ApplicationLogger(SchemaManager.class);
 
-    private static final String LOCATION = "services.%s.schema.resource.location";
+  private static final String LOCATION = "services.%s.schema.resource.location";
 
-    private List<Schema> schemas;
+  private List<Schema> schemas;
 
-    private SchemaManager(Configuration configuration, Registry registry) {
-        super("schema", configuration, registry);
-        this.schemas = new ArrayList<>();
+  private SchemaManager(Configuration configuration, Registry registry) {
+    super("schema", configuration, registry);
+    this.schemas = new ArrayList<>();
+  }
+
+  public List<Schema> getSchemas() {
+    return this.schemas;
+  }
+
+  @Override
+  protected String getResourceLocation() {
+    var configName = String.format(LOCATION, this.configuration.getServiceName());
+    try {
+      return this.configuration.getConfig(configName).orElse(null);
+    } catch (ConfigException ex) {
+      return null;
     }
+  }
 
-    public List<Schema> getSchemas() {
-        return this.schemas;
-    }
+  @Override
+  protected Resource createResource(File file) throws ResourceException {
+    var schema = new JSONSchema(file);
+    this.schemas.add(schema);
+    return schema;
+  }
 
-    @Override
-    protected String getResourceLocation() {
-        var configName = String.format(LOCATION, this.configuration.getServiceName());
-        try {
-            return this.configuration.getConfig(configName).orElse(null);
-        } catch (ConfigException ex) {
-            return null;
-        }
-    }
+  /**
+   * Load schema from registry.
+   * 
+   * @param domain name.
+   * @return domain schema.
+   * @throws JSONException     cannot parse JSON content.
+   * @throws RegistryException cannotconnect to registry.
+   */
+  public JSONSchema getSchema(String domain) throws JSONException, RegistryException {
+    LOG.info("Loading schema: {}", domain);
+    var schema = this.registry.get(domain);
+    LOG.info("Retrieved schema: {}", schema);
+    return new JSONSchema(new JSONObject(schema));
+  }
 
-    @Override
-    protected Resource createResource(File file) throws ResourceException {
-        var schema = new JSONSchema(file);
-        this.schemas.add(schema);
-        return schema;
-    }
-
-    /**
-     * Load schema from registry.
-     * 
-     * @param domain  name.
-     * @return domain schema.
-     * @throws JSONException     cannot parse JSON content.
-     * @throws RegistryException cannotconnect to registry.
-     */
-    public JSONSchema getSchema(String domain) throws JSONException, RegistryException {
-        LOG.info("Loading schema: {}", domain);
-        var schema = this.registry.get(domain);
-        LOG.info("Retrieved schema: {}", schema);
-        return new JSONSchema(new JSONObject(schema));
-    }
-
-    public static SchemaManager of(Configuration configuration, Registry registry) {
-        return new SchemaManager(configuration, registry);
-    }
+  public static SchemaManager of(Configuration configuration, Registry registry) {
+    return new SchemaManager(configuration, registry);
+  }
 }

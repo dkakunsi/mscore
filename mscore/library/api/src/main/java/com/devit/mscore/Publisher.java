@@ -9,16 +9,16 @@ import org.json.JSONObject;
  */
 public interface Publisher {
 
-    /**
-     * Publish message to broker on the provided channel.
-     * 
-     * @param json to publish.
-     */
-    void publish(JSONObject json);
+  /**
+   * Publish message to broker on the provided channel.
+   * 
+   * @param json to publish.
+   */
+  void publish(JSONObject json);
 
-    /**
-     * 
-     * @return channel to publish to.
-     */
-    String getChannel();
+  /**
+   * 
+   * @return channel to publish to.
+   */
+  String getChannel();
 }

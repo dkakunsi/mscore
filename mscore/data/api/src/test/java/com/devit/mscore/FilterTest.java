@@ -11,19 +11,19 @@ import org.junit.Test;
 
 public class FilterTest {
 
-    @Test
-    public void testFilter() {
-        var filter = new Filter(List.of("attribute")) {
+  @Test
+  public void testFilter() {
+    var filter = new Filter(List.of("attribute")) {
 
-            @Override
-            protected void apply(JSONObject json, String key) {
-            }
-        };
-        assertThat(filter.getDomain(), is("all"));
+      @Override
+      protected void apply(JSONObject json, String key) {
+      }
+    };
+    assertThat(filter.getDomain(), is("all"));
 
-        var json = new JSONObject("{\"domain\":\"domain\",\"attribute\":\"attribute\"}");
-        filter.filter(json);
-        assertTrue(json.has("domain"));
-        assertTrue(json.has("attribute"));
-    }
+    var json = new JSONObject("{\"domain\":\"domain\",\"attribute\":\"attribute\"}");
+    filter.filter(json);
+    assertTrue(json.has("domain"));
+    assertTrue(json.has("attribute"));
+  }
 }

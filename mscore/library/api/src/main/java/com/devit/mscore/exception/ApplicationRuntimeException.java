@@ -7,13 +7,13 @@ package com.devit.mscore.exception;
  */
 public class ApplicationRuntimeException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    public ApplicationRuntimeException(ApplicationException ex) {
-        super(ex);
-    }
+  public ApplicationRuntimeException(ApplicationException ex) {
+    super(ex);
+  }
 
-    public ApplicationRuntimeException(String message) {
-        super(message);
-    }
+  public ApplicationRuntimeException(String message) {
+    super(message);
+  }
 }

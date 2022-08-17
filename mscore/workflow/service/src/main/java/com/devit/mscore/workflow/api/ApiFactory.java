@@ -9,18 +9,18 @@ import com.devit.mscore.workflow.api.javalin.WorkflowEndpoint;
 
 public class ApiFactory extends JavalinApiFactory {
 
-    private ApiFactory(Configuration configuration) {
-        super(configuration);
-    }
+  private ApiFactory(Configuration configuration) {
+    super(configuration);
+  }
 
-    public static ApiFactory of(Configuration configuration, AuthenticationProvider authenticationProvider) {
-        var factory = new ApiFactory(configuration);
-        factory.authenticationProvider = authenticationProvider;
-        return factory;
-    }
+  public static ApiFactory of(Configuration configuration, AuthenticationProvider authenticationProvider) {
+    var factory = new ApiFactory(configuration);
+    factory.authenticationProvider = authenticationProvider;
+    return factory;
+  }
 
-    public ApiFactory addService(Service service) {
-        add(new WorkflowEndpoint(new WorkflowController(service)));
-        return this;
-    }
+  public ApiFactory addService(Service service) {
+    add(new WorkflowEndpoint(new WorkflowController(service)));
+    return this;
+  }
 }

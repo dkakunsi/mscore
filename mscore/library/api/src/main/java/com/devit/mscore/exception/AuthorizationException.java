@@ -5,17 +5,17 @@ package com.devit.mscore.exception;
  */
 public class AuthorizationException extends ApplicationException {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    public AuthorizationException(String message) {
-        super(message);
-    }
+  public AuthorizationException(String message) {
+    super(message);
+  }
 
-    public AuthorizationException(Throwable cause) {
-        super(cause);
-    }
+  public AuthorizationException(Throwable cause) {
+    super(cause);
+  }
 
-    public AuthorizationException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public AuthorizationException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

@@ -12,19 +12,20 @@ import org.json.JSONObject;
 
 public class SynchronizationListener extends Listener {
 
-    private static final Logger LOG = ApplicationLogger.getLogger(SynchronizationListener.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(SynchronizationListener.class);
 
-    protected SynchronizationsExecutor synchronizer;
+  protected SynchronizationsExecutor synchronizer;
 
-    public SynchronizationListener(Subscriber subscriber, SynchronizationsExecutor synchronizer) {
-        super(subscriber);
-        this.synchronizer = synchronizer;
-    }
+  public SynchronizationListener(Subscriber subscriber, SynchronizationsExecutor synchronizer) {
+    super(subscriber);
+    this.synchronizer = synchronizer;
+  }
 
-    @Override
-    protected void consume(JSONObject message) {
-        LOG.info("External dependency {} of {} domain is updated. Trying to sync references.", getId(message), getDomain(message));
-        this.synchronizer.execute(message);
-        LOG.debug("Dependency is synced: {}", message);
-    }
+  @Override
+  protected void consume(JSONObject message) {
+    LOG.info("External dependency {} of {} domain is updated. Trying to sync references.", getId(message),
+        getDomain(message));
+    this.synchronizer.execute(message);
+    LOG.debug("Dependency is synced: {}", message);
+  }
 }

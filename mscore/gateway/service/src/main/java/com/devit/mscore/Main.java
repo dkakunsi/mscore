@@ -8,17 +8,17 @@ import com.devit.mscore.logging.ApplicationLogger;
 
 public class Main {
 
-    private static final Logger LOGGER = ApplicationLogger.getLogger(Main.class);
+  private static final Logger LOGGER = ApplicationLogger.getLogger(Main.class);
 
-    public static void main(String[] args) throws ApplicationException {
-        setContext(DefaultApplicationContext.of("starter"));
-        var starter = new ApplicationStarter(args);
-        try {
-            LOGGER.info("Service is starting...");
-            starter.start();
-            LOGGER.info("Service is started!");
-        } catch (RuntimeException ex) {
-            throw new ApplicationException("Service is fail to start.", ex);
-        }
+  public static void main(String[] args) throws ApplicationException {
+    setContext(DefaultApplicationContext.of("starter"));
+    var starter = new ApplicationStarter(args);
+    try {
+      LOGGER.info("Service is starting...");
+      starter.start();
+      LOGGER.info("Service is started!");
+    } catch (RuntimeException ex) {
+      throw new ApplicationException("Service is fail to start.", ex);
     }
+  }
 }

@@ -14,15 +14,15 @@ import com.devit.mscore.exception.ApplicationException;
  */
 public interface Starter {
 
-    /**
-     * Start the object.
-     * 
-     * @throws ApplicationException failure in system start.
-     */
-    void start() throws ApplicationException;
+  /**
+   * Start the object.
+   * 
+   * @throws ApplicationException failure in system start.
+   */
+  void start() throws ApplicationException;
 
-    /**
-     * Stop the object.
-     */
-    void stop();
+  /**
+   * Stop the object.
+   */
+  void stop();
 }

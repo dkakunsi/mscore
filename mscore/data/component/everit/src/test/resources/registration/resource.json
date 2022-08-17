@@ -1,60 +1,60 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "domain",
-    "title": "Domain",
-    "description": "The Domain Data Schema",
-    "type": "object",
-    "properties": {
-        "domain": {
-            "const": "domain"
-        },
-        "id": {
-            "type": "string",
-            "maxLength": 8,
-            "unique": true
-        },
-        "name": {
-            "type": "string",
-            "maxLength": 8
-        },
-        "reference1": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string",
-                    "maxLength": 36
-                },
-                "domain": {
-                    "type": "string",
-                    "const": "referenceDomain1"
-                }
-            }
-        },
-        "reference2": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "string",
-                            "maxLength": 36
-                        },
-                        "domain": {
-                            "type": "string",
-                            "const": "referenceDomain2"
-                        }
-                    }
-                }
-            ]
-        }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "domain",
+  "title": "Domain",
+  "description": "The Domain Data Schema",
+  "type": "object",
+  "properties": {
+    "domain": {
+      "const": "domain"
     },
-    "required": [
-        "domain",
-        "id",
-        "name",
-        "reference1"
-    ]
+    "id": {
+      "type": "string",
+      "maxLength": 8,
+      "unique": true
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 8
+    },
+    "reference1": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 36
+        },
+        "domain": {
+          "type": "string",
+          "const": "referenceDomain1"
+        }
+      }
+    },
+    "reference2": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "maxLength": 36
+            },
+            "domain": {
+              "type": "string",
+              "const": "referenceDomain2"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "required": [
+    "domain",
+    "id",
+    "name",
+    "reference1"
+  ]
 }

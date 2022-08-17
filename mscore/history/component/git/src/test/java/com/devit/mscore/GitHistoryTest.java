@@ -32,116 +32,116 @@ import org.mockito.Mockito;
 
 public class GitHistoryTest {
 
-    private GitHistory gitHistory;
+  private GitHistory gitHistory;
 
-    private Git git;
+  private Git git;
 
-    private ApplicationContext context;
+  private ApplicationContext context;
 
-    @Before
-    public void setup() {
-        this.context = DefaultApplicationContext.of("test");
+  @Before
+  public void setup() {
+    this.context = DefaultApplicationContext.of("test");
 
-        var repoDir = Paths.get(".").toFile();
-        var repository = mock(Repository.class);
-        doReturn(repoDir).when(repository).getDirectory();
+    var repoDir = Paths.get(".").toFile();
+    var repository = mock(Repository.class);
+    doReturn(repoDir).when(repository).getDirectory();
 
-        this.git = mock(Git.class);
-        doReturn(repository).when(this.git).getRepository();
+    this.git = mock(Git.class);
+    doReturn(repository).when(this.git).getRepository();
 
-        var transportConfigCallback = mock(TransportConfigCallback.class);
+    var transportConfigCallback = mock(TransportConfigCallback.class);
 
-        this.gitHistory = new GitHistory("repo", this.git, transportConfigCallback);
+    this.gitHistory = new GitHistory("repo", this.git, transportConfigCallback);
+  }
+
+  @After
+  public void cleanup() throws IOException {
+    FileUtils.deleteDirectory(Paths.get("domain").toFile());
+  }
+
+  @Test
+  public void testCreate() throws HistoryException {
+    mockCheckout(this.git);
+    mockPull(this.git);
+    mockAdd(this.git);
+    mockCommit(this.git);
+    mockPush(this.git);
+
+    var message = new JSONObject();
+    message.put("domain", "domain");
+    message.put("id", "id");
+    message.put("name", "name");
+
+    try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+      utilities.when(() -> ApplicationContext.getContext()).thenReturn(context);
+
+      this.gitHistory.create(message);
     }
+  }
 
-    @After
-    public void cleanup() throws IOException {
-        FileUtils.deleteDirectory(Paths.get("domain").toFile());
+  @Test
+  public void testCreate_ThrowsException() throws HistoryException, GitAPIException {
+    mockCheckout(this.git);
+    mockPull(this.git);
+    mockAdd(this.git);
+    mockCommit(this.git);
+    mockPushException(this.git);
+
+    var message = new JSONObject();
+    message.put("domain", "domain");
+    message.put("id", "id");
+    message.put("name", "name");
+
+    try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+      utilities.when(() -> ApplicationContext.getContext()).thenReturn(context);
+
+      var ex = assertThrows(HistoryException.class, () -> this.gitHistory.create(message));
+      var cause = ex.getCause();
+      assertThat(cause, instanceOf(GitAPIException.class));
     }
+  }
 
-    @Test
-    public void testCreate() throws HistoryException {
-        mockCheckout(this.git);
-        mockPull(this.git);
-        mockAdd(this.git);
-        mockCommit(this.git);
-        mockPush(this.git);
+  private static void mockCheckout(Git repository) {
+    var checkoutCommand = mock(CheckoutCommand.class);
+    doReturn(checkoutCommand).when(checkoutCommand).setName(anyString());
 
-        var message = new JSONObject();
-        message.put("domain", "domain");
-        message.put("id", "id");
-        message.put("name", "name");
+    doReturn(checkoutCommand).when(repository).checkout();
+  }
 
-        try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
-            utilities.when(() -> ApplicationContext.getContext()).thenReturn(context);
+  private static void mockPull(Git repository) {
+    var pullCommand = mock(PullCommand.class);
+    doReturn(pullCommand).when(pullCommand).setTransportConfigCallback(any(TransportConfigCallback.class));
 
-            this.gitHistory.create(message);
-        }
-    }
+    doReturn(pullCommand).when(repository).pull();
+  }
 
-    @Test
-    public void testCreate_ThrowsException() throws HistoryException, GitAPIException {
-        mockCheckout(this.git);
-        mockPull(this.git);
-        mockAdd(this.git);
-        mockCommit(this.git);
-        mockPushException(this.git);
+  private static void mockAdd(Git repository) {
+    var addCommand = mock(AddCommand.class);
+    doReturn(addCommand).when(addCommand).addFilepattern(anyString());
 
-        var message = new JSONObject();
-        message.put("domain", "domain");
-        message.put("id", "id");
-        message.put("name", "name");
+    doReturn(addCommand).when(repository).add();
+  }
 
-        try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
-            utilities.when(() -> ApplicationContext.getContext()).thenReturn(context);
+  private static void mockCommit(Git repository) {
+    var commitCommand = mock(CommitCommand.class);
+    doReturn(commitCommand).when(commitCommand).setMessage(anyString());
+    doReturn(commitCommand).when(commitCommand).setAuthor(anyString(), anyString());
 
-            var ex = assertThrows(HistoryException.class, () -> this.gitHistory.create(message));
-            var cause = ex.getCause();
-            assertThat(cause, instanceOf(GitAPIException.class));
-        }
-    }
+    doReturn(commitCommand).when(repository).commit();
+  }
 
-    private static void mockCheckout(Git repository) {
-        var checkoutCommand = mock(CheckoutCommand.class);
-        doReturn(checkoutCommand).when(checkoutCommand).setName(anyString());
+  private static void mockPush(Git repository) {
+    var pushCommand = mock(PushCommand.class);
+    doReturn(pushCommand).when(pushCommand).setTransportConfigCallback(any(TransportConfigCallback.class));
 
-        doReturn(checkoutCommand).when(repository).checkout();
-    }
+    doReturn(pushCommand).when(repository).push();
+  }
 
-    private static void mockPull(Git repository) {
-        var pullCommand = mock(PullCommand.class);
-        doReturn(pullCommand).when(pullCommand).setTransportConfigCallback(any(TransportConfigCallback.class));
+  private static void mockPushException(Git repository) throws GitAPIException {
+    var pushCommand = mock(PushCommand.class);
+    doReturn(pushCommand).when(pushCommand).setTransportConfigCallback(any(TransportConfigCallback.class));
+    doThrow(InvalidRemoteException.class).when(pushCommand).call();
 
-        doReturn(pullCommand).when(repository).pull();
-    }
-
-    private static void mockAdd(Git repository) {
-        var addCommand = mock(AddCommand.class);
-        doReturn(addCommand).when(addCommand).addFilepattern(anyString());
-
-        doReturn(addCommand).when(repository).add();
-    }
-
-    private static void mockCommit(Git repository) {
-        var commitCommand = mock(CommitCommand.class);
-        doReturn(commitCommand).when(commitCommand).setMessage(anyString());
-        doReturn(commitCommand).when(commitCommand).setAuthor(anyString(), anyString());
-
-        doReturn(commitCommand).when(repository).commit();
-    }
-
-    private static void mockPush(Git repository) {
-        var pushCommand = mock(PushCommand.class);
-        doReturn(pushCommand).when(pushCommand).setTransportConfigCallback(any(TransportConfigCallback.class));
-
-        doReturn(pushCommand).when(repository).push();
-    }
-
-    private static void mockPushException(Git repository) throws GitAPIException {
-        var pushCommand = mock(PushCommand.class);
-        doReturn(pushCommand).when(pushCommand).setTransportConfigCallback(any(TransportConfigCallback.class));
-        doThrow(InvalidRemoteException.class).when(pushCommand).call();
-
-        doReturn(pushCommand).when(repository).push();
-    }
+    doReturn(pushCommand).when(repository).push();
+  }
 }

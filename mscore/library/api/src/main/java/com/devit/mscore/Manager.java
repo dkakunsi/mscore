@@ -7,9 +7,9 @@ package com.devit.mscore;
  */
 public class Manager {
 
-    protected Configuration configuration;
+  protected Configuration configuration;
 
-    protected Manager(Configuration configuration) {
-        this.configuration = configuration;
-    }
+  protected Manager(Configuration configuration) {
+    this.configuration = configuration;
+  }
 }

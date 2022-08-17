@@ -13,45 +13,45 @@ import org.apache.kafka.common.header.Headers;
 
 public class KafkaApplicationContext extends ApplicationContext {
 
-    private KafkaApplicationContext(Map<String, Object> contextData) {
-        super(contextData);
-    }
+  private KafkaApplicationContext(Map<String, Object> contextData) {
+    super(contextData);
+  }
 
-    public static ApplicationContext of(Headers headers) {
-        var contextData = new HashMap<String, Object>();
-        var context = new KafkaApplicationContext(contextData);
-        context.setPrincipalIfExists(headers);
-        context.setBreadcrumbIdIfExistsOrGenerate(headers);
-        context.setActionIfExists(headers);
+  public static ApplicationContext of(Headers headers) {
+    var contextData = new HashMap<String, Object>();
+    var context = new KafkaApplicationContext(contextData);
+    context.setPrincipalIfExists(headers);
+    context.setBreadcrumbIdIfExistsOrGenerate(headers);
+    context.setActionIfExists(headers);
 
-        return context;
-    }
+    return context;
+  }
 
-    private void setPrincipalIfExists(Headers headers) {
-        var principalHeader = headers.lastHeader(PRINCIPAL);
-        if (principalHeader != null) {
-            setPrincipal(new String(principalHeader.value()));
-        }
+  private void setPrincipalIfExists(Headers headers) {
+    var principalHeader = headers.lastHeader(PRINCIPAL);
+    if (principalHeader != null) {
+      setPrincipal(new String(principalHeader.value()));
     }
+  }
 
-    private void setBreadcrumbIdIfExistsOrGenerate(Headers headers) {
-        var breadcrumbIdHeader = headers.lastHeader(BREADCRUMB_ID);
-        if (breadcrumbIdHeader != null) {
-            setBreadcrumbId(new String(breadcrumbIdHeader.value()));
-        } else {
-            generateBreadcrumbId();
-        }
+  private void setBreadcrumbIdIfExistsOrGenerate(Headers headers) {
+    var breadcrumbIdHeader = headers.lastHeader(BREADCRUMB_ID);
+    if (breadcrumbIdHeader != null) {
+      setBreadcrumbId(new String(breadcrumbIdHeader.value()));
+    } else {
+      generateBreadcrumbId();
     }
+  }
 
-    private void setActionIfExists(Headers headers) {
-        var actionHeader = headers.lastHeader(ACTION);  
-        if (actionHeader != null) {
-            this.contextData.put(ACTION, new String(actionHeader.value()));
-        }
+  private void setActionIfExists(Headers headers) {
+    var actionHeader = headers.lastHeader(ACTION);
+    if (actionHeader != null) {
+      this.contextData.put(ACTION, new String(actionHeader.value()));
     }
+  }
 
-    @Override
-    public String getSource() {
-        return "messaging";
-    }
+  @Override
+  public String getSource() {
+    return "messaging";
+  }
 }

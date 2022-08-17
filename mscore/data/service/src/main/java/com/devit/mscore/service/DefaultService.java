@@ -44,216 +44,216 @@ import org.json.JSONObject;
  */
 public class DefaultService implements Service, Synchronizer {
 
-    private static final Logger LOG = new ApplicationLogger(DefaultService.class);
+  private static final Logger LOG = new ApplicationLogger(DefaultService.class);
 
-    private static final String SYNCHRONIZATION_ERROR = "Synchronization failed.";
+  private static final String SYNCHRONIZATION_ERROR = "Synchronization failed.";
 
-    protected Schema schema;
+  protected Schema schema;
 
-    protected Repository repository;
+  protected Repository repository;
 
-    protected Index index;
+  protected Index index;
 
-    protected ValidationsExecutor validator;
+  protected ValidationsExecutor validator;
 
-    protected FiltersExecutor filter;
+  protected FiltersExecutor filter;
 
-    protected EnrichmentsExecutor enricher;
+  protected EnrichmentsExecutor enricher;
 
-    protected List<PostProcessObserver> observers;
+  protected List<PostProcessObserver> observers;
 
-    public DefaultService(Schema schema) {
-        this.schema = schema;
-        this.observers = new ArrayList<>();
+  public DefaultService(Schema schema) {
+    this.schema = schema;
+    this.observers = new ArrayList<>();
+  }
+
+  public DefaultService(Schema schema, Repository repository, Index index, ValidationsExecutor validator,
+      FiltersExecutor filter, EnrichmentsExecutor enricher) {
+    this(schema);
+    this.repository = repository;
+    this.index = index;
+    this.validator = validator;
+    this.enricher = enricher;
+    this.filter = filter;
+  }
+
+  public DefaultService addObserver(PostProcessObserver observer) {
+    this.observers.add(observer);
+    return this;
+  }
+
+  @Override
+  public String getDomain() {
+    return this.schema.getDomain();
+  }
+
+  @Override
+  public Schema getSchema() {
+    return this.schema;
+  }
+
+  @Override
+  public String save(final JSONObject json) throws ApplicationException {
+    if (json == null || json.isEmpty()) {
+      LOG.warn("Cannot save empty data.");
+      throw new ValidationException("Cannot save empty data.");
     }
 
-    public DefaultService(Schema schema, Repository repository, Index index, ValidationsExecutor validator,
-            FiltersExecutor filter, EnrichmentsExecutor enricher) {
-        this(schema);
-        this.repository = repository;
-        this.index = index;
-        this.validator = validator;
-        this.enricher = enricher;
-        this.filter = filter;
+    LOG.debug("Saving data {} to database.", getCode(json));
+    setAuditAttribute(json);
+    this.validator.execute(json);
+    this.enricher.execute(json);
+
+    var result = this.repository.save(json);
+
+    try {
+      this.filter.execute(json);
+      this.observers.forEach(observer -> observer.notify(result));
+      return getId(result);
+    } catch (JSONException e) {
+      throw new ApplicationException(e);
+    }
+  }
+
+  private void setAuditAttribute(JSONObject json) throws DataException {
+    var context = getContext();
+    try {
+      var id = getId(json);
+      if (StringUtils.isBlank(id) || !this.repository.find(id).isPresent()) {
+        json.put(CREATED_DATE, DateUtils.nowString());
+        json.put(CREATED_BY, context.getRequestedBy());
+      }
+      json.put(LAST_UPDATED_DATE, DateUtils.nowString());
+      json.put(LAST_UPDATED_BY, context.getRequestedBy());
+    } catch (JSONException e) {
+      throw new DataException(e);
+    }
+  }
+
+  @Override
+  public void delete(String id) throws ApplicationException {
+    if (StringUtils.isEmpty(id)) {
+      throw new ValidationException("Id cannot be empty.");
+    }
+    LOG.debug("Deleting data: {}.", id);
+    this.repository.delete(id);
+  }
+
+  @Override
+  public JSONObject find(String id) throws ApplicationException {
+    if (StringUtils.isEmpty(id)) {
+      throw new ValidationException("Id cannot be empty.");
     }
 
-    public DefaultService addObserver(PostProcessObserver observer) {
-        this.observers.add(observer);
-        return this;
+    var optional = this.repository.find(id);
+    if (optional.isEmpty()) {
+      return new JSONObject();
+    }
+    var json = optional.get();
+    this.filter.execute(json);
+
+    LOG.debug("Found data for id {}: {}.", id, json);
+    return json;
+  }
+
+  @Override
+  public JSONArray find(List<String> ids) throws ApplicationException {
+    if (ids == null || ids.isEmpty()) {
+      throw new ValidationException("Keys cannot be empty.");
     }
 
-    @Override
-    public String getDomain() {
-        return this.schema.getDomain();
+    var optional = this.repository.find(ids);
+    if (optional.isEmpty()) {
+      return new JSONArray();
     }
 
-    @Override
-    public Schema getSchema() {
-        return this.schema;
+    try {
+      var jsons = optional.get();
+      this.filter.execute(jsons);
+      LOG.debug("Found data for ids {}: {}.", ids, jsons);
+
+      return jsons;
+    } catch (JSONException e) {
+      throw new DataException(e);
+    }
+  }
+
+  @Override
+  public JSONObject findByCode(String code) throws ApplicationException {
+    if (StringUtils.isEmpty(code)) {
+      throw new ValidationException("Code cannot be empty.");
     }
 
-    @Override
-    public String save(final JSONObject json) throws ApplicationException {
-        if (json == null || json.isEmpty()) {
-            LOG.warn("Cannot save empty data.");
-            throw new ValidationException("Cannot save empty data.");
-        }
+    try {
+      var array = this.repository.find(CODE, code);
+      if (array.isEmpty()) {
+        return new JSONObject();
+      }
+      var json = array.get().getJSONObject(0);
+      this.filter.execute(json);
 
-        LOG.debug("Saving data {} to database.", getCode(json));
-        setAuditAttribute(json);
-        this.validator.execute(json);
-        this.enricher.execute(json);
-
-        var result = this.repository.save(json);
-
-        try {
-            this.filter.execute(json);
-            this.observers.forEach(observer -> observer.notify(result));
-            return getId(result);
-        } catch (JSONException e) {
-            throw new ApplicationException(e);
-        }
+      LOG.debug("Found data for code {}: {}.", code, json);
+      return json;
+    } catch (JSONException e) {
+      throw new DataException(e);
     }
+  }
 
-    private void setAuditAttribute(JSONObject json) throws DataException {
-        var context = getContext();
-        try {
-            var id = getId(json);
-            if (StringUtils.isBlank(id) || !this.repository.find(id).isPresent()) {
-                json.put(CREATED_DATE, DateUtils.nowString());
-                json.put(CREATED_BY, context.getRequestedBy());
-            }
-            json.put(LAST_UPDATED_DATE, DateUtils.nowString());
-            json.put(LAST_UPDATED_BY, context.getRequestedBy());
-        } catch (JSONException e) {
-            throw new DataException(e);
-        }
+  @Override
+  public JSONArray search(JSONObject query) throws ApplicationException {
+    return this.index.search(query).orElse(new JSONArray());
+  }
+
+  // Synchronizer implementation
+
+  @Override
+  public void synchronize() throws SynchronizationException {
+    // Just sync the parent, then system will propagate to all children.
+    // Parent object is object without parent attribute,
+    // which means it is children of no-one.
+    synchronize("parent", null);
+  }
+
+  @Override
+  public void synchronize(String id) throws SynchronizationException {
+    try {
+      var json = this.repository.find(id);
+      if (json.isEmpty()) {
+        LOG.info("Cannot synchronize. No data to synchronize in domain {}.", getDomain());
+        return;
+      }
+      synchronize(json.get());
+    } catch (DataException ex) {
+      throw new SynchronizationException(SYNCHRONIZATION_ERROR, ex);
     }
+  }
 
-    @Override
-    public void delete(String id) throws ApplicationException {
-        if (StringUtils.isEmpty(id)) {
-            throw new ValidationException("Id cannot be empty.");
-        }
-        LOG.debug("Deleting data: {}.", id);
-        this.repository.delete(id);
+  @Override
+  public void synchronize(String searchAttribute, String value)
+      throws SynchronizationException {
+    try {
+      var jsons = this.repository.find(searchAttribute, value);
+      if (jsons.isEmpty()) {
+        LOG.info("Cannot synchronize. No data to synchronize in domain {}.", getDomain());
+        return;
+      }
+      for (Object object : jsons.get()) {
+        synchronize((JSONObject) object);
+      }
+    } catch (DataException ex) {
+      throw new SynchronizationException(SYNCHRONIZATION_ERROR, ex);
     }
+  }
 
-    @Override
-    public JSONObject find(String id) throws ApplicationException {
-        if (StringUtils.isEmpty(id)) {
-            throw new ValidationException("Id cannot be empty.");
-        }
-
-        var optional = this.repository.find(id);
-        if (optional.isEmpty()) {
-            return new JSONObject();
-        }
-        var json = optional.get();
-        this.filter.execute(json);
-
-        LOG.debug("Found data for id {}: {}.", id, json);
-        return json;
+  private boolean synchronize(JSONObject json) {
+    this.enricher.execute(json);
+    try {
+      var result = this.repository.save(json);
+      this.filter.execute(result);
+      this.observers.forEach(observer -> observer.notify(result));
+      return true;
+    } catch (DataException ex) {
+      return false;
     }
-
-    @Override
-    public JSONArray find(List<String> ids) throws ApplicationException {
-        if (ids == null || ids.isEmpty()) {
-            throw new ValidationException("Keys cannot be empty.");
-        }
-
-        var optional = this.repository.find(ids);
-        if (optional.isEmpty()) {
-            return new JSONArray();
-        }
-
-        try {
-            var jsons = optional.get();
-            this.filter.execute(jsons);
-            LOG.debug("Found data for ids {}: {}.", ids, jsons);
-
-            return jsons;
-        } catch (JSONException e) {
-            throw new DataException(e);
-        }
-    }
-
-    @Override
-    public JSONObject findByCode(String code) throws ApplicationException {
-        if (StringUtils.isEmpty(code)) {
-            throw new ValidationException("Code cannot be empty.");
-        }
-
-        try {
-            var array = this.repository.find(CODE, code);
-            if (array.isEmpty()) {
-                return new JSONObject();
-            }
-            var json = array.get().getJSONObject(0);
-            this.filter.execute(json);
-
-            LOG.debug("Found data for code {}: {}.", code, json);
-            return json;
-        } catch (JSONException e) {
-            throw new DataException(e);
-        }
-    }
-
-    @Override
-    public JSONArray search(JSONObject query) throws ApplicationException {
-        return this.index.search(query).orElse(new JSONArray());
-    }
-
-    // Synchronizer implementation
-
-    @Override
-    public void synchronize() throws SynchronizationException {
-        // Just sync the parent, then system will propagate to all children.
-        // Parent object is object without parent attribute,
-        // which means it is children of no-one.
-        synchronize("parent", null);
-    }
-
-    @Override
-    public void synchronize(String id) throws SynchronizationException {
-        try {
-            var json = this.repository.find(id);
-            if (json.isEmpty()) {
-                LOG.info("Cannot synchronize. No data to synchronize in domain {}.", getDomain());
-                return;
-            }
-            synchronize(json.get());
-        } catch (DataException ex) {
-            throw new SynchronizationException(SYNCHRONIZATION_ERROR, ex);
-        }
-    }
-
-    @Override
-    public void synchronize(String searchAttribute, String value)
-            throws SynchronizationException {
-        try {
-            var jsons = this.repository.find(searchAttribute, value);
-            if (jsons.isEmpty()) {
-                LOG.info("Cannot synchronize. No data to synchronize in domain {}.", getDomain());
-                return;
-            }
-            for (Object object : jsons.get()) {
-                synchronize((JSONObject) object);
-            }
-        } catch (DataException ex) {
-            throw new SynchronizationException(SYNCHRONIZATION_ERROR, ex);
-        }
-    }
-
-    private boolean synchronize(JSONObject json) {
-        this.enricher.execute(json);
-        try {
-            var result = this.repository.save(json);
-            this.filter.execute(result);
-            this.observers.forEach(observer -> observer.notify(result));
-            return true;
-        } catch (DataException ex) {
-            return false;
-        }
-    }
+  }
 }

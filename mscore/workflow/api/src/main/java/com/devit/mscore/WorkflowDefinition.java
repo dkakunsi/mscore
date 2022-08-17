@@ -13,15 +13,15 @@ import org.json.JSONObject;
  */
 public abstract class WorkflowDefinition extends Resource {
 
-    protected WorkflowDefinition(File resourceFile) throws ResourceException {
-        super(resourceFile);
-    }
+  protected WorkflowDefinition(File resourceFile) throws ResourceException {
+    super(resourceFile);
+  }
 
-    protected WorkflowDefinition(String name, String content) {
-        super(name, content);
-    }
+  protected WorkflowDefinition(String name, String content) {
+    super(name, content);
+  }
 
-    public abstract JSONObject getMessage(String definitionId);
+  public abstract JSONObject getMessage(String definitionId);
 
-    public abstract String getResourceName();
+  public abstract String getResourceName();
 }

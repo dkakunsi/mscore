@@ -10,23 +10,23 @@ import com.devit.mscore.web.javalin.JavalinApiFactory;
 
 public class ApiFactory extends JavalinApiFactory {
 
-    private ApiFactory(Configuration configuration) {
-        super(configuration);
-    }
+  private ApiFactory(Configuration configuration) {
+    super(configuration);
+  }
 
-    public static ApiFactory of(Configuration configuration, AuthenticationProvider authenticationProvider) {
-        var manager = new ApiFactory(configuration);
-        manager.authenticationProvider = authenticationProvider;
-        return manager;
-    }
+  public static ApiFactory of(Configuration configuration, AuthenticationProvider authenticationProvider) {
+    var manager = new ApiFactory(configuration);
+    manager.authenticationProvider = authenticationProvider;
+    return manager;
+  }
 
-    public ApiFactory add(ResourceService resourceService) {
-        add(new ResourceController(resourceService));
-        return this;
-    }
+  public ApiFactory add(ResourceService resourceService) {
+    add(new ResourceController(resourceService));
+    return this;
+  }
 
-    public ApiFactory add(WorkflowService workflowService) {
-        add(new WorkflowController(workflowService));
-        return this;
-    }
+  public ApiFactory add(WorkflowService workflowService) {
+    add(new WorkflowController(workflowService));
+    return this;
+  }
 }

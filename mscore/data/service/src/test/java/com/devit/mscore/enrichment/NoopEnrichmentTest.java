@@ -8,21 +8,21 @@ import org.junit.Test;
 
 public class NoopEnrichmentTest {
 
-    private NoopEnrichment enrichment;
+  private NoopEnrichment enrichment;
 
-    @Before
-    public void setup() {
-        this.enrichment = new NoopEnrichment("domain", "attribute");
-    }
+  @Before
+  public void setup() {
+    this.enrichment = new NoopEnrichment("domain", "attribute");
+  }
 
-    @Test
-    public void testIsValid() {
-        assertTrue(this.enrichment.isValid(new JSONObject()));
-    }
+  @Test
+  public void testIsValid() {
+    assertTrue(this.enrichment.isValid(new JSONObject()));
+  }
 
-    @Test
-    public void testLoadFromDataStore() {
-        var result = this.enrichment.loadFromDataStore("domain", "id");
-        assertTrue(result.isEmpty());
-    }
+  @Test
+  public void testLoadFromDataStore() {
+    var result = this.enrichment.loadFromDataStore("domain", "id");
+    assertTrue(result.isEmpty());
+  }
 }

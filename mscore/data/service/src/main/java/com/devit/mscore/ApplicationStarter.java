@@ -36,165 +36,165 @@ import com.devit.mscore.util.DateUtils;
 import com.devit.mscore.validation.ValidationsExecutor;
 import com.devit.mscore.web.javalin.JavalinApiFactory;
 
-
 public class ApplicationStarter implements Starter {
 
-    private static final Logger LOGGER = ApplicationLogger.getLogger(ApplicationStarter.class);
+  private static final Logger LOGGER = ApplicationLogger.getLogger(ApplicationStarter.class);
 
-    private static final String DEPENDENCY = "services.%s.kafka.topic.dependency";
+  private static final String DEPENDENCY = "services.%s.kafka.topic.dependency";
 
-    private static final String TIMEZONE = "platform.service.timezone";
+  private static final String TIMEZONE = "platform.service.timezone";
 
-    private static final String PUBLISHING_DELAY = "platform.kafka.publishing.delay";
+  private static final String PUBLISHING_DELAY = "platform.kafka.publishing.delay";
 
-    private static final String DEFAULT_ZONE_ID = "Asia/Makassar";
+  private static final String DEFAULT_ZONE_ID = "Asia/Makassar";
 
-    private Configuration configuration;
+  private Configuration configuration;
 
-    private Registry schemaRegistry;
+  private Registry schemaRegistry;
 
-    private Registry indexMapRegistry;
+  private Registry indexMapRegistry;
 
-    private Registry serviceRegistry;
+  private Registry serviceRegistry;
 
-    private List<Validation> webValidations;
+  private List<Validation> webValidations;
 
-    private Map<String, Index> indices;
+  private Map<String, Index> indices;
 
-    private ValidationsExecutor validationsExecutor;
+  private ValidationsExecutor validationsExecutor;
 
-    private EnrichmentsExecutor enrichmentsExecutor;
+  private EnrichmentsExecutor enrichmentsExecutor;
 
-    private SynchronizationsExecutor synchronizationsExecutor;
+  private SynchronizationsExecutor synchronizationsExecutor;
 
-    public ApplicationStarter(String[] args) throws ConfigException {
-        this(FileConfigurationUtils.load(args));
+  public ApplicationStarter(String[] args) throws ConfigException {
+    this(FileConfigurationUtils.load(args));
+  }
+
+  public ApplicationStarter(FileConfiguration fileConfiguration) throws ConfigException {
+    try {
+      var registryFactory = ZookeeperRegistryFactory.of(fileConfiguration);
+      var zookeeperRegistry = registryFactory.registry("platformConfig");
+      zookeeperRegistry.open();
+      this.configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
+      this.serviceRegistry = zookeeperRegistry;
+    } catch (RegistryException ex) {
+      throw new ConfigException(ex);
+    }
+    DateUtils.setZoneId(this.configuration.getConfig(TIMEZONE).orElse(DEFAULT_ZONE_ID));
+
+    // Create registry
+    this.schemaRegistry = new MemoryRegistry(SCHEMA);
+    this.indexMapRegistry = new MemoryRegistry(INDEX_MAP);
+
+    // Create executor
+    this.validationsExecutor = new ValidationsExecutor();
+    this.enrichmentsExecutor = new EnrichmentsExecutor();
+    this.synchronizationsExecutor = new SynchronizationsExecutor();
+
+    this.webValidations = new ArrayList<>();
+    this.indices = new HashMap<>();
+  }
+
+  public static ApplicationStarter of(String[] args) throws ConfigException {
+    var starter = new ApplicationStarter(args);
+    var schemaValidation = new SchemaValidation(starter.getSchemaRegistry());
+    starter.addWebValidations(schemaValidation);
+
+    return starter;
+  }
+
+  public void addWebValidations(Validation validation) {
+    this.webValidations.add(validation);
+  }
+
+  public Registry getSchemaRegistry() {
+    return this.schemaRegistry;
+  }
+
+  @Override
+  public void start() throws ApplicationException {
+    // Register resources
+    var schemaManager = SchemaManager.of(this.configuration, this.schemaRegistry);
+    registerResource(schemaManager);
+
+    var indexFactory = ElasticsearchIndexFactory.of(this.configuration, this.indexMapRegistry);
+    registerResource(indexFactory);
+
+    // Create authentication
+    var authentication = JWTAuthenticationProvider.of(this.configuration);
+
+    // Create component factories
+    var repositoryFactory = MongoDatabaseFactory.of(this.configuration);
+    var messagingFactory = KafkaMessagingFactory.of(this.configuration);
+    var apiFactory = JavalinApiFactory.of(this.configuration, authentication, this.webValidations);
+    var filterFactory = FilterFactory.of();
+
+    var filter = filterFactory.filters(this.configuration);
+    var registration = new ServiceRegistration(this.serviceRegistry, this.configuration);
+
+    // Generate service and it's dependencies from schema.
+    var delay = getPublishingDelay();
+    for (var schema : schemaManager.getSchemas()) {
+      var index = indexFactory.index(schema.getDomain());
+      this.indices.put(schema.getDomain(), index.build());
+
+      createEnrichment(schema, this.enrichmentsExecutor, this.indices);
+
+      var repository = repositoryFactory.repository(schema);
+      var publisher = messagingFactory.publisher(schema.getDomain());
+      var indexingObserver = new IndexingObserver(index);
+      var publishingObserver = new PublishingObserver(publisher, delay);
+      var service = new DefaultService(schema, repository, index, this.validationsExecutor, filter,
+          this.enrichmentsExecutor)
+          .addObserver(indexingObserver)
+          .addObserver(publishingObserver);
+
+      apiFactory.add(service);
+      registration.register(service);
+
+      this.synchronizationsExecutor.add(service);
     }
 
-    public ApplicationStarter(FileConfiguration fileConfiguration) throws ConfigException {
-        try {
-            var registryFactory = ZookeeperRegistryFactory.of(fileConfiguration);
-            var zookeeperRegistry = registryFactory.registry("platformConfig");
-            zookeeperRegistry.open();
-            this.configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
-            this.serviceRegistry = zookeeperRegistry;
-        } catch (RegistryException ex) {
-            throw new ConfigException(ex);
-        }
-        DateUtils.setZoneId(this.configuration.getConfig(TIMEZONE).orElse(DEFAULT_ZONE_ID));
-
-        // Create registry
-        this.schemaRegistry = new MemoryRegistry(SCHEMA);
-        this.indexMapRegistry = new MemoryRegistry(INDEX_MAP);
-
-        // Create executor
-        this.validationsExecutor = new ValidationsExecutor();
-        this.enrichmentsExecutor = new EnrichmentsExecutor();
-        this.synchronizationsExecutor = new SynchronizationsExecutor();
-
-        this.webValidations = new ArrayList<>();
-        this.indices = new HashMap<>();
+    // Create listener
+    var syncTopics = messagingFactory.getTopics(String.format(DEPENDENCY, configuration.getServiceName()));
+    if (syncTopics.isPresent()) {
+      var subscriber = messagingFactory.subscriber();
+      var syncListener = new SynchronizationListener(subscriber, this.synchronizationsExecutor);
+      syncListener.listen(syncTopics.get());
     }
 
-    public static ApplicationStarter of(String[] args) throws ConfigException {
-        var starter = new ApplicationStarter(args);
-        var schemaValidation = new SchemaValidation(starter.getSchemaRegistry());
-        starter.addWebValidations(schemaValidation);
+    // Start API server
+    apiFactory.server().start();
 
-        return starter;
+    this.serviceRegistry.close();
+  }
+
+  private Long getPublishingDelay() throws ConfigException {
+    var wait = this.configuration.getConfig(PUBLISHING_DELAY).orElse("0");
+    try {
+      return Long.parseLong(wait);
+    } catch (NumberFormatException ex) {
+      return 0L;
     }
+  }
 
-    public void addWebValidations(Validation validation) {
-        this.webValidations.add(validation);
+  private static void createEnrichment(Schema schema, EnrichmentsExecutor enricher, Map<String, Index> indices) {
+    for (var attribute : schema.getReferenceNames()) {
+      enricher.add(new IndexEnrichment(indices, schema.getDomain(), attribute));
     }
+  }
 
-    public Registry getSchemaRegistry() {
-        return this.schemaRegistry;
+  private static void registerResource(ResourceManager resourceManager) {
+    LOGGER.info("Register resource: {}.", resourceManager.getType());
+    try {
+      resourceManager.registerResources();
+    } catch (ResourceException ex) {
+      LOGGER.warn("Cannot register resource {}.", resourceManager.getType(), ex);
     }
+  }
 
-    @Override
-    public void start() throws ApplicationException {
-        // Register resources
-        var schemaManager = SchemaManager.of(this.configuration, this.schemaRegistry);
-        registerResource(schemaManager);
-
-        var indexFactory = ElasticsearchIndexFactory.of(this.configuration, this.indexMapRegistry);
-        registerResource(indexFactory);
-
-        // Create authentication
-        var authentication = JWTAuthenticationProvider.of(this.configuration);
-
-        // Create component factories
-        var repositoryFactory = MongoDatabaseFactory.of(this.configuration);
-        var messagingFactory = KafkaMessagingFactory.of(this.configuration);
-        var apiFactory = JavalinApiFactory.of(this.configuration, authentication, this.webValidations);
-        var filterFactory = FilterFactory.of();
-
-        var filter = filterFactory.filters(this.configuration);
-        var registration = new ServiceRegistration(this.serviceRegistry, this.configuration);
-
-        // Generate service and it's dependencies from schema.
-        var delay = getPublishingDelay();
-        for (var schema : schemaManager.getSchemas()) {
-            var index = indexFactory.index(schema.getDomain());
-            this.indices.put(schema.getDomain(), index.build());
-
-            createEnrichment(schema, this.enrichmentsExecutor, this.indices);
-
-            var repository = repositoryFactory.repository(schema);
-            var publisher = messagingFactory.publisher(schema.getDomain());
-            var indexingObserver = new IndexingObserver(index);
-            var publishingObserver = new PublishingObserver(publisher, delay);
-            var service = new DefaultService(schema, repository, index, this.validationsExecutor, filter, this.enrichmentsExecutor)
-                    .addObserver(indexingObserver)
-                    .addObserver(publishingObserver);
-
-            apiFactory.add(service);
-            registration.register(service);
-
-            this.synchronizationsExecutor.add(service);
-        }
-
-        // Create listener
-        var syncTopics = messagingFactory.getTopics(String.format(DEPENDENCY, configuration.getServiceName()));
-        if (syncTopics.isPresent()) {
-            var subscriber = messagingFactory.subscriber();
-            var syncListener = new SynchronizationListener(subscriber, this.synchronizationsExecutor);
-            syncListener.listen(syncTopics.get());
-        }
-
-        // Start API server
-        apiFactory.server().start();
-
-        this.serviceRegistry.close();
-    }
-
-    private Long getPublishingDelay() throws ConfigException {
-        var wait = this.configuration.getConfig(PUBLISHING_DELAY).orElse("0");
-        try {
-            return Long.parseLong(wait);
-        } catch (NumberFormatException ex) {
-            return 0L;
-        }
-    }
-
-    private static void createEnrichment(Schema schema, EnrichmentsExecutor enricher, Map<String, Index> indices) {
-        for (var attribute : schema.getReferenceNames()) {
-            enricher.add(new IndexEnrichment(indices, schema.getDomain(), attribute));
-        }
-    }
-
-    private static void registerResource(ResourceManager resourceManager) {
-        LOGGER.info("Register resource: {}.", resourceManager.getType());
-        try {
-            resourceManager.registerResources();
-        } catch (ResourceException ex) {
-            LOGGER.warn("Cannot register resource {}.", resourceManager.getType(), ex);
-        }
-    }
-
-    @Override
-    public void stop() {
-        System.exit(0);
-    }
+  @Override
+  public void stop() {
+    System.exit(0);
+  }
 }

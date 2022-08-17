@@ -16,61 +16,61 @@ import io.javalin.http.Context;
 
 public class JavalinApplicationContext extends ApplicationContext {
 
-    private JavalinApplicationContext(Map<String, Object> contextData) {
-        super(contextData);
+  private JavalinApplicationContext(Map<String, Object> contextData) {
+    super(contextData);
+  }
+
+  public static ApplicationContext of(Context ctx) {
+    var contextData = new HashMap<String, Object>();
+    contextData.putAll(ctx.headerMap());
+
+    var context = new JavalinApplicationContext(contextData);
+    context.principal(ctx);
+    context.breadcrumbId(ctx);
+    context.action(ctx);
+    context.authorization(ctx);
+
+    return context;
+  }
+
+  private void breadcrumbId(Context ctx) {
+    var breadcrumbId = getValue(ctx, BREADCRUMB_ID);
+    if (StringUtils.isNotBlank(breadcrumbId)) {
+      setBreadcrumbId(breadcrumbId);
     }
+  }
 
-    public static ApplicationContext of(Context ctx) {
-        var contextData = new HashMap<String, Object>();
-        contextData.putAll(ctx.headerMap());
-
-        var context = new JavalinApplicationContext(contextData);
-        context.principal(ctx);
-        context.breadcrumbId(ctx);
-        context.action(ctx);
-        context.authorization(ctx);
-
-        return context;
+  private void principal(Context ctx) {
+    var principal = getValue(ctx, PRINCIPAL);
+    if (principal != null && StringUtils.isNotBlank(principal)) {
+      setPrincipal(principal);
     }
+  }
 
-    private void breadcrumbId(Context ctx) {
-        var breadcrumbId = getValue(ctx, BREADCRUMB_ID);
-        if (StringUtils.isNotBlank(breadcrumbId)) {
-            setBreadcrumbId(breadcrumbId);
-        }
+  private String getValue(Context ctx, String key) {
+    var value = ctx.attribute(key);
+    if (value == null || StringUtils.isBlank(value.toString())) {
+      value = ctx.header(key);
     }
+    return value != null ? value.toString() : null;
+  }
 
-    private void principal(Context ctx) {
-        var principal = getValue(ctx, PRINCIPAL);
-        if (principal != null && StringUtils.isNotBlank(principal)) {
-            setPrincipal(principal);
-        }
+  private void action(Context ctx) {
+    var action = ctx.header(ACTION);
+    if (StringUtils.isNotBlank(action)) {
+      this.contextData.put(ACTION, action);
     }
+  }
 
-    private String getValue(Context ctx, String key) {
-        var value = ctx.attribute(key);
-        if (value == null || StringUtils.isBlank(value.toString())) {
-            value = ctx.header(key);
-        }
-        return value != null ? value.toString() : null;
+  private void authorization(Context ctx) {
+    var authorization = ctx.header(AUTHORIZATION);
+    if (StringUtils.isNotBlank(authorization)) {
+      this.contextData.put(AUTHORIZATION, authorization);
     }
+  }
 
-    private void action(Context ctx) {
-        var action = ctx.header(ACTION);
-        if (StringUtils.isNotBlank(action)) {
-            this.contextData.put(ACTION, action);
-        }
-    }
-
-    private void authorization(Context ctx) {
-        var authorization = ctx.header(AUTHORIZATION);
-        if (StringUtils.isNotBlank(authorization)) {
-            this.contextData.put(AUTHORIZATION, authorization);
-        }
-    }
-
-    @Override
-    public String getSource() {
-        return "web";
-    }
+  @Override
+  public String getSource() {
+    return "web";
+  }
 }

@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.devit.mscore</groupId>
-        <artifactId>component</artifactId>
-        <version>${revision}</version>
-        <relativePath>..</relativePath>
-    </parent>
+  <parent>
+    <groupId>com.devit.mscore</groupId>
+    <artifactId>component</artifactId>
+    <version>${revision}</version>
+    <relativePath>..</relativePath>
+  </parent>
 
-    <artifactId>kafka</artifactId>
-    <packaging>jar</packaging>
-    <name>MS Core :: Messaging :: Kafka</name>
+  <artifactId>kafka</artifactId>
+  <packaging>jar</packaging>
+  <name>MS Core :: Messaging :: Kafka</name>
 
-    <properties>
-        <revision>1.0-SNAPSHOT</revision>
-        <kafka.version>3.0.0</kafka.version>
-    </properties>
+  <properties>
+    <revision>1.0-SNAPSHOT</revision>
+    <kafka.version>3.0.0</kafka.version>
+  </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>${kafka.version}</version>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>com.devit.mscore</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+      <version>${kafka.version}</version>
+    </dependency>
+  </dependencies>
 </project>

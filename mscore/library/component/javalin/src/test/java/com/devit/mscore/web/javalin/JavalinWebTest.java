@@ -38,445 +38,448 @@ import kong.unirest.Unirest;
 
 public class JavalinWebTest {
 
-    private static final String BASE_URL = "http://localhost:2220/domain";
+  private static final String BASE_URL = "http://localhost:2220/domain";
 
-    private static final String BASE_SECURE_URL = "http://localhost:2220/secure";
+  private static final String BASE_SECURE_URL = "http://localhost:2220/secure";
 
-    private static JSONObject principal;
+  private static JSONObject principal;
 
-    private static Configuration configuration;
+  private static Configuration configuration;
 
-    private static Service service;
+  private static Service service;
 
-    private static Service secureService;
+  private static Service secureService;
 
-    private static Synchronizer synchronizer;
+  private static Synchronizer synchronizer;
 
-    private static AuthenticationProvider authentication;
+  private static AuthenticationProvider authentication;
 
-    private static JavalinServer server;
+  private static JavalinServer server;
 
-    @BeforeClass
-    public static void setup() throws Exception {
-        configuration = mock(Configuration.class);
-        doReturn(Optional.of("2220")).when(configuration).getConfig("platform.service.web.port");
-        doReturn("test").when(configuration).getServiceName();
+  @BeforeClass
+  public static void setup() throws Exception {
+    configuration = mock(Configuration.class);
+    doReturn(Optional.of("2220")).when(configuration).getConfig("platform.service.web.port");
+    doReturn("test").when(configuration).getServiceName();
 
-        principal = new JSONObject();
-        var role = new JSONArray(List.of("user"));
-        principal.put("role", role);
+    principal = new JSONObject();
+    var role = new JSONArray(List.of("user"));
+    principal.put("role", role);
 
-        authentication = mock(AuthenticationProvider.class);
-        var roles = Map.of("/domain/*", "user", "/secure*", Map.of("POST", "admin"), "/secure/*", Map.of("PUT", "admin"), "/secure/*/sync", "admin", "/secure/sync", "admin");
-        doReturn(roles).when(authentication).getUri();
-        doReturn(principal).when(authentication).verify(anyString());
+    authentication = mock(AuthenticationProvider.class);
+    var roles = Map.of("/domain/*", "user", "/secure*", Map.of("POST", "admin"), "/secure/*", Map.of("PUT", "admin"),
+        "/secure/*/sync", "admin", "/secure/sync", "admin");
+    doReturn(roles).when(authentication).getUri();
+    doReturn(principal).when(authentication).verify(anyString());
 
-        var apiFactory = JavalinApiFactory.of(configuration, authentication, null);
+    var apiFactory = JavalinApiFactory.of(configuration, authentication, null);
 
-        service = mock(Service.class);
-        doReturn("domain").when(service).getDomain();
-        synchronizer = mock(Synchronizer.class);
+    service = mock(Service.class);
+    doReturn("domain").when(service).getDomain();
+    synchronizer = mock(Synchronizer.class);
 
-        var controller = new JavalinController(service, synchronizer);
-        var endpoint = new JavalinEndpoint(controller);
+    var controller = new JavalinController(service, synchronizer);
+    var endpoint = new JavalinEndpoint(controller);
 
-        apiFactory.add(endpoint);
+    apiFactory.add(endpoint);
 
-        secureService = mock(Service.class);
-        doReturn("secure").when(secureService).getDomain();
-        var secureController = new JavalinController(secureService, synchronizer);
-        apiFactory.add(secureController);
+    secureService = mock(Service.class);
+    doReturn("secure").when(secureService).getDomain();
+    var secureController = new JavalinController(secureService, synchronizer);
+    apiFactory.add(secureController);
 
-        var anotherService = mock(Service.class);
-        doReturn("anotherService").when(anotherService).getDomain();
-        var anotherEndpoint = new JavalinEndpoint(anotherService);
+    var anotherService = mock(Service.class);
+    doReturn("anotherService").when(anotherService).getDomain();
+    var anotherEndpoint = new JavalinEndpoint(anotherService);
 
-        apiFactory.add(anotherEndpoint);
-        server = (JavalinServer) apiFactory.server();
-        server.start();
-    }
+    apiFactory.add(anotherEndpoint);
+    server = (JavalinServer) apiFactory.server();
+    server.start();
+  }
 
-    @AfterClass
-    public static void destroy() {
-        server.stop();
-    }
+  @AfterClass
+  public static void destroy() {
+    server.stop();
+  }
 
-    @Deprecated
-    @Test
-    public void dummyTest() {
-        var factory = JavalinApiFactory.of(configuration, authentication, null);
-        assertNotNull(factory);
-    }
+  @Deprecated
+  @Test
+  public void dummyTest() {
+    var factory = JavalinApiFactory.of(configuration, authentication, null);
+    assertNotNull(factory);
+  }
 
-    @Test
-    public void testSave() throws ApplicationException {
-        doReturn("id").when(service).save(any(JSONObject.class));
+  @Test
+  public void testSave() throws ApplicationException {
+    doReturn("id").when(service).save(any(JSONObject.class));
 
-        var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
-        var response = Unirest.post(BASE_URL).body(body).asString();
+    var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
+    var response = Unirest.post(BASE_URL).body(body).asString();
 
-        assertThat(response.getStatus(), is(200));
+    assertThat(response.getStatus(), is(200));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONObject(responseBody);
-        assertThat(jsonResponse.getString("id"), is("id"));
-    }
+    var jsonResponse = new JSONObject(responseBody);
+    assertThat(jsonResponse.getString("id"), is("id"));
+  }
 
-    @Test
-    public void testPut() throws ApplicationException {
-        doReturn("id").when(service).save(any(JSONObject.class));
+  @Test
+  public void testPut() throws ApplicationException {
+    doReturn("id").when(service).save(any(JSONObject.class));
 
-        var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
-        var response = Unirest.put(BASE_URL + "/id").header("Authorization", "JWT Token").body(body).asString();
+    var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
+    var response = Unirest.put(BASE_URL + "/id").header("Authorization", "JWT Token").body(body).asString();
 
-        assertThat(response.getStatus(), is(200));
+    assertThat(response.getStatus(), is(200));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONObject(responseBody);
-        assertThat(jsonResponse.getString("id"), is("id"));
-    }
+    var jsonResponse = new JSONObject(responseBody);
+    assertThat(jsonResponse.getString("id"), is("id"));
+  }
 
-    @Test
-    public void testSave_WithoutDomain() throws ApplicationException {
-        var body = "{\"name\":\"name\"}";
-        Unirest.post(BASE_URL).body(body).asString();
+  @Test
+  public void testSave_WithoutDomain() throws ApplicationException {
+    var body = "{\"name\":\"name\"}";
+    Unirest.post(BASE_URL).body(body).asString();
 
-        verify(service, atLeastOnce()).save(any(JSONObject.class));
-    }
+    verify(service, atLeastOnce()).save(any(JSONObject.class));
+  }
 
-    @Test
-    public void testSave_InvalidBody() {
-        var body = "invalid body";
-        var response = Unirest.post(BASE_URL).body(body).asString();
-        assertErrorResponse(response, 400, "REQUEST ERROR", "Unexpected format.");
-    }
+  @Test
+  public void testSave_InvalidBody() {
+    var body = "invalid body";
+    var response = Unirest.post(BASE_URL).body(body).asString();
+    assertErrorResponse(response, 400, "REQUEST ERROR", "Unexpected format.");
+  }
 
-    @Test
-    public void testSave_ThrowValidationException() throws ApplicationException {
-        var ex = new ValidationException("Validation message");
-        doThrow(ex).when(service).save(any(JSONObject.class));
+  @Test
+  public void testSave_ThrowValidationException() throws ApplicationException {
+    var ex = new ValidationException("Validation message");
+    doThrow(ex).when(service).save(any(JSONObject.class));
 
-        var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
-        var response = Unirest.post(BASE_URL).body(body).asString();
+    var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
+    var response = Unirest.post(BASE_URL).body(body).asString();
 
-        assertErrorResponse(response, 400, "REQUEST ERROR", "Validation message");
-    }
+    assertErrorResponse(response, 400, "REQUEST ERROR", "Validation message");
+  }
 
-    @Test
-    public void testSave_ThrowDataException() throws ApplicationException {
-        var ex = new DataException("Data message");
-        doThrow(ex).when(service).save(any(JSONObject.class));
+  @Test
+  public void testSave_ThrowDataException() throws ApplicationException {
+    var ex = new DataException("Data message");
+    doThrow(ex).when(service).save(any(JSONObject.class));
 
-        var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
-        var response = Unirest.post(BASE_URL).body(body).asString();
+    var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
+    var response = Unirest.post(BASE_URL).body(body).asString();
 
-        assertErrorResponse(response, 500, "SERVER ERROR", "Data message");
-    }
+    assertErrorResponse(response, 500, "SERVER ERROR", "Data message");
+  }
 
-    @Test
-    public void testSave_ThrowDataNotFoundException() throws ApplicationException {
-        var ex = new DataNotFoundException("Data not found message");
-        doThrow(ex).when(service).save(any(JSONObject.class));
+  @Test
+  public void testSave_ThrowDataNotFoundException() throws ApplicationException {
+    var ex = new DataNotFoundException("Data not found message");
+    doThrow(ex).when(service).save(any(JSONObject.class));
 
-        var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
-        var response = Unirest.post(BASE_URL).body(body).asString();
+    var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
+    var response = Unirest.post(BASE_URL).body(body).asString();
 
-        assertErrorResponse(response, 404, "REQUEST ERROR", "Data not found message");
-    }
+    assertErrorResponse(response, 404, "REQUEST ERROR", "Data not found message");
+  }
 
-    @Test
-    public void testSave_ThrowDataDuplicationException() throws ApplicationException {
-        var ex = new DataDuplicationException("Data duplication message");
-        doThrow(ex).when(service).save(any(JSONObject.class));
+  @Test
+  public void testSave_ThrowDataDuplicationException() throws ApplicationException {
+    var ex = new DataDuplicationException("Data duplication message");
+    doThrow(ex).when(service).save(any(JSONObject.class));
 
-        var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
-        var response = Unirest.post(BASE_URL).body(body).asString();
+    var body = "{\"domain\":\"domain\",\"name\":\"name\"}";
+    var response = Unirest.post(BASE_URL).body(body).asString();
 
-        assertErrorResponse(response, 400, "REQUEST ERROR", "Data duplication message");
-    }
+    assertErrorResponse(response, 400, "REQUEST ERROR", "Data duplication message");
+  }
 
-    @Test
-    public void testGetOne() throws ApplicationException {
-        var json = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\"}");
-        doReturn(json).when(service).find("id");
+  @Test
+  public void testGetOne() throws ApplicationException {
+    var json = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\"}");
+    doReturn(json).when(service).find("id");
 
-        var response = Unirest.get(BASE_URL + "/id").header("Authorization", "JWT Token").asString();
+    var response = Unirest.get(BASE_URL + "/id").header("Authorization", "JWT Token").asString();
 
-        assertThat(response.getStatus(), is(200));
+    assertThat(response.getStatus(), is(200));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONObject(responseBody);
-        assertThat(jsonResponse.getString("id"), is("id"));
-        assertThat(jsonResponse.getString("domain"), is("domain"));
-        assertThat(jsonResponse.getString("name"), is("name"));
-    }
+    var jsonResponse = new JSONObject(responseBody);
+    assertThat(jsonResponse.getString("id"), is("id"));
+    assertThat(jsonResponse.getString("domain"), is("domain"));
+    assertThat(jsonResponse.getString("name"), is("name"));
+  }
 
-    @Test
-    public void testGetOneByCode() throws ApplicationException {
-        var json = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\"}");
-        doReturn(json).when(service).findByCode("code");
+  @Test
+  public void testGetOneByCode() throws ApplicationException {
+    var json = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\"}");
+    doReturn(json).when(service).findByCode("code");
 
-        var response = Unirest.get(BASE_URL + "/code/code").header("Authorization", "JWT Token").asString();
+    var response = Unirest.get(BASE_URL + "/code/code").header("Authorization", "JWT Token").asString();
 
-        assertThat(response.getStatus(), is(200));
+    assertThat(response.getStatus(), is(200));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONObject(responseBody);
-        assertThat(jsonResponse.getString("id"), is("id"));
-        assertThat(jsonResponse.getString("domain"), is("domain"));
-        assertThat(jsonResponse.getString("name"), is("name"));
-    }
+    var jsonResponse = new JSONObject(responseBody);
+    assertThat(jsonResponse.getString("id"), is("id"));
+    assertThat(jsonResponse.getString("domain"), is("domain"));
+    assertThat(jsonResponse.getString("name"), is("name"));
+  }
 
-    @Test
-    public void testGetMany() throws ApplicationException {
-        var json = new JSONArray("[{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\"}]");
-        doReturn(json).when(service).find(anyList());
+  @Test
+  public void testGetMany() throws ApplicationException {
+    var json = new JSONArray("[{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\"}]");
+    doReturn(json).when(service).find(anyList());
 
-        var response = Unirest.get(BASE_URL + "/keys").header("Authorization", "JWT Token").queryString(Map.of("ids", "id1")).asString();
+    var response = Unirest.get(BASE_URL + "/keys").header("Authorization", "JWT Token")
+        .queryString(Map.of("ids", "id1")).asString();
 
-        assertThat(response.getStatus(), is(200));
+    assertThat(response.getStatus(), is(200));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONArray(responseBody);
-        assertThat(jsonResponse.length(), is(1));
+    var jsonResponse = new JSONArray(responseBody);
+    assertThat(jsonResponse.length(), is(1));
 
-        var jsonObject = jsonResponse.getJSONObject(0);
-        assertThat(jsonObject.getString("id"), is("id"));
-        assertThat(jsonObject.getString("domain"), is("domain"));
-        assertThat(jsonObject.getString("name"), is("name"));
-    }
+    var jsonObject = jsonResponse.getJSONObject(0);
+    assertThat(jsonObject.getString("id"), is("id"));
+    assertThat(jsonObject.getString("domain"), is("domain"));
+    assertThat(jsonObject.getString("name"), is("name"));
+  }
 
-    @Test
-    public void testGet_NotFound() throws ApplicationException {
-        var json = new JSONObject();
-        doReturn(json).when(service).find("id");
+  @Test
+  public void testGet_NotFound() throws ApplicationException {
+    var json = new JSONObject();
+    doReturn(json).when(service).find("id");
 
-        var response = Unirest.get(BASE_URL + "/id").header("Authorization", "JWT Token").asString();
+    var response = Unirest.get(BASE_URL + "/id").header("Authorization", "JWT Token").asString();
 
-        assertThat(response.getStatus(), is(200));
+    assertThat(response.getStatus(), is(200));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONObject(responseBody);
-        assertTrue(jsonResponse.isEmpty());
-    }
+    var jsonResponse = new JSONObject(responseBody);
+    assertTrue(jsonResponse.isEmpty());
+  }
 
-    @Test
-    public void testDelete() throws ApplicationException {
-        var response = Unirest.delete(BASE_URL + "/id").header("Authorization", "JWT Token").asString();
+  @Test
+  public void testDelete() throws ApplicationException {
+    var response = Unirest.delete(BASE_URL + "/id").header("Authorization", "JWT Token").asString();
 
-        assertThat(response.getStatus(), is(501));
+    assertThat(response.getStatus(), is(501));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONObject(responseBody);
-        assertThat(jsonResponse.getString("message"), is("Delete is not supported."));
-        assertThat(jsonResponse.getString("type"), is("SERVER ERROR"));
-    }
+    var jsonResponse = new JSONObject(responseBody);
+    assertThat(jsonResponse.getString("message"), is("Delete is not supported."));
+    assertThat(jsonResponse.getString("type"), is("SERVER ERROR"));
+  }
 
-    @Test
-    public void testGetMany_WithoutParam() throws ApplicationException {
-        var response = Unirest.get(BASE_URL + "/keys").header("Authorization", "JWT Token").asString();
-        assertErrorResponse(response, 400, "REQUEST ERROR", "List of IDs is not provided");
-    }
+  @Test
+  public void testGetMany_WithoutParam() throws ApplicationException {
+    var response = Unirest.get(BASE_URL + "/keys").header("Authorization", "JWT Token").asString();
+    assertErrorResponse(response, 400, "REQUEST ERROR", "List of IDs is not provided");
+  }
 
-    @Test
-    public void testSearch() throws ApplicationException {
-        doReturn(new JSONArray("[{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"Family Name\"}]")).when(service).search(any(JSONObject.class));
+  @Test
+  public void testSearch() throws ApplicationException {
+    doReturn(new JSONArray("[{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"Family Name\"}]")).when(service)
+        .search(any(JSONObject.class));
 
-        var body = "{\"criteria\": [{\"attribute\": \"name\",\"value\": \"Family\",\"operator\": \"contains\"}]}";
-        var response = Unirest.post(BASE_URL + "/search").header("Authorization", "JWT Token").body(body).asString();
+    var body = "{\"criteria\": [{\"attribute\": \"name\",\"value\": \"Family\",\"operator\": \"contains\"}]}";
+    var response = Unirest.post(BASE_URL + "/search").header("Authorization", "JWT Token").body(body).asString();
 
-        assertThat(response.getStatus(), is(200));
+    assertThat(response.getStatus(), is(200));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONArray(responseBody);
-        assertThat(jsonResponse.length(), is(1));
+    var jsonResponse = new JSONArray(responseBody);
+    assertThat(jsonResponse.length(), is(1));
 
-        var jsonObject = jsonResponse.getJSONObject(0);
-        assertThat(jsonObject.getString("domain"), is("domain"));
-        assertThat(jsonObject.getString("id"), is("id"));
-        assertThat(jsonObject.getString("name"), is("Family Name"));
-    }
+    var jsonObject = jsonResponse.getJSONObject(0);
+    assertThat(jsonObject.getString("domain"), is("domain"));
+    assertThat(jsonObject.getString("id"), is("id"));
+    assertThat(jsonObject.getString("name"), is("Family Name"));
+  }
 
-    @Test
-    public void testSearch_NotFound() throws ApplicationException {
-        doReturn(new JSONArray()).when(service).search(any(JSONObject.class));
+  @Test
+  public void testSearch_NotFound() throws ApplicationException {
+    doReturn(new JSONArray()).when(service).search(any(JSONObject.class));
 
-        var body = "{\"criteria\": [{\"attribute\": \"name\",\"value\": \"Family\",\"operator\": \"contains\"}]}";
-        var response = Unirest.post(BASE_URL + "/search").header("Authorization", "JWT Token").body(body).asString();
+    var body = "{\"criteria\": [{\"attribute\": \"name\",\"value\": \"Family\",\"operator\": \"contains\"}]}";
+    var response = Unirest.post(BASE_URL + "/search").header("Authorization", "JWT Token").body(body).asString();
 
-        assertThat(response.getStatus(), is(200));
+    assertThat(response.getStatus(), is(200));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONArray(responseBody);
-        assertTrue(jsonResponse.isEmpty());
-    }
+    var jsonResponse = new JSONArray(responseBody);
+    assertTrue(jsonResponse.isEmpty());
+  }
 
-    @Test
-    public void testSyncById() {
-        var response = Unirest.post(BASE_URL + "/id/sync").header("Authorization", "JWT Token").asString();
+  @Test
+  public void testSyncById() {
+    var response = Unirest.post(BASE_URL + "/id/sync").header("Authorization", "JWT Token").asString();
 
-        assertThat(response.getStatus(), is(200));
+    assertThat(response.getStatus(), is(200));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONObject(responseBody);
-        assertThat(jsonResponse.getString("message"), is("Synchronization process is in progress."));
-    }
+    var jsonResponse = new JSONObject(responseBody);
+    assertThat(jsonResponse.getString("message"), is("Synchronization process is in progress."));
+  }
 
-    @Test
-    public void testSyncAll() {
-        var response = Unirest.post(BASE_URL + "/sync").header("Authorization", "JWT Token").asString();
+  @Test
+  public void testSyncAll() {
+    var response = Unirest.post(BASE_URL + "/sync").header("Authorization", "JWT Token").asString();
 
-        assertThat(response.getStatus(), is(200));
+    assertThat(response.getStatus(), is(200));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONObject(responseBody);
-        assertThat(jsonResponse.getString("message"), is("Synchronization process is in progress."));
-    }
+    var jsonResponse = new JSONObject(responseBody);
+    assertThat(jsonResponse.getString("message"), is("Synchronization process is in progress."));
+  }
 
-    private void assertErrorResponse(HttpResponse<String> response, int status, String errorType, String message) {
-        assertThat(response.getStatus(), is(status));
+  private void assertErrorResponse(HttpResponse<String> response, int status, String errorType, String message) {
+    assertThat(response.getStatus(), is(status));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONObject(responseBody);
-        assertThat(jsonResponse.getString("message"), is(message));
-        assertThat(jsonResponse.getString("type"), is(errorType));
-    }
+    var jsonResponse = new JSONObject(responseBody);
+    assertThat(jsonResponse.getString("message"), is(message));
+    assertThat(jsonResponse.getString("type"), is(errorType));
+  }
 
-    
-    @Test
-    public void testSecureSave() throws ApplicationException {
-        doReturn("id").when(secureService).save(any(JSONObject.class));
+  @Test
+  public void testSecureSave() throws ApplicationException {
+    doReturn("id").when(secureService).save(any(JSONObject.class));
 
-        var body = "{\"domain\":\"secure\",\"name\":\"name\"}";
-        var response = Unirest.post(BASE_SECURE_URL).header("Authorization", "JWT Token").body(body).asString();
+    var body = "{\"domain\":\"secure\",\"name\":\"name\"}";
+    var response = Unirest.post(BASE_SECURE_URL).header("Authorization", "JWT Token").body(body).asString();
 
-        assertThat(response.getStatus(), is(403));
-    }
+    assertThat(response.getStatus(), is(403));
+  }
 
-    @Test
-    public void testSecureSave_WithoutToken() throws ApplicationException {
-        doReturn("id").when(secureService).save(any(JSONObject.class));
+  @Test
+  public void testSecureSave_WithoutToken() throws ApplicationException {
+    doReturn("id").when(secureService).save(any(JSONObject.class));
 
-        var body = "{\"domain\":\"secure\",\"name\":\"name\"}";
-        var response = Unirest.post(BASE_SECURE_URL).body(body).asString();
+    var body = "{\"domain\":\"secure\",\"name\":\"name\"}";
+    var response = Unirest.post(BASE_SECURE_URL).body(body).asString();
 
-        assertThat(response.getStatus(), is(401));
-    }
+    assertThat(response.getStatus(), is(401));
+  }
 
-    @Test
-    public void testSecurePut() throws ApplicationException {
-        doReturn("id").when(secureService).save(any(JSONObject.class));
+  @Test
+  public void testSecurePut() throws ApplicationException {
+    doReturn("id").when(secureService).save(any(JSONObject.class));
 
-        var body = "{\"domain\":\"secure\",\"name\":\"name\"}";
-        var response = Unirest.put(BASE_SECURE_URL + "/id").header("Authorization", "JWT Token").body(body).asString();
+    var body = "{\"domain\":\"secure\",\"name\":\"name\"}";
+    var response = Unirest.put(BASE_SECURE_URL + "/id").header("Authorization", "JWT Token").body(body).asString();
 
-        assertThat(response.getStatus(), is(403));
-    }
+    assertThat(response.getStatus(), is(403));
+  }
 
-    @Test
-    public void testSecure_GetOne() throws ApplicationException {
-        var json = new JSONObject("{\"domain\":\"secure\",\"id\":\"id\",\"name\":\"name\"}");
-        doReturn(json).when(secureService).find("id");
+  @Test
+  public void testSecure_GetOne() throws ApplicationException {
+    var json = new JSONObject("{\"domain\":\"secure\",\"id\":\"id\",\"name\":\"name\"}");
+    doReturn(json).when(secureService).find("id");
 
-        var response = Unirest.get(BASE_SECURE_URL + "/id").header("Authorization", "JWT Token").asString();
+    var response = Unirest.get(BASE_SECURE_URL + "/id").header("Authorization", "JWT Token").asString();
 
-        assertThat(response.getStatus(), is(200));
+    assertThat(response.getStatus(), is(200));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONObject(responseBody);
-        assertThat(jsonResponse.getString("id"), is("id"));
-        assertThat(jsonResponse.getString("domain"), is("secure"));
-        assertThat(jsonResponse.getString("name"), is("name"));
-    }
+    var jsonResponse = new JSONObject(responseBody);
+    assertThat(jsonResponse.getString("id"), is("id"));
+    assertThat(jsonResponse.getString("domain"), is("secure"));
+    assertThat(jsonResponse.getString("name"), is("name"));
+  }
 
-    @Test
-    public void testSecure_GetOneByCode() throws ApplicationException {
-        var json = new JSONObject("{\"domain\":\"secure\",\"id\":\"id\",\"name\":\"name\"}");
-        doReturn(json).when(secureService).findByCode("code");
+  @Test
+  public void testSecure_GetOneByCode() throws ApplicationException {
+    var json = new JSONObject("{\"domain\":\"secure\",\"id\":\"id\",\"name\":\"name\"}");
+    doReturn(json).when(secureService).findByCode("code");
 
-        var response = Unirest.get(BASE_SECURE_URL + "/code/code").header("Authorization", "JWT Token").asString();
+    var response = Unirest.get(BASE_SECURE_URL + "/code/code").header("Authorization", "JWT Token").asString();
 
-        assertThat(response.getStatus(), is(200));
+    assertThat(response.getStatus(), is(200));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONObject(responseBody);
-        assertThat(jsonResponse.getString("id"), is("id"));
-        assertThat(jsonResponse.getString("domain"), is("secure"));
-        assertThat(jsonResponse.getString("name"), is("name"));
-    }
+    var jsonResponse = new JSONObject(responseBody);
+    assertThat(jsonResponse.getString("id"), is("id"));
+    assertThat(jsonResponse.getString("domain"), is("secure"));
+    assertThat(jsonResponse.getString("name"), is("name"));
+  }
 
-    @Test
-    public void testSecure_GetMany() throws ApplicationException {
-        var json = new JSONArray("[{\"domain\":\"secure\",\"id\":\"id\",\"name\":\"name\"}]");
-        doReturn(json).when(secureService).find(anyList());
+  @Test
+  public void testSecure_GetMany() throws ApplicationException {
+    var json = new JSONArray("[{\"domain\":\"secure\",\"id\":\"id\",\"name\":\"name\"}]");
+    doReturn(json).when(secureService).find(anyList());
 
-        var response = Unirest.get(BASE_SECURE_URL + "/keys").header("Authorization", "JWT Token").queryString(Map.of("ids", "id1")).asString();
+    var response = Unirest.get(BASE_SECURE_URL + "/keys").header("Authorization", "JWT Token")
+        .queryString(Map.of("ids", "id1")).asString();
 
-        assertThat(response.getStatus(), is(200));
+    assertThat(response.getStatus(), is(200));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONArray(responseBody);
-        assertThat(jsonResponse.length(), is(1));
+    var jsonResponse = new JSONArray(responseBody);
+    assertThat(jsonResponse.length(), is(1));
 
-        var jsonObject = jsonResponse.getJSONObject(0);
-        assertThat(jsonObject.getString("id"), is("id"));
-        assertThat(jsonObject.getString("domain"), is("secure"));
-        assertThat(jsonObject.getString("name"), is("name"));
-    }
+    var jsonObject = jsonResponse.getJSONObject(0);
+    assertThat(jsonObject.getString("id"), is("id"));
+    assertThat(jsonObject.getString("domain"), is("secure"));
+    assertThat(jsonObject.getString("name"), is("name"));
+  }
 
-    @Test
-    public void testSecure_Delete() throws ApplicationException {
-        var response = Unirest.delete(BASE_SECURE_URL + "/id").header("Authorization", "JWT Token").asString();
+  @Test
+  public void testSecure_Delete() throws ApplicationException {
+    var response = Unirest.delete(BASE_SECURE_URL + "/id").header("Authorization", "JWT Token").asString();
 
-        assertThat(response.getStatus(), is(501));
+    assertThat(response.getStatus(), is(501));
 
-        var responseBody = response.getBody();
-        assertNotNull(responseBody);
+    var responseBody = response.getBody();
+    assertNotNull(responseBody);
 
-        var jsonResponse = new JSONObject(responseBody);
-        assertThat(jsonResponse.getString("message"), is("Delete is not supported."));
-        assertThat(jsonResponse.getString("type"), is("SERVER ERROR"));
-    }
+    var jsonResponse = new JSONObject(responseBody);
+    assertThat(jsonResponse.getString("message"), is("Delete is not supported."));
+    assertThat(jsonResponse.getString("type"), is("SERVER ERROR"));
+  }
 
-    @Test
-    public void testSecure_SyncById() {
-        var response = Unirest.get(BASE_SECURE_URL + "/id/sync").header("Authorization", "JWT Token").asString();
-        assertThat(response.getStatus(), is(403));
-    }
+  @Test
+  public void testSecure_SyncById() {
+    var response = Unirest.get(BASE_SECURE_URL + "/id/sync").header("Authorization", "JWT Token").asString();
+    assertThat(response.getStatus(), is(403));
+  }
 
-    @Test
-    public void testSecure_SyncAll() {
-        var response = Unirest.get(BASE_SECURE_URL + "/sync").header("Authorization", "JWT Token").asString();
-        assertThat(response.getStatus(), is(403));
-    }
+  @Test
+  public void testSecure_SyncAll() {
+    var response = Unirest.get(BASE_SECURE_URL + "/sync").header("Authorization", "JWT Token").asString();
+    assertThat(response.getStatus(), is(403));
+  }
 }

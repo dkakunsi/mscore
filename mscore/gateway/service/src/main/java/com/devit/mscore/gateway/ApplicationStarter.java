@@ -22,66 +22,66 @@ import com.devit.mscore.web.Client;
 
 public class ApplicationStarter implements Starter {
 
-    private static final String WORKFLOW_SERVICES = "services.%s.workflow.enabled";
+  private static final String WORKFLOW_SERVICES = "services.%s.workflow.enabled";
 
-    private static final String TIMEZONE = "platform.service.timezone";
+  private static final String TIMEZONE = "platform.service.timezone";
 
-    private Configuration configuration;
+  private Configuration configuration;
 
-    private ServiceRegistration serviceRegistration;
+  private ServiceRegistration serviceRegistration;
 
-    private AuthenticationProvider authenticationProvider;
+  private AuthenticationProvider authenticationProvider;
 
-    private Client webClient;
+  private Client webClient;
 
-    private ApiFactory apiFactory;
+  private ApiFactory apiFactory;
 
-    public ApplicationStarter(String[] args) throws ConfigException {
-        this(FileConfigurationUtils.load(args));
+  public ApplicationStarter(String[] args) throws ConfigException {
+    this(FileConfigurationUtils.load(args));
+  }
+
+  public ApplicationStarter(FileConfiguration fileConfiguration) throws ConfigException {
+    try {
+      var zookeeperRegistry = ZookeeperRegistryFactory.of(fileConfiguration).registry("platformConfig");
+      zookeeperRegistry.open();
+      this.configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
+      this.serviceRegistration = new ServiceRegistration(zookeeperRegistry, configuration);
+    } catch (RegistryException ex) {
+      throw new ConfigException(ex);
     }
 
-    public ApplicationStarter(FileConfiguration fileConfiguration) throws ConfigException {
-        try {
-            var zookeeperRegistry = ZookeeperRegistryFactory.of(fileConfiguration).registry("platformConfig");
-            zookeeperRegistry.open();
-            this.configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
-            this.serviceRegistration = new ServiceRegistration(zookeeperRegistry, configuration); 
-        } catch (RegistryException ex) {
-            throw new ConfigException(ex);
-        }
+    DateUtils.setZoneId(this.configuration.getConfig(TIMEZONE).orElse("Asia/Makassar"));
+    this.authenticationProvider = JWTAuthenticationProvider.of(configuration);
+    this.apiFactory = ApiFactory.of(this.configuration, this.authenticationProvider);
+  }
 
-        DateUtils.setZoneId(this.configuration.getConfig(TIMEZONE).orElse("Asia/Makassar"));
-        this.authenticationProvider = JWTAuthenticationProvider.of(configuration);
-        this.apiFactory = ApiFactory.of(this.configuration, this.authenticationProvider);
+  @Override
+  public void start() throws ApplicationException {
+    var useWorkflow = isUseWorkflow();
+    var workflowService = new WorkflowService(this.serviceRegistration, this.webClient);
+    var resourceService = new ResourceService(this.serviceRegistration, this.webClient, workflowService, useWorkflow);
+
+    this.apiFactory.add(resourceService);
+
+    if (BooleanUtils.isTrue(useWorkflow)) {
+      this.apiFactory.add(workflowService);
     }
 
-    @Override
-    public void start() throws ApplicationException {
-        var useWorkflow = isUseWorkflow();
-        var workflowService = new WorkflowService(this.serviceRegistration, this.webClient);
-        var resourceService = new ResourceService(this.serviceRegistration, this.webClient, workflowService, useWorkflow);
+    var server = this.apiFactory.server();
+    server.start();
 
-        this.apiFactory.add(resourceService);
+    this.serviceRegistration.open();
+    this.serviceRegistration.register(resourceService);
+    this.serviceRegistration.register(workflowService);
+  }
 
-        if (BooleanUtils.isTrue(useWorkflow)) {
-            this.apiFactory.add(workflowService);
-        }
+  private boolean isUseWorkflow() throws ConfigException {
+    var configName = String.format(WORKFLOW_SERVICES, this.configuration.getServiceName());
+    return Boolean.valueOf(this.configuration.getConfig(configName).orElse("false"));
+  }
 
-        var server = this.apiFactory.server();
-        server.start();
-
-        this.serviceRegistration.open();
-        this.serviceRegistration.register(resourceService);
-        this.serviceRegistration.register(workflowService);
-    }
-
-    private boolean isUseWorkflow() throws ConfigException {
-        var configName = String.format(WORKFLOW_SERVICES, this.configuration.getServiceName());
-        return Boolean.valueOf(this.configuration.getConfig(configName).orElse("false"));
-    }
-
-    @Override
-    public void stop() {
-        System.exit(0);
-    }
+  @Override
+  public void stop() {
+    System.exit(0);
+  }
 }

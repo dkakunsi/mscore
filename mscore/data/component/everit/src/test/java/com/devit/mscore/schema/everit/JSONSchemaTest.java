@@ -17,88 +17,88 @@ import org.junit.Test;
 
 public class JSONSchemaTest {
 
-    @Test
-    public void testValidate() throws URISyntaxException, ResourceException, ValidationException {
-        var resourceFile = getResourceFile("resource/resource.json");
-        var actual = new JSONSchema(resourceFile);
-        var json = "{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\",\"reference1\":{\"domain\":\"referenceDomain1\",\"id\":\"referenceId1\"}}";
-        actual.validate(new JSONObject(json));
-    }
+  @Test
+  public void testValidate() throws URISyntaxException, ResourceException, ValidationException {
+    var resourceFile = getResourceFile("resource/resource.json");
+    var actual = new JSONSchema(resourceFile);
+    var json = "{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\",\"reference1\":{\"domain\":\"referenceDomain1\",\"id\":\"referenceId1\"}}";
+    actual.validate(new JSONObject(json));
+  }
 
-    @Test
-    public void testGetReferences_SingleReference() throws URISyntaxException, ResourceException, ValidationException {
-        var resourceFile = getResourceFile("resource/resource.json");
-        var actual = new JSONSchema(resourceFile);
+  @Test
+  public void testGetReferences_SingleReference() throws URISyntaxException, ResourceException, ValidationException {
+    var resourceFile = getResourceFile("resource/resource.json");
+    var actual = new JSONSchema(resourceFile);
 
-        var references = actual.getReferenceNames();
-        assertThat(references.size(), is(2));
-        var expectedReferences = Set.of("reference1", "reference2");
-        assertThat(references, is(expectedReferences));
+    var references = actual.getReferenceNames();
+    assertThat(references.size(), is(2));
+    var expectedReferences = Set.of("reference1", "reference2");
+    assertThat(references, is(expectedReferences));
 
-        var referenceDomains = actual.getReferenceDomains();
-        assertThat(referenceDomains.size(), is(2));
-        assertThat(referenceDomains.get(0).get(0), is("referenceDomain1"));
-        assertThat(referenceDomains.get(1).get(0), is("referenceDomain2"));
-    }
+    var referenceDomains = actual.getReferenceDomains();
+    assertThat(referenceDomains.size(), is(2));
+    assertThat(referenceDomains.get(0).get(0), is("referenceDomain1"));
+    assertThat(referenceDomains.get(1).get(0), is("referenceDomain2"));
+  }
 
-    @Test
-    public void testGetReferences_MultipleReference() throws URISyntaxException, ResourceException, ValidationException {
-        var resourceFile = getResourceFile("resource/resource_multi_references.json");
-        var actual = new JSONSchema(resourceFile);
+  @Test
+  public void testGetReferences_MultipleReference() throws URISyntaxException, ResourceException, ValidationException {
+    var resourceFile = getResourceFile("resource/resource_multi_references.json");
+    var actual = new JSONSchema(resourceFile);
 
-        var references = actual.getReferenceNames();
-        assertThat(references.size(), is(2));
-        var expectedReferences = Set.of("reference1", "reference2");
-        assertThat(references, is(expectedReferences));
+    var references = actual.getReferenceNames();
+    assertThat(references.size(), is(2));
+    var expectedReferences = Set.of("reference1", "reference2");
+    assertThat(references, is(expectedReferences));
 
-        var referenceDomains = actual.getReferenceDomains();
-        assertThat(referenceDomains.size(), is(2));
-        assertThat(referenceDomains.get(0).get(0), is("referenceDomain1a"));
-        assertThat(referenceDomains.get(0).get(1), is("referenceDomain1b"));
-        assertThat(referenceDomains.get(1).get(0), is("referenceDomain2a"));
-        assertThat(referenceDomains.get(1).get(1), is("referenceDomain2b"));
-    }
+    var referenceDomains = actual.getReferenceDomains();
+    assertThat(referenceDomains.size(), is(2));
+    assertThat(referenceDomains.get(0).get(0), is("referenceDomain1a"));
+    assertThat(referenceDomains.get(0).get(1), is("referenceDomain1b"));
+    assertThat(referenceDomains.get(1).get(0), is("referenceDomain2a"));
+    assertThat(referenceDomains.get(1).get(1), is("referenceDomain2b"));
+  }
 
-    @Test
-    public void testValidate_Invalid() throws URISyntaxException, ResourceException, ValidationException {
-        var resourceFile = getResourceFile("resource/resource.json");
-        var actual = new JSONSchema(resourceFile);
-        var json = "{\"domain\":\"unknown\",\"id\":\"toolongid\",\"name\":\"toolongname\"}";
+  @Test
+  public void testValidate_Invalid() throws URISyntaxException, ResourceException, ValidationException {
+    var resourceFile = getResourceFile("resource/resource.json");
+    var actual = new JSONSchema(resourceFile);
+    var json = "{\"domain\":\"unknown\",\"id\":\"toolongid\",\"name\":\"toolongname\"}";
 
-        var ex = assertThrows(ValidationException.class, () -> actual.validate(new JSONObject(json)));
-        assertThat(ex.getMessage(), is("Failed to validate JSON."));
-        assertThat(ex.getCause(), instanceOf(org.everit.json.schema.ValidationException.class));
-    }
+    var ex = assertThrows(ValidationException.class, () -> actual.validate(new JSONObject(json)));
+    assertThat(ex.getMessage(), is("Failed to validate JSON."));
+    assertThat(ex.getCause(), instanceOf(org.everit.json.schema.ValidationException.class));
+  }
 
-    @Test
-    public void testCreate_JSONConstructor() throws ResourceException, URISyntaxException {
-        var resourceFile = getResourceFile("resource/resource.json");
-        var content = new JSONSchema(resourceFile).getContent();
-        var json = new JSONObject("{\"domain\":\"resource\",\"name\":\"name\"}")
-                .put("content", content);
+  @Test
+  public void testCreate_JSONConstructor() throws ResourceException, URISyntaxException {
+    var resourceFile = getResourceFile("resource/resource.json");
+    var content = new JSONSchema(resourceFile).getContent();
+    var json = new JSONObject("{\"domain\":\"resource\",\"name\":\"name\"}")
+        .put("content", content);
 
-        var schema = new JSONSchema(json);
-        var actual = schema.getMessage();
+    var schema = new JSONSchema(json);
+    var actual = schema.getMessage();
 
-        assertThat(actual.toString(), is(json.toString()));
-    }
+    assertThat(actual.toString(), is(json.toString()));
+  }
 
-    @Test
-    public void testGetUniqueAttributes() throws URISyntaxException, ResourceException {
-        var resourceFile = getResourceFile("resource/resource.json");
-        var content = new JSONSchema(resourceFile).getContent();
-        var json = new JSONObject("{\"domain\":\"resource\",\"name\":\"name\"}")
-                .put("content", content);
+  @Test
+  public void testGetUniqueAttributes() throws URISyntaxException, ResourceException {
+    var resourceFile = getResourceFile("resource/resource.json");
+    var content = new JSONSchema(resourceFile).getContent();
+    var json = new JSONObject("{\"domain\":\"resource\",\"name\":\"name\"}")
+        .put("content", content);
 
-        var schema = new JSONSchema(json);
-        var uniqueAttributes = schema.getUniqueAttributes();
+    var schema = new JSONSchema(json);
+    var uniqueAttributes = schema.getUniqueAttributes();
 
-        assertThat(uniqueAttributes.size(), is(1));
-        assertThat(uniqueAttributes.get(0), is("id"));
-    }
+    assertThat(uniqueAttributes.size(), is(1));
+    assertThat(uniqueAttributes.get(0), is("id"));
+  }
 
-    public static File getResourceFile(String resourceName) throws URISyntaxException {
-        var resource = JSONSchemaTest.class.getClassLoader().getResource(resourceName);
-        return new File(resource.toURI());
-    }
+  public static File getResourceFile(String resourceName) throws URISyntaxException {
+    var resource = JSONSchemaTest.class.getClassLoader().getResource(resourceName);
+    return new File(resource.toURI());
+  }
 }

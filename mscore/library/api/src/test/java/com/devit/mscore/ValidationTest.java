@@ -8,15 +8,15 @@ import org.junit.Test;
 
 public class ValidationTest {
 
-    @Test
-    public void testGetDomain() {
-        var validation = new Validation() {
-            @Override
-            public boolean validate(JSONObject json) {
-                return false;
-            }
-        };
+  @Test
+  public void testGetDomain() {
+    var validation = new Validation() {
+      @Override
+      public boolean validate(JSONObject json) {
+        return false;
+      }
+    };
 
-        assertThat(validation.getDomain(), is("all"));
-    }
+    assertThat(validation.getDomain(), is("all"));
+  }
 }

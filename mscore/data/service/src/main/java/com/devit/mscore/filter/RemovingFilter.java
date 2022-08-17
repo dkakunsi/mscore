@@ -8,12 +8,12 @@ import org.json.JSONObject;
 
 public class RemovingFilter extends Filter {
 
-    RemovingFilter(List<String> attributes) {
-        super(attributes);
-    }
+  RemovingFilter(List<String> attributes) {
+    super(attributes);
+  }
 
-    @Override
-    protected void apply(JSONObject json, String key) {
-        json.remove(key);
-    }
+  @Override
+  protected void apply(JSONObject json, String key) {
+    json.remove(key);
+  }
 }

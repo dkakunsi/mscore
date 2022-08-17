@@ -25,34 +25,34 @@ import org.json.JSONObject;
  */
 public class SchemaValidation implements Validation {
 
-    private static final Logger LOG = new ApplicationLogger(SchemaValidation.class);
+  private static final Logger LOG = new ApplicationLogger(SchemaValidation.class);
 
-    private Registry registry;
+  private Registry registry;
 
-    public SchemaValidation(Registry registry) {
-        this.registry = registry;
+  public SchemaValidation(Registry registry) {
+    this.registry = registry;
+  }
+
+  @Override
+  public boolean validate(JSONObject json) {
+    if (!hasDomain(json)) {
+      var cause = new ValidationException("Invalid data. No domain found.");
+      throw new ApplicationRuntimeException(cause);
     }
 
-    @Override
-    public boolean validate(JSONObject json) {
-        if (!hasDomain(json)) {
-            var cause = new ValidationException("Invalid data. No domain found.");
-            throw new ApplicationRuntimeException(cause);
-        }
+    var domain = json.getString(DOMAIN);
+    LOG.debug("Validating {}", domain);
 
-        var domain = json.getString(DOMAIN);
-        LOG.debug("Validating {}", domain);
-
-        try {
-            var registeredSchema = this.registry.get(domain);
-            new JSONSchema(new JSONObject(registeredSchema)).validate(json);
-            return true;
-        } catch (ValidationException ex) {
-            LOG.error("Validation failed for object: {}", getCode(json), ex);
-            return false;
-        } catch (RegistryException ex) {
-            LOG.error("Cannot validate since the schema is not exist: {}", domain);
-            throw new ApplicationRuntimeException(ex);
-        }
+    try {
+      var registeredSchema = this.registry.get(domain);
+      new JSONSchema(new JSONObject(registeredSchema)).validate(json);
+      return true;
+    } catch (ValidationException ex) {
+      LOG.error("Validation failed for object: {}", getCode(json), ex);
+      return false;
+    } catch (RegistryException ex) {
+      LOG.error("Cannot validate since the schema is not exist: {}", domain);
+      throw new ApplicationRuntimeException(ex);
     }
+  }
 }

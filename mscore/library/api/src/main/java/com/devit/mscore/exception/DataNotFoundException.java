@@ -7,17 +7,17 @@ package com.devit.mscore.exception;
  */
 public class DataNotFoundException extends DataException {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    public DataNotFoundException(String message) {
-        super(message);
-    }
+  public DataNotFoundException(String message) {
+    super(message);
+  }
 
-    public DataNotFoundException(Throwable cause) {
-        super(cause);
-    }
+  public DataNotFoundException(Throwable cause) {
+    super(cause);
+  }
 
-    public DataNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public DataNotFoundException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

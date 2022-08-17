@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.devit.mscore</groupId>
-        <artifactId>component</artifactId>
-        <version>${revision}</version>
-        <relativePath>..</relativePath>
-    </parent>
+  <parent>
+    <groupId>com.devit.mscore</groupId>
+    <artifactId>component</artifactId>
+    <version>${revision}</version>
+    <relativePath>..</relativePath>
+  </parent>
 
-    <artifactId>javalin</artifactId>
-    <packaging>jar</packaging>
-    <name>MS Core :: Web :: Javalin</name>
+  <artifactId>javalin</artifactId>
+  <packaging>jar</packaging>
+  <name>MS Core :: Web :: Javalin</name>
 
-    <properties>
-        <revision>1.0-SNAPSHOT</revision>
-        <json.version>20190722</json.version>
-        <javalin.version>3.5.0</javalin.version>
-        <unirest.version>3.4.00</unirest.version>
-        <data-api.version>[1.0,)</data-api.version>
-    </properties>
+  <properties>
+    <revision>1.0-SNAPSHOT</revision>
+    <json.version>20190722</json.version>
+    <javalin.version>3.5.0</javalin.version>
+    <unirest.version>3.4.00</unirest.version>
+    <data-api.version>[1.0,)</data-api.version>
+  </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.javalin</groupId>
-            <artifactId>javalin</artifactId>
-            <version>${javalin.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.konghq</groupId>
-            <artifactId>unirest-java</artifactId>
-            <version>${unirest.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>com.devit.mscore</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.javalin</groupId>
+      <artifactId>javalin</artifactId>
+      <version>${javalin.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>slf4j-api</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.konghq</groupId>
+      <artifactId>unirest-java</artifactId>
+      <version>${unirest.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

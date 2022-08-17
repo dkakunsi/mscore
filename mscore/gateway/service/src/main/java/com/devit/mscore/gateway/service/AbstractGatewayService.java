@@ -8,20 +8,20 @@ import com.devit.mscore.web.Client;
 
 public abstract class AbstractGatewayService implements Service {
 
-    protected Client client;
+  protected Client client;
 
-    protected ServiceRegistration serviceRegistration;
+  protected ServiceRegistration serviceRegistration;
 
-    protected AbstractGatewayService(ServiceRegistration serviceRegistration, Client client) {
-        this.serviceRegistration = serviceRegistration;
-        this.client = client;
+  protected AbstractGatewayService(ServiceRegistration serviceRegistration, Client client) {
+    this.serviceRegistration = serviceRegistration;
+    this.client = client;
+  }
+
+  protected String getUri(String domain) {
+    try {
+      return this.serviceRegistration.get(domain);
+    } catch (RegistryException ex) {
+      throw new ApplicationRuntimeException(ex);
     }
-
-    protected String getUri(String domain) {
-        try {
-            return this.serviceRegistration.get(domain);
-        } catch (RegistryException ex) {
-            throw new ApplicationRuntimeException(ex);
-        }
-    }
+  }
 }

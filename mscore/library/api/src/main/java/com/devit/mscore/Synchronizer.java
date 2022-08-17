@@ -21,43 +21,43 @@ import com.devit.mscore.exception.SynchronizationException;
  */
 public interface Synchronizer {
 
-    /**
-     * Get the schema of the domain to synchronize.
-     * 
-     * @return schema of domain.
-     */
-    public Resource getSchema();
+  /**
+   * Get the schema of the domain to synchronize.
+   * 
+   * @return schema of domain.
+   */
+  public Resource getSchema();
 
-    /**
-     * <p>
-     * Synchronize object with the given <code>id</code>.
-     * </p>
-     * 
-     * @param id      id of object to sync.
-     * 
-     * @throws SynchronizationException
-     */
-    void synchronize(String id) throws SynchronizationException;
+  /**
+   * <p>
+   * Synchronize object with the given <code>id</code>.
+   * </p>
+   * 
+   * @param id id of object to sync.
+   * 
+   * @throws SynchronizationException
+   */
+  void synchronize(String id) throws SynchronizationException;
 
-    /**
-     * <p>
-     * Synchronize all object related to <code>searchAttribute</code> with the given
-     * <code>value</code>.
-     * </p>
-     * 
-     * @param searchAttribute attribute to meet.
-     * @param value           value of attribute to search.
-     * 
-     * @throws SynchronizationException
-     */
-    void synchronize(String searchAttribute, String value) throws SynchronizationException;
+  /**
+   * <p>
+   * Synchronize all object related to <code>searchAttribute</code> with the given
+   * <code>value</code>.
+   * </p>
+   * 
+   * @param searchAttribute attribute to meet.
+   * @param value           value of attribute to search.
+   * 
+   * @throws SynchronizationException
+   */
+  void synchronize(String searchAttribute, String value) throws SynchronizationException;
 
-    /**
-     * <p>
-     * Synchronize all object in database.
-     * </p>
-     * 
-     * @throws SynchronizationException
-     */
-    void synchronize() throws SynchronizationException;
+  /**
+   * <p>
+   * Synchronize all object in database.
+   * </p>
+   * 
+   * @throws SynchronizationException
+   */
+  void synchronize() throws SynchronizationException;
 }

@@ -14,48 +14,48 @@ import org.junit.Test;
 
 public class MemoryRegistryTest {
 
-    private Map<String, String> register;
+  private Map<String, String> register;
 
-    private Registry registry;
+  private Registry registry;
 
-    @Before
-    public void setup() {
-        new MemoryRegistry("name"); // just for coverage.
+  @Before
+  public void setup() {
+    new MemoryRegistry("name"); // just for coverage.
 
-        this.register = new HashMap<>();
-        this.registry = new MemoryRegistry("name", this.register);
-    }
+    this.register = new HashMap<>();
+    this.registry = new MemoryRegistry("name", this.register);
+  }
 
-    @Test
-    public void testAdd() throws RegistryException {
-        this.register.clear();
-        this.registry.add("name", "service-url");
+  @Test
+  public void testAdd() throws RegistryException {
+    this.register.clear();
+    this.registry.add("name", "service-url");
 
-        assertThat(this.registry.all().size(), is(1));
-    }
+    assertThat(this.registry.all().size(), is(1));
+  }
 
-    @Test
-    public void testGet() throws RegistryException {
-        this.register.clear();
-        this.register.put("domain", "service-url");
+  @Test
+  public void testGet() throws RegistryException {
+    this.register.clear();
+    this.register.put("domain", "service-url");
 
-        var result = this.registry.get("domain");
-        assertThat(result, is("service-url"));
-    }
+    var result = this.registry.get("domain");
+    assertThat(result, is("service-url"));
+  }
 
-    @Test
-    public void testGetAll() throws RegistryException {
-        this.register.clear();
-        this.register.put("domain", "service-url");
+  @Test
+  public void testGetAll() throws RegistryException {
+    this.register.clear();
+    this.register.put("domain", "service-url");
 
-        var results = this.registry.all();
-        assertThat(results.size(), is(1));
-        assertThat(results.get("domain"), is("service-url"));
+    var results = this.registry.all();
+    assertThat(results.size(), is(1));
+    assertThat(results.get("domain"), is("service-url"));
 
-        var values = this.registry.values();
-        assertThat(values.get(0), is("service-url"));
+    var values = this.registry.values();
+    assertThat(values.get(0), is("service-url"));
 
-        var keys = this.registry.keys();
-        assertThat(keys.get(0), is("domain"));
-    }
+    var keys = this.registry.keys();
+    assertThat(keys.get(0), is("domain"));
+  }
 }

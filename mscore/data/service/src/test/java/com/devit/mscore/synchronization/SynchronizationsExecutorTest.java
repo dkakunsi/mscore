@@ -25,66 +25,66 @@ import org.junit.Test;
 
 public class SynchronizationsExecutorTest {
 
-    private SynchronizationsExecutor executor;
+  private SynchronizationsExecutor executor;
 
-    private Synchronizer synchronizer;
+  private Synchronizer synchronizer;
 
-    @Before
-    public void setup() {
-        this.executor = new SynchronizationsExecutor();
-        this.synchronizer = mock(Synchronizer.class);
-    }
+  @Before
+  public void setup() {
+    this.executor = new SynchronizationsExecutor();
+    this.synchronizer = mock(Synchronizer.class);
+  }
 
-    @Test
-    public void testSynchronize() throws SynchronizationException {
-        var synchronization = new DefaultSynchronization(synchronizer, "domain", "attribute");
-        this.executor.add(synchronization);
+  @Test
+  public void testSynchronize() throws SynchronizationException {
+    var synchronization = new DefaultSynchronization(synchronizer, "domain", "attribute");
+    this.executor.add(synchronization);
 
-        var json = "{\"domain\":\"domain\",\"id\":\"id\"}";
-        this.executor.execute(new JSONObject(json));
+    var json = "{\"domain\":\"domain\",\"id\":\"id\"}";
+    this.executor.execute(new JSONObject(json));
 
-        verify(this.synchronizer, times(1)).synchronize(anyString(), anyString());
-    }
+    verify(this.synchronizer, times(1)).synchronize(anyString(), anyString());
+  }
 
-    @Test
-    public void testSynchronize_WithoutDomain() throws SynchronizationException {
-        var synchronization = new DefaultSynchronization(synchronizer, "domain", "attribute");
-        this.executor.add(synchronization);
+  @Test
+  public void testSynchronize_WithoutDomain() throws SynchronizationException {
+    var synchronization = new DefaultSynchronization(synchronizer, "domain", "attribute");
+    this.executor.add(synchronization);
 
-        var json = "{\"id\":\"id\"}";
-        this.executor.execute(new JSONObject(json));
+    var json = "{\"id\":\"id\"}";
+    this.executor.execute(new JSONObject(json));
 
-        verify(this.synchronizer, times(0)).synchronize(anyString(), anyString());
-    }
+    verify(this.synchronizer, times(0)).synchronize(anyString(), anyString());
+  }
 
-    @Test
-    public void testSynchronize_ThrowException() throws SynchronizationException {
-        doThrow(new SynchronizationException("")).when(this.synchronizer).synchronize(anyString(), anyString());
-        var synchronization = new DefaultSynchronization(synchronizer, "domain", "attribute");
-        this.executor.add(synchronization);
+  @Test
+  public void testSynchronize_ThrowException() throws SynchronizationException {
+    doThrow(new SynchronizationException("")).when(this.synchronizer).synchronize(anyString(), anyString());
+    var synchronization = new DefaultSynchronization(synchronizer, "domain", "attribute");
+    this.executor.add(synchronization);
 
-        var json = "{\"domain\":\"domain\",\"id\":\"id\"}";
-        this.executor.execute(new JSONObject(json));
+    var json = "{\"domain\":\"domain\",\"id\":\"id\"}";
+    this.executor.execute(new JSONObject(json));
 
-        verify(this.synchronizer, times(1)).synchronize(anyString(), anyString());
-    }
+    verify(this.synchronizer, times(1)).synchronize(anyString(), anyString());
+  }
 
-    @Test
-    public void testAdd_Synchronizer() throws ResourceException, URISyntaxException {
-        var schema = mock(Schema.class);
-        doReturn(Map.of("referenceAttribute", List.of("referenceDomain"))).when(schema).getReferences();
-        doReturn(schema).when(this.synchronizer).getSchema();
+  @Test
+  public void testAdd_Synchronizer() throws ResourceException, URISyntaxException {
+    var schema = mock(Schema.class);
+    doReturn(Map.of("referenceAttribute", List.of("referenceDomain"))).when(schema).getReferences();
+    doReturn(schema).when(this.synchronizer).getSchema();
 
-        var initialNumberOfSynhronization = this.executor.getSynchronizations().size();
-        this.executor.add(synchronizer);
-        assertThat(this.executor.getSynchronizations().size(), Is.is(initialNumberOfSynhronization + 1));
+    var initialNumberOfSynhronization = this.executor.getSynchronizations().size();
+    this.executor.add(synchronizer);
+    assertThat(this.executor.getSynchronizations().size(), Is.is(initialNumberOfSynhronization + 1));
 
-        var synchronization = this.executor.getSynchronizations().get("referenceDomain");
-        assertThat(synchronization.get(0).getReferenceAttribute(), Is.is("referenceAttribute"));
-    }
-    
-    public static File getResourceFile(String resourceName) throws URISyntaxException {
-        var resource = SynchronizationsExecutorTest.class.getClassLoader().getResource(resourceName);
-        return new File(resource.toURI());
-    }
+    var synchronization = this.executor.getSynchronizations().get("referenceDomain");
+    assertThat(synchronization.get(0).getReferenceAttribute(), Is.is("referenceAttribute"));
+  }
+
+  public static File getResourceFile(String resourceName) throws URISyntaxException {
+    var resource = SynchronizationsExecutorTest.class.getClassLoader().getResource(resourceName);
+    return new File(resource.toURI());
+  }
 }

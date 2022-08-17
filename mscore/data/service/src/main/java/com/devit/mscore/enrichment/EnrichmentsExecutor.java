@@ -25,50 +25,50 @@ import org.json.JSONObject;
  */
 public final class EnrichmentsExecutor implements Executor<Enrichment> {
 
-    private static final Logger LOG = ApplicationLogger.getLogger(EnrichmentsExecutor.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(EnrichmentsExecutor.class);
 
-    private Map<String, Map<String, Enrichment>> enrichments;
+  private Map<String, Map<String, Enrichment>> enrichments;
 
-    public EnrichmentsExecutor() {
-        this.enrichments = new HashMap<>();
+  public EnrichmentsExecutor() {
+    this.enrichments = new HashMap<>();
+  }
+
+  @Override
+  public void add(Enrichment enrichment) {
+    var domain = enrichment.getDomain();
+    this.enrichments.computeIfAbsent(domain, key -> new HashMap<>());
+    this.enrichments.get(domain).put(enrichment.getAttribute(), enrichment);
+  }
+
+  @Override
+  public void execute(JSONObject json) {
+    var domain = getDomain(json);
+    enrich(this.enrichments.get(ALL), json);
+    if (StringUtils.isEmpty(domain)) {
+      LOG.warn("Fail to enrich domain-specific attributes of {}. Domain is not provided.", json);
+      return;
+    }
+    enrich(this.enrichments.get(domain), json);
+  }
+
+  private static void enrich(Map<String, Enrichment> enrichments, JSONObject json) {
+    if (enrichments == null || json == null) {
+      return;
     }
 
-    @Override
-    public void add(Enrichment enrichment) {
-        var domain = enrichment.getDomain();
-        this.enrichments.computeIfAbsent(domain, key -> new HashMap<>());
-        this.enrichments.get(domain).put(enrichment.getAttribute(), enrichment);
-    }
-
-    @Override
-    public void execute(JSONObject json) {
+    enrichments.forEach((key, enrichment) -> {
+      if (json.has(key)) {
+        var id = getId(json);
         var domain = getDomain(json);
-        enrich(this.enrichments.get(ALL), json);
-        if (StringUtils.isEmpty(domain)) {
-            LOG.warn("Fail to enrich domain-specific attributes of {}. Domain is not provided.", json);
-            return;
+        try {
+          LOG.info("Enriching attribute {} of {} for {} domain", key, id, domain);
+          enrichment.enrich(json);
+        } catch (EnrichmentException ex) {
+          LOG.warn("Cannot enrich attribute {} of {} for {} domain", key, id, domain, ex);
         }
-        enrich(this.enrichments.get(domain), json);
-    }
-
-    private static void enrich(Map<String, Enrichment> enrichments, JSONObject json) {
-        if (enrichments == null || json == null) {
-            return;
-        }
-
-        enrichments.forEach((key, enrichment) -> {
-            if (json.has(key)) {
-                var id = getId(json);
-                var domain = getDomain(json);
-                try {
-                    LOG.info("Enriching attribute {} of {} for {} domain", key, id, domain);
-                    enrichment.enrich(json);
-                } catch (EnrichmentException ex) {
-                    LOG.warn("Cannot enrich attribute {} of {} for {} domain", key, id, domain, ex);
-                }
-            } else {
-                LOG.warn("Cannot enrich non-existing attribute {}", key);
-            }
-        });
-    }
+      } else {
+        LOG.warn("Cannot enrich non-existing attribute {}", key);
+      }
+    });
+  }
 }

@@ -11,32 +11,32 @@ import com.devit.mscore.exception.ResourceException;
 
 public class PebbleTemplateFactory extends ResourceManager {
 
-    private static final String LOCATION = "services.%s.template.resource.location";
+  private static final String LOCATION = "services.%s.template.resource.location";
 
-    private PebbleTemplateFactory(Registry registry, Configuration configuration) {
-        super("template", configuration, registry);
-    }
+  private PebbleTemplateFactory(Registry registry, Configuration configuration) {
+    super("template", configuration, registry);
+  }
 
-    public static PebbleTemplateFactory of(Registry registry, Configuration configuration) {
-        return new PebbleTemplateFactory(registry, configuration);
-    }
+  public static PebbleTemplateFactory of(Registry registry, Configuration configuration) {
+    return new PebbleTemplateFactory(registry, configuration);
+  }
 
-    public PebbleTemplate template() {
-        return new PebbleTemplate();
-    }
+  public PebbleTemplate template() {
+    return new PebbleTemplate();
+  }
 
-    @Override
-    protected String getResourceLocation() {
-        var configName = String.format(LOCATION, this.configuration.getServiceName());
-        try {
-            return this.configuration.getConfig(configName).orElse(null);
-        } catch (ConfigException ex) {
-            return null;
-        }
+  @Override
+  protected String getResourceLocation() {
+    var configName = String.format(LOCATION, this.configuration.getServiceName());
+    try {
+      return this.configuration.getConfig(configName).orElse(null);
+    } catch (ConfigException ex) {
+      return null;
     }
+  }
 
-    @Override
-    protected Resource createResource(File file) throws ResourceException {
-        return new PebbleTemplateResource(file);
-    }
+  @Override
+  protected Resource createResource(File file) throws ResourceException {
+    return new PebbleTemplateResource(file);
+  }
 }

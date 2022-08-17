@@ -11,17 +11,17 @@ import org.json.JSONObject;
  */
 public interface Notification {
 
-    /**
-     * Type of notification. Ex. email, phone, etc.
-     * 
-     * @return notificationtype.
-     */
-    String getType();
+  /**
+   * Type of notification. Ex. email, phone, etc.
+   * 
+   * @return notificationtype.
+   */
+  String getType();
 
-    /**
-     * Build and send notification about {@code entity} changes.
-     * 
-     * @param entity  to notify about.
-     */
-    void send(JSONObject entity) throws NotificationException;
+  /**
+   * Build and send notification about {@code entity} changes.
+   * 
+   * @param entity to notify about.
+   */
+  void send(JSONObject entity) throws NotificationException;
 }

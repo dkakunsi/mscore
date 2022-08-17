@@ -16,103 +16,103 @@ import io.javalin.http.Handler;
 
 public class ResourceController extends JavalinController {
 
-    private ResourceService resourceService;
+  private ResourceService resourceService;
 
-    public ResourceController(ResourceService resourceService) {
-        super(resourceService);
-        this.resourceService = resourceService;
-    }
+  public ResourceController(ResourceService resourceService) {
+    super(resourceService);
+    this.resourceService = resourceService;
+  }
 
-    @Override
-    public Handler post() {
-        return ctx -> {
-            var domain = ctx.queryParam(DOMAIN);
-            var payload = ctx.body();
-            var response = this.resourceService.post(domain, new JSONObject(payload));
+  @Override
+  public Handler post() {
+    return ctx -> {
+      var domain = ctx.queryParam(DOMAIN);
+      var payload = ctx.body();
+      var response = this.resourceService.post(domain, new JSONObject(payload));
 
-            ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
-        };
-    }
+      ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
+    };
+  }
 
-    @Override
-    public Handler put() {
-        return ctx -> {
-            var domain = ctx.queryParam(DOMAIN);
-            var id = ctx.pathParam(ID);
-            var payload = ctx.body();
-            var response = this.resourceService.put(domain, id, new JSONObject(payload));
+  @Override
+  public Handler put() {
+    return ctx -> {
+      var domain = ctx.queryParam(DOMAIN);
+      var id = ctx.pathParam(ID);
+      var payload = ctx.body();
+      var response = this.resourceService.put(domain, id, new JSONObject(payload));
 
-            ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
-        };
-    }
+      ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
+    };
+  }
 
-    @Override
-    public Handler getOne() {
-        return ctx -> {
-            var domain = ctx.queryParam(DOMAIN);
-            var id = ctx.pathParam(ID);
-            var response = this.resourceService.getById(domain, id);
+  @Override
+  public Handler getOne() {
+    return ctx -> {
+      var domain = ctx.queryParam(DOMAIN);
+      var id = ctx.pathParam(ID);
+      var response = this.resourceService.getById(domain, id);
 
-            ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
-        };
-    }
+      ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
+    };
+  }
 
-    @Override
-    public Handler getOneByCode() {
-        return ctx -> {
-            var domain = ctx.queryParam(DOMAIN);
-            var code = ctx.pathParam(CODE);
-            var response = this.resourceService.getByCode(domain, code);
+  @Override
+  public Handler getOneByCode() {
+    return ctx -> {
+      var domain = ctx.queryParam(DOMAIN);
+      var code = ctx.pathParam(CODE);
+      var response = this.resourceService.getByCode(domain, code);
 
-            ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
-        };
-    }
+      ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
+    };
+  }
 
-    @Override
-    public Handler getMany() {
-        return ctx -> {
-            var domain = ctx.queryParam(DOMAIN);
-            var ids = ctx.queryParam("ids");
-            var response = this.resourceService.getMany(domain, ids);
+  @Override
+  public Handler getMany() {
+    return ctx -> {
+      var domain = ctx.queryParam(DOMAIN);
+      var ids = ctx.queryParam("ids");
+      var response = this.resourceService.getMany(domain, ids);
 
-            ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
-        };
-    }
+      ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
+    };
+  }
 
-    @Override
-    public Handler syncById() {
-        return ctx -> {
-            var domain = ctx.queryParam(DOMAIN);
-            var id = ctx.pathParam(ID);
-            var response = this.resourceService.syncById(domain, id);
+  @Override
+  public Handler syncById() {
+    return ctx -> {
+      var domain = ctx.queryParam(DOMAIN);
+      var id = ctx.pathParam(ID);
+      var response = this.resourceService.syncById(domain, id);
 
-            ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
-        };
-    }
+      ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
+    };
+  }
 
-    @Override
-    public Handler syncAll() {
-        return ctx -> {
-            var domain = ctx.queryParam(DOMAIN);
-            var response = this.resourceService.sync(domain);
+  @Override
+  public Handler syncAll() {
+    return ctx -> {
+      var domain = ctx.queryParam(DOMAIN);
+      var response = this.resourceService.sync(domain);
 
-            ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
-        };
-    }
+      ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
+    };
+  }
 
-    @Override
-    public Handler search() {
-        return ctx -> {
-            var criteria = ctx.body();
-            if (StringUtils.isEmpty(criteria)) {
-                throw new ValidationException("Search criteria is invalid.");
-            }
+  @Override
+  public Handler search() {
+    return ctx -> {
+      var criteria = ctx.body();
+      if (StringUtils.isEmpty(criteria)) {
+        throw new ValidationException("Search criteria is invalid.");
+      }
 
-            var json = new JSONObject(criteria);
-            var domain = ctx.queryParam(DOMAIN);
-            var response = ((ResourceService) this.service).search(domain, json);
+      var json = new JSONObject(criteria);
+      var domain = ctx.queryParam(DOMAIN);
+      var response = ((ResourceService) this.service).search(domain, json);
 
-            ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
-        };
-    }
+      ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
+    };
+  }
 }

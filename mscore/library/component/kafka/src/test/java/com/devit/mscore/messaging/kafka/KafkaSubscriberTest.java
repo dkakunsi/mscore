@@ -25,67 +25,68 @@ import org.junit.Test;
 
 public class KafkaSubscriberTest {
 
-    private KafkaSubscriber subscriber;
+  private KafkaSubscriber subscriber;
 
-    private Consumer<String, String> consumer;
+  private Consumer<String, String> consumer;
 
-    @SuppressWarnings("unchecked")
-    @Before
-    public void setup() {
-        this.consumer = mock(Consumer.class);
-        this.subscriber = new KafkaSubscriber(consumer);
-    }
+  @SuppressWarnings("unchecked")
+  @Before
+  public void setup() {
+    this.consumer = mock(Consumer.class);
+    this.subscriber = new KafkaSubscriber(consumer);
+  }
 
-    @Test
-    public void testSubscribe() {
-        java.util.function.Consumer<JSONObject> consumer = json -> {};
-        this.subscriber.subscribe("topic", consumer);
-        var topics = this.subscriber.getChannel();
-        assertThat(topics, is("topic"));
-    }
+  @Test
+  public void testSubscribe() {
+    java.util.function.Consumer<JSONObject> consumer = json -> {
+    };
+    this.subscriber.subscribe("topic", consumer);
+    var topics = this.subscriber.getChannel();
+    assertThat(topics, is("topic"));
+  }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testConsume() throws InterruptedException {
-        var result = new JSONObject();
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testConsume() throws InterruptedException {
+    var result = new JSONObject();
 
-        java.util.function.Consumer<JSONObject> localConsumer = json -> result.put("json", json);
-        this.subscriber.subscribe("topic", localConsumer);
-        var topics = this.subscriber.getChannel();
-        assertThat(topics, is("topic"));
+    java.util.function.Consumer<JSONObject> localConsumer = json -> result.put("json", json);
+    this.subscriber.subscribe("topic", localConsumer);
+    var topics = this.subscriber.getChannel();
+    assertThat(topics, is("topic"));
 
-        var principal = new JSONObject("{\"requestedBy\":\"requestedBy\"}");
-        var principalHeader = mock(Header.class);
-        doReturn(principal.toString().getBytes()).when(principalHeader).value();
+    var principal = new JSONObject("{\"requestedBy\":\"requestedBy\"}");
+    var principalHeader = mock(Header.class);
+    doReturn(principal.toString().getBytes()).when(principalHeader).value();
 
-        var breadcrumbId = "breadcrumbId";
-        var breadcrumbIdHeader = mock(Header.class);
-        doReturn(breadcrumbId.getBytes()).when(breadcrumbIdHeader).value();
+    var breadcrumbId = "breadcrumbId";
+    var breadcrumbIdHeader = mock(Header.class);
+    doReturn(breadcrumbId.getBytes()).when(breadcrumbIdHeader).value();
 
-        var headers = mock(Headers.class);
-        doReturn(principalHeader).when(headers).lastHeader("principal");
-        doReturn(breadcrumbIdHeader).when(headers).lastHeader("breadcrumbId");
+    var headers = mock(Headers.class);
+    doReturn(principalHeader).when(headers).lastHeader("principal");
+    doReturn(breadcrumbIdHeader).when(headers).lastHeader("breadcrumbId");
 
-        var record = mock(ConsumerRecord.class);
-        doReturn("topic").when(record).topic();
-        doReturn(0).when(record).partition();
-        doReturn(0L).when(record).offset();
-        doReturn("{\"id\":\"id\"}").when(record).value();
-        doReturn(headers).when(record).headers();
+    var record = mock(ConsumerRecord.class);
+    doReturn("topic").when(record).topic();
+    doReturn(0).when(record).partition();
+    doReturn(0L).when(record).offset();
+    doReturn("{\"id\":\"id\"}").when(record).value();
+    doReturn(headers).when(record).headers();
 
-        var records = new ConsumerRecords<String, String>(Map.of(new TopicPartition("topic", 0), List.of(record)));
+    var records = new ConsumerRecords<String, String>(Map.of(new TopicPartition("topic", 0), List.of(record)));
 
-        doReturn(records).when(this.consumer).poll(any(Duration.class));
+    doReturn(records).when(this.consumer).poll(any(Duration.class));
 
-        this.subscriber.start();
-        await().until(new Callable<Boolean>() {
-            public Boolean call() throws Exception {
-                return result.has("json");
-            };
-        });
-        this.subscriber.stop();
+    this.subscriber.start();
+    await().until(new Callable<Boolean>() {
+      public Boolean call() throws Exception {
+        return result.has("json");
+      };
+    });
+    this.subscriber.stop();
 
-        assertNotNull(result.get("json"));
-        assertThat(result.getJSONObject("json").getString("id"), is("id"));
-    }
+    assertNotNull(result.get("json"));
+    assertThat(result.getJSONObject("json").getString("id"), is("id"));
+  }
 }

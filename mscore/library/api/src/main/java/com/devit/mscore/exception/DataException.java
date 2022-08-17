@@ -7,17 +7,17 @@ package com.devit.mscore.exception;
  */
 public class DataException extends ApplicationException {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    public DataException(String message) {
-        super(message);
-    }
+  public DataException(String message) {
+    super(message);
+  }
 
-    public DataException(Throwable cause) {
-        super(cause);
-    }
+  public DataException(Throwable cause) {
+    super(cause);
+  }
 
-    public DataException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public DataException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

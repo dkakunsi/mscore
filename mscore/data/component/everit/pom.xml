@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.devit.mscore</groupId>
-        <artifactId>data-component</artifactId>
-        <version>${revision}</version>
-    </parent>
-
-    <artifactId>everit</artifactId>
+  <parent>
+    <groupId>com.devit.mscore</groupId>
+    <artifactId>data-component</artifactId>
     <version>${revision}</version>
-    <packaging>jar</packaging>
-    <name>MS Core :: JSON Schema :: Everit</name>
+  </parent>
 
-    <properties>
-        <revision>1.0-SNAPSHOT</revision>
-        <everit.version>1.12.1</everit.version>
-    </properties>
+  <artifactId>everit</artifactId>
+  <version>${revision}</version>
+  <packaging>jar</packaging>
+  <name>MS Core :: JSON Schema :: Everit</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.github.everit-org.json-schema</groupId>
-            <artifactId>org.everit.json.schema</artifactId>
-            <version>${everit.version}</version>
-        </dependency>
-    </dependencies>
+  <properties>
+    <revision>1.0-SNAPSHOT</revision>
+    <everit.version>1.12.1</everit.version>
+  </properties>
 
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>com.github.everit-org.json-schema</groupId>
+      <artifactId>org.everit.json.schema</artifactId>
+      <version>${everit.version}</version>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
 </project>

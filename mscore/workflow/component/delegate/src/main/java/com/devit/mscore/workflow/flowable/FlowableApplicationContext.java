@@ -14,44 +14,44 @@ import org.flowable.engine.delegate.DelegateExecution;
 
 public class FlowableApplicationContext extends ApplicationContext {
 
-    private FlowableApplicationContext(Map<String, Object> contextData) {
-        super(contextData);
-    }
+  private FlowableApplicationContext(Map<String, Object> contextData) {
+    super(contextData);
+  }
 
-    @Override
-    public String getSource() {
-        return "flowable";
-    }
-    
-    public static ApplicationContext of(DelegateExecution execution) {
-        var contextData = new HashMap<String, Object>();
-        var context = new FlowableApplicationContext(contextData);
-        context.breadcrumbId(execution);
-        context.action(execution);
+  @Override
+  public String getSource() {
+    return "flowable";
+  }
 
-        return context;
-    }
+  public static ApplicationContext of(DelegateExecution execution) {
+    var contextData = new HashMap<String, Object>();
+    var context = new FlowableApplicationContext(contextData);
+    context.breadcrumbId(execution);
+    context.action(execution);
 
-    private void action(DelegateExecution execution) {
-        var processDefinitionId = execution.getProcessDefinitionId();
-        var action = processDefinitionId.split(":")[0];
-        if (!StringUtils.isBlank(action)) {
-            this.contextData.put(ACTION, action);
-        }
-    }
+    return context;
+  }
 
-    private void breadcrumbId(DelegateExecution execution) {
-        var variableObj = execution.getVariable(BREADCRUMB_ID);
-        if (variableObj != null) {
-            setBreadcrumbId(variableObj.toString());
-        }
+  private void action(DelegateExecution execution) {
+    var processDefinitionId = execution.getProcessDefinitionId();
+    var action = processDefinitionId.split(":")[0];
+    if (!StringUtils.isBlank(action)) {
+      this.contextData.put(ACTION, action);
     }
+  }
 
-    public DataClient getDataClient() {
-        return DelegateUtils.getDataClient();
+  private void breadcrumbId(DelegateExecution execution) {
+    var variableObj = execution.getVariable(BREADCRUMB_ID);
+    if (variableObj != null) {
+      setBreadcrumbId(variableObj.toString());
     }
+  }
 
-    public Publisher getPublisher(String target) {
-        return DelegateUtils.getPublisher(target);
-    }
+  public DataClient getDataClient() {
+    return DelegateUtils.getDataClient();
+  }
+
+  public Publisher getPublisher(String target) {
+    return DelegateUtils.getPublisher(target);
+  }
 }

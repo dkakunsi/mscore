@@ -23,88 +23,88 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ZookeeperRegistryFactoryTest {
-    
-    private static TestingServer zookeeperServer;
 
-    private Configuration configuration;
+  private static TestingServer zookeeperServer;
 
-    private ZookeeperRegistryFactory factory;
+  private Configuration configuration;
 
-    @BeforeClass
-    public static void startServer() throws Exception {
-        zookeeperServer = new TestingServer(4000);
-        zookeeperServer.start();
-    }
+  private ZookeeperRegistryFactory factory;
 
-    @AfterClass
-    public static void stopServer() throws IOException {
-        zookeeperServer.stop();
-    }
+  @BeforeClass
+  public static void startServer() throws Exception {
+    zookeeperServer = new TestingServer(4000);
+    zookeeperServer.start();
+  }
 
-    @Before
-    public void setup() {
-        this.configuration = mock(Configuration.class);
-        this.factory = ZookeeperRegistryFactory.of(this.configuration);
-    }
+  @AfterClass
+  public static void stopServer() throws IOException {
+    zookeeperServer.stop();
+  }
 
-    @Test
-    public void testGetZookeeperRegistry() throws RegistryException, ConfigException {
-        doReturn(Optional.of("127.0.0.1:4000")).when(this.configuration).getConfig("zookeeper.host");
-        doReturn(Optional.of("50")).when(this.configuration).getConfig("zookeeper.retry.sleep");
-        doReturn(Optional.of("1")).when(this.configuration).getConfig("zookeeper.retry.max");
+  @Before
+  public void setup() {
+    this.configuration = mock(Configuration.class);
+    this.factory = ZookeeperRegistryFactory.of(this.configuration);
+  }
 
-        var domainRegistry = this.factory.registry("domain");
+  @Test
+  public void testGetZookeeperRegistry() throws RegistryException, ConfigException {
+    doReturn(Optional.of("127.0.0.1:4000")).when(this.configuration).getConfig("zookeeper.host");
+    doReturn(Optional.of("50")).when(this.configuration).getConfig("zookeeper.retry.sleep");
+    doReturn(Optional.of("1")).when(this.configuration).getConfig("zookeeper.retry.max");
 
-        assertNotNull(domainRegistry);
-    }
+    var domainRegistry = this.factory.registry("domain");
 
-    @Test
-    public void testGetZookeeperRegistry_UseDefaultValues() throws RegistryException, ConfigException {
-        doReturn(Optional.of("127.0.0.1:4000")).when(this.configuration).getConfig("zookeeper.host");
-        var domainRegistry = this.factory.registry("domain");
-        assertNotNull(domainRegistry);
-    }
+    assertNotNull(domainRegistry);
+  }
 
-    @Test
-    public void testGetZookeeperRegistry_NoZookeeperHost_ThrowRegistryException() {
-        var ex = assertThrows(RegistryException.class, () -> this.factory.registry("domain"));
-        var exceptionMessage = ex.getMessage();
-        assertThat(exceptionMessage, is("No zookeeper host was configured."));
-    }
+  @Test
+  public void testGetZookeeperRegistry_UseDefaultValues() throws RegistryException, ConfigException {
+    doReturn(Optional.of("127.0.0.1:4000")).when(this.configuration).getConfig("zookeeper.host");
+    var domainRegistry = this.factory.registry("domain");
+    assertNotNull(domainRegistry);
+  }
 
-    @Test
-    public void testGetZookeeperHost_ThrowException() throws ConfigException {
-        var configuration = mock(Configuration.class);
-        doThrow(new ConfigException("Error message.")).when(configuration).getConfig("zookeeper.host");
+  @Test
+  public void testGetZookeeperRegistry_NoZookeeperHost_ThrowRegistryException() {
+    var ex = assertThrows(RegistryException.class, () -> this.factory.registry("domain"));
+    var exceptionMessage = ex.getMessage();
+    assertThat(exceptionMessage, is("No zookeeper host was configured."));
+  }
 
-        var ex = assertThrows(RegistryException.class, () -> ZookeeperRegistryFactory.getZookeeperHost(configuration));
-        assertThat(ex.getMessage(), is("Error message."));
-        assertThat(ex.getCause(), instanceOf(ConfigException.class));
-    }
+  @Test
+  public void testGetZookeeperHost_ThrowException() throws ConfigException {
+    var configuration = mock(Configuration.class);
+    doThrow(new ConfigException("Error message.")).when(configuration).getConfig("zookeeper.host");
 
-    @Test
-    public void testGetSleepBetweenReply_ThrowException() throws ConfigException {
-        var configuration = mock(Configuration.class);
-        doThrow(new ConfigException("Error message.")).when(configuration).getConfig("zookeeper.retry.sleep");
+    var ex = assertThrows(RegistryException.class, () -> ZookeeperRegistryFactory.getZookeeperHost(configuration));
+    assertThat(ex.getMessage(), is("Error message."));
+    assertThat(ex.getCause(), instanceOf(ConfigException.class));
+  }
 
-        var ex = assertThrows(RegistryException.class, () -> ZookeeperRegistryFactory.getSleepBetweenRetry(configuration));
-        assertThat(ex.getMessage(), is("Error message."));
-        assertThat(ex.getCause(), instanceOf(ConfigException.class));
-    }
+  @Test
+  public void testGetSleepBetweenReply_ThrowException() throws ConfigException {
+    var configuration = mock(Configuration.class);
+    doThrow(new ConfigException("Error message.")).when(configuration).getConfig("zookeeper.retry.sleep");
 
-    @Test
-    public void testGetMaxRetry_ThrowException() throws ConfigException {
-        var configuration = mock(Configuration.class);
-        doThrow(new ConfigException("Error message.")).when(configuration).getConfig("zookeeper.retry.max");
+    var ex = assertThrows(RegistryException.class, () -> ZookeeperRegistryFactory.getSleepBetweenRetry(configuration));
+    assertThat(ex.getMessage(), is("Error message."));
+    assertThat(ex.getCause(), instanceOf(ConfigException.class));
+  }
 
-        var ex = assertThrows(RegistryException.class, () -> ZookeeperRegistryFactory.getMaxRetry(configuration));
-        assertThat(ex.getMessage(), is("Error message."));
-        assertThat(ex.getCause(), instanceOf(ConfigException.class));
-    }
+  @Test
+  public void testGetMaxRetry_ThrowException() throws ConfigException {
+    var configuration = mock(Configuration.class);
+    doThrow(new ConfigException("Error message.")).when(configuration).getConfig("zookeeper.retry.max");
 
-    @Test
-    public void testGetOrDefault_ThrowException() {
-        var result = ZookeeperRegistryFactory.getOrDefault(Optional.of("###"), 1);
-        assertThat(result, is(Integer.valueOf(1)));
-    }
+    var ex = assertThrows(RegistryException.class, () -> ZookeeperRegistryFactory.getMaxRetry(configuration));
+    assertThat(ex.getMessage(), is("Error message."));
+    assertThat(ex.getCause(), instanceOf(ConfigException.class));
+  }
+
+  @Test
+  public void testGetOrDefault_ThrowException() {
+    var result = ZookeeperRegistryFactory.getOrDefault(Optional.of("###"), 1);
+    assertThat(result, is(Integer.valueOf(1)));
+  }
 }

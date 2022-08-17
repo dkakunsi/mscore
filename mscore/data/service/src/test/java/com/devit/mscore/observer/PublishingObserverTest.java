@@ -15,28 +15,28 @@ import org.junit.Test;
 
 public class PublishingObserverTest {
 
-    @Test
-    public void testNotify_NullPublisher() {
-        var publisher = mock(Publisher.class);
-        var publishingObserver = new PublishingObserver(publisher, 0L);
-        publishingObserver.notify(new JSONObject());
+  @Test
+  public void testNotify_NullPublisher() {
+    var publisher = mock(Publisher.class);
+    var publishingObserver = new PublishingObserver(publisher, 0L);
+    publishingObserver.notify(new JSONObject());
 
-        verify(publisher).publish(any(JSONObject.class));
-    }
+    verify(publisher).publish(any(JSONObject.class));
+  }
 
-    @Test
-    public void testNotify_ExceptionThrown() {
-        var publisher = mock(Publisher.class);
-        doThrow(new RuntimeException("Test")).when(publisher).publish(any(JSONObject.class));
+  @Test
+  public void testNotify_ExceptionThrown() {
+    var publisher = mock(Publisher.class);
+    doThrow(new RuntimeException("Test")).when(publisher).publish(any(JSONObject.class));
 
-        var publishingObserver = new PublishingObserver(publisher, 0L);
+    var publishingObserver = new PublishingObserver(publisher, 0L);
 
-        var json = new JSONObject();
-        var ex = assertThrows(RuntimeException.class, () -> {
-            publishingObserver.notify(json);
-        });
+    var json = new JSONObject();
+    var ex = assertThrows(RuntimeException.class, () -> {
+      publishingObserver.notify(json);
+    });
 
-        verify(publisher).publish(any(JSONObject.class));
-        assertThat("Test", is(ex.getMessage()));
-    }
+    verify(publisher).publish(any(JSONObject.class));
+    assertThat("Test", is(ex.getMessage()));
+  }
 }

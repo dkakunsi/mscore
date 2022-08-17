@@ -18,43 +18,42 @@ import io.javalin.apibuilder.EndpointGroup;
 
 public class JavalinEndpoint implements Endpoint {
 
-    protected JavalinController controller;
+  protected JavalinController controller;
 
-    public JavalinEndpoint(Service service) {
-        this.controller = new JavalinController(service);
-    }
+  public JavalinEndpoint(Service service) {
+    this.controller = new JavalinController(service);
+  }
 
-    public JavalinEndpoint(JavalinController controller) {
-        setController(controller);
-    }
+  public JavalinEndpoint(JavalinController controller) {
+    setController(controller);
+  }
 
-    public void setController(JavalinController controller) {
-        this.controller = controller;
-    }
+  public void setController(JavalinController controller) {
+    this.controller = controller;
+  }
 
-    @Override
-    public void register() {
-        getEndpoints().stream().forEach(EndpointGroup::addEndpoints);
-    }
+  @Override
+  public void register() {
+    getEndpoints().stream().forEach(EndpointGroup::addEndpoints);
+  }
 
-    public List<EndpointGroup> getEndpoints() {
-        var endpoints = new ArrayList<EndpointGroup>();
-        endpoints.add(() -> path(this.controller.getDomain(), () -> {
-                post(this.controller.post());
-                post("search", this.controller.search());
-                post("sync", this.controller.syncAll());
-                get(this.controller.all());
-                get("code/:" + CODE, this.controller.getOneByCode());
-                get("keys", this.controller.getMany());
-                path(":" + ID, () -> {
-                    get(this.controller.getOne());
-                    put(this.controller.put());
-                    delete(this.controller.delete());
-                    post("sync", this.controller.syncById());
-                });
-            })
-        );
+  public List<EndpointGroup> getEndpoints() {
+    var endpoints = new ArrayList<EndpointGroup>();
+    endpoints.add(() -> path(this.controller.getDomain(), () -> {
+      post(this.controller.post());
+      post("search", this.controller.search());
+      post("sync", this.controller.syncAll());
+      get(this.controller.all());
+      get("code/:" + CODE, this.controller.getOneByCode());
+      get("keys", this.controller.getMany());
+      path(":" + ID, () -> {
+        get(this.controller.getOne());
+        put(this.controller.put());
+        delete(this.controller.delete());
+        post("sync", this.controller.syncById());
+      });
+    }));
 
-        return endpoints;
-    }
+    return endpoints;
+  }
 }

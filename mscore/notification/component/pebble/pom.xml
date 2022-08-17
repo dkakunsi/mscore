@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.devit.mscore</groupId>
-        <artifactId>notification-component</artifactId>
-        <version>${revision}</version>
-    </parent>
+  <parent>
+    <groupId>com.devit.mscore</groupId>
+    <artifactId>notification-component</artifactId>
+    <version>${revision}</version>
+  </parent>
 
-    <artifactId>pebble</artifactId>
-    <packaging>jar</packaging>
-    <name>MS Core :: Template :: Pebble</name>
+  <artifactId>pebble</artifactId>
+  <packaging>jar</packaging>
+  <name>MS Core :: Template :: Pebble</name>
 
-    <properties>
-        <revision>1.0-SNAPSHOT</revision>
-        <pebble.version>3.1.5</pebble.version>
-    </properties>
+  <properties>
+    <revision>1.0-SNAPSHOT</revision>
+    <pebble.version>3.1.5</pebble.version>
+  </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
-            <artifactId>notification-api</artifactId>
-            <version>${revision}</version>
-        </dependency>
+  <dependencies>
+    <dependency>
+      <groupId>com.devit.mscore</groupId>
+      <artifactId>notification-api</artifactId>
+      <version>${revision}</version>
+    </dependency>
 
-        <dependency>
-            <groupId>io.pebbletemplates</groupId>
-            <artifactId>pebble</artifactId>
-            <version>${pebble.version}</version>
-        </dependency>
-    </dependencies>
+    <dependency>
+      <groupId>io.pebbletemplates</groupId>
+      <artifactId>pebble</artifactId>
+      <version>${pebble.version}</version>
+    </dependency>
+  </dependencies>
 </project>

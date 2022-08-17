@@ -28,65 +28,65 @@ import org.junit.Test;
 
 public class MongoDatabaseFactoryTest {
 
-    private MongoDatabaseFactory factory;
+  private MongoDatabaseFactory factory;
 
-    private Configuration configuration;
+  private Configuration configuration;
 
-    private MongoClient client;
+  private MongoClient client;
 
-    @Before
-    public void setup() {
-        this.configuration = mock(Configuration.class);
-        this.client = mock(MongoClient.class);
-        this.factory = MongoDatabaseFactory.of(configuration);
-        this.factory.setMongoClient(this.client);
-    }
+  @Before
+  public void setup() {
+    this.configuration = mock(Configuration.class);
+    this.client = mock(MongoClient.class);
+    this.factory = MongoDatabaseFactory.of(configuration);
+    this.factory.setMongoClient(this.client);
+  }
 
-    @Test
-    public void testGetRepository() throws ConfigException {
-        var schema = mock(Schema.class);
-        doReturn("domain").when(schema).getDomain();
-        doReturn(List.of("id")).when(schema).getUniqueAttributes();
+  @Test
+  public void testGetRepository() throws ConfigException {
+    var schema = mock(Schema.class);
+    doReturn("domain").when(schema).getDomain();
+    doReturn(List.of("id")).when(schema).getUniqueAttributes();
 
-        var document = mock(Document.class);
-        doReturn("_id").when(document).get("name");
-        var mongoCursor = mock(MongoCursor.class);
-        doReturn(document).when(mongoCursor).next();
-        doReturn(true, false).when(mongoCursor).hasNext();
-        var listIndeces = mock(ListIndexesIterable.class);
-        doReturn(mongoCursor).when(listIndeces).iterator();
-        var collection = mock(MongoCollection.class);
-        doReturn(listIndeces).when(collection).listIndexes();
-        var database = mock(MongoDatabase.class);
-        doReturn(collection).when(database).getCollection("domain");
+    var document = mock(Document.class);
+    doReturn("_id").when(document).get("name");
+    var mongoCursor = mock(MongoCursor.class);
+    doReturn(document).when(mongoCursor).next();
+    doReturn(true, false).when(mongoCursor).hasNext();
+    var listIndeces = mock(ListIndexesIterable.class);
+    doReturn(mongoCursor).when(listIndeces).iterator();
+    var collection = mock(MongoCollection.class);
+    doReturn(listIndeces).when(collection).listIndexes();
+    var database = mock(MongoDatabase.class);
+    doReturn(collection).when(database).getCollection("domain");
 
-        doReturn(database).when(this.client).getDatabase("database");
-        doReturn(Optional.of("database")).when(this.configuration).getConfig("platform.mongo.database");
+    doReturn(database).when(this.client).getDatabase("database");
+    doReturn(Optional.of("database")).when(this.configuration).getConfig("platform.mongo.database");
 
-        var repository = this.factory.repository(schema);
-        assertNotNull(repository);
-    }
+    var repository = this.factory.repository(schema);
+    assertNotNull(repository);
+  }
 
-    @Test
-    public void testCreateConnectionString() throws ConfigException {
-        doReturn(Optional.of("mongo")).when(this.configuration).getConfig("platform.mongo.host");
-        doReturn(Optional.of("1000")).when(this.configuration).getConfig("platform.mongo.port");
+  @Test
+  public void testCreateConnectionString() throws ConfigException {
+    doReturn(Optional.of("mongo")).when(this.configuration).getConfig("platform.mongo.host");
+    doReturn(Optional.of("1000")).when(this.configuration).getConfig("platform.mongo.port");
 
-        var connectionString = this.factory.createConnectionString();
-        assertNotNull(connectionString);
-    }
+    var connectionString = this.factory.createConnectionString();
+    assertNotNull(connectionString);
+  }
 
-    @Test
-    public void testApplyAuthentication() throws ConfigException {
-        doReturn(Optional.of("true")).when(this.configuration).getConfig("platform.mongo.secure");
-        doReturn(Optional.of("username")).when(this.configuration).getConfig("platform.mongo.username");
-        doReturn(Optional.of("password")).when(this.configuration).getConfig("platform.mongo.password");
+  @Test
+  public void testApplyAuthentication() throws ConfigException {
+    doReturn(Optional.of("true")).when(this.configuration).getConfig("platform.mongo.secure");
+    doReturn(Optional.of("username")).when(this.configuration).getConfig("platform.mongo.username");
+    doReturn(Optional.of("password")).when(this.configuration).getConfig("platform.mongo.password");
 
-        var builder = mock(Builder.class);
-        var connectionString = mock(ConnectionString.class);
-        doReturn(builder).when(builder).applyConnectionString(connectionString);
+    var builder = mock(Builder.class);
+    var connectionString = mock(ConnectionString.class);
+    doReturn(builder).when(builder).applyConnectionString(connectionString);
 
-        this.factory.applyAuthentication(builder, "databaseName", connectionString);
-        verify(builder, times(1)).credential(any(MongoCredential.class));
-    }
+    this.factory.applyAuthentication(builder, "databaseName", connectionString);
+    verify(builder, times(1)).credential(any(MongoCredential.class));
+  }
 }

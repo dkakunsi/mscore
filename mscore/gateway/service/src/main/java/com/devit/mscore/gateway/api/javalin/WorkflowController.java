@@ -11,21 +11,21 @@ import io.javalin.http.Handler;
 
 public class WorkflowController extends JavalinController {
 
-    private WorkflowService workflowService;
+  private WorkflowService workflowService;
 
-    public WorkflowController(WorkflowService workflowService) {
-        super(workflowService);
-        this.workflowService = workflowService;
-    }
+  public WorkflowController(WorkflowService workflowService) {
+    super(workflowService);
+    this.workflowService = workflowService;
+  }
 
-    @Override
-    public Handler put() {
-        return ctx -> {
-            var taskId = ctx.pathParam(ID);
-            var payload = ctx.body();
-            this.workflowService.completeTask(taskId, new JSONObject(payload));
+  @Override
+  public Handler put() {
+    return ctx -> {
+      var taskId = ctx.pathParam(ID);
+      var payload = ctx.body();
+      this.workflowService.completeTask(taskId, new JSONObject(payload));
 
-            ctx.status(SUCCESS);
-        };
-    }
+      ctx.status(SUCCESS);
+    };
+  }
 }

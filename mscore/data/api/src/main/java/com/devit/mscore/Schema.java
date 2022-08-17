@@ -17,26 +17,26 @@ import org.json.JSONObject;
  */
 public abstract class Schema extends Resource {
 
-    protected Schema(File resourceFile) throws ResourceException {
-        super(resourceFile);
-        this.name = resourceFile.getName().split("\\.")[0];
-    }
+  protected Schema(File resourceFile) throws ResourceException {
+    super(resourceFile);
+    this.name = resourceFile.getName().split("\\.")[0];
+  }
 
-    protected Schema(String name, String content) {
-        super(name, content);
-    }
+  protected Schema(String name, String content) {
+    super(name, content);
+  }
 
-    public String getDomain() {
-        return this.name;
-    }
+  public String getDomain() {
+    return this.name;
+  }
 
-    public abstract void validate(JSONObject json) throws ValidationException;
+  public abstract void validate(JSONObject json) throws ValidationException;
 
-    public abstract Map<String, List<String>> getReferences();
+  public abstract Map<String, List<String>> getReferences();
 
-    public abstract Set<String> getReferenceNames();
+  public abstract Set<String> getReferenceNames();
 
-    public abstract List<List<String>> getReferenceDomains();
+  public abstract List<List<String>> getReferenceDomains();
 
-    public abstract List<String> getUniqueAttributes();
+  public abstract List<String> getUniqueAttributes();
 }

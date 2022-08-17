@@ -7,10 +7,10 @@ import org.flowable.engine.delegate.JavaDelegate;
 
 public class TestDelegate implements JavaDelegate {
 
-    public static Registry registry;
+  public static Registry registry;
 
-    @Override
-    public void execute(DelegateExecution execution) {
-        registry.getName();        
-    }
+  @Override
+  public void execute(DelegateExecution execution) {
+    registry.getName();
+  }
 }

@@ -17,17 +17,17 @@ import org.json.JSONObject;
  */
 public class NoopEnrichment extends Enrichment {
 
-    public NoopEnrichment(String domain, String attribute) {
-        super(domain, attribute);
-    }
+  public NoopEnrichment(String domain, String attribute) {
+    super(domain, attribute);
+  }
 
-    @Override
-    protected boolean isValid(JSONObject object) {
-        return true;
-    }
+  @Override
+  protected boolean isValid(JSONObject object) {
+    return true;
+  }
 
-    @Override
-    protected Optional<JSONObject> loadFromDataStore(String domain, String id) {
-        return Optional.empty();
-    }
+  @Override
+  protected Optional<JSONObject> loadFromDataStore(String domain, String id) {
+    return Optional.empty();
+  }
 }

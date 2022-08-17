@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.devit.mscore</groupId>
-        <artifactId>component-parent</artifactId>
-        <version>2.1.1</version>
-        <relativePath>../../common/component/pom.xml</relativePath>
-    </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.devit.mscore</groupId>
+    <artifactId>component-parent</artifactId>
+    <version>2.1.1</version>
+    <relativePath>../../common/component/pom.xml</relativePath>
+  </parent>
 
-    <artifactId>component</artifactId>
-    <version>${revision}</version>
-    <packaging>pom</packaging>
-    <name>MS Core :: Library :: Component Parent</name>
+  <artifactId>component</artifactId>
+  <version>${revision}</version>
+  <packaging>pom</packaging>
+  <name>MS Core :: Library :: Component Parent</name>
 
-    <properties>
-        <revision>1.0-SNAPSHOT</revision>
-    </properties>
+  <properties>
+    <revision>1.0-SNAPSHOT</revision>
+  </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
-            <artifactId>api</artifactId>
-            <version>${revision}</version>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>com.devit.mscore</groupId>
+      <artifactId>api</artifactId>
+      <version>${revision}</version>
+    </dependency>
+  </dependencies>
 
-    <modules>
-        <module>log4j</module>
-        <module>authentication</module>
-        <module>local</module>
-        <module>zookeeper</module>
-        <module>jersey</module>
-        <module>kafka</module>
-        <module>javalin</module>
-    </modules>
+  <modules>
+    <module>log4j</module>
+    <module>authentication</module>
+    <module>local</module>
+    <module>zookeeper</module>
+    <module>jersey</module>
+    <module>kafka</module>
+    <module>javalin</module>
+  </modules>
 </project>

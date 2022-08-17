@@ -13,24 +13,24 @@ import java.util.UUID;
  */
 public class DefaultApplicationContext extends ApplicationContext {
 
-    private final String source;
+  private final String source;
 
-    private DefaultApplicationContext(String source, Map<String, Object> contextData) {
-        super(contextData);
-        this.source = source;
-    }
+  private DefaultApplicationContext(String source, Map<String, Object> contextData) {
+    super(contextData);
+    this.source = source;
+  }
 
-    @Override
-    public String getSource() {
-        return this.source;
-    }
+  @Override
+  public String getSource() {
+    return this.source;
+  }
 
-    public static ApplicationContext of(String source) {
-        return of(source, new HashMap<>());
-    }
+  public static ApplicationContext of(String source) {
+    return of(source, new HashMap<>());
+  }
 
-    public static ApplicationContext of(String source, Map<String, Object> contextData) {
-        contextData.computeIfAbsent(BREADCRUMB_ID, key -> UUID.randomUUID().toString());
-        return new DefaultApplicationContext(source, contextData);
-    }
+  public static ApplicationContext of(String source, Map<String, Object> contextData) {
+    contextData.computeIfAbsent(BREADCRUMB_ID, key -> UUID.randomUUID().toString());
+    return new DefaultApplicationContext(source, contextData);
+  }
 }

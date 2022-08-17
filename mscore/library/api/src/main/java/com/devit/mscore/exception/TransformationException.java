@@ -5,17 +5,17 @@ package com.devit.mscore.exception;
  */
 public class TransformationException extends ApplicationException {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    public TransformationException(String message) {
-        super(message);
-    }
+  public TransformationException(String message) {
+    super(message);
+  }
 
-    public TransformationException(Throwable cause) {
-        super(cause);
-    }
+  public TransformationException(Throwable cause) {
+    super(cause);
+  }
 
-    public TransformationException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public TransformationException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

@@ -7,8 +7,8 @@ package com.devit.mscore.web;
  */
 public interface Endpoint {
 
-    /**
-     * Register endpoint to server.
-     */
-    void register();
+  /**
+   * Register endpoint to server.
+   */
+  void register();
 }

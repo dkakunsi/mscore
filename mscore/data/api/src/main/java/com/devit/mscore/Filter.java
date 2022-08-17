@@ -13,28 +13,28 @@ import org.json.JSONObject;
  */
 public abstract class Filter {
 
-    protected List<String> attributes;
+  protected List<String> attributes;
 
-    protected Filter(List<String> attributes) {
-        this.attributes = attributes;
-    }
+  protected Filter(List<String> attributes) {
+    this.attributes = attributes;
+  }
 
-    /**
-     * 
-     * @return domain this filter applies to.
-     */
-    public String getDomain() {
-        return ALL;
-    }
+  /**
+   * 
+   * @return domain this filter applies to.
+   */
+  public String getDomain() {
+    return ALL;
+  }
 
-    /**
-     * Filter the given json.
-     * 
-     * @param json to filter.
-     */
-    public void filter(JSONObject json) {
-        this.attributes.forEach(attribute -> apply(json, attribute));
-    }
+  /**
+   * Filter the given json.
+   * 
+   * @param json to filter.
+   */
+  public void filter(JSONObject json) {
+    this.attributes.forEach(attribute -> apply(json, attribute));
+  }
 
-    protected abstract void apply(JSONObject json, String key);
+  protected abstract void apply(JSONObject json, String key);
 }

@@ -24,16 +24,16 @@ import org.junit.Test;
 
 public class SchemaValidationTest {
 
-    private Registry registry;
+  private Registry registry;
 
-    @Before
-    public void setup() {
-        this.registry = mock(Registry.class);
-    }
+  @Before
+  public void setup() {
+    this.registry = mock(Registry.class);
+  }
 
-    @Test
-    public void testValidate() throws URISyntaxException, ResourceException, RegistryException {
-        // @formatter:off
+  @Test
+  public void testValidate() throws URISyntaxException, ResourceException, RegistryException {
+    // @formatter:off
         var resourceFile = getResourceFile("resource/resource.json");
         var schema = new JSONObject()
             .put("id", "id")
@@ -42,16 +42,16 @@ public class SchemaValidationTest {
         doReturn(schema.toString()).when(this.registry).get(anyString());
         // @formatter:on
 
-        var validation = new SchemaValidation(this.registry);
-        var input = "{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\",\"reference1\":{\"domain\":\"referenceDomain1\",\"id\":\"referenceId1\"}}";
+    var validation = new SchemaValidation(this.registry);
+    var input = "{\"domain\":\"domain\",\"id\":\"id\",\"name\":\"name\",\"reference1\":{\"domain\":\"referenceDomain1\",\"id\":\"referenceId1\"}}";
 
-        var result = validation.validate(new JSONObject(input));
-        assertTrue(result);
-    }
+    var result = validation.validate(new JSONObject(input));
+    assertTrue(result);
+  }
 
-    @Test
-    public void testValidate_Invalid() throws URISyntaxException, ResourceException, RegistryException {
-        // @formatter:off
+  @Test
+  public void testValidate_Invalid() throws URISyntaxException, ResourceException, RegistryException {
+    // @formatter:off
         var resourceFile = getResourceFile("resource/resource.json");
         var schema = new JSONObject()
             .put("id", "id")
@@ -60,28 +60,28 @@ public class SchemaValidationTest {
         doReturn(schema.toString()).when(this.registry).get(anyString());
         // @formatter:on
 
-        var validation = new SchemaValidation(this.registry);
-        var input = "{\"domain\":\"unknown\",\"id\":\"toolongid\",\"name\":\"toolongname\"}";
+    var validation = new SchemaValidation(this.registry);
+    var input = "{\"domain\":\"unknown\",\"id\":\"toolongid\",\"name\":\"toolongname\"}";
 
-        var result = validation.validate(new JSONObject(input));
-        assertFalse(result);
-    }
+    var result = validation.validate(new JSONObject(input));
+    assertFalse(result);
+  }
 
-    @Test
-    public void testValidate_NoSchema() throws URISyntaxException, ResourceException, RegistryException {
-        doThrow(RegistryException.class).when(this.registry).get(anyString());
+  @Test
+  public void testValidate_NoSchema() throws URISyntaxException, ResourceException, RegistryException {
+    doThrow(RegistryException.class).when(this.registry).get(anyString());
 
-        var validation = new SchemaValidation(this.registry);
-        var input = "{\"domain\":\"unknown\",\"id\":\"toolongid\",\"name\":\"toolongname\"}";
+    var validation = new SchemaValidation(this.registry);
+    var input = "{\"domain\":\"unknown\",\"id\":\"toolongid\",\"name\":\"toolongname\"}";
 
-        var json = new JSONObject(input);
-        var ex = assertThrows(ApplicationRuntimeException.class, () -> validation.validate(json));
-        assertThat(ex.getCause(), instanceOf(RegistryException.class));
-    }
+    var json = new JSONObject(input);
+    var ex = assertThrows(ApplicationRuntimeException.class, () -> validation.validate(json));
+    assertThat(ex.getCause(), instanceOf(RegistryException.class));
+  }
 
-    public static File getResourceFile(String resourceName) throws URISyntaxException {
-        var resource = SchemaValidationTest.class.getClassLoader().getResource(resourceName);
-        return new File(resource.toURI());
-    }
+  public static File getResourceFile(String resourceName) throws URISyntaxException {
+    var resource = SchemaValidationTest.class.getClassLoader().getResource(resourceName);
+    return new File(resource.toURI());
+  }
 
 }

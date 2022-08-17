@@ -16,66 +16,66 @@ import org.json.JSONObject;
  */
 public class Resource {
 
-    private static final String RESOURCE_FAILURE_MESSAGE = "Cannot read resource file.";
+  private static final String RESOURCE_FAILURE_MESSAGE = "Cannot read resource file.";
 
-    protected String name;
+  protected String name;
 
-    protected String content;
+  protected String content;
 
-    protected Resource(File resourceFile) throws ResourceException {
-        this(resourceFile.getName(), getContent(resourceFile));
+  protected Resource(File resourceFile) throws ResourceException {
+    this(resourceFile.getName(), getContent(resourceFile));
+  }
+
+  public Resource(String name, String content) {
+    this.name = name;
+    this.content = content;
+  }
+
+  protected static String getContent(File resourceFile) throws ResourceException {
+    try {
+      return Files.readString(resourceFile.toPath());
+    } catch (IOException | RuntimeException ex) {
+      throw new ResourceException(RESOURCE_FAILURE_MESSAGE, ex);
+    }
+  }
+
+  public static List<File> getFiles(File directory) throws ResourceException {
+    if (!directory.isDirectory()) {
+      throw new ResourceException("Location is not a directory.", new IOException(directory.getAbsolutePath()));
     }
 
-    public Resource(String name, String content) {
-        this.name = name;
-        this.content = content;
+    var files = directory.listFiles();
+    if (files == null || files.length <= 0) {
+      throw new ResourceException("No file available in directory: " + directory.getName());
     }
 
-    protected static String getContent(File resourceFile) throws ResourceException {
-        try {
-            return Files.readString(resourceFile.toPath());
-        } catch (IOException | RuntimeException ex) {
-            throw new ResourceException(RESOURCE_FAILURE_MESSAGE, ex);
-        }
-    }
+    return List.of(files);
+  }
 
-    public static List<File> getFiles(File directory) throws ResourceException {
-        if (!directory.isDirectory()) {
-            throw new ResourceException("Location is not a directory.", new IOException(directory.getAbsolutePath()));
-        }
+  public String getName() {
+    return this.name;
+  }
 
-        var files = directory.listFiles();
-        if (files == null || files.length <= 0) {
-            throw new ResourceException("No file available in directory: " + directory.getName());
-        }
+  public String getContent() {
+    return this.content;
+  }
 
-        return List.of(files);
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getContent() {
-        return this.content;
-    }
-
-    /**
-     * Create JSON representation for this resource as message.
-     * 
-     * @return resource JSON representation.
-     */
-    public JSONObject getMessage() {
-        // @formatter:off
+  /**
+   * Create JSON representation for this resource as message.
+   * 
+   * @return resource JSON representation.
+   */
+  public JSONObject getMessage() {
+    // @formatter:off
         return new JSONObject()
                 .put("domain", "resource")
                 .put("name", getName())
                 .put("content", getContent());
         // @formatter:on
-    }
+  }
 
-    @Override
-    public String toString() {
-        return getMessage().toString();
-    }
+  @Override
+  public String toString() {
+    return getMessage().toString();
+  }
 }

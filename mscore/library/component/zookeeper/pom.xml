@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.devit.mscore</groupId>
-        <artifactId>component</artifactId>
-        <version>${revision}</version>
-        <relativePath>..</relativePath>
-    </parent>
+  <parent>
+    <groupId>com.devit.mscore</groupId>
+    <artifactId>component</artifactId>
+    <version>${revision}</version>
+    <relativePath>..</relativePath>
+  </parent>
 
-    <artifactId>zookeeper</artifactId>
-    <packaging>jar</packaging>
-    <name>MS Core :: Configuration :: Zookeeper</name>
+  <artifactId>zookeeper</artifactId>
+  <packaging>jar</packaging>
+  <name>MS Core :: Configuration :: Zookeeper</name>
 
-    <properties>
-        <revision>1.0-SNAPSHOT</revision>
-        <curator.version>5.2.0</curator.version>
-    </properties>
+  <properties>
+    <revision>1.0-SNAPSHOT</revision>
+    <curator.version>5.2.0</curator.version>
+  </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-framework</artifactId>
-            <version>${curator.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-test</artifactId>
-            <version>${curator.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>com.devit.mscore</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.curator</groupId>
+      <artifactId>curator-framework</artifactId>
+      <version>${curator.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.curator</groupId>
+      <artifactId>curator-test</artifactId>
+      <version>${curator.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

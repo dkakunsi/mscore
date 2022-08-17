@@ -9,17 +9,17 @@ import org.json.JSONObject;
  */
 public interface WorkflowObject {
 
-    String ACTIVATED = "Active";
+  String ACTIVATED = "Active";
 
-    String COMPLETED = "Complete";
+  String COMPLETED = "Complete";
 
-    String getId();
+  String getId();
 
-    String getName();
+  String getName();
 
-    void complete();
+  void complete();
 
-    default JSONObject toJson() {
-        return new JSONObject();
-    }
+  default JSONObject toJson() {
+    return new JSONObject();
+  }
 }

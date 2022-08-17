@@ -11,38 +11,39 @@ import org.json.JSONObject;
  */
 public abstract class Listener implements Starter {
 
-    protected Subscriber subscriber;
+  protected Subscriber subscriber;
 
-    protected Listener(Subscriber subscriber) {
-        this.subscriber = subscriber;
+  protected Listener(Subscriber subscriber) {
+    this.subscriber = subscriber;
+  }
+
+  /**
+   * Consume the message.
+   * 
+   * @param message to synchronize.
+   */
+  protected abstract void consume(JSONObject message);
+
+  /**
+   * Listen for incoming synchronization message.
+   * 
+   * @throws ApplicationException
+   */
+  public void listen(String... topics) throws ApplicationException {
+    for (var topic : topics) {
+      this.subscriber.subscribe(topic, this::consume);
     }
 
-    /**
-     * Consume the message.
-     * 
-     * @param message to synchronize.
-     */
-    protected abstract void consume(JSONObject message);
+    start();
+  }
 
-    /**
-     * Listen for incoming synchronization message.
-     * @throws ApplicationException
-     */
-    public void listen(String... topics) throws ApplicationException {
-        for (var topic : topics) {
-            this.subscriber.subscribe(topic, this::consume);
-        }
+  @Override
+  public void start() throws ApplicationException {
+    this.subscriber.start();
+  }
 
-        start();
-    }
-
-    @Override
-    public void start() throws ApplicationException {
-        this.subscriber.start();
-    }
-
-    @Override
-    public void stop() {
-        this.subscriber.stop();
-    }
+  @Override
+  public void stop() {
+    this.subscriber.stop();
+  }
 }

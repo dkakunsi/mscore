@@ -23,147 +23,147 @@ import io.javalin.http.Handler;
  */
 public class JavalinController {
 
-    private static final Logger LOG = ApplicationLogger.getLogger(JavalinController.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(JavalinController.class);
 
-    protected static final String CONTENT_TYPE = "application/json";
+  protected static final String CONTENT_TYPE = "application/json";
 
-    protected static final int SUCCESS = 200;
+  protected static final int SUCCESS = 200;
 
-    protected Service service;
+  protected Service service;
 
-    protected Synchronizer synchronizer;
+  protected Synchronizer synchronizer;
 
-    public JavalinController(Service service) {
-        this(service, service instanceof Synchronizer ? (Synchronizer) service : null);
-    }
+  public JavalinController(Service service) {
+    this(service, service instanceof Synchronizer ? (Synchronizer) service : null);
+  }
 
-    protected JavalinController(Service service, Synchronizer synchronizer) {
-        this.service = service;
-        this.synchronizer = synchronizer;
-    }
+  protected JavalinController(Service service, Synchronizer synchronizer) {
+    this.service = service;
+    this.synchronizer = synchronizer;
+  }
 
-    public String getDomain() {
-        return this.service.getDomain();
-    }
+  public String getDomain() {
+    return this.service.getDomain();
+  }
 
-    public Handler post() {
-        return ctx -> {
-            LOG.debug("Posting data.");
-            var payload = ctx.body();
-            var id = this.service.save(new JSONObject(payload));
-            var data = new JSONObject();
-            data.put(ID, id);
+  public Handler post() {
+    return ctx -> {
+      LOG.debug("Posting data.");
+      var payload = ctx.body();
+      var id = this.service.save(new JSONObject(payload));
+      var data = new JSONObject();
+      data.put(ID, id);
 
-            ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
-        };
-    }
+      ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
+    };
+  }
 
-    public Handler put() {
-        return ctx -> {
-            var key = ctx.pathParam(ID);
-            LOG.debug("Putting data: {}.", key);
+  public Handler put() {
+    return ctx -> {
+      var key = ctx.pathParam(ID);
+      LOG.debug("Putting data: {}.", key);
 
-            var payload = ctx.body();
-            var data = new JSONObject(payload);
-            data.put(ID, key);
+      var payload = ctx.body();
+      var data = new JSONObject(payload);
+      data.put(ID, key);
 
-            var id = this.service.save(data);
-            data = new JSONObject();
-            data.put(ID, id);
+      var id = this.service.save(data);
+      data = new JSONObject();
+      data.put(ID, id);
 
-            ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
-        };
-    }
+      ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
+    };
+  }
 
-    public Handler getOne() {
-        return ctx -> {
-            var key = ctx.pathParam(ID);
+  public Handler getOne() {
+    return ctx -> {
+      var key = ctx.pathParam(ID);
 
-            LOG.debug("Get data with id: {}.", key);
-            var data = this.service.find(key);
+      LOG.debug("Get data with id: {}.", key);
+      var data = this.service.find(key);
 
-            LOG.trace("Retrieved data for id: {}. {}", key, data);
-            ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
-        };
-    }
+      LOG.trace("Retrieved data for id: {}. {}", key, data);
+      ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
+    };
+  }
 
-    public Handler getOneByCode() {
-        return ctx -> {
-            var code = ctx.pathParam(CODE);
+  public Handler getOneByCode() {
+    return ctx -> {
+      var code = ctx.pathParam(CODE);
 
-            LOG.debug("Get data with code: {}.", code);
-            var data = this.service.findByCode(code);
+      LOG.debug("Get data with code: {}.", code);
+      var data = this.service.findByCode(code);
 
-            LOG.trace("Retrieved data for code: {}. {}", code, data);
-            ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
-        };
-    }
+      LOG.trace("Retrieved data for code: {}. {}", code, data);
+      ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
+    };
+  }
 
-    public Handler getMany() {
-        return ctx -> {
-            var listOfId = ctx.queryParam("ids");
-            if (listOfId == null) {
-                throw new ValidationException("List of IDs is not provided");
-            }
+  public Handler getMany() {
+    return ctx -> {
+      var listOfId = ctx.queryParam("ids");
+      if (listOfId == null) {
+        throw new ValidationException("List of IDs is not provided");
+      }
 
-            LOG.debug("Get data with keys: {}.", listOfId);
-            var keys = Arrays.asList(listOfId.split(","));
-            var data = this.service.find(keys);
+      LOG.debug("Get data with keys: {}.", listOfId);
+      var keys = Arrays.asList(listOfId.split(","));
+      var data = this.service.find(keys);
 
-            LOG.trace("Retrieved data for id: {}. {}", listOfId, data);
-            ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
-        };
-    }
+      LOG.trace("Retrieved data for id: {}. {}", listOfId, data);
+      ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
+    };
+  }
 
-    public Handler all() {
-        return ctx -> {
-            var data = this.service.all();
+  public Handler all() {
+    return ctx -> {
+      var data = this.service.all();
 
-            LOG.debug("Retrieved all data. {}", data);
-            ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
-        };
-    }
+      LOG.debug("Retrieved all data. {}", data);
+      ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
+    };
+  }
 
-    public Handler delete() {
-        return ctx -> {
-            throw new ImplementationException("Delete is not supported.");
-        };
-    }
+  public Handler delete() {
+    return ctx -> {
+      throw new ImplementationException("Delete is not supported.");
+    };
+  }
 
-    public Handler search() {
-        return ctx -> {
-            var criteria = ctx.body();
-            var result = this.service.search(new JSONObject(criteria));
+  public Handler search() {
+    return ctx -> {
+      var criteria = ctx.body();
+      var result = this.service.search(new JSONObject(criteria));
 
-            ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(result.toString());
-        };
-    }
+      ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(result.toString());
+    };
+  }
 
-    public Handler syncById() {
-        return ctx -> {
-            var key = ctx.pathParam(ID);
+  public Handler syncById() {
+    return ctx -> {
+      var key = ctx.pathParam(ID);
 
-            LOG.debug("Sync data with id: {}.", key);
-            this.synchronizer.synchronize(key);
+      LOG.debug("Sync data with id: {}.", key);
+      this.synchronizer.synchronize(key);
 
-            var data = getSyncMessage();
-            ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
-        };
-    }
+      var data = getSyncMessage();
+      ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
+    };
+  }
 
-    public Handler syncAll() {
-        return ctx -> {
-            LOG.debug("Sync all.");
+  public Handler syncAll() {
+    return ctx -> {
+      LOG.debug("Sync all.");
 
-            this.synchronizer.synchronize();
-            var data = getSyncMessage();
-            ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
-        };
-    }
+      this.synchronizer.synchronize();
+      var data = getSyncMessage();
+      ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
+    };
+  }
 
-    private JSONObject getSyncMessage() {
-        var jsonResponse = new JSONObject();
-        jsonResponse.put("message", "Synchronization process is in progress.");
-        return jsonResponse;
-    }
+  private JSONObject getSyncMessage() {
+    var jsonResponse = new JSONObject();
+    jsonResponse.put("message", "Synchronization process is in progress.");
+    return jsonResponse;
+  }
 }

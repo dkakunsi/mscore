@@ -30,85 +30,85 @@ import org.junit.Test;
 
 public class ZookeeperRegistryTest {
 
-    private static TestingServer zookeeperServer;
+  private static TestingServer zookeeperServer;
 
-    private static ZookeeperRegistry registry;
+  private static ZookeeperRegistry registry;
 
-    @BeforeClass
-    public static void startServer() throws Exception {
-        zookeeperServer = new TestingServer(4000);
-        zookeeperServer.start();
+  @BeforeClass
+  public static void startServer() throws Exception {
+    zookeeperServer = new TestingServer(4000);
+    zookeeperServer.start();
 
-        var sleepMsBetweenRetries = 100;
-        var maxRetries = 3;
-        var retryPolicy = new RetryNTimes(maxRetries, sleepMsBetweenRetries);
+    var sleepMsBetweenRetries = 100;
+    var maxRetries = 3;
+    var retryPolicy = new RetryNTimes(maxRetries, sleepMsBetweenRetries);
 
-        var client = CuratorFrameworkFactory.newClient("127.0.0.1:4000", retryPolicy);
+    var client = CuratorFrameworkFactory.newClient("127.0.0.1:4000", retryPolicy);
 
-        registry = new ZookeeperRegistry("curator", client);
-        registry.open();
-    }
+    registry = new ZookeeperRegistry("curator", client);
+    registry.open();
+  }
 
-    @AfterClass
-    public static void stopServer() throws IOException {
-        registry.close();
-        zookeeperServer.stop();
-    }
+  @AfterClass
+  public static void stopServer() throws IOException {
+    registry.close();
+    zookeeperServer.stop();
+  }
 
-    @Test
-    public void test_Found() throws RegistryException {
-        var key = "/service/domain/address";
-        registry.add(key, "domain-address");
-        var value = registry.get(key);
+  @Test
+  public void test_Found() throws RegistryException {
+    var key = "/service/domain/address";
+    registry.add(key, "domain-address");
+    var value = registry.get(key);
 
-        assertThat(value, is("domain-address"));
-    }
+    assertThat(value, is("domain-address"));
+  }
 
-    @Test
-    public void test_NotFound() throws RegistryException {
-        var value = registry.get("/notexists");
-        assertNull(value);
-    }
+  @Test
+  public void test_NotFound() throws RegistryException {
+    var value = registry.get("/notexists");
+    assertNull(value);
+  }
 
-    @Test
-    public void testAdd_ThrowException() throws Exception {
-        var mockedExistsBuilder = mock(ExistsBuilder.class);
-        doReturn(new Stat()).when(mockedExistsBuilder).forPath(anyString());
-        var mockedGetDataBuilder = mock(GetDataBuilder.class);
-        doReturn(null).when(mockedGetDataBuilder).forPath(anyString());
-        var mockedGetChildrenBuilder = mock(GetChildrenBuilder.class);
-        doReturn(List.of()).when(mockedGetChildrenBuilder).forPath(anyString());
+  @Test
+  public void testAdd_ThrowException() throws Exception {
+    var mockedExistsBuilder = mock(ExistsBuilder.class);
+    doReturn(new Stat()).when(mockedExistsBuilder).forPath(anyString());
+    var mockedGetDataBuilder = mock(GetDataBuilder.class);
+    doReturn(null).when(mockedGetDataBuilder).forPath(anyString());
+    var mockedGetChildrenBuilder = mock(GetChildrenBuilder.class);
+    doReturn(List.of()).when(mockedGetChildrenBuilder).forPath(anyString());
 
-        var mockedClient = mock(CuratorFramework.class);
-        doReturn(mockedExistsBuilder).when(mockedClient).checkExists();
-        doReturn(mockedGetDataBuilder).when(mockedClient).getData();
-        doReturn(mockedGetChildrenBuilder).when(mockedClient).getChildren();
-        doReturn(CuratorFrameworkState.STARTED).when(mockedClient).getState();
-        doThrow(IllegalArgumentException.class).when(mockedClient).create();
-        
-        var localRegistry = new ZookeeperRegistry("name", mockedClient);
-        assertThrows(RegistryException.class, () -> localRegistry.add("key", "value"));
-    }
+    var mockedClient = mock(CuratorFramework.class);
+    doReturn(mockedExistsBuilder).when(mockedClient).checkExists();
+    doReturn(mockedGetDataBuilder).when(mockedClient).getData();
+    doReturn(mockedGetChildrenBuilder).when(mockedClient).getChildren();
+    doReturn(CuratorFrameworkState.STARTED).when(mockedClient).getState();
+    doThrow(IllegalArgumentException.class).when(mockedClient).create();
 
-    @Test
-    public void dummyTest() throws RegistryException {
-        var name = registry.getName();
-        registry.all();
-        assertThat(name, is("curator"));
+    var localRegistry = new ZookeeperRegistry("name", mockedClient);
+    assertThrows(RegistryException.class, () -> localRegistry.add("key", "value"));
+  }
 
-        var values = registry.values();
-        assertNotNull(values);
+  @Test
+  public void dummyTest() throws RegistryException {
+    var name = registry.getName();
+    registry.all();
+    assertThat(name, is("curator"));
 
-        var keys = registry.keys();
-        assertNotNull(keys);
-    }
+    var values = registry.values();
+    assertNotNull(values);
 
-    @Test
-    public void testGetCacheKey() {
-        var key = "/services/data/config.name";
-        var expectedCacheKey = "services.data.config.name";
+    var keys = registry.keys();
+    assertNotNull(keys);
+  }
 
-        var cacheKey = ZookeeperRegistry.getCacheKey(key);
-        assertThat(cacheKey, is(expectedCacheKey));
-    }
+  @Test
+  public void testGetCacheKey() {
+    var key = "/services/data/config.name";
+    var expectedCacheKey = "services.data.config.name";
+
+    var cacheKey = ZookeeperRegistry.getCacheKey(key);
+    assertThat(cacheKey, is(expectedCacheKey));
+  }
 }

@@ -20,55 +20,55 @@ import com.devit.mscore.registry.ZookeeperRegistryFactory;
 
 public class ApplicationStarter implements Starter {
 
-    private static final Logger LOGGER = ApplicationLogger.getLogger(ApplicationStarter.class);
+  private static final Logger LOGGER = ApplicationLogger.getLogger(ApplicationStarter.class);
 
-    private static final String TOPICS_KEY = "services.%s.topics";
+  private static final String TOPICS_KEY = "services.%s.topics";
 
-    private Configuration configuration;
+  private Configuration configuration;
 
-    private KafkaMessagingFactory messagingFactory;
+  private KafkaMessagingFactory messagingFactory;
 
-    private GitHistoryFactory historyFactory;
+  private GitHistoryFactory historyFactory;
 
-    public ApplicationStarter(String[] args) throws ConfigException {
-        this(FileConfigurationUtils.load(args));
+  public ApplicationStarter(String[] args) throws ConfigException {
+    this(FileConfigurationUtils.load(args));
+  }
+
+  public ApplicationStarter(FileConfiguration fileConfiguration) throws ConfigException {
+    try {
+      var registryFactory = ZookeeperRegistryFactory.of(fileConfiguration);
+      var zookeeperRegistry = registryFactory.registry("platformConfig");
+      zookeeperRegistry.open();
+      this.configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
+
+      this.messagingFactory = KafkaMessagingFactory.of(this.configuration);
+      this.historyFactory = GitHistoryFactory.of(this.configuration);
+    } catch (RegistryException ex) {
+      throw new ConfigException(ex);
     }
+  }
 
-    public ApplicationStarter(FileConfiguration fileConfiguration) throws ConfigException {
-        try {
-            var registryFactory = ZookeeperRegistryFactory.of(fileConfiguration);
-            var zookeeperRegistry = registryFactory.registry("platformConfig");
-            zookeeperRegistry.open();
-            this.configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
+  private List<String> getTopicsToListen() throws ConfigException {
+    var topicConfigName = String.format(TOPICS_KEY, this.configuration.getServiceName());
+    var topics = configuration.getConfig(topicConfigName)
+        .orElseThrow(() -> new ConfigException("No topic provided."));
+    return Stream.of(topics.split(",")).collect(Collectors.toList());
+  }
 
-            this.messagingFactory = KafkaMessagingFactory.of(this.configuration);
-            this.historyFactory = GitHistoryFactory.of(this.configuration);
-        } catch (RegistryException ex) {
-            throw new ConfigException(ex);
-        }
+  @Override
+  public void start() throws ApplicationException {
+    var topics = getTopicsToListen();
+    if (!topics.isEmpty()) {
+      EventListener.of(messagingFactory.subscriber())
+          .with(historyFactory.historyManager())
+          .listen(topics.toArray(new String[0]));
+    } else {
+      LOGGER.warn("No topics to listen to");
     }
+  }
 
-    private List<String> getTopicsToListen() throws ConfigException {
-        var topicConfigName = String.format(TOPICS_KEY, this.configuration.getServiceName());
-        var topics = configuration.getConfig(topicConfigName)
-                .orElseThrow(() -> new ConfigException("No topic provided."));
-        return Stream.of(topics.split(",")).collect(Collectors.toList());
-    }
-
-    @Override
-    public void start() throws ApplicationException {
-        var topics = getTopicsToListen();
-        if (!topics.isEmpty()) {
-            EventListener.of(messagingFactory.subscriber())
-                    .with(historyFactory.historyManager())
-                    .listen(topics.toArray(new String[0]));
-        } else {
-            LOGGER.warn("No topics to listen to");
-        }
-    }
-
-    @Override
-    public void stop() {
-        System.exit(0);
-    }
+  @Override
+  public void stop() {
+    System.exit(0);
+  }
 }

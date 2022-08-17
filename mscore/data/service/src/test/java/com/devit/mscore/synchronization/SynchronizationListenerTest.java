@@ -13,16 +13,16 @@ import org.junit.Test;
 
 public class SynchronizationListenerTest {
 
-    @Test
-    public void test() throws SynchronizationException {
-        var synchronizer = mock(Synchronizer.class);
-        var syncExecutor = new SynchronizationsExecutor();
-        var spiedSynchronization = spy(new DefaultSynchronization(synchronizer, "referenceDomain", "referenceAttribute"));
-        syncExecutor.add(spiedSynchronization);
+  @Test
+  public void test() throws SynchronizationException {
+    var synchronizer = mock(Synchronizer.class);
+    var syncExecutor = new SynchronizationsExecutor();
+    var spiedSynchronization = spy(new DefaultSynchronization(synchronizer, "referenceDomain", "referenceAttribute"));
+    syncExecutor.add(spiedSynchronization);
 
-        var listener = new SynchronizationListener(null, syncExecutor);
-        listener.consume(new JSONObject("{\"domain\":\"referenceDomain\",\"id\":\"id\"}"));
+    var listener = new SynchronizationListener(null, syncExecutor);
+    listener.consume(new JSONObject("{\"domain\":\"referenceDomain\",\"id\":\"id\"}"));
 
-        verify(spiedSynchronization, times(1)).synchronize("id");
-    }
+    verify(spiedSynchronization, times(1)).synchronize("id");
+  }
 }

@@ -22,49 +22,50 @@ import org.json.JSONObject;
 
 public class KafkaPublisher implements Publisher {
 
-    private static final Logger LOG = new ApplicationLogger(KafkaPublisher.class);
+  private static final Logger LOG = new ApplicationLogger(KafkaPublisher.class);
 
-    protected Producer<String, String> producer;
+  protected Producer<String, String> producer;
 
-    protected String topic;
+  protected String topic;
 
-    KafkaPublisher(String topic, Producer<String, String> producer) {
-        this.producer = producer;
-        this.topic = topic;
+  KafkaPublisher(String topic, Producer<String, String> producer) {
+    this.producer = producer;
+    this.topic = topic;
+  }
+
+  @Override
+  public String getChannel() {
+    return this.topic;
+  }
+
+  @Override
+  public void publish(JSONObject json) {
+
+    if (StringUtils.isEmpty(this.topic)) {
+      LOG.warn("Cannot publish message. Topic is not provided.");
+      return;
+    }
+    if (json == null || json.isEmpty()) {
+      LOG.warn("Cannot publish an empty message.");
+      return;
     }
 
-    @Override
-    public String getChannel() {
-        return this.topic;
-    }
-
-    @Override
-    public void publish(JSONObject json) {
-
-        if (StringUtils.isEmpty(this.topic)) {
-            LOG.warn("Cannot publish message. Topic is not provided.");
-            return;
-        }
-        if (json == null || json.isEmpty()) {
-            LOG.warn("Cannot publish an empty message.");
-            return;
-        }
-
-        // @formatter:off
+    // @formatter:off
         var headers = buildHeader();
         LOG.debug("Publishing message to topic {}. Headers: {}. Message: {}", this.topic, headers, json);
         var producerRecord = new ProducerRecord<String, String>(this.topic, null, getId(json), json.toString(), headers);
         this.producer.send(producerRecord);
         // @formatter:on
-    }
+  }
 
-    private static List<Header> buildHeader() {
-        var context = getContext();
-        List<Header> headers = new ArrayList<>();
-        headers.add(new RecordHeader(BREADCRUMB_ID, context.getBreadcrumbId().getBytes()));
-        context.getPrincipal().ifPresent(principal -> headers.add(new RecordHeader(PRINCIPAL, principal.toString().getBytes())));
-        context.getAction().ifPresent(action -> headers.add(new RecordHeader(ACTION, action.getBytes())));
+  private static List<Header> buildHeader() {
+    var context = getContext();
+    List<Header> headers = new ArrayList<>();
+    headers.add(new RecordHeader(BREADCRUMB_ID, context.getBreadcrumbId().getBytes()));
+    context.getPrincipal()
+        .ifPresent(principal -> headers.add(new RecordHeader(PRINCIPAL, principal.toString().getBytes())));
+    context.getAction().ifPresent(action -> headers.add(new RecordHeader(ACTION, action.getBytes())));
 
-        return headers;
-    }
+    return headers;
+  }
 }

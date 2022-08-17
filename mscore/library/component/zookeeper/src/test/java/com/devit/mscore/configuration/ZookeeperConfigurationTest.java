@@ -22,62 +22,62 @@ import org.mockito.ArgumentCaptor;
 
 public class ZookeeperConfigurationTest {
 
-    private Registry registry;
+  private Registry registry;
 
-    @Before
-    public void setup() {
-        this.registry = mock(Registry.class);
-    }
+  @Before
+  public void setup() {
+    this.registry = mock(Registry.class);
+  }
 
-    @Test
-    public void testGetConfig() throws RegistryException, ConfigException {
-        doReturn("value").when(this.registry).get(anyString());
+  @Test
+  public void testGetConfig() throws RegistryException, ConfigException {
+    doReturn("value").when(this.registry).get(anyString());
 
-        var configuration = new ZookeeperConfiguration(this.registry, "test");
-        var configValue = configuration.getConfig("type", "service", "key");
-        assertThat(configValue.get(), is("value"));
+    var configuration = new ZookeeperConfiguration(this.registry, "test");
+    var configValue = configuration.getConfig("type", "service", "key");
+    assertThat(configValue.get(), is("value"));
 
-        var pathCaptor = ArgumentCaptor.forClass(String.class);
-        verify(this.registry).get(pathCaptor.capture());
+    var pathCaptor = ArgumentCaptor.forClass(String.class);
+    verify(this.registry).get(pathCaptor.capture());
 
-        assertThat(pathCaptor.getValue(), is("/type/service/key"));
-    }
+    assertThat(pathCaptor.getValue(), is("/type/service/key"));
+  }
 
-    @Test
-    public void testGetConfig_Fail() throws RegistryException, ConfigException {
-        doThrow(RegistryException.class).when(this.registry).get(anyString());
+  @Test
+  public void testGetConfig_Fail() throws RegistryException, ConfigException {
+    doThrow(RegistryException.class).when(this.registry).get(anyString());
 
-        var configuration = new ZookeeperConfiguration(this.registry, "test");
-        var ex = assertThrows(ConfigException.class, () -> configuration.getConfig("type", "service", "key"));
-        var actualEx = ex.getCause();
-        assertThat(actualEx, instanceOf(RegistryException.class));
-    }
+    var configuration = new ZookeeperConfiguration(this.registry, "test");
+    var ex = assertThrows(ConfigException.class, () -> configuration.getConfig("type", "service", "key"));
+    var actualEx = ex.getCause();
+    assertThat(actualEx, instanceOf(RegistryException.class));
+  }
 
-    @Test
-    public void testGetAll() throws ConfigException, RegistryException {
-        doReturn(Map.of("key", "value")).when(this.registry).all();
+  @Test
+  public void testGetAll() throws ConfigException, RegistryException {
+    doReturn(Map.of("key", "value")).when(this.registry).all();
 
-        var configuration = new ZookeeperConfiguration(this.registry, "test");
-        var configs = configuration.getConfigs();
+    var configuration = new ZookeeperConfiguration(this.registry, "test");
+    var configs = configuration.getConfigs();
 
-        assertThat(configs.size(), is(1));
-        assertThat(configs.get("key"), is("value"));
-    }
+    assertThat(configs.size(), is(1));
+    assertThat(configs.get("key"), is("value"));
+  }
 
-    @Test
-    public void testInit_Fail() throws RegistryException {
-        doThrow(RegistryException.class).when(this.registry).all();
+  @Test
+  public void testInit_Fail() throws RegistryException {
+    doThrow(RegistryException.class).when(this.registry).all();
 
-        var ex = assertThrows(ConfigException.class, () -> new ZookeeperConfiguration(this.registry, "test"));
-        var actualEx = ex.getCause();
-        assertThat(actualEx, instanceOf(RegistryException.class));
-    }
+    var ex = assertThrows(ConfigException.class, () -> new ZookeeperConfiguration(this.registry, "test"));
+    var actualEx = ex.getCause();
+    assertThat(actualEx, instanceOf(RegistryException.class));
+  }
 
-    @Test
-    public void testGetConfig_NullValue_ShouldReturnEmpty() throws ConfigException, RegistryException {
-        doReturn(null).when(this.registry).get(anyString());
-        var configuration = new ZookeeperConfiguration(this.registry, "test");
-        var optionalValue = configuration.getConfig("key");
-        assertThat(optionalValue.isEmpty(), is(true));
-    }
+  @Test
+  public void testGetConfig_NullValue_ShouldReturnEmpty() throws ConfigException, RegistryException {
+    doReturn(null).when(this.registry).get(anyString());
+    var configuration = new ZookeeperConfiguration(this.registry, "test");
+    var optionalValue = configuration.getConfig("key");
+    assertThat(optionalValue.isEmpty(), is(true));
+  }
 }

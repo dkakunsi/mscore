@@ -7,38 +7,38 @@ import com.devit.mscore.Publisher;
 
 public class DelegateUtils {
 
-    public static final String NOTIFICATION = "notification";
+  public static final String NOTIFICATION = "notification";
 
-    private static Configuration systemConfig;
+  private static Configuration systemConfig;
 
-    private static DataClient dataClient;
+  private static DataClient dataClient;
 
-    private static Map<String, Publisher> publisherMap;
+  private static Map<String, Publisher> publisherMap;
 
-    static Configuration getConfiguration() {
-        return systemConfig;
-    }
+  static Configuration getConfiguration() {
+    return systemConfig;
+  }
 
-    private DelegateUtils() {
-    }
+  private DelegateUtils() {
+  }
 
-    public static void setConfiguration(Configuration configuration) {
-        systemConfig = configuration;
-    }
+  public static void setConfiguration(Configuration configuration) {
+    systemConfig = configuration;
+  }
 
-    static Publisher getPublisher(String target) {
-        return publisherMap.get(target);
-    }
+  static Publisher getPublisher(String target) {
+    return publisherMap.get(target);
+  }
 
-    public static void setPublishers(Map<String, Publisher> publishers) {
-        publisherMap = publishers;
-    }
+  public static void setPublishers(Map<String, Publisher> publishers) {
+    publisherMap = publishers;
+  }
 
-    static DataClient getDataClient() {
-        return dataClient;
-    }
+  static DataClient getDataClient() {
+    return dataClient;
+  }
 
-    public static void setDataClient(DataClient newDataClient) {
-        dataClient = newDataClient;
-    }
+  public static void setDataClient(DataClient newDataClient) {
+    dataClient = newDataClient;
+  }
 }

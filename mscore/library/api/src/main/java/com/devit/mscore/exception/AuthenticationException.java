@@ -5,17 +5,17 @@ package com.devit.mscore.exception;
  */
 public class AuthenticationException extends ApplicationException {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    public AuthenticationException(String message) {
-        super(message);
-    }
+  public AuthenticationException(String message) {
+    super(message);
+  }
 
-    public AuthenticationException(Throwable cause) {
-        super(cause);
-    }
+  public AuthenticationException(Throwable cause) {
+    super(cause);
+  }
 
-    public AuthenticationException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public AuthenticationException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

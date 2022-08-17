@@ -11,34 +11,34 @@ import org.json.JSONObject;
 
 public class ElasticsearchIndex extends Index {
 
-    private JSONObject mapping;
+  private JSONObject mapping;
 
-    private ElasticsearchService service;
+  private ElasticsearchService service;
 
-    ElasticsearchIndex(String indexName, ElasticsearchService service, JSONObject mapping) {
-        super(indexName);
-        this.service = service;
-        this.mapping = mapping;
-    }
+  ElasticsearchIndex(String indexName, ElasticsearchService service, JSONObject mapping) {
+    super(indexName);
+    this.service = service;
+    this.mapping = mapping;
+  }
 
-    @Override
-    public String index(JSONObject json) throws IndexingException {
-        return this.service.index(this.indexName, json);
-    }
+  @Override
+  public String index(JSONObject json) throws IndexingException {
+    return this.service.index(this.indexName, json);
+  }
 
-    @Override
-    public Optional<JSONArray> search(JSONObject criteria) throws IndexingException {
-        return this.service.search(this.indexName, criteria);
-    }
+  @Override
+  public Optional<JSONArray> search(JSONObject criteria) throws IndexingException {
+    return this.service.search(this.indexName, criteria);
+  }
 
-    @Override
-    public Optional<JSONObject> get(String id) throws IndexingException {
-        return this.service.get(this.indexName, id);
-    }
+  @Override
+  public Optional<JSONObject> get(String id) throws IndexingException {
+    return this.service.get(this.indexName, id);
+  }
 
-    public Index build() throws JSONException {
-        var content = this.mapping.getString("content");
-        this.service.buildIndex(this.indexName, content);
-        return this;
-    }
+  public Index build() throws JSONException {
+    var content = this.mapping.getString("content");
+    this.service.buildIndex(this.indexName, content);
+    return this;
+  }
 }

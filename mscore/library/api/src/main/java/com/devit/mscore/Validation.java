@@ -11,21 +11,21 @@ import org.json.JSONObject;
  */
 public interface Validation {
 
-    /**
-     * 
-     * @return domain this validation applies to.
-     */
-    default String getDomain() {
-        return ALL;
-    }
+  /**
+   * 
+   * @return domain this validation applies to.
+   */
+  default String getDomain() {
+    return ALL;
+  }
 
-    /**
-     * <p>
-     * Validate json object.
-     * </p>
-     * 
-     * @param object  to validate.
-     * @return true when object is valid, else otherwise.
-     */
-    boolean validate(JSONObject json);
+  /**
+   * <p>
+   * Validate json object.
+   * </p>
+   * 
+   * @param object to validate.
+   * @return true when object is valid, else otherwise.
+   */
+  boolean validate(JSONObject json);
 }

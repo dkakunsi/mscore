@@ -11,34 +11,34 @@ import org.json.JSONObject;
 
 public class EventListener extends Listener {
 
-    private static final Logger LOGGER = ApplicationLogger.getLogger(EventListener.class);
+  private static final Logger LOGGER = ApplicationLogger.getLogger(EventListener.class);
 
-    private History history;
+  private History history;
 
-    private EventListener(Subscriber subscriber) {
-        super(subscriber);
+  private EventListener(Subscriber subscriber) {
+    super(subscriber);
+  }
+
+  public static EventListener of(Subscriber subscriber) {
+    return new EventListener(subscriber);
+  }
+
+  public static EventListener of(Subscriber subscriber, History history) {
+    return new EventListener(subscriber).with(history);
+  }
+
+  public EventListener with(History history) {
+    this.history = history;
+    return this;
+  }
+
+  @Override
+  public void consume(JSONObject message) {
+    LOGGER.debug("Receive event message: {}", message);
+    try {
+      this.history.create(message);
+    } catch (HistoryException ex) {
+      LOGGER.error("Failed to create history", ex);
     }
-
-    public static EventListener of(Subscriber subscriber) {
-        return new EventListener(subscriber);
-    }
-
-    public static EventListener of(Subscriber subscriber, History history) {
-        return new EventListener(subscriber).with(history);
-    }
-
-    public EventListener with(History history) {
-        this.history = history;
-        return this;
-    }
-
-    @Override
-    public void consume(JSONObject message) {
-        LOGGER.debug("Receive event message: {}", message);
-        try {
-            this.history.create(message);
-        } catch (HistoryException ex) {
-            LOGGER.error("Failed to create history", ex);
-        }
-    }
+  }
 }

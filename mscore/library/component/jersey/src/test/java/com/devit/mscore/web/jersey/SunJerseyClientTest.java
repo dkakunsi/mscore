@@ -22,92 +22,92 @@ import org.junit.Test;
 
 public class SunJerseyClientTest {
 
-    private SunJerseyClient webClient;
+  private SunJerseyClient webClient;
 
-    private Client client;
+  private Client client;
 
-    private WebResource api;
+  private WebResource api;
 
-    private Builder builder;
+  private Builder builder;
 
-    @Before
-    public void setup() {
-        this.builder = mock(Builder.class);
-        this.api = mock(WebResource.class);
-        doReturn(this.builder).when(this.api).accept(anyString());
+  @Before
+  public void setup() {
+    this.builder = mock(Builder.class);
+    this.api = mock(WebResource.class);
+    doReturn(this.builder).when(this.api).accept(anyString());
 
-        this.client = mock(Client.class);
-        doReturn(this.api).when(this.client).resource(anyString());
+    this.client = mock(Client.class);
+    doReturn(this.api).when(this.client).resource(anyString());
 
-        this.webClient = new SunJerseyClient(this.client);
-    }
+    this.webClient = new SunJerseyClient(this.client);
+  }
 
-    @Test
-    public void testDelete() {
-        var response = mock(ClientResponse.class);
-        doReturn(true).when(response).hasEntity();
-        doReturn("deleted").when(response).getEntity(String.class);
-        doReturn(200).when(response).getStatus();
-        doReturn(response).when(this.builder).delete(ClientResponse.class);
+  @Test
+  public void testDelete() {
+    var response = mock(ClientResponse.class);
+    doReturn(true).when(response).hasEntity();
+    doReturn("deleted").when(response).getEntity(String.class);
+    doReturn(200).when(response).getStatus();
+    doReturn(response).when(this.builder).delete(ClientResponse.class);
 
-        var result = this.webClient.delete("uri");
+    var result = this.webClient.delete("uri");
 
-        assertNotNull(result);
-        assertThat(result.length(), is(2));
-        assertThat(result.getInt("code"), is(200));
-        assertThat(result.getString("payload"), is("deleted"));
-    }
+    assertNotNull(result);
+    assertThat(result.length(), is(2));
+    assertThat(result.getInt("code"), is(200));
+    assertThat(result.getString("payload"), is("deleted"));
+  }
 
-    @Test
-    public void testGet() {
-        var response = mock(ClientResponse.class);
-        doReturn(false).when(response).hasEntity();
-        doReturn(404).when(response).getStatus();
-        doReturn(response).when(this.builder).get(ClientResponse.class);
+  @Test
+  public void testGet() {
+    var response = mock(ClientResponse.class);
+    doReturn(false).when(response).hasEntity();
+    doReturn(404).when(response).getStatus();
+    doReturn(response).when(this.builder).get(ClientResponse.class);
 
-        var result = this.webClient.get("uri", Map.of("Authorization", "auth"));
+    var result = this.webClient.get("uri", Map.of("Authorization", "auth"));
 
-        assertNotNull(result);
-        assertThat(result.length(), is(2));
-        assertThat(result.getInt("code"), is(404));
-        assertThat(result.getString("payload"), is("Cannot connect to uri"));
-    }
+    assertNotNull(result);
+    assertThat(result.length(), is(2));
+    assertThat(result.getInt("code"), is(404));
+    assertThat(result.getString("payload"), is("Cannot connect to uri"));
+  }
 
-    @Test
-    public void testPost() {
-        var response = mock(ClientResponse.class);
-        doReturn(true).when(response).hasEntity();
-        doReturn("{\"message\":\"Internal Server Error\"}").when(response).getEntity(String.class);
-        doReturn(500).when(response).getStatus();
-        doReturn(response).when(this.builder).post(ClientResponse.class, "{\"id\":\"id\"}");
+  @Test
+  public void testPost() {
+    var response = mock(ClientResponse.class);
+    doReturn(true).when(response).hasEntity();
+    doReturn("{\"message\":\"Internal Server Error\"}").when(response).getEntity(String.class);
+    doReturn(500).when(response).getStatus();
+    doReturn(response).when(this.builder).post(ClientResponse.class, "{\"id\":\"id\"}");
 
-        var result = this.webClient.post("uri", Optional.of(new JSONObject("{\"id\":\"id\"}")));
+    var result = this.webClient.post("uri", Optional.of(new JSONObject("{\"id\":\"id\"}")));
 
-        assertNotNull(result);
-        assertThat(result.length(), is(2));
-        assertThat(result.getInt("code"), is(500));
-        assertThat(result.getJSONObject("payload").getString("message"), is("Internal Server Error"));
-    }
+    assertNotNull(result);
+    assertThat(result.length(), is(2));
+    assertThat(result.getInt("code"), is(500));
+    assertThat(result.getJSONObject("payload").getString("message"), is("Internal Server Error"));
+  }
 
-    @Test
-    public void testPut() {
-        var response = mock(ClientResponse.class);
-        doReturn(true).when(response).hasEntity();
-        doReturn("{\"message\":\"Invalid Message\"}").when(response).getEntity(String.class);
-        doReturn(400).when(response).getStatus();
-        doReturn(response).when(this.builder).put(ClientResponse.class, "{\"id\":\"id\"}");
+  @Test
+  public void testPut() {
+    var response = mock(ClientResponse.class);
+    doReturn(true).when(response).hasEntity();
+    doReturn("{\"message\":\"Invalid Message\"}").when(response).getEntity(String.class);
+    doReturn(400).when(response).getStatus();
+    doReturn(response).when(this.builder).put(ClientResponse.class, "{\"id\":\"id\"}");
 
-        var result = this.webClient.put("uri", Optional.of(new JSONObject("{\"id\":\"id\"}")));
+    var result = this.webClient.put("uri", Optional.of(new JSONObject("{\"id\":\"id\"}")));
 
-        assertNotNull(result);
-        assertThat(result.length(), is(2));
-        assertThat(result.getInt("code"), is(400));
-        assertThat(result.getJSONObject("payload").getString("message"), is("Invalid Message"));
-    }
+    assertNotNull(result);
+    assertThat(result.length(), is(2));
+    assertThat(result.getInt("code"), is(400));
+    assertThat(result.getJSONObject("payload").getString("message"), is("Invalid Message"));
+  }
 
-    @Test
-    public void testClone() {
-        var clone = this.webClient.createNew();
-        assertNotEquals(clone, this.webClient);
-    }
+  @Test
+  public void testClone() {
+    var clone = this.webClient.createNew();
+    assertNotEquals(clone, this.webClient);
+  }
 }

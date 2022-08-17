@@ -15,31 +15,31 @@ import org.junit.Test;
 
 public class ExecutorTest {
 
-    @Test
-    public void testExecute_Array() {
-        var executor = new ExecutorImpl();
-        var spiedExecutor = spy(executor);
+  @Test
+  public void testExecute_Array() {
+    var executor = new ExecutorImpl();
+    var spiedExecutor = spy(executor);
 
-        var jsons = new JSONArray();
-        jsons.put(new JSONObject());
-        jsons.put(new JSONObject());
-        jsons.put(new JSONObject());
-        assertThat(jsons.length(), is(3));
+    var jsons = new JSONArray();
+    jsons.put(new JSONObject());
+    jsons.put(new JSONObject());
+    jsons.put(new JSONObject());
+    assertThat(jsons.length(), is(3));
 
-        spiedExecutor.execute(jsons);
+    spiedExecutor.execute(jsons);
 
-        verify(spiedExecutor, times(3)).execute(any(JSONObject.class));
+    verify(spiedExecutor, times(3)).execute(any(JSONObject.class));
+  }
+
+  public class ExecutorImpl implements Executor<Object> {
+
+    @Override
+    public void add(Object object) {
     }
 
-    public class ExecutorImpl implements Executor<Object> {
-
-        @Override
-        public void add(Object object) {
-        }
-
-        @Override
-        public void execute(JSONObject json) throws ApplicationRuntimeException {
-        }
-
+    @Override
+    public void execute(JSONObject json) throws ApplicationRuntimeException {
     }
+
+  }
 }

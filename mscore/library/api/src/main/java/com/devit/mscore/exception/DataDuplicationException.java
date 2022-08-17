@@ -7,17 +7,17 @@ package com.devit.mscore.exception;
  */
 public class DataDuplicationException extends DataException {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    public DataDuplicationException(String message) {
-        super(message);
-    }
+  public DataDuplicationException(String message) {
+    super(message);
+  }
 
-    public DataDuplicationException(Throwable cause) {
-        super(cause);
-    }
+  public DataDuplicationException(Throwable cause) {
+    super(cause);
+  }
 
-    public DataDuplicationException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public DataDuplicationException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

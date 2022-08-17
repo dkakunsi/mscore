@@ -11,13 +11,13 @@ import org.json.JSONObject;
  */
 public interface Template {
 
-    /**
-     * Build message from {@code template} and {@code object}.
-     * 
-     * @param template message template.
-     * @param object   data.
-     * @return message.
-     * @throws TemplateException error in template processing.
-     */
-    String build(String template, JSONObject object) throws TemplateException;
+  /**
+   * Build message from {@code template} and {@code object}.
+   * 
+   * @param template message template.
+   * @param object   data.
+   * @return message.
+   * @throws TemplateException error in template processing.
+   */
+  String build(String template, JSONObject object) throws TemplateException;
 }

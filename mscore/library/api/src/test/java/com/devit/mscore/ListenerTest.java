@@ -22,56 +22,56 @@ import org.mockito.stubbing.Answer;
 
 public class ListenerTest {
 
-    @Test
-    public void testListen() throws ApplicationException {
-        var subscriber = mockSubscriber();
-        var listener = listener(subscriber);
-        var spiedListener = spy(listener);
+  @Test
+  public void testListen() throws ApplicationException {
+    var subscriber = mockSubscriber();
+    var listener = listener(subscriber);
+    var spiedListener = spy(listener);
 
-        spiedListener.listen("topic1", "topic2");
+    spiedListener.listen("topic1", "topic2");
 
-        verify(spiedListener, times(2)).consume(any(JSONObject.class));
+    verify(spiedListener, times(2)).consume(any(JSONObject.class));
 
-        verify(subscriber).start();
-        spiedListener.stop();
-        verify(subscriber).stop();
-    }
+    verify(subscriber).start();
+    spiedListener.stop();
+    verify(subscriber).stop();
+  }
 
-    @Test
-    public void testListen_StartError() throws ApplicationException {
-        var subscriber = mock(Subscriber.class);
-        doThrow(new ApplicationException("Cannot start consumer.")).when(subscriber).start();
-        var listener = listener(subscriber);
-        var spiedListener = spy(listener);
+  @Test
+  public void testListen_StartError() throws ApplicationException {
+    var subscriber = mock(Subscriber.class);
+    doThrow(new ApplicationException("Cannot start consumer.")).when(subscriber).start();
+    var listener = listener(subscriber);
+    var spiedListener = spy(listener);
 
-        var ex = assertThrows(ApplicationException.class, () -> spiedListener.listen("topic1", "topic2"));
-        assertEquals("Cannot start consumer.", ex.getMessage());
-        verify(subscriber).start();
-    }
+    var ex = assertThrows(ApplicationException.class, () -> spiedListener.listen("topic1", "topic2"));
+    assertEquals("Cannot start consumer.", ex.getMessage());
+    verify(subscriber).start();
+  }
 
-    @SuppressWarnings("unchecked")
-    private static Subscriber mockSubscriber() {
-        var mockSubscriber = mock(Subscriber.class);
-        doAnswer(new Answer<String>() {
+  @SuppressWarnings("unchecked")
+  private static Subscriber mockSubscriber() {
+    var mockSubscriber = mock(Subscriber.class);
+    doAnswer(new Answer<String>() {
 
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                var consumer = (Consumer<JSONObject>) invocation.getArgument(1);
-                consumer.accept(new JSONObject());
-                return null;
-            }
+      @Override
+      public String answer(InvocationOnMock invocation) throws Throwable {
+        var consumer = (Consumer<JSONObject>) invocation.getArgument(1);
+        consumer.accept(new JSONObject());
+        return null;
+      }
 
-        }).when(mockSubscriber).subscribe(anyString(), any());
-        return mockSubscriber;
+    }).when(mockSubscriber).subscribe(anyString(), any());
+    return mockSubscriber;
 
-    }
+  }
 
-    private Listener listener(Subscriber subscriber) {
-        return new Listener(subscriber) {
+  private Listener listener(Subscriber subscriber) {
+    return new Listener(subscriber) {
 
-            @Override
-            public void consume(JSONObject message) {
-            }
-        };        
-    }
+      @Override
+      public void consume(JSONObject message) {
+      }
+    };
+  }
 }

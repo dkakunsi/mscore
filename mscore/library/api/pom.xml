@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.devit.mscore</groupId>
-        <artifactId>component-parent</artifactId>
-        <version>2.1.1</version>
-        <relativePath>../../common/component/pom.xml</relativePath>
-    </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.devit.mscore</groupId>
+    <artifactId>component-parent</artifactId>
+    <version>2.1.1</version>
+    <relativePath>../../common/component/pom.xml</relativePath>
+  </parent>
 
-    <artifactId>api</artifactId>
-    <version>${revision}</version>
-    <packaging>jar</packaging>
-    <name>MS Core :: Core API</name>
+  <artifactId>api</artifactId>
+  <version>${revision}</version>
+  <packaging>jar</packaging>
+  <name>MS Core :: Core API</name>
 
-    <properties>
-        <revision>1.0-SNAPSHOT</revision>
-    </properties>
+  <properties>
+    <revision>1.0-SNAPSHOT</revision>
+  </properties>
 </project>

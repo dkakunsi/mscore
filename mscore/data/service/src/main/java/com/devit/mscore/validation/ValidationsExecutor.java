@@ -24,35 +24,35 @@ import org.json.JSONObject;
  */
 public class ValidationsExecutor implements Executor<Validation> {
 
-    private static final String INVALID_DATA = "The given data is not valid. Check the log for detail.";
+  private static final String INVALID_DATA = "The given data is not valid. Check the log for detail.";
 
-    private Map<String, List<Validation>> validations;
+  private Map<String, List<Validation>> validations;
 
-    public ValidationsExecutor() {
-        this.validations = new HashMap<>();
+  public ValidationsExecutor() {
+    this.validations = new HashMap<>();
+  }
+
+  @Override
+  public void add(Validation validation) {
+    var domain = validation.getDomain();
+    this.validations.computeIfAbsent(domain, key -> new ArrayList<>());
+    this.validations.get(domain).add(validation);
+  }
+
+  @Override
+  public void execute(JSONObject json) {
+    if (!valid(this.validations.get(ALL), json) || !valid(this.validations.get(getDomain(json)), json)) {
+      throw new ApplicationRuntimeException(new ValidationException(INVALID_DATA));
     }
+  }
 
-    @Override
-    public void add(Validation validation) {
-        var domain = validation.getDomain();
-        this.validations.computeIfAbsent(domain, key -> new ArrayList<>());
-        this.validations.get(domain).add(validation);
+  private static boolean valid(List<Validation> validations, JSONObject json) {
+    if (validations == null) {
+      return true;
     }
-
-    @Override
-    public void execute(JSONObject json) {
-        if (!valid(this.validations.get(ALL), json) || !valid(this.validations.get(getDomain(json)), json)) {
-            throw new ApplicationRuntimeException(new ValidationException(INVALID_DATA));
-        }
+    if (json == null) {
+      return false;
     }
-
-    private static boolean valid(List<Validation> validations, JSONObject json) {
-        if (validations == null) {
-            return true;
-        }
-        if (json == null) {
-            return false;
-        }
-        return validations.stream().allMatch(v -> v.validate(json));
-    }
+    return validations.stream().allMatch(v -> v.validate(json));
+  }
 }

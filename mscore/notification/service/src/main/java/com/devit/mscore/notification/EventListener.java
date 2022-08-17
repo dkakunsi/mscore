@@ -14,38 +14,38 @@ import org.json.JSONObject;
 
 public class EventListener extends Listener {
 
-    private static final Logger LOGGER = ApplicationLogger.getLogger(EventListener.class);
+  private static final Logger LOGGER = ApplicationLogger.getLogger(EventListener.class);
 
-    private List<Notification> notifications;
+  private List<Notification> notifications;
 
-    private EventListener(Subscriber subscriber) {
-        super(subscriber);
-        this.notifications = new ArrayList<>();
-    }
+  private EventListener(Subscriber subscriber) {
+    super(subscriber);
+    this.notifications = new ArrayList<>();
+  }
 
-    public static EventListener of(Subscriber subscriber) {
-        return new EventListener(subscriber);
-    }
+  public static EventListener of(Subscriber subscriber) {
+    return new EventListener(subscriber);
+  }
 
-    public static EventListener of(Subscriber subscriber, Notification notification) {
-        return new EventListener(subscriber).with(notification);
-    }
+  public static EventListener of(Subscriber subscriber, Notification notification) {
+    return new EventListener(subscriber).with(notification);
+  }
 
-    public EventListener with(Notification notification) {
-        this.notifications.add(notification);
-        return this;
-    }
+  public EventListener with(Notification notification) {
+    this.notifications.add(notification);
+    return this;
+  }
 
-    @Override
-    public void consume(JSONObject message) {
-        LOGGER.debug("Receive event message: {}", message);
-        this.notifications.forEach(notification -> {
-            try {
-                LOGGER.info("Sending '{}' notification.", notification.getType());
-                notification.send(message);
-            } catch (NotificationException ex) {
-                LOGGER.error("Notification failed.", ex);
-            }
-        });
-    }
+  @Override
+  public void consume(JSONObject message) {
+    LOGGER.debug("Receive event message: {}", message);
+    this.notifications.forEach(notification -> {
+      try {
+        LOGGER.info("Sending '{}' notification.", notification.getType());
+        notification.send(message);
+      } catch (NotificationException ex) {
+        LOGGER.error("Notification failed.", ex);
+      }
+    });
+  }
 }

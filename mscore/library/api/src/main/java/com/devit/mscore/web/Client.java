@@ -14,13 +14,13 @@ import org.json.JSONObject;
  */
 public interface Client {
 
-    Client createNew();
+  Client createNew();
 
-    JSONObject post(String uri, Optional<JSONObject> payload) throws WebClientException;
+  JSONObject post(String uri, Optional<JSONObject> payload) throws WebClientException;
 
-    JSONObject put(String uri, Optional<JSONObject> payload) throws WebClientException;
+  JSONObject put(String uri, Optional<JSONObject> payload) throws WebClientException;
 
-    JSONObject delete(String uri) throws WebClientException;
+  JSONObject delete(String uri) throws WebClientException;
 
-    JSONObject get(String uri, Map<String, String> params) throws WebClientException;
+  JSONObject get(String uri, Map<String, String> params) throws WebClientException;
 }

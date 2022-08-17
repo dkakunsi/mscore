@@ -17,12 +17,12 @@ import com.devit.mscore.exception.SynchronizationException;
  */
 public class DefaultSynchronization extends Synchronization {
 
-    public DefaultSynchronization(Synchronizer synchronizer, String referenceDomain, String referenceAttribute) {
-        super(synchronizer, referenceDomain, referenceAttribute);
-    }
+  public DefaultSynchronization(Synchronizer synchronizer, String referenceDomain, String referenceAttribute) {
+    super(synchronizer, referenceDomain, referenceAttribute);
+  }
 
-    @Override
-    public void synchronize(String referenceId) throws SynchronizationException {
-        this.synchronizer.synchronize(getSearchAttribute(), referenceId);
-    }
+  @Override
+  public void synchronize(String referenceId) throws SynchronizationException {
+    this.synchronizer.synchronize(getSearchAttribute(), referenceId);
+  }
 }

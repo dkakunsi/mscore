@@ -14,17 +14,17 @@ import org.json.JSONObject;
 
 public class SendNotification implements JavaDelegate {
 
-    private static final Logger LOGGER = ApplicationLogger.getLogger(SendNotification.class);
+  private static final Logger LOGGER = ApplicationLogger.getLogger(SendNotification.class);
 
-    @Override
-    public void execute(DelegateExecution execution) {
-        var context = (FlowableApplicationContext) FlowableApplicationContext.of(execution);
-        setContext(context);
-        var publisher = context.getPublisher(NOTIFICATION);
-        var entity = execution.getVariable("entity", String.class);
-        var json = new JSONObject(entity);
+  @Override
+  public void execute(DelegateExecution execution) {
+    var context = (FlowableApplicationContext) FlowableApplicationContext.of(execution);
+    setContext(context);
+    var publisher = context.getPublisher(NOTIFICATION);
+    var entity = execution.getVariable("entity", String.class);
+    var json = new JSONObject(entity);
 
-        LOGGER.info("Sending notification for entity {}.", getId(json));
-        publisher.publish(json);
-    }
+    LOGGER.info("Sending notification for entity {}.", getId(json));
+    publisher.publish(json);
+  }
 }

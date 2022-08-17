@@ -21,50 +21,51 @@ import org.junit.Test;
 
 public class PebbleTemplateFactoryTest {
 
-    private Registry registry;
+  private Registry registry;
 
-    private Configuration configuration;
+  private Configuration configuration;
 
-    private PebbleTemplateFactory factory;
+  private PebbleTemplateFactory factory;
 
-    @Before
-    public void setup() {
-        this.registry = mock(Registry.class);
-        this.configuration = mock(Configuration.class);
-        doReturn("notification").when(this.configuration).getServiceName();
-        doReturn(true).when(this.configuration).has("services.notification.template.resource.location");
-        this.factory = PebbleTemplateFactory.of(this.registry, this.configuration);
-    }
+  @Before
+  public void setup() {
+    this.registry = mock(Registry.class);
+    this.configuration = mock(Configuration.class);
+    doReturn("notification").when(this.configuration).getServiceName();
+    doReturn(true).when(this.configuration).has("services.notification.template.resource.location");
+    this.factory = PebbleTemplateFactory.of(this.registry, this.configuration);
+  }
 
-    @Test
-    public void testCreateTemplate() {
-        var template = this.factory.template();
-        assertNotNull(template);
-    }
+  @Test
+  public void testCreateTemplate() {
+    var template = this.factory.template();
+    assertNotNull(template);
+  }
 
-    @Test
-    public void testGetResourceLocation() throws ConfigException {
-        doReturn(Optional.of("./template")).when(this.configuration).getConfig("services.notification.template.resource.location");
+  @Test
+  public void testGetResourceLocation() throws ConfigException {
+    doReturn(Optional.of("./template")).when(this.configuration)
+        .getConfig("services.notification.template.resource.location");
 
-        var location = this.factory.getResourceLocation();
-        assertThat(location, is("./template"));
-    }
+    var location = this.factory.getResourceLocation();
+    assertThat(location, is("./template"));
+  }
 
-    @Test
-    public void testCreateResource() throws URISyntaxException, ResourceException {
-        var resourceFile = getResourceFile("template/domain.action.txt");
+  @Test
+  public void testCreateResource() throws URISyntaxException, ResourceException {
+    var resourceFile = getResourceFile("template/domain.action.txt");
 
-        var content = new PebbleTemplateResource(resourceFile).getContent();
-        var json = new JSONObject("{\"name\":\"domain.action\"}").put("content", content);
+    var content = new PebbleTemplateResource(resourceFile).getContent();
+    var json = new JSONObject("{\"name\":\"domain.action\"}").put("content", content);
 
-        var resource = this.factory.createResource(resourceFile);
+    var resource = this.factory.createResource(resourceFile);
 
-        var actual = resource.getMessage();
-        assertThat(actual.toString(), is(json.toString()));
-    }
+    var actual = resource.getMessage();
+    assertThat(actual.toString(), is(json.toString()));
+  }
 
-    public static File getResourceFile(String resourceName) throws URISyntaxException {
-        var resource = PebbleTemplateFactoryTest.class.getClassLoader().getResource(resourceName);
-        return new File(resource.toURI());
-    }
+  public static File getResourceFile(String resourceName) throws URISyntaxException {
+    var resource = PebbleTemplateFactoryTest.class.getClassLoader().getResource(resourceName);
+    return new File(resource.toURI());
+  }
 }

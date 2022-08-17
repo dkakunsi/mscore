@@ -12,53 +12,53 @@ import com.devit.mscore.exception.SynchronizationException;
  */
 public abstract class Synchronization {
 
-    protected String referenceDomain;
+  protected String referenceDomain;
 
-    protected String referenceAttribute;
+  protected String referenceAttribute;
 
-    protected Synchronizer synchronizer;
+  protected Synchronizer synchronizer;
 
-    protected Synchronization(Synchronizer synchronizer, String referenceDomain, String referenceAttribute) {
-        this.referenceDomain = referenceDomain;
-        this.referenceAttribute = referenceAttribute;
-        this.synchronizer = synchronizer;
-    }
+  protected Synchronization(Synchronizer synchronizer, String referenceDomain, String referenceAttribute) {
+    this.referenceDomain = referenceDomain;
+    this.referenceAttribute = referenceAttribute;
+    this.synchronizer = synchronizer;
+  }
 
-    /**
-     * <p>
-     * Get the reference domain that triggers synchronization.
-     * </p>
-     * 
-     * @return reference domain.
-     */
-    public String getReferenceDomain() {
-        return this.referenceDomain;
-    }
+  /**
+   * <p>
+   * Get the reference domain that triggers synchronization.
+   * </p>
+   * 
+   * @return reference domain.
+   */
+  public String getReferenceDomain() {
+    return this.referenceDomain;
+  }
 
-    /**
-     * <p>
-     * Get the reference attribute that triggers synchronization.
-     * </p>
-     * 
-     * @return reference attribute.
-     */
-    public String getReferenceAttribute() {
-        return this.referenceAttribute;
-    }
+  /**
+   * <p>
+   * Get the reference attribute that triggers synchronization.
+   * </p>
+   * 
+   * @return reference attribute.
+   */
+  public String getReferenceAttribute() {
+    return this.referenceAttribute;
+  }
 
-    /**
-     * Execute the sync process.
-     * 
-     * @param context     application context.
-     * @param referenceId to synchronize.
-     */
-    public abstract void synchronize(String referenceId) throws SynchronizationException;
+  /**
+   * Execute the sync process.
+   * 
+   * @param context     application context.
+   * @param referenceId to synchronize.
+   */
+  public abstract void synchronize(String referenceId) throws SynchronizationException;
 
-    protected String getSearchAttribute() {
-        return String.format("%s.id", this.referenceAttribute);
-    }
+  protected String getSearchAttribute() {
+    return String.format("%s.id", this.referenceAttribute);
+  }
 
-    protected Synchronizer getSynchronizer() {
-        return this.synchronizer;
-    }
+  protected Synchronizer getSynchronizer() {
+    return this.synchronizer;
+  }
 }

@@ -10,7 +10,7 @@ trigger:
   paths:
     include:
       - mscore/history/**
-    exclude: 
+    exclude:
       - mscore/history/README.MD
       - mscore/history/azure-pipelines*
 
@@ -24,53 +24,53 @@ variables:
     value: $[counter(variables['history21'], 1)]
 
 steps:
-- task: Bash@3
-  name: 'Version'
-  displayName: 'Set Tag'
-  inputs:
-    targetType: 'inline'
-    script: 'echo "##vso[task.setvariable variable=tag;isOutput=true]$(git describe --tags --abbrev=0)"'
+  - task: Bash@3
+    name: "Version"
+    displayName: "Set Tag"
+    inputs:
+      targetType: "inline"
+      script: 'echo "##vso[task.setvariable variable=tag;isOutput=true]$(git describe --tags --abbrev=0)"'
 
-- task: Bash@3
-  displayName: 'Print Version'
-  inputs:
-    targetType: 'inline'
-    script: 'echo "$(Version.tag).$(revision)"'
+  - task: Bash@3
+    displayName: "Print Version"
+    inputs:
+      targetType: "inline"
+      script: 'echo "$(Version.tag).$(revision)"'
 
-# used for mscore profile
-# - task: MavenAuthenticate@0
-#   displayName: 'Maven Authenticate'
-#   inputs:
-#     artifactsFeeds: mscore
+  # used for mscore profile
+  # - task: MavenAuthenticate@0
+  #   displayName: 'Maven Authenticate'
+  #   inputs:
+  #     artifactsFeeds: mscore
 
-# used for myMavenRepo profile
-- task: DownloadSecureFile@1
-  displayName: 'Download maven settings file'
-  name: 'mavenSettingsFile'
-  inputs:
-    secureFile: 'settings.xml'
+  # used for myMavenRepo profile
+  - task: DownloadSecureFile@1
+    displayName: "Download maven settings file"
+    name: "mavenSettingsFile"
+    inputs:
+      secureFile: "settings.xml"
 
-- task: Maven@3
-  displayName: 'Maven build'
-  inputs:
-    mavenPomFile: 'mscore/history/pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.11'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: 'mscore/history/**/surefire-reports/TEST-*.xml'
-    goals: 'deploy'
-#    options: -Drevision=$(Version.tag) -Pmscore
-    options: -Drevision=$(Version.tag).$(revision) -s $(mavenSettingsFile.secureFilePath) -PmyMavenRepo
+  - task: Maven@3
+    displayName: "Maven build"
+    inputs:
+      mavenPomFile: "mscore/history/pom.xml"
+      mavenOptions: "-Xmx3072m"
+      javaHomeOption: "JDKVersion"
+      jdkVersionOption: "1.11"
+      jdkArchitectureOption: "x64"
+      publishJUnitResults: true
+      testResultsFiles: "mscore/history/**/surefire-reports/TEST-*.xml"
+      goals: "deploy"
+      #    options: -Drevision=$(Version.tag) -Pmscore
+      options: -Drevision=$(Version.tag).$(revision) -s $(mavenSettingsFile.secureFilePath) -PmyMavenRepo
 
-- task: Docker@2
-  displayName: 'Docker build & push worklow image'
-  inputs:
-    containerRegistry: 'Docker Hub - devit16'
-    repository: 'devit16/mscore-history-service'
-    command: 'buildAndPush'
-    Dockerfile: 'mscore/history/**/service/target/Dockerfile'
-    tags: |
-      latest
-      $(Version.tag).$(revision)
+  - task: Docker@2
+    displayName: "Docker build & push worklow image"
+    inputs:
+      containerRegistry: "Docker Hub - devit16"
+      repository: "devit16/mscore-history-service"
+      command: "buildAndPush"
+      Dockerfile: "mscore/history/**/service/target/Dockerfile"
+      tags: |
+        latest
+        $(Version.tag).$(revision)

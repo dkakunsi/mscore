@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.devit.mscore</groupId>
-        <artifactId>component-parent</artifactId>
-        <version>2.1.1</version>
-        <relativePath>../../common/component/pom.xml</relativePath>
-    </parent>
+  <parent>
+    <groupId>com.devit.mscore</groupId>
+    <artifactId>component-parent</artifactId>
+    <version>2.1.1</version>
+    <relativePath>../../common/component/pom.xml</relativePath>
+  </parent>
 
-    <artifactId>notification-api</artifactId>
-    <version>${revision}</version>
-    <packaging>jar</packaging>
-    <name>MS Core :: Notification :: API</name>
+  <artifactId>notification-api</artifactId>
+  <version>${revision}</version>
+  <packaging>jar</packaging>
+  <name>MS Core :: Notification :: API</name>
 
-    <properties>
-        <revision>1.0-SNAPSHOT</revision>
-        <library.version>[2.1,)</library.version>
-    </properties>
+  <properties>
+    <revision>1.0-SNAPSHOT</revision>
+    <library.version>[2.1,)</library.version>
+  </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
-            <artifactId>api</artifactId>
-            <version>${library.version}</version>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>com.devit.mscore</groupId>
+      <artifactId>api</artifactId>
+      <version>${library.version}</version>
+    </dependency>
+  </dependencies>
 </project>

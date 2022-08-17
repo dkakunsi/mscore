@@ -11,24 +11,24 @@ import org.junit.Test;
 
 public class SynchronizationTest {
 
-    @Test
-    public void test() {
-        var synchronizer = mock(Synchronizer.class);
-        var synchronization = new SynchronizationImpl(synchronizer, "referenceDomain", "referenceAttribute");
-        assertThat(synchronization.getReferenceDomain(), is("referenceDomain"));
-        assertThat(synchronization.getReferenceAttribute(), is("referenceAttribute"));
-        assertNotNull(synchronization.getSynchronizer());
-        assertThat(synchronization.getSearchAttribute(), is("referenceAttribute.id"));
+  @Test
+  public void test() {
+    var synchronizer = mock(Synchronizer.class);
+    var synchronization = new SynchronizationImpl(synchronizer, "referenceDomain", "referenceAttribute");
+    assertThat(synchronization.getReferenceDomain(), is("referenceDomain"));
+    assertThat(synchronization.getReferenceAttribute(), is("referenceAttribute"));
+    assertNotNull(synchronization.getSynchronizer());
+    assertThat(synchronization.getSearchAttribute(), is("referenceAttribute.id"));
+  }
+
+  public class SynchronizationImpl extends Synchronization {
+
+    protected SynchronizationImpl(Synchronizer synchronizer, String domain, String attribute) {
+      super(synchronizer, domain, attribute);
     }
 
-    public class SynchronizationImpl extends Synchronization {
-
-        protected SynchronizationImpl(Synchronizer synchronizer, String domain, String attribute) {
-            super(synchronizer, domain, attribute);
-        }
-
-        @Override
-        public void synchronize(String id) throws SynchronizationException {
-        }
+    @Override
+    public void synchronize(String id) throws SynchronizationException {
     }
+  }
 }

@@ -20,226 +20,226 @@ import org.json.JSONObject;
  */
 public class FlowableProcessInstance implements WorkflowObject, ProcessInstance {
 
-    private static final String STATUS = "status";
+  private static final String STATUS = "status";
 
-    private static final String OWNER = "owner";
+  private static final String OWNER = "owner";
 
-    private static final String ORGANISATION = "organisation";
+  private static final String ORGANISATION = "organisation";
 
-    private ProcessInstance processInstance;
+  private ProcessInstance processInstance;
 
-    private RuntimeService runtimeService;
+  private RuntimeService runtimeService;
 
-    private JSONObject json;
+  private JSONObject json;
 
-    private String instanceStatus;
+  private String instanceStatus;
 
-    public FlowableProcessInstance(RuntimeService runtimeService, ProcessInstance processInstance) {
-        this.runtimeService = runtimeService;
-        this.processInstance = processInstance;
-        this.instanceStatus = processInstance.isEnded() ? COMPLETED : ACTIVATED;
-        this.json = initJson();
+  public FlowableProcessInstance(RuntimeService runtimeService, ProcessInstance processInstance) {
+    this.runtimeService = runtimeService;
+    this.processInstance = processInstance;
+    this.instanceStatus = processInstance.isEnded() ? COMPLETED : ACTIVATED;
+    this.json = initJson();
+  }
+
+  private JSONObject initJson() {
+    var entity = new JSONObject();
+    entity.put(ID, getBusinessKey());
+    entity.put(DOMAIN, getDomain());
+
+    var jsonObj = new JSONObject();
+    jsonObj.put("entity", entity);
+
+    var ownerId = getOwner();
+    if (StringUtils.isNotBlank(ownerId)) {
+      jsonObj.put(OWNER, ownerId);
     }
 
-    private JSONObject initJson() {
-        var entity = new JSONObject();
-        entity.put(ID, getBusinessKey());
-        entity.put(DOMAIN, getDomain());
+    jsonObj.put(ORGANISATION, getOrganisation());
+    jsonObj.put("createdBy", getStartUserId());
+    jsonObj.put(DOMAIN, "workflow");
+    jsonObj.put(ID, getProcessInstanceId());
+    jsonObj.put("action", getAction());
+    jsonObj.put("name", getName());
+    jsonObj.put(STATUS, instanceStatus);
 
-        var jsonObj = new JSONObject();
-        jsonObj.put("entity", entity);
+    return jsonObj;
+  }
 
-        var ownerId = getOwner();
-        if (StringUtils.isNotBlank(ownerId)) {
-            jsonObj.put(OWNER, ownerId);
-        }
+  @Override
+  public String getId() {
+    return this.processInstance.getId();
+  }
 
-        jsonObj.put(ORGANISATION, getOrganisation());
-        jsonObj.put("createdBy", getStartUserId());
-        jsonObj.put(DOMAIN, "workflow");
-        jsonObj.put(ID, getProcessInstanceId());
-        jsonObj.put("action", getAction());
-        jsonObj.put("name", getName());
-        jsonObj.put(STATUS, instanceStatus);
+  @Override
+  public boolean isEnded() {
+    return this.processInstance.isEnded();
+  }
 
-        return jsonObj;
-    }
+  @Override
+  public String getActivityId() {
+    return this.processInstance.getActivityId();
+  }
 
-    @Override
-    public String getId() {
-        return this.processInstance.getId();
-    }
+  @Override
+  public String getProcessInstanceId() {
+    return this.processInstance.getProcessInstanceId();
+  }
 
-    @Override
-    public boolean isEnded() {
-        return this.processInstance.isEnded();
-    }
+  @Override
+  public String getParentId() {
+    return this.processInstance.getParentId();
+  }
 
-    @Override
-    public String getActivityId() {
-        return this.processInstance.getActivityId();
-    }
+  @Override
+  public String getSuperExecutionId() {
+    return this.processInstance.getSuperExecutionId();
+  }
 
-    @Override
-    public String getProcessInstanceId() {
-        return this.processInstance.getProcessInstanceId();
-    }
+  @Override
+  public String getRootProcessInstanceId() {
+    return this.processInstance.getRootProcessInstanceId();
+  }
 
-    @Override
-    public String getParentId() {
-        return this.processInstance.getParentId();
-    }
+  @Override
+  public String getReferenceId() {
+    return this.processInstance.getReferenceId();
+  }
 
-    @Override
-    public String getSuperExecutionId() {
-        return this.processInstance.getSuperExecutionId();
-    }
+  @Override
+  public String getReferenceType() {
+    return this.processInstance.getReferenceType();
+  }
 
-    @Override
-    public String getRootProcessInstanceId() {
-        return this.processInstance.getRootProcessInstanceId();
-    }
+  @Override
+  public String getPropagatedStageInstanceId() {
+    return this.processInstance.getPropagatedStageInstanceId();
+  }
 
-    @Override
-    public String getReferenceId() {
-        return this.processInstance.getReferenceId();
-    }
+  @Override
+  public String getProcessDefinitionId() {
+    return this.processInstance.getProcessDefinitionId();
+  }
 
-    @Override
-    public String getReferenceType() {
-        return this.processInstance.getReferenceType();
-    }
+  @Override
+  public String getProcessDefinitionName() {
+    return this.processInstance.getProcessDefinitionName();
+  }
 
-    @Override
-    public String getPropagatedStageInstanceId() {
-        return this.processInstance.getPropagatedStageInstanceId();
-    }
+  @Override
+  public String getProcessDefinitionKey() {
+    return this.processInstance.getProcessDefinitionKey();
+  }
 
-    @Override
-    public String getProcessDefinitionId() {
-        return this.processInstance.getProcessDefinitionId();
-    }
+  @Override
+  public Integer getProcessDefinitionVersion() {
+    return this.processInstance.getProcessDefinitionVersion();
+  }
 
-    @Override
-    public String getProcessDefinitionName() {
-        return this.processInstance.getProcessDefinitionName();
-    }
+  @Override
+  public String getDeploymentId() {
+    return this.processInstance.getDeploymentId();
+  }
 
-    @Override
-    public String getProcessDefinitionKey() {
-        return this.processInstance.getProcessDefinitionKey();
-    }
+  @Override
+  public String getBusinessKey() {
+    return this.processInstance.getBusinessKey();
+  }
 
-    @Override
-    public Integer getProcessDefinitionVersion() {
-        return this.processInstance.getProcessDefinitionVersion();
-    }
+  @Override
+  public boolean isSuspended() {
+    return this.processInstance.isSuspended();
+  }
 
-    @Override
-    public String getDeploymentId() {
-        return this.processInstance.getDeploymentId();
-    }
+  @Override
+  public Map<String, Object> getProcessVariables() {
+    return this.processInstance.getProcessVariables();
+  }
 
-    @Override
-    public String getBusinessKey() {
-        return this.processInstance.getBusinessKey();
-    }
+  @Override
+  public String getTenantId() {
+    return this.processInstance.getTenantId();
+  }
 
-    @Override
-    public boolean isSuspended() {
-        return this.processInstance.isSuspended();
-    }
+  @Override
+  public String getName() {
+    return this.processInstance.getName();
+  }
 
-    @Override
-    public Map<String, Object> getProcessVariables() {
-        return this.processInstance.getProcessVariables();
-    }
+  @Override
+  public String getDescription() {
+    return this.processInstance.getDescription();
+  }
 
-    @Override
-    public String getTenantId() {
-        return this.processInstance.getTenantId();
-    }
+  @Override
+  public String getLocalizedName() {
+    return this.processInstance.getLocalizedName();
+  }
 
-    @Override
-    public String getName() {
-        return this.processInstance.getName();
-    }
+  @Override
+  public String getLocalizedDescription() {
+    return this.processInstance.getLocalizedDescription();
+  }
 
-    @Override
-    public String getDescription() {
-        return this.processInstance.getDescription();
-    }
+  @Override
+  public Date getStartTime() {
+    return this.processInstance.getStartTime();
+  }
 
-    @Override
-    public String getLocalizedName() {
-        return this.processInstance.getLocalizedName();
-    }
+  @Override
+  public String getStartUserId() {
+    return this.processInstance.getStartUserId();
+  }
 
-    @Override
-    public String getLocalizedDescription() {
-        return this.processInstance.getLocalizedDescription();
-    }
+  @Override
+  public String getCallbackId() {
+    return this.processInstance.getCallbackId();
+  }
 
-    @Override
-    public Date getStartTime() {
-        return this.processInstance.getStartTime();
-    }
+  @Override
+  public String getCallbackType() {
+    return this.processInstance.getCallbackType();
+  }
 
-    @Override
-    public String getStartUserId() {
-        return this.processInstance.getStartUserId();
-    }
+  @Override
+  public void complete() {
+    this.instanceStatus = COMPLETED;
+  }
 
-    @Override
-    public String getCallbackId() {
-        return this.processInstance.getCallbackId();
-    }
+  public boolean isComplete() {
+    return COMPLETED.equals(this.instanceStatus);
+  }
 
-    @Override
-    public String getCallbackType() {
-        return this.processInstance.getCallbackType();
-    }
+  @Override
+  public JSONObject toJson() {
+    this.json.put(STATUS, instanceStatus);
+    return this.json;
+  }
 
-    @Override
-    public void complete() {
-        this.instanceStatus = COMPLETED;
-    }
+  private String getOwner() {
+    var owner = getVariables().get(OWNER);
+    return owner != null ? owner.toString() : null;
+  }
 
-    public boolean isComplete() {
-        return COMPLETED.equals(this.instanceStatus);
-    }
+  private String getOrganisation() {
+    var organisation = getVariables().get(ORGANISATION);
+    return organisation != null ? organisation.toString() : null;
+  }
 
-    @Override
-    public JSONObject toJson() {
-        this.json.put(STATUS, instanceStatus);
-        return this.json;
-    }
+  private String getDomain() {
+    var domain = getVariables().get(DOMAIN);
+    return domain != null ? domain.toString() : null;
+  }
 
-    private String getOwner() {
-        var owner = getVariables().get(OWNER);
-        return owner != null ? owner.toString() : null;
-    }
+  private Map<String, Object> getVariables() {
+    return this.runtimeService.getVariables(getId());
+  }
 
-    private String getOrganisation() {
-        var organisation = getVariables().get(ORGANISATION);
-        return organisation != null ? organisation.toString() : null;
-    }
+  private String getAction() {
+    return this.getProcessDefinitionId().split(":")[0];
+  }
 
-    private String getDomain() {
-        var domain = getVariables().get(DOMAIN);
-        return domain != null ? domain.toString() : null;
-    }
-
-    private Map<String, Object> getVariables() {
-        return this.runtimeService.getVariables(getId());
-    }
-
-    private String getAction() {
-        return this.getProcessDefinitionId().split(":")[0];
-    }
-
-    @Override
-    public String toString() {
-        return toJson().toString();
-    }
+  @Override
+  public String toString() {
+    return toJson().toString();
+  }
 }

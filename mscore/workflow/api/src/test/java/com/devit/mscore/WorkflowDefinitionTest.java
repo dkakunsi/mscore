@@ -15,52 +15,52 @@ import org.junit.Test;
 
 public class WorkflowDefinitionTest {
 
-    @Test
-    public void testGetMessage() throws URISyntaxException, ResourceException {
-        var resourceFile = getResourceFile("resource/resource.json");
-        var actual = new DummyDefinition(resourceFile).getMessage("definitionId");
+  @Test
+  public void testGetMessage() throws URISyntaxException, ResourceException {
+    var resourceFile = getResourceFile("resource/resource.json");
+    var actual = new DummyDefinition(resourceFile).getMessage("definitionId");
 
-        assertThat(actual.getString("domain"), is("resource"));
-        assertThat(actual.getString("name"), is("resource.json"));
-        assertThat(actual.getString("definitionId"), is("definitionId"));
-        assertTrue(StringUtils.isNotBlank(actual.getString("content")));
+    assertThat(actual.getString("domain"), is("resource"));
+    assertThat(actual.getString("name"), is("resource.json"));
+    assertThat(actual.getString("definitionId"), is("definitionId"));
+    assertTrue(StringUtils.isNotBlank(actual.getString("content")));
+  }
+
+  @Test
+  public void testGetMessage_3Construct() throws URISyntaxException, ResourceException {
+    var actual = new DummyDefinition("name", "{\"key\":\"value\"}").getMessage("definitionId");
+
+    assertThat(actual.getString("domain"), is("resource"));
+    assertThat(actual.getString("name"), is("name"));
+    assertThat(actual.getString("definitionId"), is("definitionId"));
+    assertTrue(StringUtils.isNotBlank(actual.getString("content")));
+  }
+
+  public static File getResourceFile(String resourceName) throws URISyntaxException {
+    var resource = WorkflowDefinitionTest.class.getClassLoader().getResource(resourceName);
+    return new File(resource.toURI());
+  }
+
+  private static class DummyDefinition extends WorkflowDefinition {
+
+    protected DummyDefinition(File resourceFile) throws ResourceException {
+      super(resourceFile);
     }
 
-    @Test
-    public void testGetMessage_3Construct() throws URISyntaxException, ResourceException {
-        var actual = new DummyDefinition("name", "{\"key\":\"value\"}").getMessage("definitionId");
-
-        assertThat(actual.getString("domain"), is("resource"));
-        assertThat(actual.getString("name"), is("name"));
-        assertThat(actual.getString("definitionId"), is("definitionId"));
-        assertTrue(StringUtils.isNotBlank(actual.getString("content")));
+    protected DummyDefinition(String name, String content) {
+      super(name, content);
     }
 
-    public static File getResourceFile(String resourceName) throws URISyntaxException {
-        var resource = WorkflowDefinitionTest.class.getClassLoader().getResource(resourceName);
-        return new File(resource.toURI());
+    @Override
+    public JSONObject getMessage(String definitionId) {
+      var message = getMessage();
+      message.put("definitionId", definitionId);
+      return message;
     }
 
-    private static class DummyDefinition extends WorkflowDefinition {
-
-        protected DummyDefinition(File resourceFile) throws ResourceException {
-            super(resourceFile);
-        }
-
-        protected DummyDefinition(String name, String content) {
-            super(name, content);
-        }
-
-        @Override
-        public JSONObject getMessage(String definitionId) {
-            var message = getMessage();
-            message.put("definitionId", definitionId);
-            return message;
-        }
-
-        @Override
-        public String getResourceName() {
-            return null;
-        }
+    @Override
+    public String getResourceName() {
+      return null;
     }
+  }
 }

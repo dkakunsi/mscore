@@ -21,63 +21,63 @@ import com.devit.mscore.template.pebble.PebbleTemplateFactory;
 
 public class ApplicationStarter implements Starter {
 
-    private static final Logger LOGGER = ApplicationLogger.getLogger(ApplicationStarter.class);
+  private static final Logger LOGGER = ApplicationLogger.getLogger(ApplicationStarter.class);
 
-    private static final String TEMPLATE = "template";
+  private static final String TEMPLATE = "template";
 
-    private static final String NOTIFICATION = "notification";
+  private static final String NOTIFICATION = "notification";
 
-    private ZookeeperRegistry zookeeperRegistry;
+  private ZookeeperRegistry zookeeperRegistry;
 
-    private Configuration configuration;
+  private Configuration configuration;
 
-    private KafkaMessagingFactory messagingFactory;
+  private KafkaMessagingFactory messagingFactory;
 
-    public ApplicationStarter(String... args) throws ConfigException {
-        this(FileConfigurationUtils.load(args));
+  public ApplicationStarter(String... args) throws ConfigException {
+    this(FileConfigurationUtils.load(args));
+  }
+
+  public ApplicationStarter(FileConfiguration fileConfiguration) throws ConfigException {
+    try {
+      this.zookeeperRegistry = ZookeeperRegistryFactory.of(fileConfiguration).registry("platformConfig");
+      zookeeperRegistry.open();
+      this.configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
+      this.messagingFactory = KafkaMessagingFactory.of(this.configuration);
+    } catch (RegistryException ex) {
+      throw new ConfigException(ex);
     }
+  }
 
-    public ApplicationStarter(FileConfiguration fileConfiguration) throws ConfigException {
-        try {
-            this.zookeeperRegistry = ZookeeperRegistryFactory.of(fileConfiguration).registry("platformConfig");
-            zookeeperRegistry.open();
-            this.configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
-            this.messagingFactory = KafkaMessagingFactory.of(this.configuration);
-        } catch (RegistryException ex) {
-            throw new ConfigException(ex);
-        }
+  @Override
+  public void start() throws ApplicationException {
+    var templateRegistry = new MemoryRegistry(TEMPLATE);
+    var templateFactory = PebbleTemplateFactory.of(templateRegistry, configuration);
+    registerResource(templateFactory);
+
+    var template = templateFactory.template();
+    var emailNotificationFactory = MailNotificationFactory.of(configuration, templateRegistry, template);
+    var mailNotification = emailNotificationFactory.mailNotification();
+
+    var subscriber = this.messagingFactory.subscriber();
+
+    var topics = this.messagingFactory.getTemplatedTopics(NOTIFICATION);
+    if (topics.isPresent()) {
+      var listener = EventListener.of(subscriber).with(mailNotification);
+      listener.listen(topics.get());
     }
+  }
 
-    @Override
-    public void start() throws ApplicationException {
-        var templateRegistry = new MemoryRegistry(TEMPLATE);
-        var templateFactory = PebbleTemplateFactory.of(templateRegistry, configuration);
-        registerResource(templateFactory);
-
-        var template = templateFactory.template();
-        var emailNotificationFactory = MailNotificationFactory.of(configuration, templateRegistry, template);
-        var mailNotification = emailNotificationFactory.mailNotification();
-
-        var subscriber = this.messagingFactory.subscriber();
-
-        var topics = this.messagingFactory.getTemplatedTopics(NOTIFICATION);
-        if (topics.isPresent()) {
-            var listener = EventListener.of(subscriber).with(mailNotification);
-            listener.listen(topics.get());
-        }
+  private static void registerResource(ResourceManager resourceManager) {
+    LOGGER.info("Register resource: {}.", resourceManager.getType());
+    try {
+      resourceManager.registerResources();
+    } catch (ResourceException ex) {
+      LOGGER.warn("Cannot register resource {}.", resourceManager.getType(), ex);
     }
+  }
 
-    private static void registerResource(ResourceManager resourceManager) {
-        LOGGER.info("Register resource: {}.", resourceManager.getType());
-        try {
-            resourceManager.registerResources();
-        } catch (ResourceException ex) {
-            LOGGER.warn("Cannot register resource {}.", resourceManager.getType(), ex);
-        }
-    }
-
-    @Override
-    public void stop() {
-        System.exit(0);
-    }
+  @Override
+  public void stop() {
+    System.exit(0);
+  }
 }

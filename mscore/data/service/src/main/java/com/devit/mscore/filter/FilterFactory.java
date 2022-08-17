@@ -9,30 +9,30 @@ import com.devit.mscore.logging.ApplicationLogger;
 
 public class FilterFactory {
 
-    private static final Logger LOGGER = new ApplicationLogger(FilterFactory.class);
+  private static final Logger LOGGER = new ApplicationLogger(FilterFactory.class);
 
-    private static final String REMOVING = "services.%s.filter.remove";
-    
-    public static FilterFactory of() {
-        return new FilterFactory();
-    }
+  private static final String REMOVING = "services.%s.filter.remove";
 
-    public FiltersExecutor filters(Configuration configuration) {
-        var executors = new FiltersExecutor();
-        addRemovingFilter(configuration, executors);
-        return executors;
-    }
+  public static FilterFactory of() {
+    return new FilterFactory();
+  }
 
-    private void addRemovingFilter(Configuration configuration, FiltersExecutor executors) {
-        var configName = String.format(REMOVING, configuration.getServiceName());
-        try {
-            var removingAttributes = configuration.getConfig(configName);
-            removingAttributes.ifPresent(removingAttribute -> {
-                var attributes = List.of(removingAttribute.split(","));
-                executors.add(new RemovingFilter(attributes));
-            });
-        } catch (ConfigException ex) {
-            LOGGER.warn("Cannot add removing filter.", ex);
-        }
+  public FiltersExecutor filters(Configuration configuration) {
+    var executors = new FiltersExecutor();
+    addRemovingFilter(configuration, executors);
+    return executors;
+  }
+
+  private void addRemovingFilter(Configuration configuration, FiltersExecutor executors) {
+    var configName = String.format(REMOVING, configuration.getServiceName());
+    try {
+      var removingAttributes = configuration.getConfig(configName);
+      removingAttributes.ifPresent(removingAttribute -> {
+        var attributes = List.of(removingAttribute.split(","));
+        executors.add(new RemovingFilter(attributes));
+      });
+    } catch (ConfigException ex) {
+      LOGGER.warn("Cannot add removing filter.", ex);
     }
+  }
 }

@@ -15,33 +15,33 @@ import org.junit.Test;
 
 public class FiltersExecutorTest {
 
-    private Configuration configuration;
+  private Configuration configuration;
 
-    @Before
-    public void setup() {
-        this.configuration = mock(Configuration.class);
-        doReturn("data").when(this.configuration).getServiceName();
-    }
+  @Before
+  public void setup() {
+    this.configuration = mock(Configuration.class);
+    doReturn("data").when(this.configuration).getServiceName();
+  }
 
-    @Test
-    public void testFilter_Password() throws ConfigException {
-        doReturn(Optional.of("password")).when(this.configuration).getConfig("services.data.filter.remove");
-        var factory = FilterFactory.of();
-        var executors = factory.filters(this.configuration);
-        var json = new JSONObject("{\"domain\":\"domain\",\"password\":\"abcd\"}");
-        executors.execute(json);
+  @Test
+  public void testFilter_Password() throws ConfigException {
+    doReturn(Optional.of("password")).when(this.configuration).getConfig("services.data.filter.remove");
+    var factory = FilterFactory.of();
+    var executors = factory.filters(this.configuration);
+    var json = new JSONObject("{\"domain\":\"domain\",\"password\":\"abcd\"}");
+    executors.execute(json);
 
-        assertFalse(json.has("password"));
-    }
+    assertFalse(json.has("password"));
+  }
 
-    @Test
-    public void testFilter_DocumentField() throws ConfigException {
-        doReturn(Optional.of("document")).when(this.configuration).getConfig("services.data.filter.remove");
-        var factory = FilterFactory.of();
-        var executors = factory.filters(this.configuration);
-        var json = new JSONObject("{\"domain\":\"domain\",\"document\":\"abcd\",\"documentation\":\"12345\"}");
-        executors.execute(json);
+  @Test
+  public void testFilter_DocumentField() throws ConfigException {
+    doReturn(Optional.of("document")).when(this.configuration).getConfig("services.data.filter.remove");
+    var factory = FilterFactory.of();
+    var executors = factory.filters(this.configuration);
+    var json = new JSONObject("{\"domain\":\"domain\",\"document\":\"abcd\",\"documentation\":\"12345\"}");
+    executors.execute(json);
 
-        assertFalse(json.has("document"));
-    }
+    assertFalse(json.has("document"));
+  }
 }

@@ -28,60 +28,60 @@ import org.mockito.ArgumentCaptor;
 
 public class SchemaManagerTest {
 
-    private Registry registry;
+  private Registry registry;
 
-    private Configuration configuration;
+  private Configuration configuration;
 
-    private SchemaManager manager;
+  private SchemaManager manager;
 
-    @Before
-    public void setup() {
-        this.registry = mock(Registry.class);
-        this.configuration = mock(Configuration.class);
-        doReturn("data").when(this.configuration).getServiceName();
-        doReturn(true).when(this.configuration).has("services.data.schema.resource.location");
-        this.manager = SchemaManager.of(this.configuration, this.registry);
-    }
+  @Before
+  public void setup() {
+    this.registry = mock(Registry.class);
+    this.configuration = mock(Configuration.class);
+    doReturn("data").when(this.configuration).getServiceName();
+    doReturn(true).when(this.configuration).has("services.data.schema.resource.location");
+    this.manager = SchemaManager.of(this.configuration, this.registry);
+  }
 
-    @Test
-    public void testRegisterSchema() throws ConfigException, URISyntaxException, ResourceException, RegistryException {
-        var location = getLocation("registration");
-        doReturn(Optional.of(location)).when(this.configuration).getConfig("services.data.schema.resource.location");
+  @Test
+  public void testRegisterSchema() throws ConfigException, URISyntaxException, ResourceException, RegistryException {
+    var location = getLocation("registration");
+    doReturn(Optional.of(location)).when(this.configuration).getConfig("services.data.schema.resource.location");
 
-        this.manager.registerResources();
+    this.manager.registerResources();
 
-        assertThat(this.manager.getSchemas().size(), is(1));
-        assertThat(this.manager.getSchemas().get(0).getDomain(), is("resource"));
+    assertThat(this.manager.getSchemas().size(), is(1));
+    assertThat(this.manager.getSchemas().get(0).getDomain(), is("resource"));
 
-        var captor = ArgumentCaptor.forClass(String.class);
-        verify(this.registry, times(1)).add(anyString(), captor.capture());
+    var captor = ArgumentCaptor.forClass(String.class);
+    verify(this.registry, times(1)).add(anyString(), captor.capture());
 
-        var argument = new JSONObject(captor.getValue());
-        assertThat(argument.getString("name"), is("resource"));
-        assertFalse(StringUtils.isBlank(argument.getString("content")));
-    }
+    var argument = new JSONObject(captor.getValue());
+    assertThat(argument.getString("name"), is("resource"));
+    assertFalse(StringUtils.isBlank(argument.getString("content")));
+  }
 
-    @Test
-    public void testGetSchema() throws RegistryException, URISyntaxException, ResourceException {
-        var resourceFile = getResourceFile("resource/resource.json");
-        var content = new JSONSchema(resourceFile).getContent();
+  @Test
+  public void testGetSchema() throws RegistryException, URISyntaxException, ResourceException {
+    var resourceFile = getResourceFile("resource/resource.json");
+    var content = new JSONSchema(resourceFile).getContent();
 
-        var mockedSchema = new JSONObject().put("id", "id").put("name", "name").put("content", content);
-        doReturn(mockedSchema.toString()).when(this.registry).get("domain");
+    var mockedSchema = new JSONObject().put("id", "id").put("name", "name").put("content", content);
+    doReturn(mockedSchema.toString()).when(this.registry).get("domain");
 
-        var schema = this.manager.getSchema("domain");
-        assertThat(schema.getDomain(), is("name"));
-        assertThat(schema.getName(), is("name"));
-        assertTrue(StringUtils.isNotBlank(schema.getContent()));
-    }
+    var schema = this.manager.getSchema("domain");
+    assertThat(schema.getDomain(), is("name"));
+    assertThat(schema.getName(), is("name"));
+    assertTrue(StringUtils.isNotBlank(schema.getContent()));
+  }
 
-    private String getLocation(String location) throws URISyntaxException {
-        return getResourceFile(location).getAbsolutePath();
-    }
-    
-    private static File getResourceFile(String resourceName) throws URISyntaxException {
-        var resource = SchemaManagerTest.class.getClassLoader().getResource(resourceName);
-        return new File(resource.toURI());
-    }
+  private String getLocation(String location) throws URISyntaxException {
+    return getResourceFile(location).getAbsolutePath();
+  }
+
+  private static File getResourceFile(String resourceName) throws URISyntaxException {
+    var resource = SchemaManagerTest.class.getClassLoader().getResource(resourceName);
+    return new File(resource.toURI());
+  }
 
 }

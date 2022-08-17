@@ -14,29 +14,29 @@ import com.devit.mscore.logging.ApplicationLogger;
  */
 public class LogDelegate implements JavaDelegate {
 
-    private static final Logger LOG = ApplicationLogger.getLogger(LogDelegate.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(LogDelegate.class);
 
-    private Expression message;
+  private Expression message;
 
-    private Expression level;
+  private Expression level;
 
-    @Override
-    public void execute(DelegateExecution execution) {
-        var messageValue = this.message.getValue(execution).toString();
-        var levelValue = this.level == null ? "" : this.level.getValue(execution).toString();
+  @Override
+  public void execute(DelegateExecution execution) {
+    var messageValue = this.message.getValue(execution).toString();
+    var levelValue = this.level == null ? "" : this.level.getValue(execution).toString();
 
-        switch (levelValue.toLowerCase()) {
-            case "info":
-                LOG.debug(messageValue);
-                break;
-            case "warn":
-                LOG.warn(messageValue);
-                break;
-            case "error":
-                LOG.error(messageValue);
-                break;
-            default:
-                LOG.info(messageValue);
-        }
+    switch (levelValue.toLowerCase()) {
+      case "info":
+        LOG.debug(messageValue);
+        break;
+      case "warn":
+        LOG.warn(messageValue);
+        break;
+      case "error":
+        LOG.error(messageValue);
+        break;
+      default:
+        LOG.info(messageValue);
     }
+  }
 }

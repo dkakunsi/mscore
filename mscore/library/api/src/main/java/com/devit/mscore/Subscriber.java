@@ -11,18 +11,18 @@ import org.json.JSONObject;
  */
 public interface Subscriber extends Starter {
 
-    /**
-     * Listen to incoming message on hte provided channel.
-     * 
-     * @param channel  could be topic or queue.
-     * @param consumer function to be executed after receiving message.
-     */
-    void subscribe(String channel, Consumer<JSONObject> consumer);
+  /**
+   * Listen to incoming message on hte provided channel.
+   * 
+   * @param channel  could be topic or queue.
+   * @param consumer function to be executed after receiving message.
+   */
+  void subscribe(String channel, Consumer<JSONObject> consumer);
 
-    /**
-     * 
-     * @return channel to subscribe
-     */
-    String getChannel();
+  /**
+   * 
+   * @return channel to subscribe
+   */
+  String getChannel();
 
 }

@@ -10,32 +10,32 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 public class EmailExtractorTest {
-    
-    @Test
-    public void testExtract() {
-        var possibleAttributes = List.of("email");
 
-        // no email
-        var json = new JSONObject();
-        json.put("name", "first-last name");
+  @Test
+  public void testExtract() {
+    var possibleAttributes = List.of("email");
 
-        var optional = EmailExtractor.extract(json, possibleAttributes);
-        assertTrue(optional.isEmpty());
+    // no email
+    var json = new JSONObject();
+    json.put("name", "first-last name");
 
-        // with email in nested object
-        var contact = new JSONObject();
-        contact.put("email", "email@contact.com");
-        contact.put("phone", "12345");
-        json.put("contact", contact);
+    var optional = EmailExtractor.extract(json, possibleAttributes);
+    assertTrue(optional.isEmpty());
 
-        optional = EmailExtractor.extract(json, possibleAttributes);
-        assertTrue(optional.isPresent());
-        assertThat(optional.get(), is(List.of("email@contact.com")));
+    // with email in nested object
+    var contact = new JSONObject();
+    contact.put("email", "email@contact.com");
+    contact.put("phone", "12345");
+    json.put("contact", contact);
 
-        // with email at top level
-        json.put("email", "firstname@lastname.com");
-        optional = EmailExtractor.extract(json, possibleAttributes);
-        assertTrue(optional.isPresent());
-        assertThat(optional.get(), is(List.of("firstname@lastname.com")));
-    }
+    optional = EmailExtractor.extract(json, possibleAttributes);
+    assertTrue(optional.isPresent());
+    assertThat(optional.get(), is(List.of("email@contact.com")));
+
+    // with email at top level
+    json.put("email", "firstname@lastname.com");
+    optional = EmailExtractor.extract(json, possibleAttributes);
+    assertTrue(optional.isPresent());
+    assertThat(optional.get(), is(List.of("firstname@lastname.com")));
+  }
 }

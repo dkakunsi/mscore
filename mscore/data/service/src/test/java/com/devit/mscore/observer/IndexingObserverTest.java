@@ -12,24 +12,24 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 public class IndexingObserverTest {
-    
-    @Test
-    public void testNotify_NullIndex() throws IndexingException {
-        var index = mock(Index.class);
-        var indexingObserver = new IndexingObserver(index);
-        indexingObserver.notify(new JSONObject());
 
-        verify(index).index(any(JSONObject.class));
-    }
+  @Test
+  public void testNotify_NullIndex() throws IndexingException {
+    var index = mock(Index.class);
+    var indexingObserver = new IndexingObserver(index);
+    indexingObserver.notify(new JSONObject());
 
-    @Test
-    public void testNotify_ExceptionThrown() throws Exception {
-        var index = mock(Index.class);
-        doThrow(IndexingException.class).when(index).index(any(JSONObject.class));
+    verify(index).index(any(JSONObject.class));
+  }
 
-        var indexingObserver = new IndexingObserver(index);
-        indexingObserver.notify(new JSONObject());
+  @Test
+  public void testNotify_ExceptionThrown() throws Exception {
+    var index = mock(Index.class);
+    doThrow(IndexingException.class).when(index).index(any(JSONObject.class));
 
-        verify(index).index(any(JSONObject.class));
-    }
+    var indexingObserver = new IndexingObserver(index);
+    indexingObserver.notify(new JSONObject());
+
+    verify(index).index(any(JSONObject.class));
+  }
 }

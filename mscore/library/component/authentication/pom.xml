@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.devit.mscore</groupId>
-        <artifactId>component</artifactId>
-        <version>${revision}</version>
-        <relativePath>..</relativePath>
-    </parent>
+  <parent>
+    <groupId>com.devit.mscore</groupId>
+    <artifactId>component</artifactId>
+    <version>${revision}</version>
+    <relativePath>..</relativePath>
+  </parent>
 
-    <artifactId>authentication</artifactId>
-    <packaging>jar</packaging>
-    <name>MS Core :: Authentication :: JWT</name>
+  <artifactId>authentication</artifactId>
+  <packaging>jar</packaging>
+  <name>MS Core :: Authentication :: JWT</name>
 
-    <properties>
-        <revision>1.0-SNAPSHOT</revision>
-    </properties>
+  <properties>
+    <revision>1.0-SNAPSHOT</revision>
+  </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.devit.mscore</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.auth0</groupId>
-            <artifactId>java-jwt</artifactId>
-            <version>3.16.0</version>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>com.devit.mscore</groupId>
+      <artifactId>log4j</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.auth0</groupId>
+      <artifactId>java-jwt</artifactId>
+      <version>3.16.0</version>
+    </dependency>
+  </dependencies>
 </project>
