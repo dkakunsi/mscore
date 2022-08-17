@@ -53,7 +53,7 @@ jobs:
       if: ${{ !inputs.release }}
       uses: allenevans/set-env@v2.0.0
       with:
-        VERSION_NUMBER: ${{ steps.semvers.outputs.patch }}
+        VERSION_NUMBER: ${{ steps.semvers.outputs.patch }}-SNAPSHOT
 
     - name: Print Version Number
       run: echo "Version number is $VERSION_NUMBER"
@@ -91,18 +91,21 @@ jobs:
       run: mvn --file mscore/data/pom.xml -PuseCustomRepo,useSonar -Drevision=$VERSION_NUMBER deploy sonar:sonar
 
     - name: Log in to Docker Hub
+      if: ${{ inputs.release }}
       uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Extract metadata for Docker
+      if: ${{ inputs.release }}
       id: meta
       uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
       with:
         images: devit16/mscore-data-service
 
     - name: Build and push Docker images
+      if: ${{ inputs.release }}
       uses: docker/build-push-action@v3.1.1
       with:
         context: "mscore/data/service/target"

@@ -14,11 +14,6 @@ on:
         description: 'Release Version'
         required: false
         type: boolean
-  workflow_run:
-    workflows:
-      - "Common - Master"
-    types:
-      - completed
 
 jobs:
   build:
@@ -53,7 +48,7 @@ jobs:
       if: ${{ !inputs.release }}
       uses: allenevans/set-env@v2.0.0
       with:
-        VERSION_NUMBER: ${{ steps.semvers.outputs.patch }}
+        VERSION_NUMBER: ${{ steps.semvers.outputs.patch }}-SNAPSHOT
 
     - name: Print Version Number
       run: echo "Version number is $VERSION_NUMBER"
