@@ -59,12 +59,6 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Extract metadata for Docker
-      id: meta
-      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
-      with:
-        images: devit16/mscore
-
     - name: Build and push Docker images
       uses: docker/build-push-action@v3.1.1
       with:
@@ -72,5 +66,5 @@ jobs:
         file: "mscore/common/docker/Dockerfile"
         push: true
         tags: |
-          $BUILD_VERSION
-          latest
+          devit16/mscore:${{ env.BUILD_VERSION }}
+          devit16/mscore:latest
