@@ -1,11 +1,11 @@
 package com.devit.mscore.workflow.flowable.delegate;
 
+import com.devit.mscore.Logger;
+import com.devit.mscore.logging.ApplicationLogger;
+
 import org.flowable.common.engine.api.delegate.Expression;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
-
-import com.devit.mscore.Logger;
-import com.devit.mscore.logging.ApplicationLogger;
 
 /**
  * Delegate that print message to log channle.

@@ -3,8 +3,6 @@ package com.devit.mscore.workflow;
 import static com.devit.mscore.util.Utils.WORKFLOW;
 import static com.devit.mscore.workflow.flowable.DelegateUtils.NOTIFICATION;
 
-import java.util.HashMap;
-
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Publisher;
@@ -32,6 +30,8 @@ import com.devit.mscore.workflow.api.ApiFactory;
 import com.devit.mscore.workflow.flowable.DataClient;
 import com.devit.mscore.workflow.flowable.DelegateUtils;
 import com.devit.mscore.workflow.flowable.FlowableWorkflowFactory;
+
+import java.util.HashMap;
 
 public class ApplicationStarter implements Starter {
 

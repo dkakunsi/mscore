@@ -1,13 +1,16 @@
 package com.devit.mscore.db.mongo;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Schema;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.ConfigException;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import org.bson.Document;
+
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoClientSettings.Builder;
@@ -16,8 +19,6 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-
-import org.bson.Document;
 
 /**
  *

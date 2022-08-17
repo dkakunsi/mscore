@@ -2,6 +2,7 @@ package com.devit.mscore;
 
 import static com.devit.mscore.ApplicationContext.setContext;
 
+import com.devit.mscore.data.ApplicationStarter;
 import com.devit.mscore.exception.ApplicationException;
 import com.devit.mscore.logging.ApplicationLogger;
 

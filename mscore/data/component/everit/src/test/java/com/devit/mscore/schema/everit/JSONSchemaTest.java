@@ -1,16 +1,16 @@
 package com.devit.mscore.schema.everit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThrows;
-import static org.hamcrest.MatcherAssert.assertThat;
+
+import com.devit.mscore.exception.ResourceException;
+import com.devit.mscore.exception.ValidationException;
 
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Set;
-
-import com.devit.mscore.exception.ResourceException;
-import com.devit.mscore.exception.ValidationException;
 
 import org.json.JSONObject;
 import org.junit.Test;

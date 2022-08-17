@@ -1,15 +1,15 @@
 package com.devit.mscore;
 
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 
-import java.util.Optional;
-
 import com.devit.mscore.exception.DataException;
 import com.devit.mscore.exception.EnrichmentException;
+
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;

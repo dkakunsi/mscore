@@ -10,13 +10,13 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
-import java.io.File;
-import java.net.URISyntaxException;
-
 import com.devit.mscore.Registry;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.ResourceException;
+
+import java.io.File;
+import java.net.URISyntaxException;
 
 import org.json.JSONObject;
 import org.junit.Before;

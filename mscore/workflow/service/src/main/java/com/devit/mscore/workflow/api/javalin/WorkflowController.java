@@ -2,13 +2,13 @@ package com.devit.mscore.workflow.api.javalin;
 
 import static com.devit.mscore.util.Utils.VARIABLE;
 
-import java.util.HashMap;
-import java.util.Optional;
-
 import com.devit.mscore.Service;
+import com.devit.mscore.WorkflowProcess;
 import com.devit.mscore.exception.ApplicationException;
 import com.devit.mscore.web.javalin.JavalinController;
-import com.devit.mscore.WorkflowProcess;
+
+import java.util.HashMap;
+import java.util.Optional;
 
 import org.json.JSONObject;
 

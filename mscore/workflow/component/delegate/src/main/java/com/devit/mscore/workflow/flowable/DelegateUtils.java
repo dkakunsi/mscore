@@ -1,9 +1,9 @@
 package com.devit.mscore.workflow.flowable;
 
-import java.util.Map;
-
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Publisher;
+
+import java.util.Map;
 
 public class DelegateUtils {
 

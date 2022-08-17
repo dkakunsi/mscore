@@ -3,10 +3,10 @@ package com.devit.mscore.workflow.flowable;
 import static com.devit.mscore.util.AttributeConstants.DOMAIN;
 import static com.devit.mscore.util.AttributeConstants.ID;
 
+import com.devit.mscore.WorkflowObject;
+
 import java.util.Date;
 import java.util.Map;
-
-import com.devit.mscore.WorkflowObject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.RuntimeService;

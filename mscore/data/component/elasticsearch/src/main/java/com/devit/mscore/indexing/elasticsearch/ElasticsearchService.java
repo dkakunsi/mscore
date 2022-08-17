@@ -2,6 +2,14 @@ package com.devit.mscore.indexing.elasticsearch;
 
 import static com.devit.mscore.util.AttributeConstants.getId;
 
+import com.devit.mscore.Logger;
+import com.devit.mscore.exception.IndexingException;
+import com.devit.mscore.logging.ApplicationLogger;
+
+import java.io.IOException;
+import java.util.Map;
+import java.util.Optional;
+
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
@@ -16,14 +24,6 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.Optional;
-
-import com.devit.mscore.Logger;
-import com.devit.mscore.exception.IndexingException;
-import com.devit.mscore.logging.ApplicationLogger;
 
 /**
  * Index implementation using elasticsearch.

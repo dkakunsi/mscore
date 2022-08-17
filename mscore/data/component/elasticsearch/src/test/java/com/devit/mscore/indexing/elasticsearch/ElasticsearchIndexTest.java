@@ -1,7 +1,7 @@
 package com.devit.mscore.indexing.elasticsearch;
 
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -10,10 +10,10 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import java.util.Optional;
-
 import com.devit.mscore.exception.IndexingException;
 import com.devit.mscore.exception.RegistryException;
+
+import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONException;

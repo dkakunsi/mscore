@@ -17,7 +17,7 @@
 
   <properties>
     <revision>1.0-SNAPSHOT</revision>
-    <sonar.projectKey>devit:test</sonar.projectKey>
+    <sonar.projectKey>devit:notification</sonar.projectKey>
   </properties>
 
   <modules>

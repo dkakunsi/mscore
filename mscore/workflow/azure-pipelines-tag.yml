@@ -48,9 +48,9 @@ steps:
       jdkArchitectureOption: "x64"
       publishJUnitResults: true
       testResultsFiles: "mscore/workflow/**/surefire-reports/TEST-*.xml"
-      goals: "deploy"
+      goals: "deploy sonar:sonar"
       #    options: -Drevision=$(Version.tag) -Pmscore
-      options: -Drevision=$(Version.tag) -s $(mavenSettingsFile.secureFilePath) -PmyMavenRepo
+      options: -Drevision=$(Version.tag) -s $(mavenSettingsFile.secureFilePath) -PmyMavenRepo,useSonar
 
   - task: Docker@2
     displayName: "Docker build & push workflow image"

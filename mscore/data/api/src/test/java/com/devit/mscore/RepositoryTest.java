@@ -1,8 +1,8 @@
 package com.devit.mscore;
 
-import java.util.List;
-
 import com.devit.mscore.exception.DataException;
+
+import java.util.List;
 
 import org.json.JSONObject;
 import org.junit.Before;

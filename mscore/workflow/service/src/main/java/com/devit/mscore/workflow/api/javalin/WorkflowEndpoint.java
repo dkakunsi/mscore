@@ -4,9 +4,9 @@ import static io.javalin.apibuilder.ApiBuilder.path;
 import static io.javalin.apibuilder.ApiBuilder.post;
 import static io.javalin.apibuilder.ApiBuilder.put;
 
-import java.util.List;
-
 import com.devit.mscore.web.javalin.JavalinEndpoint;
+
+import java.util.List;
 
 import io.javalin.apibuilder.EndpointGroup;
 

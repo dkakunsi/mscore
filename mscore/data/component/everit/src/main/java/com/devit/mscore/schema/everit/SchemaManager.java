@@ -1,9 +1,5 @@
 package com.devit.mscore.schema.everit;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Registry;
@@ -14,6 +10,10 @@ import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.ResourceException;
 import com.devit.mscore.logging.ApplicationLogger;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;

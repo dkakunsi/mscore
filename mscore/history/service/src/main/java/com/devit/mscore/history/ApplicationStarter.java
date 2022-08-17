@@ -1,9 +1,5 @@
 package com.devit.mscore.history;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.devit.mscore.Configuration;
 import com.devit.mscore.GitHistoryFactory;
 import com.devit.mscore.Logger;
@@ -17,6 +13,10 @@ import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.messaging.kafka.KafkaMessagingFactory;
 import com.devit.mscore.registry.ZookeeperRegistryFactory;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ApplicationStarter implements Starter {
 

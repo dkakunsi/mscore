@@ -4,10 +4,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertTrue;
 
+import com.devit.mscore.exception.ResourceException;
+
 import java.io.File;
 import java.net.URISyntaxException;
-
-import com.devit.mscore.exception.ResourceException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;

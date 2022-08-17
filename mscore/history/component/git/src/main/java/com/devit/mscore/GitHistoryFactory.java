@@ -1,11 +1,11 @@
 package com.devit.mscore;
 
+import com.devit.mscore.exception.ApplicationRuntimeException;
+import com.devit.mscore.exception.ConfigException;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
-import com.devit.mscore.exception.ApplicationRuntimeException;
-import com.devit.mscore.exception.ConfigException;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.TransportConfigCallback;

@@ -4,6 +4,8 @@ import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.util.AttributeConstants.getDomain;
 import static com.devit.mscore.util.AttributeConstants.getId;
 
+import com.devit.mscore.logging.ApplicationLogger;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -16,8 +18,6 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.json.JSONObject;
-
-import com.devit.mscore.logging.ApplicationLogger;
 
 public class GitHistory implements History {
 

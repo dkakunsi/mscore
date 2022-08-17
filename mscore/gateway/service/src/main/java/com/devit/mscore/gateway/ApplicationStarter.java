@@ -1,7 +1,5 @@
 package com.devit.mscore.gateway;
 
-import org.apache.commons.lang3.BooleanUtils;
-
 import com.devit.mscore.AuthenticationProvider;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.ServiceRegistration;
@@ -19,6 +17,8 @@ import com.devit.mscore.gateway.service.WorkflowService;
 import com.devit.mscore.registry.ZookeeperRegistryFactory;
 import com.devit.mscore.util.DateUtils;
 import com.devit.mscore.web.Client;
+
+import org.apache.commons.lang3.BooleanUtils;
 
 public class ApplicationStarter implements Starter {
 

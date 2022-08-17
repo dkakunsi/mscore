@@ -1,7 +1,7 @@
 package com.devit.mscore.history;
 
-import com.devit.mscore.HistoryException;
 import com.devit.mscore.History;
+import com.devit.mscore.HistoryException;
 import com.devit.mscore.Listener;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Subscriber;

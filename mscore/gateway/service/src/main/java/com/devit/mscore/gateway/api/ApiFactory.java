@@ -2,10 +2,10 @@ package com.devit.mscore.gateway.api;
 
 import com.devit.mscore.AuthenticationProvider;
 import com.devit.mscore.Configuration;
-import com.devit.mscore.gateway.service.ResourceService;
-import com.devit.mscore.gateway.service.WorkflowService;
 import com.devit.mscore.gateway.api.javalin.ResourceController;
 import com.devit.mscore.gateway.api.javalin.WorkflowController;
+import com.devit.mscore.gateway.service.ResourceService;
+import com.devit.mscore.gateway.service.WorkflowService;
 import com.devit.mscore.web.javalin.JavalinApiFactory;
 
 public class ApiFactory extends JavalinApiFactory {

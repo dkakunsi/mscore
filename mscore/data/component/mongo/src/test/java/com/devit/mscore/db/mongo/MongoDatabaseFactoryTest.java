@@ -7,24 +7,25 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Schema;
 import com.devit.mscore.exception.ConfigException;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.bson.Document;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.mongodb.ConnectionString;
-import com.mongodb.MongoCredential;
 import com.mongodb.MongoClientSettings.Builder;
+import com.mongodb.MongoCredential;
 import com.mongodb.client.ListIndexesIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-
-import org.bson.Document;
-import org.junit.Before;
-import org.junit.Test;
 
 public class MongoDatabaseFactoryTest {
 

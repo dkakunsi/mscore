@@ -226,7 +226,9 @@
           <version>${jacoco-maven-plugin.version}</version>
           <configuration>
             <excludes>
-              <exclude>**/*Exception.*</exclude>
+              <exclude>com/devit/mscore/exception/**Exception.*</exclude>
+              <exclude>com/devit/mscore/**/ApplicationStarter.*</exclude>
+              <exclude>com/devit/mscore/Main.*</exclude>
             </excludes>
           </configuration>
           <executions>

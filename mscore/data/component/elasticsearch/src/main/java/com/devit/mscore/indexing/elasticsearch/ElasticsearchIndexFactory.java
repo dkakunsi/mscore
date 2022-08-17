@@ -1,9 +1,5 @@
 package com.devit.mscore.indexing.elasticsearch;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Registry;
@@ -13,6 +9,10 @@ import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.ResourceException;
 import com.devit.mscore.logging.ApplicationLogger;
+
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;

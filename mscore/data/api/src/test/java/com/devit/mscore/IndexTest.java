@@ -1,12 +1,12 @@
 package com.devit.mscore;
 
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-
-import java.util.Optional;
+import static org.hamcrest.core.Is.is;
 
 import com.devit.mscore.exception.IndexingException;
 import com.devit.mscore.util.AttributeConstants;
+
+import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

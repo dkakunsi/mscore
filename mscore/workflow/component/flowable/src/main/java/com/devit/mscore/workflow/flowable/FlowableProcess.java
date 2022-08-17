@@ -7,14 +7,14 @@ import static com.devit.mscore.web.WebUtils.INFORMATION;
 import static com.devit.mscore.web.WebUtils.SUCCESS;
 import static com.devit.mscore.workflow.flowable.FlowableDefinition.PROCESS;
 import static com.devit.mscore.workflow.flowable.FlowableDefinition.WORKFLOW;
-import static org.flowable.engine.ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE;
+import static org.flowable.common.engine.impl.AbstractEngineConfiguration.DB_SCHEMA_UPDATE_TRUE;
 
 import com.devit.mscore.Logger;
 import com.devit.mscore.Registry;
 import com.devit.mscore.Service;
-import com.devit.mscore.WorkflowProcess;
 import com.devit.mscore.WorkflowDefinition;
 import com.devit.mscore.WorkflowObject;
+import com.devit.mscore.WorkflowProcess;
 import com.devit.mscore.exception.ProcessException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.WebClientException;

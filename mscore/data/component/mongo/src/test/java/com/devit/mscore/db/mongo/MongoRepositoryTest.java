@@ -1,11 +1,11 @@
 package com.devit.mscore.db.mongo;
 
 import static com.devit.mscore.util.AttributeConstants.getId;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -14,18 +14,11 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import java.util.List;
-import java.util.function.Consumer;
-
 import com.devit.mscore.exception.DataDuplicationException;
 import com.devit.mscore.exception.DataException;
-import com.mongodb.DuplicateKeyException;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.ListIndexesIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.ReplaceOptions;
-import com.mongodb.client.result.UpdateResult;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
@@ -34,6 +27,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.mongodb.DuplicateKeyException;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.ListIndexesIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.result.UpdateResult;
 
 public class MongoRepositoryTest {
 

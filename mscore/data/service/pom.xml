@@ -16,6 +16,8 @@
   <properties>
     <revision>1.0-SNAPSHOT</revision>
     <library.version>[2.1,)</library.version>
+
+    <minimum.class.line.coverage>0.82</minimum.class.line.coverage>
   </properties>
 
   <dependencies>

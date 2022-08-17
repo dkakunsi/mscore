@@ -1,8 +1,8 @@
 package com.devit.mscore.schema.everit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -10,15 +10,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.util.Optional;
-
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Registry;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.ResourceException;
+
+import java.io.File;
+import java.net.URISyntaxException;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;

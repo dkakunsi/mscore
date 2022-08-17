@@ -48,6 +48,6 @@ steps:
       jdkArchitectureOption: "x64"
       publishJUnitResults: true
       testResultsFiles: "mscore/library/**/surefire-reports/TEST-*.xml"
-      goals: "deploy"
-      #    options: -Drevision=$(Version.tag) -Pmscore
-      options: -Drevision=$(Version.tag) -s $(mavenSettingsFile.secureFilePath) -PmyMavenRepo
+      goals: "deploy sonar:sonar"
+      #    options: -Drevision=$(Version.tag) -Pmscore,useSonar
+      options: -Drevision=$(Version.tag) -s $(mavenSettingsFile.secureFilePath) -PmyMavenRepo,useSonar

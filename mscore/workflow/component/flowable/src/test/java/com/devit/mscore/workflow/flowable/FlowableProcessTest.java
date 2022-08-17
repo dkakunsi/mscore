@@ -1,11 +1,11 @@
 package com.devit.mscore.workflow.flowable;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -16,11 +16,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.io.File;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Optional;
 
 import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
@@ -34,6 +29,11 @@ import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.WebClientException;
 import com.devit.mscore.web.Client;
 import com.devit.mscore.workflow.flowable.delegate.TestDelegate;
+
+import java.io.File;
+import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;

@@ -1,10 +1,16 @@
 package com.devit.mscore.db.mongo;
 
 import static com.devit.mscore.util.AttributeConstants.ID;
-import static com.devit.mscore.util.AttributeConstants.hasId;
 import static com.devit.mscore.util.AttributeConstants.getCode;
 import static com.devit.mscore.util.AttributeConstants.getId;
+import static com.devit.mscore.util.AttributeConstants.hasId;
 import static com.devit.mscore.util.JsonUtils.copy;
+
+import com.devit.mscore.Logger;
+import com.devit.mscore.Repository;
+import com.devit.mscore.exception.DataDuplicationException;
+import com.devit.mscore.exception.DataException;
+import com.devit.mscore.logging.ApplicationLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,22 +18,17 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import com.devit.mscore.Logger;
-import com.devit.mscore.Repository;
-import com.devit.mscore.exception.DataDuplicationException;
-import com.devit.mscore.exception.DataException;
-import com.devit.mscore.logging.ApplicationLogger;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.mongodb.DuplicateKeyException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.ReplaceOptions;
-
-import org.bson.Document;
-import org.bson.types.ObjectId;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * Root class of mongo repository implementation.

@@ -5,11 +5,11 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import com.devit.mscore.exception.ConfigException;
+
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Optional;
-
-import com.devit.mscore.exception.ConfigException;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;

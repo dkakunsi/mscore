@@ -1,9 +1,9 @@
 package com.devit.mscore.indexing.elasticsearch;
 
-import java.util.Optional;
-
 import com.devit.mscore.Index;
 import com.devit.mscore.exception.IndexingException;
+
+import java.util.Optional;
 
 import org.json.JSONArray;
 import org.json.JSONException;

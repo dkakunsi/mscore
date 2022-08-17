@@ -2,13 +2,12 @@ package com.devit.mscore;
 
 import java.util.Base64;
 
-import com.jcraft.jsch.HostKey;
-
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-
 import org.eclipse.jgit.transport.ssh.jsch.JschConfigSessionFactory;
 import org.eclipse.jgit.util.FS;
+
+import com.jcraft.jsch.HostKey;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
 
 public class CustomJschConfigSessionFactory extends JschConfigSessionFactory {
 

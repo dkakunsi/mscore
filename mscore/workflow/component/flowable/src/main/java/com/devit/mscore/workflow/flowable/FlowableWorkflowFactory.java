@@ -1,12 +1,5 @@
 package com.devit.mscore.workflow.flowable;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.sql.DataSource;
-
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Registry;
 import com.devit.mscore.Resource;
@@ -16,6 +9,13 @@ import com.devit.mscore.WorkflowProcess;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.ResourceException;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.sql.DataSource;
 
 import org.postgresql.ds.PGSimpleDataSource;
 
