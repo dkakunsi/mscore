@@ -10,7 +10,7 @@
   <description>Parent project of all mscore components</description>
 
   <properties>
-    <parent.version>2.1</parent.version>
+    <parent.version>2.1.2</parent.version>
 
     <!-- Unify encoding for all the modules -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -45,11 +45,11 @@
     <hamcrest.version>2.0.0.0</hamcrest.version>
     <awaitality.version>4.2.0</awaitality.version>
 
-    <!-- Distribution Management URLS -->
-    <maven.repo>http://128.199.213.91:1200/repository</maven.repo>
-    <dist.release>${maven.repo}/maven-releases</dist.release>
-    <dist.snapshot>${maven.repo}/maven-snapshots</dist.snapshot>
+    <!-- Sonarcloud.io -->
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.organization>dev-it</sonar.organization>
 
+    <!-- Jacoco -->
     <minimum.class.line.coverage>0.90</minimum.class.line.coverage>
     <minimum.bundle.line.coverage>0.90</minimum.bundle.line.coverage>
   </properties>
@@ -437,21 +437,21 @@
 
   <profiles>
     <profile>
-      <id>myMavenRepo</id>
+      <id>useCustomRepo</id>
       <repositories>
         <repository>
-          <id>myMavenRepo.read</id>
-          <url>${myMavenRepo.read.url}</url>
+          <id>customRepo.read</id>
+          <url>${customRepo.read.url}</url>
         </repository>
       </repositories>
       <distributionManagement>
         <repository>
-          <id>myMavenRepo.write</id>
-          <url>${myMavenRepo.write.url}</url>
+          <id>customRepo.write</id>
+          <url>${customRepo.write.url}</url>
         </repository>
         <snapshotRepository>
-          <id>myMavenRepo.write</id>
-          <url>${myMavenRepo.write.url}</url>
+          <id>customRepo.write</id>
+          <url>${customRepo.write.url}</url>
         </snapshotRepository>
       </distributionManagement>
     </profile>
