@@ -1,0 +1,107 @@
+name: Gateway - Master
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "mscore/gateway/**"
+      - "!mscore/gateway/README.MD"
+      - "!mscore/gateway/.gitignore"
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release Version'
+        required: false
+        type: boolean
+  workflow_run:
+    workflows:
+      - "Library - Master"
+    types:
+      - completed
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Get Latest Tag
+      id: latestTag
+      run: echo "::set-output name=tag::$(git describe --tags --abbrev=0)"
+
+    - name: Set Release Version
+      if: ${{ inputs.release }}
+      uses: allenevans/set-env@v2.0.0
+      with:
+        VERSION_NUMBER: ${{ steps.latestTag.outputs.tag }}
+
+    - name: 'Get Next Version'
+      if: ${{ !inputs.release }}
+      id: semvers
+      uses: "WyriHaximus/github-action-next-semvers@v1"
+      with:
+        version: ${{ steps.latestTag.outputs.tag }}
+
+    - name: Set Snapshot Version
+      if: ${{ !inputs.release }}
+      uses: allenevans/set-env@v2.0.0
+      with:
+        VERSION_NUMBER: ${{ steps.semvers.outputs.patch }}-SNAPSHOT
+
+    - name: Print Version Number
+      run: echo "Version number is $VERSION_NUMBER"
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Generate settings.xml for Maven Builds
+      uses: whelk-io/maven-settings-xml-action@v20
+      with:
+        profiles: >
+          [
+            {
+              "id": "useCustomRepo",
+              "name": "Profile for custom repostiory",
+              "properties": {
+                "customRepo.read.url": "${{ secrets.CUSTOMREPO_READ_URL }}",
+                "customRepo.write.url": "${{ secrets.CUSTOMREPO_WRITE_URL }}"
+              }
+            },
+            {
+              "id": "useSonar",
+              "name": "Profile for Sonarcloud.io",
+              "properties": {
+                "sonar.login": "${{ secrets.SONAR_LOGIN }}"
+              }
+            }
+          ]
+
+    - name: Build with Maven
+      run: mvn --file mscore/gateway/pom.xml -PuseCustomRepo,useSonar -Drevision=$VERSION_NUMBER deploy sonar:sonar
+
+    - name: Log in to Docker Hub
+      if: ${{ inputs.release }}
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker images
+      if: ${{ inputs.release }}
+      uses: docker/build-push-action@v3.1.1
+      with:
+        context: "mscore/gateway/service/target"
+        file: "mscore/gateway/service/target/Dockerfile"
+        push: true
+        tags: |
+          devit16/mscore-gateway-service:${{ env.VERSION_NUMBER }}
+          devit16/mscore-gateway-service:latest
