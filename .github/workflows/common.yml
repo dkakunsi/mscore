@@ -8,6 +8,7 @@ on:
       - "mscore/common/**"
       - "!mscore/common/README.MD"
       - "!mscore/common/.gitignore"
+  workflow_dispatch: # enable manual trigger
 
 env:
   BUILD_VERSION: 2.1.2
