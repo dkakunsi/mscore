@@ -15,7 +15,7 @@
 
   <properties>
     <revision>1.0-SNAPSHOT</revision>
-    <mongo.version>3.12.7</mongo.version>
+    <mongo.version>3.12.8</mongo.version>
   </properties>
 
   <dependencies>
