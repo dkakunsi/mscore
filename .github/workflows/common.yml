@@ -5,10 +5,9 @@ on:
     branches:
       - master
     paths:
-      - mscore/common/**
-    paths-ignore:
-      - mscore/common/README.MD
-      - mscore/common/.gitignore
+      - "mscore/common/**"
+      - "!mscore/common/README.MD"
+      - "!mscore/common/.gitignore"
 
 env:
   BUILD_VERSION: 2.1.2
