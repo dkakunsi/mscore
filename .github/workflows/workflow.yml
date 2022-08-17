@@ -1,4 +1,4 @@
-name: Workflow - Master
+name: Workflow Platform
 
 on:
   push:
@@ -16,7 +16,7 @@ on:
         type: boolean
   workflow_run:
     workflows:
-      - "Library - Master"
+      - "Library"
     types:
       - completed
 

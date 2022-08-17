@@ -1,4 +1,4 @@
-name: Common - Master
+name: Common
 
 on:
   push:
