@@ -61,8 +61,15 @@ public class ZookeeperConfiguration implements Configuration {
       return Optional.empty();
     }
 
-    var registryKey = "/" + key.replace(".", "/");
+    var registryKey = getRegistryKey(key);
     return executeGetConfig(registryKey);
+  }
+
+  private String getRegistryKey(String key) {
+    var keyElements = key.split(".");
+    var oldGroupElement = String.join(".", keyElements[0], keyElements[1]) + ".";
+    var newGroupELement = "/" + String.join("/", keyElements[0], keyElements[1]) + "/";
+    return key.replace(oldGroupElement, newGroupELement);
   }
 
   private Optional<String> executeGetConfig(String registryKey) throws ConfigException {
