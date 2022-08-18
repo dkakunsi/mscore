@@ -14,11 +14,11 @@ on:
         description: 'Release Version'
         required: false
         type: boolean
-  workflow_run:
-    workflows:
-      - "Library"
-    types:
-      - completed
+  # workflow_run:
+  #   workflows:
+  #     - "Library"
+  #   types:
+  #     - completed
 
 jobs:
   build:
