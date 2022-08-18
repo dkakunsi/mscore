@@ -80,4 +80,18 @@ public class ZookeeperConfigurationTest {
     var optionalValue = configuration.getConfig("key");
     assertThat(optionalValue.isEmpty(), is(true));
   }
+
+  @Test
+  public void testGetConfigByKey() throws ConfigException, RegistryException {
+    var mockedRegistry = mock(Registry.class);
+    doReturn("serviceGroup1").when(mockedRegistry).get("/platform/kafka/group.id");
+
+    var configuration = new ZookeeperConfiguration(mockedRegistry, "serviceName");
+    assertThat(configuration.getPrefixSeparator(), is("."));
+    assertThat(configuration.getServiceName(), is("serviceName"));
+
+    var configValue = configuration.getConfig("platform.kafka.group.id");
+    assertThat(configValue.isPresent(), is(true));
+    assertThat(configValue.get(), is("serviceGroup1"));
+  }
 }
