@@ -26,9 +26,9 @@ import org.apache.kafka.clients.producer.ProducerConfig;
  */
 public class KafkaMessagingFactory {
 
-  private static final String TOPIC_TEMPLATE = "topic.%s";
-
   private static final String CONFIG_TEMPLATE = "platform.kafka.%s";
+
+  private static final String TOPIC_TEMPLATE = "platform.kafka.topic.%s";
 
   private static final String SERVICE_CONFIG_TEMPLATE = "services.%s.kafka.%s";
 
@@ -62,18 +62,21 @@ public class KafkaMessagingFactory {
   }
 
   private void initKafkaIds() throws ConfigException {
-    var serviceName = this.configuration.getServiceName();
-    var groupIdConfigName = String.format(SERVICE_CONFIG_TEMPLATE, serviceName, ConsumerConfig.GROUP_ID_CONFIG);
-    var groupIdConfig = getConfig(groupIdConfigName)
-        .orElseThrow(() -> new ConfigException("No kafka group id is provided"));
-    this.kafkaGroupId = Pair.of(ConsumerConfig.GROUP_ID_CONFIG, groupIdConfig);
+    var groupId = getGroupId();
+    this.kafkaGroupId = Pair.of(ConsumerConfig.GROUP_ID_CONFIG, groupId);
 
-    var clientIdConfig = getClientIdConfig(groupIdConfig);
-    this.kafkaClientId = Pair.of(ProducerConfig.CLIENT_ID_CONFIG, clientIdConfig);
+    var clientId = getClientId(groupId);
+    this.kafkaClientId = Pair.of(ProducerConfig.CLIENT_ID_CONFIG, clientId);
   }
 
-  private String getClientIdConfig(String groupIdConfig) {
-    return String.format("%s-%s", groupIdConfig, UUID.randomUUID());
+  private String getGroupId() throws ConfigException {
+    var groupIdConfigKey = String.format(SERVICE_CONFIG_TEMPLATE, this.configuration.getServiceName(),
+        ConsumerConfig.GROUP_ID_CONFIG);
+    return getConfig(groupIdConfigKey).orElseThrow(() -> new ConfigException("No kafka group id is provided"));
+  }
+
+  private String getClientId(String groupId) {
+    return String.format("%s-%s", groupId, UUID.randomUUID());
   }
 
   public static KafkaMessagingFactory of(Configuration configuration) throws ConfigException {
@@ -110,20 +113,16 @@ public class KafkaMessagingFactory {
   protected Properties getProperties(List<String> configOptions) {
     var properties = new Properties();
     properties.setProperty(this.kafkaClientId.getKey(), this.kafkaClientId.getValue());
-    configOptions.forEach(option -> properties.put(option, executeGetTemplatedConfig(option).orElse(null)));
+    configOptions.forEach(option -> properties.put(option, getTemplatedConfig(option).orElse(null)));
     return properties;
   }
 
-  private Optional<String> executeGetTemplatedConfig(String key) {
+  private Optional<String> getTemplatedConfig(String key) {
     try {
-      return getTemplatedConfig(key);
+      return getConfig(String.format(CONFIG_TEMPLATE, key));
     } catch (ConfigException ex) {
       throw new ApplicationRuntimeException(ex);
     }
-  }
-
-  protected Optional<String> getTemplatedConfig(String key) throws ConfigException {
-    return getConfig(String.format(CONFIG_TEMPLATE, key));
   }
 
   protected Optional<String> getConfig(String key) throws ConfigException {
@@ -131,21 +130,20 @@ public class KafkaMessagingFactory {
   }
 
   /**
-   * This will search for `kafka.topic.{@code name}`.
+   * This will search for `platform.kafka.topic.{@code name}`.
    *
-   * @param name topic config name.
+   * @param name topic name.
    * @return kafka topics.
    * @throws ConfigException
    */
   public Optional<String[]> getTemplatedTopics(String name) throws ConfigException {
-    var topicName = String.format(TOPIC_TEMPLATE, name);
-    var topic = getTemplatedConfig(topicName);
-    return checkTopicsResult(topic);
+    var topics = getConfig(String.format(TOPIC_TEMPLATE, name));
+    return checkTopicsResult(topics);
   }
 
-  public Optional<String[]> getTopics(String name) throws ConfigException {
-    var topic = getConfig(name);
-    return checkTopicsResult(topic);
+  public Optional<String[]> getTopics(String configKey) throws ConfigException {
+    var topics = getConfig(configKey);
+    return checkTopicsResult(topics);
   }
 
   private Optional<String[]> checkTopicsResult(Optional<String> resultOptional) {
@@ -168,10 +166,13 @@ public class KafkaMessagingFactory {
 
   public KafkaPublisher publisher(String name) {
     this.kafkaPublishers.computeIfAbsent(name, publisherName -> {
-      var topicName = String.format(TOPIC_TEMPLATE, publisherName);
-      var topic = executeGetTemplatedConfig(topicName)
-          .orElseThrow(() -> new ApplicationRuntimeException(String.format("No topic for %s", name)));
-      return new KafkaPublisher(topic, producer());
+      try {
+        var topic = getTemplatedTopics(publisherName)
+            .orElseThrow(() -> new ApplicationRuntimeException(String.format("No topic for %s", name)));
+        return new KafkaPublisher(topic[0], producer());
+      } catch (ConfigException ex) {
+        throw new ApplicationRuntimeException(ex);
+      }
     });
     return this.kafkaPublishers.get(name);
   }

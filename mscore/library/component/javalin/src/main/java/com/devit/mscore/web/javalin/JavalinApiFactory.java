@@ -24,13 +24,15 @@ public class JavalinApiFactory {
 
   private static final String DEFAULT_PORT = "2000";
 
-  private static final String PORT = "platform.service.web.port";
+  private static final String DEFAULT_CACHE_SIZE = "1000000";
 
-  private static final String CONFIG_TEMPLATE = "services.%s.web.%s";
+  private static final String PORT = "services.%s.web.port";
 
-  private static final String ENVIRONMENT = "environment";
+  private static final String REQUEST_CACH_SIZE = "services.%s.web.requestCacheSize";
 
-  private static final String CORS_ORIGINS = "cors.origins";
+  private static final String ENVIRONMENT = "services.%s.web.environment";
+
+  private static final String CORS_ORIGINS = "services.%s.web.cors.origins";
 
   protected AuthenticationProvider authenticationProvider;
 
@@ -44,13 +46,10 @@ public class JavalinApiFactory {
 
   private Server server;
 
-  private String serviceName;
-
   protected JavalinApiFactory(Configuration configuration) {
     this.configuration = configuration;
     this.javalinConfigurer = createJavalinConfig();
     this.endpoints = new ArrayList<>();
-    this.serviceName = configuration.getServiceName();
   }
 
   public static JavalinApiFactory of(Configuration configuration) {
@@ -69,8 +68,7 @@ public class JavalinApiFactory {
     return config -> {
 
       try {
-        var requestCacheSize = configuration.getConfig("javalin.requestCacheSize").orElse("1000000");
-        config.requestCacheSize = Long.valueOf(requestCacheSize);
+        config.requestCacheSize = Long.valueOf(getRequestCacheSize());
 
         getEnvironment().ifPresent(env -> {
           if ("test".equals(env)) {
@@ -114,16 +112,23 @@ public class JavalinApiFactory {
   }
 
   private String getPort() throws ConfigException {
-    return this.configuration.getConfig(PORT).orElse(DEFAULT_PORT);
+    return getFormattedConfig(PORT).orElse(DEFAULT_PORT);
+  }
+
+  private String getRequestCacheSize() throws ConfigException {
+    return getFormattedConfig(REQUEST_CACH_SIZE).orElse(DEFAULT_CACHE_SIZE);
   }
 
   private Optional<String> getOrigins() throws ConfigException {
-    var configName = String.format(CONFIG_TEMPLATE, this.serviceName, CORS_ORIGINS);
-    return this.configuration.getConfig(configName);
+    return getFormattedConfig(CORS_ORIGINS);
   }
 
   private Optional<String> getEnvironment() throws ConfigException {
-    var configName = String.format(CONFIG_TEMPLATE, this.serviceName, ENVIRONMENT);
+    return getFormattedConfig(ENVIRONMENT);
+  }
+
+  private Optional<String> getFormattedConfig(String template) throws ConfigException {
+    var configName = String.format(template, this.configuration.getServiceName());
     return this.configuration.getConfig(configName);
   }
 }
