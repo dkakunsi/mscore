@@ -38,9 +38,9 @@ import kong.unirest.Unirest;
 
 public class JavalinWebTest {
 
-  private static final String BASE_URL = "http://localhost:2220/domain";
+  private static final String BASE_URL = "http://localhost:2000/domain";
 
-  private static final String BASE_SECURE_URL = "http://localhost:2220/secure";
+  private static final String BASE_SECURE_URL = "http://localhost:2000/secure";
 
   private static JSONObject principal;
 
@@ -59,8 +59,8 @@ public class JavalinWebTest {
   @BeforeClass
   public static void setup() throws Exception {
     configuration = mock(Configuration.class);
-    doReturn(Optional.of("2220")).when(configuration).getConfig("platform.service.web.port");
     doReturn("test").when(configuration).getServiceName();
+    doReturn(Optional.empty()).when(configuration).getConfig("services.test.web.port");
 
     principal = new JSONObject();
     var role = new JSONArray(List.of("user"));
