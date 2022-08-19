@@ -8,7 +8,7 @@ ENV JAVA_MINIMAL="/opt/java-minimal"
 # build minimal JRE
 RUN /usr/lib/jvm/java-11-openjdk/bin/jlink \
     --verbose \
-    --add-modules java.base,java.desktop,java.management,java.logging,java.security.sasl \
+    --add-modules java.base,java.desktop,java.management,java.logging,java.security.sasl,java.naming \
     --compress 2 --strip-debug --no-header-files --no-man-pages \
     --release-info="add:IMPLEMENTOR=radistao:IMPLEMENTOR_VERSION=radistao_JRE" \
     --output "$JAVA_MINIMAL"
