@@ -489,7 +489,8 @@
 
   <modules>
     <module>component</module>
-    <module>docker</module>
+    <module>report</module>
+    <module>aggregator</module>
     <module>main</module>
   </modules>
 </project>

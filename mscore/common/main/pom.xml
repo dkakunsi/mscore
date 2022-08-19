@@ -20,7 +20,6 @@
     <docker.build.dir>${project.build.directory}</docker.build.dir>
     <docker.output.dir>/docker</docker.output.dir>
 
-    <maven-dependency-plugin.version>3.2.0</maven-dependency-plugin.version>
     <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
     <docker-maven-plugin.version>0.38.0</docker-maven-plugin.version>
   </properties>
@@ -88,33 +87,6 @@
           <configuration>
             <skip>true</skip>
           </configuration>
-        </plugin>
-        <!-- Copy Dockerfile from docker template project -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-dependency-plugin</artifactId>
-          <version>${maven-dependency-plugin.version}</version>
-          <executions>
-            <execution>
-              <id>${project.artifactId}</id>
-              <phase>generate-sources</phase>
-              <goals>
-                <goal>unpack</goal>
-              </goals>
-              <configuration>
-                <artifactItems>
-                  <artifactItem>
-                    <groupId>com.devit.mscore</groupId>
-                    <artifactId>docker</artifactId>
-                    <version>${parent.version}</version>
-                    <type>jar</type>
-                    <overWrite>false</overWrite>
-                    <outputDirectory>${docker.build.dir}</outputDirectory>
-                  </artifactItem>
-                </artifactItems>
-              </configuration>
-            </execution>
-          </executions>
         </plugin>
         <!-- Create docker image -->
         <plugin>
