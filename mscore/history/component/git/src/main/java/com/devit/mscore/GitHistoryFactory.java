@@ -6,6 +6,7 @@ import com.devit.mscore.exception.ConfigException;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.TransportConfigCallback;
@@ -17,17 +18,19 @@ public class GitHistoryFactory {
 
   private static final String DEFAULT_LOCAL_REPOSITORY = "./repo";
 
-  private static final String GIT_URL = "services.%s.git.url";
+  private static final String CONFIG_TEMPLATE = "services.%s.git.%s";
 
-  private static final String LOCAL_REPOSITORY = "services.%s.git.dir";
+  private static final String GIT_URL = "url";
 
-  private static final String PRIVATE_KEY = "services.%s.git.key";
+  private static final String LOCAL_REPOSITORY = "dir";
 
-  private static final String PASS_PHRASE = "services.%s.git.passPhrase";
+  private static final String PRIVATE_KEY = "key";
 
-  private static final String HOST_NAME = "services.%s.git.hostName";
+  private static final String PASS_PHRASE = "passPhrase";
 
-  private static final String HOST_KEY = "services.%s.git.hostKey";
+  private static final String HOST_NAME = "hostName";
+
+  private static final String HOST_KEY = "hostKey";
 
   private Configuration configuration;
 
@@ -63,8 +66,7 @@ public class GitHistoryFactory {
   }
 
   private static String getLocalDirectory(Configuration configuration) throws ConfigException {
-    var dirKey = String.format(LOCAL_REPOSITORY, configuration.getServiceName());
-    return configuration.getConfig(dirKey).orElse(DEFAULT_LOCAL_REPOSITORY);
+    return getConfig(configuration, LOCAL_REPOSITORY).orElse(DEFAULT_LOCAL_REPOSITORY);
   }
 
   static boolean isLocalRepositoryExists(File repoDir) {
@@ -75,18 +77,24 @@ public class GitHistoryFactory {
       TransportConfigCallback transportConfigCallback)
       throws ConfigException {
 
-    var uriConfigName = String.format(GIT_URL, configuration.getServiceName());
-    var uriConfig = configuration.getConfig(uriConfigName)
-        .orElseThrow(() -> new ConfigException("No git uri is provided."));
     var localTransportConfigCallback = transportConfigCallback != null ? transportConfigCallback
         : createTransportConfigCallback(configuration);
 
     try {
       return Git.cloneRepository().setTransportConfigCallback(localTransportConfigCallback)
-          .setURI(uriConfig).setDirectory(repoDir).call();
+          .setURI(getGitUrl(configuration)).setDirectory(repoDir).call();
     } catch (GitAPIException ex) {
       throw new ConfigException(ex);
     }
+  }
+
+  private static String getGitUrl(Configuration configuration) throws ConfigException {
+    return getConfig(configuration, GIT_URL).orElseThrow(() -> new ConfigException("No git uri is provided."));
+  }
+
+  private static Optional<String> getConfig(Configuration configuration, String key) throws ConfigException {
+    var configKey = String.format(CONFIG_TEMPLATE, configuration.getServiceName(), key);
+    return configuration.getConfig(configKey);
   }
 
   static TransportConfigCallback createTransportConfigCallback(Configuration configuration) {
@@ -100,24 +108,30 @@ public class GitHistoryFactory {
     };
   }
 
-  private static SshSessionFactory createSshSessionFactory(Configuration configuration)
-      throws ConfigException {
-    var serviceName = configuration.getServiceName();
-    var hostNameConfigName = String.format(HOST_NAME, serviceName);
-    var hostKeyConfigName = String.format(HOST_KEY, serviceName);
-    var privateKeyConfigName = String.format(PRIVATE_KEY, serviceName);
-    var passPhraseConfigName = String.format(PASS_PHRASE, serviceName);
+  private static SshSessionFactory createSshSessionFactory(Configuration configuration) throws ConfigException {
 
-    var hostName = configuration.getConfig(hostNameConfigName)
-        .orElseThrow(() -> new ConfigException("No host name configured."));
-    var hostKey = configuration.getConfig(hostKeyConfigName)
-        .orElseThrow(() -> new ConfigException("No host key configured."));
-    var privateKey = configuration.getConfig(privateKeyConfigName)
-        .orElseThrow(() -> new ConfigException("No private key configured."));
-    var passphrase = configuration.getConfig(passPhraseConfigName)
-        .orElseThrow(() -> new ConfigException("No passphrase provided."));
+    var hostName = getHostName(configuration);
+    var hostKey = getHostKey(configuration);
+    var privateKey = getPrivateKey(configuration);
+    var passphrase = getPassphrase(configuration);
 
     return new CustomJschConfigSessionFactory(hostName, hostKey, privateKey, passphrase);
+  }
+
+  private static String getHostName(Configuration configuration) throws ConfigException {
+    return getConfig(configuration, HOST_NAME).orElseThrow(() -> new ConfigException("No host name configured."));
+  }
+
+  private static String getHostKey(Configuration configuration) throws ConfigException {
+    return getConfig(configuration, HOST_KEY).orElseThrow(() -> new ConfigException("No host key configured."));
+  }
+
+  private static String getPrivateKey(Configuration configuration) throws ConfigException {
+    return getConfig(configuration, PRIVATE_KEY).orElseThrow(() -> new ConfigException("No private key configured."));
+  }
+
+  private static String getPassphrase(Configuration configuration) throws ConfigException {
+    return getConfig(configuration, PASS_PHRASE).orElseThrow(() -> new ConfigException("No passphrase configured."));
   }
 
   public GitHistory historyManager() throws ConfigException {
