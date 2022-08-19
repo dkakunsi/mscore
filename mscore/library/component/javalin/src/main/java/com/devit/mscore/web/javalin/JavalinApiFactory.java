@@ -71,7 +71,7 @@ public class JavalinApiFactory {
         config.requestCacheSize = Long.valueOf(getRequestCacheSize());
 
         getEnvironment().ifPresent(env -> {
-          if ("test".equals(env)) {
+          if ("test".equals(env) || "local".equals(env)) {
             config.enableCorsForAllOrigins();
           }
         });
