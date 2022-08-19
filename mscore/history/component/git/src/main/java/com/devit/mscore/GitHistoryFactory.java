@@ -18,19 +18,17 @@ public class GitHistoryFactory {
 
   private static final String DEFAULT_LOCAL_REPOSITORY = "./repo";
 
-  private static final String CONFIG_TEMPLATE = "services.%s.git.%s";
+  private static final String GIT_URL = "services.%s.git.url";
 
-  private static final String GIT_URL = "url";
+  private static final String LOCAL_REPOSITORY = "services.%s.git.dir";
 
-  private static final String LOCAL_REPOSITORY = "dir";
+  private static final String PRIVATE_KEY = "services.%s.git.key";
 
-  private static final String PRIVATE_KEY = "key";
+  private static final String PASS_PHRASE = "services.%s.git.passPhrase";
 
-  private static final String PASS_PHRASE = "passPhrase";
+  private static final String HOST_NAME = "services.%s.git.hostName";
 
-  private static final String HOST_NAME = "hostName";
-
-  private static final String HOST_KEY = "hostKey";
+  private static final String HOST_KEY = "services.%s.git.hostKey";
 
   private Configuration configuration;
 
@@ -93,7 +91,7 @@ public class GitHistoryFactory {
   }
 
   private static Optional<String> getConfig(Configuration configuration, String key) throws ConfigException {
-    var configKey = String.format(CONFIG_TEMPLATE, configuration.getServiceName(), key);
+    var configKey = String.format(key, configuration.getServiceName());
     return configuration.getConfig(configKey);
   }
 
