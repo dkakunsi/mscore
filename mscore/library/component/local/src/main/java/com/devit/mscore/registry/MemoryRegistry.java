@@ -19,13 +19,12 @@ public class MemoryRegistry implements Registry {
   private Map<String, String> register;
 
   public MemoryRegistry(String name) {
-    this.name = name;
-    this.register = new HashMap<>();
+    this(name, new HashMap<>());
   }
 
   public MemoryRegistry(String name, Map<String, String> register) {
     this.name = name;
-    this.register = register;
+    this.register = new HashMap<>(register);
   }
 
   @Override
@@ -42,7 +41,7 @@ public class MemoryRegistry implements Registry {
   @Override
   public Map<String, String> all() throws RegistryException {
     LOG.debug("Retrieving all value from memory register");
-    return this.register;
+    return new HashMap<>(this.register);
   }
 
   @Override
@@ -64,10 +63,17 @@ public class MemoryRegistry implements Registry {
   @Override
   public void open() {
     // no need to open a memory
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void close() {
     // no need to close a memory
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
   }
 }

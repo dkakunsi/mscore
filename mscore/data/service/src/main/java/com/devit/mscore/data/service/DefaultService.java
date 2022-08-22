@@ -20,6 +20,7 @@ import com.devit.mscore.data.filter.FiltersExecutor;
 import com.devit.mscore.data.observer.PostProcessObserver;
 import com.devit.mscore.data.validation.ValidationsExecutor;
 import com.devit.mscore.exception.ApplicationException;
+import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.DataException;
 import com.devit.mscore.exception.SynchronizationException;
 import com.devit.mscore.exception.ValidationException;
@@ -70,11 +71,15 @@ public class DefaultService implements Service, Synchronizer {
   public DefaultService(Schema schema, Repository repository, Index index, ValidationsExecutor validator,
       FiltersExecutor filter, EnrichmentsExecutor enricher) {
     this(schema);
-    this.repository = repository;
     this.index = index;
-    this.validator = validator;
-    this.enricher = enricher;
-    this.filter = filter;
+    try {
+      this.repository = (Repository) repository.clone();
+      this.validator = (ValidationsExecutor) validator.clone();
+      this.enricher = (EnrichmentsExecutor) enricher.clone();
+      this.filter = (FiltersExecutor) filter.clone();
+    } catch (CloneNotSupportedException ex) {
+      throw new ApplicationRuntimeException(ex);
+    }
   }
 
   public DefaultService addObserver(PostProcessObserver observer) {
@@ -93,6 +98,7 @@ public class DefaultService implements Service, Synchronizer {
   }
 
   @Override
+  @SuppressWarnings("PMD.GuardLogStatement")
   public String save(final JSONObject json) throws ApplicationException {
     if (json == null || json.isEmpty()) {
       LOG.warn("Cannot save empty data.");
@@ -215,6 +221,7 @@ public class DefaultService implements Service, Synchronizer {
   }
 
   @Override
+  @SuppressWarnings("PMD.GuardLogStatement")
   public void synchronize(String id) throws SynchronizationException {
     try {
       var json = this.repository.find(id);
@@ -229,6 +236,7 @@ public class DefaultService implements Service, Synchronizer {
   }
 
   @Override
+  @SuppressWarnings("PMD.GuardLogStatement")
   public void synchronize(String searchAttribute, String value)
       throws SynchronizationException {
     try {
@@ -255,5 +263,10 @@ public class DefaultService implements Service, Synchronizer {
     } catch (DataException ex) {
       return false;
     }
+  }
+
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
   }
 }

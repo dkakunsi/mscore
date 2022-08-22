@@ -31,11 +31,6 @@ public class SunJerseyClient implements com.devit.mscore.web.Client, Requester {
   }
 
   @Override
-  public com.devit.mscore.web.Client createNew() {
-    return new SunJerseyClient();
-  }
-
-  @Override
   public JSONObject delete(String uri) {
     LOG.debug("Sending DELETE '{}'", uri);
     var response = request(uri, new HashMap<>(), new HashMap<>()).delete(ClientResponse.class);
@@ -89,5 +84,10 @@ public class SunJerseyClient implements com.devit.mscore.web.Client, Requester {
       builtHeaders.forEach(builder::header);
     }
     return builder;
+  }
+
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
   }
 }

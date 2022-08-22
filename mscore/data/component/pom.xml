@@ -28,11 +28,16 @@
       <artifactId>log4j</artifactId>
       <version>${library.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.devit.mscore</groupId>
+      <artifactId>api</artifactId>
+      <version>${library.version}</version>
+    </dependency>
   </dependencies>
 
   <modules>
-    <module>elasticsearch</module>
     <module>everit</module>
     <module>mongo</module>
+    <module>elasticsearch</module>
   </modules>
 </project>

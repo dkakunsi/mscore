@@ -16,6 +16,7 @@
 
   <properties>
     <revision>1.0-SNAPSHOT</revision>
+    <spotbugs.skip>true</spotbugs.skip>
   </properties>
 
   <dependencies>

@@ -12,9 +12,7 @@ import org.json.JSONObject;
  *
  * @author dkakunsi
  */
-public interface Client {
-
-  Client createNew();
+public interface Client extends Cloneable {
 
   JSONObject post(String uri, Optional<JSONObject> payload) throws WebClientException;
 
@@ -23,4 +21,6 @@ public interface Client {
   JSONObject delete(String uri) throws WebClientException;
 
   JSONObject get(String uri, Map<String, String> params) throws WebClientException;
+
+  Object clone() throws CloneNotSupportedException;
 }

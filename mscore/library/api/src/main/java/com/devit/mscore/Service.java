@@ -14,7 +14,7 @@ import org.json.JSONObject;
  *
  * @author dkakunsi
  */
-public interface Service {
+public interface Service  extends Cloneable {
 
   /**
    *
@@ -96,4 +96,6 @@ public interface Service {
   default JSONArray search(JSONObject query) throws ApplicationException {
     throw new ImplementationException();
   }
+
+  Object clone() throws CloneNotSupportedException;
 }

@@ -9,6 +9,7 @@ import static io.javalin.apibuilder.ApiBuilder.post;
 import static io.javalin.apibuilder.ApiBuilder.put;
 
 import com.devit.mscore.Service;
+import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.web.Endpoint;
 
 import java.util.ArrayList;
@@ -21,15 +22,15 @@ public class JavalinEndpoint implements Endpoint {
   protected JavalinController controller;
 
   public JavalinEndpoint(Service service) {
-    this.controller = new JavalinController(service);
+    this(new JavalinController(service));
   }
 
   public JavalinEndpoint(JavalinController controller) {
-    setController(controller);
-  }
-
-  public void setController(JavalinController controller) {
-    this.controller = controller;
+    try {
+      this.controller = (JavalinController) controller.clone();
+    } catch (CloneNotSupportedException ex) {
+      throw new ApplicationRuntimeException(ex);
+    }
   }
 
   @Override

@@ -30,10 +30,15 @@ public class SchemaValidation implements Validation {
   private Registry registry;
 
   public SchemaValidation(Registry registry) {
-    this.registry = registry;
+    try {
+      this.registry = (Registry) registry.clone();
+    } catch (CloneNotSupportedException ex) {
+      throw new ApplicationRuntimeException(ex);
+    }
   }
 
   @Override
+  @SuppressWarnings("PMD.GuardLogStatement")
   public boolean validate(JSONObject json) {
     if (!hasDomain(json)) {
       var cause = new ValidationException("Invalid data. No domain found.");
@@ -48,7 +53,7 @@ public class SchemaValidation implements Validation {
       new JSONSchema(new JSONObject(registeredSchema)).validate(json);
       return true;
     } catch (ValidationException ex) {
-      LOG.error("Validation failed for object: {}", getCode(json), ex);
+      LOG.error("Validation failed for object: {}", ex, getCode(json));
       return false;
     } catch (RegistryException ex) {
       LOG.error("Cannot validate since the schema is not exist: {}", domain);

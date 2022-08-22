@@ -75,7 +75,7 @@ public class FlowableProcessTest {
   private ApplicationContext context;
 
   @Before
-  public void setup() throws RegistryException, ConfigException {
+  public void setup() throws RegistryException, ConfigException, CloneNotSupportedException {
     this.configuration = mock(Configuration.class);
     doReturn(Optional.of("localhost")).when(this.configuration).getConfig("process.db.host");
     doReturn(Optional.of("5432")).when(this.configuration).getConfig("process.db.port");
@@ -89,12 +89,13 @@ public class FlowableProcessTest {
     doReturn(true).when(this.configuration).has("workflow.definition.location");
 
     this.serviceRegistration = mock(ServiceRegistration.class);
+    doReturn(this.serviceRegistration).when(this.serviceRegistration).clone();
     doReturn("http://data/domain").when(this.serviceRegistration).get(anyString());
     doReturn("http://data/workflow").when(this.serviceRegistration).get("workflow");
     doReturn("http://data/task").when(this.serviceRegistration).get("task");
 
     this.client = mock(Client.class);
-    doReturn(this.client).when(this.client).createNew();
+    doReturn(this.client).when(this.client).clone();
 
     this.dataClient = new DataClient(this.client, this.serviceRegistration, "workflow", "task");
 

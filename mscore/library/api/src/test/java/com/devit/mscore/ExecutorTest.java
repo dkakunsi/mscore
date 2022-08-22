@@ -41,5 +41,8 @@ public class ExecutorTest {
     public void execute(JSONObject json) throws ApplicationRuntimeException {
     }
 
+    public Object clone() throws CloneNotSupportedException {
+      return super.clone();
+    }
   }
 }

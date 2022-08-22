@@ -62,7 +62,7 @@ public class FileConfiguration implements Configuration {
 
   @Override
   public Map<String, String> getConfigs() {
-    return this.configs;
+    return new HashMap<>(this.configs);
   }
 
   @Override

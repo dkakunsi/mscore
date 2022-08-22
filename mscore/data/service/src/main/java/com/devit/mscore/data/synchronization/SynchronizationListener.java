@@ -6,6 +6,7 @@ import static com.devit.mscore.util.AttributeConstants.getId;
 import com.devit.mscore.Listener;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Subscriber;
+import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.logging.ApplicationLogger;
 
 import org.json.JSONObject;
@@ -18,10 +19,15 @@ public class SynchronizationListener extends Listener {
 
   public SynchronizationListener(Subscriber subscriber, SynchronizationsExecutor synchronizer) {
     super(subscriber);
-    this.synchronizer = synchronizer;
+    try {
+      this.synchronizer = (SynchronizationsExecutor) synchronizer.clone();
+    } catch (CloneNotSupportedException ex) {
+      throw new ApplicationRuntimeException(ex);
+    }
   }
 
   @Override
+  @SuppressWarnings("PMD.GuardLogStatement")
   protected void consume(JSONObject message) {
     LOG.info("External dependency {} of {} domain is updated. Trying to sync references.", getId(message),
         getDomain(message));

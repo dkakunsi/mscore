@@ -6,10 +6,10 @@ import static com.devit.mscore.util.AttributeConstants.ID;
 import com.devit.mscore.WorkflowObject;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.flowable.engine.RuntimeService;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.json.JSONObject;
 
@@ -28,16 +28,16 @@ public class FlowableProcessInstance implements WorkflowObject, ProcessInstance 
 
   private ProcessInstance processInstance;
 
-  private RuntimeService runtimeService;
-
   private JSONObject json;
 
   private String instanceStatus;
 
-  public FlowableProcessInstance(RuntimeService runtimeService, ProcessInstance processInstance) {
-    this.runtimeService = runtimeService;
+  private Map<String, Object> variables;
+
+  public FlowableProcessInstance(ProcessInstance processInstance, Map<String, Object> variables) {
     this.processInstance = processInstance;
     this.instanceStatus = processInstance.isEnded() ? COMPLETED : ACTIVATED;
+    this.variables = new HashMap<>(variables);
     this.json = initJson();
   }
 
@@ -212,26 +212,22 @@ public class FlowableProcessInstance implements WorkflowObject, ProcessInstance 
   @Override
   public JSONObject toJson() {
     this.json.put(STATUS, instanceStatus);
-    return this.json;
+    return new JSONObject(this.json.toString());
   }
 
   private String getOwner() {
-    var owner = getVariables().get(OWNER);
+    var owner = this.variables.get(OWNER);
     return owner != null ? owner.toString() : null;
   }
 
   private String getOrganisation() {
-    var organisation = getVariables().get(ORGANISATION);
+    var organisation = this.variables.get(ORGANISATION);
     return organisation != null ? organisation.toString() : null;
   }
 
   private String getDomain() {
-    var domain = getVariables().get(DOMAIN);
+    var domain = this.variables.get(DOMAIN);
     return domain != null ? domain.toString() : null;
-  }
-
-  private Map<String, Object> getVariables() {
-    return this.runtimeService.getVariables(getId());
   }
 
   private String getAction() {

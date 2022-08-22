@@ -142,7 +142,7 @@ public class JSONSchema extends Schema {
 
   @Override
   public Map<String, List<String>> getReferences() {
-    return this.references;
+    return new HashMap<>(this.references);
   }
 
   @Override

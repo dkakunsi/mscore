@@ -31,6 +31,7 @@ public class SetAttribute implements JavaDelegate {
   private Expression value;
 
   @Override
+  @SuppressWarnings("PMD.GuardLogStatement")
   public void execute(DelegateExecution execution) {
     var context = FlowableApplicationContext.of(execution);
     setContext(context);
@@ -77,6 +78,7 @@ public class SetAttribute implements JavaDelegate {
     }
   }
 
+  @SuppressWarnings("PMD.GuardLogStatement")
   protected void updateEntity(JSONObject entity) {
     var context = (FlowableApplicationContext) getContext();
     var dataClient = context.getDataClient();

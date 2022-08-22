@@ -73,12 +73,12 @@ public class FlowableProcess implements WorkflowProcess, Service {
   }
 
   @Override
-  public void start() {
+  public synchronized void start() {
     // @formatter:off
-        ProcessEngineConfiguration processEngineConfiguration = new StandaloneProcessEngineConfiguration()
-                .setDataSource(this.dataSource)
-                .setDatabaseSchemaUpdate(DB_SCHEMA_UPDATE_TRUE);
-        // @formatter:on
+    ProcessEngineConfiguration processEngineConfiguration = new StandaloneProcessEngineConfiguration()
+        .setDataSource(this.dataSource)
+        .setDatabaseSchemaUpdate(DB_SCHEMA_UPDATE_TRUE);
+    // @formatter:on
 
     var processEngine = processEngineConfiguration.buildProcessEngine();
     this.repositoryService = processEngine.getRepositoryService();
@@ -96,6 +96,7 @@ public class FlowableProcess implements WorkflowProcess, Service {
   }
 
   @Override
+  @SuppressWarnings("PMD.GuardLogStatement")
   public void deployDefinition(WorkflowDefinition workflowDefinition)
       throws ProcessException {
     LOGGER.info("Deploying definition: {}", workflowDefinition);
@@ -204,7 +205,8 @@ public class FlowableProcess implements WorkflowProcess, Service {
         return null;
       }
 
-      var flowableInstance = new FlowableProcessInstance(this.runtimeService, processInstance);
+      var processInstanceVariables = this.runtimeService.getVariables(processInstance.getId());
+      var flowableInstance = new FlowableProcessInstance(processInstance, processInstanceVariables);
       syncProcessInstance(flowableInstance);
       syncCreatedTask(processInstance.getProcessInstanceId());
       return flowableInstance;
@@ -218,7 +220,12 @@ public class FlowableProcess implements WorkflowProcess, Service {
     var processInstance = this.runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId)
         .singleResult();
 
-    return (processInstance == null) ? null : new FlowableProcessInstance(this.runtimeService, processInstance);
+    if (processInstance == null) {
+      return null;
+    }
+
+    var processInstanceVariables = this.runtimeService.getVariables(processInstance.getId());
+    return new FlowableProcessInstance(processInstance, processInstanceVariables);
   }
 
   HistoricProcessInstance getHistoricInstance(String processInstanceId) {
@@ -229,8 +236,19 @@ public class FlowableProcess implements WorkflowProcess, Service {
   @Override
   public List<WorkflowObject> getTasks(String processInstanceId) {
     var tasks = this.taskService.createTaskQuery().processInstanceId(processInstanceId).list();
-    return (tasks == null) ? null
-        : tasks.stream().map(task -> new FlowableTask(task, this.historyService)).collect(Collectors.toList());
+    if (tasks == null) {
+      return null;
+    }
+
+    return tasks.stream().map(task -> {
+      var taskVariables = getTaskVariables(task.getProcessInstanceId());
+      return new FlowableTask(task, taskVariables);
+    }).collect(Collectors.toList());
+  }
+
+  private Map<String, Object> getTaskVariables(String processInstanceId) {
+    var historicProcessInstance = this.historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+    return historicProcessInstance.getProcessVariables();
   }
 
   @Override
@@ -255,13 +273,20 @@ public class FlowableProcess implements WorkflowProcess, Service {
 
   private FlowableTask getTask(String taskId) {
     var task = this.taskService.createTaskQuery().taskId(taskId).singleResult();
-    return task == null ? null : new FlowableTask(task, this.historyService);
+    if (task == null) {
+      return null;
+    }
+
+    var taskVariables = getTaskVariables(task.getProcessInstanceId());
+    return new FlowableTask(task, taskVariables);
   }
 
   public FlowableProcessInstance getInstanceById(String processInstanceId) {
     var processInstance = this.runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId)
         .singleResult();
-    return new FlowableProcessInstance(this.runtimeService, processInstance);
+
+    var processInstanceVariables = this.runtimeService.getVariables(processInstance.getId());
+    return new FlowableProcessInstance(processInstance, processInstanceVariables);
   }
 
   private void syncCompletableProcessInstance(FlowableProcessInstance flowableInstance) {
@@ -276,6 +301,7 @@ public class FlowableProcess implements WorkflowProcess, Service {
     syncProcessInstance(flowableInstance);
   }
 
+  @SuppressWarnings("PMD.GuardLogStatement")
   private void syncProcessInstance(FlowableProcessInstance flowableInstance) {
     var client = this.dataClient.getClient();
     var uri = this.dataClient.getWorkflowUri();
@@ -299,17 +325,25 @@ public class FlowableProcess implements WorkflowProcess, Service {
       return;
     }
 
-    var flowableTask = new FlowableTask(tasks.get(0), this.historyService);
+    var task = tasks.get(0);
+    var taskVariables = getTaskVariables(task.getProcessInstanceId());
+    var flowableTask = new FlowableTask(task, taskVariables);
     syncTask(flowableTask);
   }
 
   private void syncCompletedTask(String taskId) {
     var historicTaskInstance = this.historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
-    var flowableTask = new FlowableTask(historicTaskInstance, this.historyService);
+    if (historicTaskInstance == null) {
+      return;
+    }
+
+    var taskVariables = getTaskVariables(historicTaskInstance.getProcessInstanceId());
+    var flowableTask = new FlowableTask(historicTaskInstance, taskVariables);
     flowableTask.complete();
     syncTask(flowableTask);
   }
 
+  @SuppressWarnings("PMD.GuardLogStatement")
   private void syncTask(FlowableTask flowableTask) {
     var client = this.dataClient.getClient();
     var uri = this.dataClient.getTaskUri();
@@ -325,5 +359,10 @@ public class FlowableProcess implements WorkflowProcess, Service {
     } catch (WebClientException ex) {
       LOGGER.error("Cannot synchronize workflow task: {}.", flowableTask);
     }
+  }
+
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
   }
 }

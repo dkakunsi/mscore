@@ -3,14 +3,14 @@ package com.devit.mscore.gateway.service;
 import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.gateway.service.ServiceUtils.WEBCLIENT_EXCEPTION_MESSAGE;
 
-import java.util.Optional;
-
 import com.devit.mscore.Logger;
 import com.devit.mscore.ServiceRegistration;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.WebClientException;
 import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.web.Client;
+
+import java.util.Optional;
 
 import org.json.JSONObject;
 
@@ -31,6 +31,7 @@ public class WorkflowService extends AbstractGatewayService {
     return DOMAIN;
   }
 
+  @SuppressWarnings("PMD.GuardLogStatement")
   public JSONObject createInstance(JSONObject payload) throws WebClientException {
     var context = getContext();
     try {

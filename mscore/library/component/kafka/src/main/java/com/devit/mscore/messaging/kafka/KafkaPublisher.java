@@ -8,10 +8,15 @@ import static com.devit.mscore.util.Utils.PRINCIPAL;
 
 import com.devit.mscore.Logger;
 import com.devit.mscore.Publisher;
+import com.devit.mscore.exception.ApplicationRuntimeException;
+import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.logging.ApplicationLogger;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.Producer;
@@ -60,12 +65,19 @@ public class KafkaPublisher implements Publisher {
 
   private static List<Header> buildHeader() {
     var context = getContext();
-    List<Header> headers = new ArrayList<>();
-    headers.add(new RecordHeader(BREADCRUMB_ID, context.getBreadcrumbId().getBytes()));
-    context.getPrincipal()
-        .ifPresent(principal -> headers.add(new RecordHeader(PRINCIPAL, principal.toString().getBytes())));
-    context.getAction().ifPresent(action -> headers.add(new RecordHeader(ACTION, action.getBytes())));
 
+    List<Header> headers = new ArrayList<>();
+    Optional.of(context.getBreadcrumbId()).ifPresent(breadcrumbId -> addHeader(headers, BREADCRUMB_ID, breadcrumbId));
+    context.getPrincipal().ifPresent(principal -> addHeader(headers, PRINCIPAL, principal.toString()));
+    context.getAction().ifPresent(action -> addHeader(headers, ACTION, action));
     return headers;
+  }
+
+  private static void addHeader(List<Header> headers, String key, String value) {
+    try {
+      headers.add(new RecordHeader(key, value.getBytes(StandardCharsets.UTF_8.name())));
+    } catch (UnsupportedEncodingException ex) {
+      throw new ApplicationRuntimeException(new ConfigException(ex));
+    }
   }
 }

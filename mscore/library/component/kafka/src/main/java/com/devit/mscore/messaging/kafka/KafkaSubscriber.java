@@ -55,6 +55,7 @@ public class KafkaSubscriber implements Subscriber {
     }).start();
   }
 
+  @SuppressWarnings("PMD.GuardLogStatement")
   private void handleMessage(ConsumerRecord<String, String> message) {
     new Thread(() -> {
       LOG.debug(String.format("Receiving message from topic '%s', partition '%s', offset '%s': %s",

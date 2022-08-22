@@ -5,6 +5,7 @@ import com.devit.mscore.Logger;
 import com.devit.mscore.Registry;
 import com.devit.mscore.Resource;
 import com.devit.mscore.ResourceManager;
+import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.ResourceException;
@@ -52,14 +53,20 @@ public class ElasticsearchIndexFactory extends ResourceManager {
     return new ElasticsearchIndexFactory(configuration, registry);
   }
 
-  public ElasticsearchIndex index(String indexName) throws ConfigException, RegistryException {
+  public ElasticsearchIndex index(String indexName) throws RegistryException {
     var mapping = this.registry.get(indexName);
     return new ElasticsearchIndex(indexName, service(), new JSONObject(mapping));
   }
 
-  protected ElasticsearchService service() throws ConfigException {
+  protected ElasticsearchService service() {
     if (this.service == null) {
-      this.service = new ElasticsearchService(getESClient());
+      this.service = new ElasticsearchService(() -> {
+        try {
+          return getESClient();
+        } catch (ConfigException ex) {
+          throw new ApplicationRuntimeException(ex);
+        }
+      });
     }
     return this.service;
   }
@@ -68,18 +75,11 @@ public class ElasticsearchIndexFactory extends ResourceManager {
     if (this.client != null) {
       return this.client;
     }
-
-    var builder = RestClient.builder(getHost());
-    if (isSecure()) {
-      LOG.info("Applying secure connection to ES.");
-      applyAuthentication(builder);
-    }
-    this.client = new RestHighLevelClient(builder);
-    return this.client;
+    return this.client = Helper.getEsClient(configuration, getHost(), isSecure());
   }
 
   protected HttpHost[] getHost() throws ConfigException {
-    var addresses = getConfigValue(HOST).orElseThrow(() -> new ConfigException("No ES host is configured.")).split(",");
+    var addresses = getConfigValue(this.configuration, HOST).orElseThrow(() -> new ConfigException("No ES host is configured.")).split(",");
     var hosts = new HttpHost[addresses.length];
 
     LOG.debug("Trying to connect to ES host: {}", (Object[]) addresses);
@@ -99,33 +99,11 @@ public class ElasticsearchIndexFactory extends ResourceManager {
 
   protected boolean isSecure() {
     try {
-      var secureConfig = getConfigValue(SECURE).orElse("false");
+      var secureConfig = getConfigValue(this.configuration, SECURE).orElse("false");
       return Boolean.parseBoolean(secureConfig);
     } catch (ConfigException ex) {
       return false;
     }
-  }
-
-  protected void applyAuthentication(RestClientBuilder restClientBuilder) throws ConfigException {
-    var username = getUsername();
-    var password = getPassword();
-    final var credentialsProvider = new BasicCredentialsProvider();
-    credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
-
-    restClientBuilder.setHttpClientConfigCallback(
-        httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
-  }
-
-  protected String getUsername() throws ConfigException {
-    return getConfigValue(USERNAME).orElseThrow(() -> new ConfigException("ES username is not provided"));
-  }
-
-  protected String getPassword() throws ConfigException {
-    return getConfigValue(PASSWORD).orElseThrow(() -> new ConfigException("ES password is not provided"));
-  }
-
-  private Optional<String> getConfigValue(String key) throws ConfigException {
-    return this.configuration.getConfig(String.format(CONFIG_TEMPLATE, key));
   }
 
   @Override
@@ -143,8 +121,37 @@ public class ElasticsearchIndexFactory extends ResourceManager {
     return new ElasticsearchMapping(file);
   }
 
-  // TODO remove this after implementing embedded-es for testing.
-  public void setESClient(RestHighLevelClient client) {
-    this.client = client;
+  private static Optional<String> getConfigValue(Configuration configuration, String key) throws ConfigException {
+    return configuration.getConfig(String.format(CONFIG_TEMPLATE, key));
+  }
+
+  protected static class Helper {
+
+    protected static RestHighLevelClient getEsClient(Configuration configuration, HttpHost[] hosts, boolean isSecure) throws ConfigException {
+      var builder = RestClient.builder(hosts);
+      if (isSecure) {
+        LOG.info("Applying secure connection to ES.");
+        applyAuthentication(configuration, builder);
+      }
+      return new RestHighLevelClient(builder);
+    }
+  
+    protected static void applyAuthentication(Configuration configuration, RestClientBuilder restClientBuilder) throws ConfigException {
+      var username = getUsername(configuration);
+      var password = getPassword(configuration);
+      final var credentialsProvider = new BasicCredentialsProvider();
+      credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+  
+      restClientBuilder.setHttpClientConfigCallback(
+          httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
+    }
+  
+    protected static String getUsername(Configuration configuration) throws ConfigException {
+      return getConfigValue(configuration, USERNAME).orElseThrow(() -> new ConfigException("ES username is not provided"));
+    }
+  
+    protected static String getPassword(Configuration configuration) throws ConfigException {
+      return getConfigValue(configuration, PASSWORD).orElseThrow(() -> new ConfigException("ES password is not provided"));
+    }
   }
 }

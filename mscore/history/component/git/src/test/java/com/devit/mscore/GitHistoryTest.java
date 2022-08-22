@@ -9,8 +9,11 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
+import com.devit.mscore.exception.ConfigException;
+
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.AddCommand;
@@ -39,7 +42,7 @@ public class GitHistoryTest {
   private ApplicationContext context;
 
   @Before
-  public void setup() {
+  public void setup() throws ConfigException {
     this.context = DefaultApplicationContext.of("test");
 
     var repoDir = Paths.get(".").toFile();
@@ -51,7 +54,12 @@ public class GitHistoryTest {
 
     var transportConfigCallback = mock(TransportConfigCallback.class);
 
-    this.gitHistory = new GitHistory("repo", this.git, transportConfigCallback);
+    var configuration = mock(Configuration.class);
+    doReturn("test").when(configuration).getServiceName();
+    doReturn(Optional.of("repo")).when(configuration).getConfig("services.test.git.dir");
+
+    var gitHistoryBuilder = GitHistory.Builder.of(configuration);
+    this.gitHistory = gitHistoryBuilder.historyManager("repo", this.git, transportConfigCallback);
   }
 
   @After

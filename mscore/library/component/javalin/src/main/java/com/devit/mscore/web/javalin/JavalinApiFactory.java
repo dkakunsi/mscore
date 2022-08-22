@@ -44,8 +44,6 @@ public class JavalinApiFactory {
 
   private Consumer<JavalinConfig> javalinConfigurer;
 
-  private Server server;
-
   protected JavalinApiFactory(Configuration configuration) {
     this.configuration = configuration;
     this.javalinConfigurer = createJavalinConfig();
@@ -99,16 +97,8 @@ public class JavalinApiFactory {
   }
 
   public Server server() throws ConfigException {
-    if (this.server == null) {
-      initServer();
-    }
-    return this.server;
-  }
-
-  private void initServer() throws ConfigException {
-    this.server = new JavalinServer(Integer.parseInt(getPort()), this.endpoints, this.javalinConfigurer);
-    this.server.setAuthenticationProvider(this.authenticationProvider);
-    this.server.setValidations(this.validations);
+    return new JavalinServer(Integer.parseInt(getPort()), this.endpoints, this.validations,
+        this.authenticationProvider, this.javalinConfigurer);
   }
 
   private String getPort() throws ConfigException {

@@ -21,6 +21,7 @@ public class SetStatus extends SetAttribute {
   private Expression closeReason;
 
   @Override
+  @SuppressWarnings("PMD.GuardLogStatement")
   public void execute(DelegateExecution execution) {
     var context = FlowableApplicationContext.of(execution);
     setContext(context);

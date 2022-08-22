@@ -12,7 +12,7 @@ import org.json.JSONObject;
  *
  * @author dkakunsi
  */
-public interface Executor<T> {
+public interface Executor<T> extends Cloneable {
 
   /**
    * Add object {@code t} to execution list.
@@ -41,4 +41,6 @@ public interface Executor<T> {
   default void execute(JSONArray dataArray) throws ApplicationRuntimeException {
     dataArray.forEach(data -> execute((JSONObject) data));
   }
+
+  Object clone() throws CloneNotSupportedException;
 }

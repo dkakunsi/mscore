@@ -55,4 +55,9 @@ public class ValidationsExecutor implements Executor<Validation> {
     }
     return validations.stream().allMatch(v -> v.validate(json));
   }
+
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
+  }
 }

@@ -12,4 +12,8 @@ public class Manager {
   protected Manager(Configuration configuration) {
     this.configuration = configuration;
   }
+
+  protected Configuration getConfiguration() {
+    return this.configuration;
+  }
 }

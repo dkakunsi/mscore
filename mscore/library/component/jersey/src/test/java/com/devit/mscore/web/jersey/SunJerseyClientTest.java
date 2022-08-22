@@ -1,9 +1,9 @@
 package com.devit.mscore.web.jersey;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -11,14 +11,14 @@ import static org.mockito.Mockito.mock;
 import java.util.Map;
 import java.util.Optional;
 
+import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
-
-import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
 
 public class SunJerseyClientTest {
 
@@ -106,8 +106,8 @@ public class SunJerseyClientTest {
   }
 
   @Test
-  public void testClone() {
-    var clone = this.webClient.createNew();
+  public void testClone() throws CloneNotSupportedException {
+    var clone = this.webClient.clone();
     assertNotEquals(clone, this.webClient);
   }
 }

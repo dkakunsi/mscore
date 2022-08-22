@@ -47,4 +47,9 @@ public final class FiltersExecutor implements Executor<Filter> {
     }
     filters.forEach(filter -> filter.filter(json));
   }
+
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
+  }
 }

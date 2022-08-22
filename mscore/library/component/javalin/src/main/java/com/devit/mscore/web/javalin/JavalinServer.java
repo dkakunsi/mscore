@@ -5,6 +5,7 @@ import static com.devit.mscore.util.JsonUtils.isNotJsonString;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
 
+import com.devit.mscore.AuthenticationProvider;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Validation;
 import com.devit.mscore.exception.ApplicationException;
@@ -57,8 +58,8 @@ public final class JavalinServer extends Server {
 
   private Map<Class<Exception>, ExceptionHandler<Exception>> exceptionHandler;
 
-  JavalinServer(Integer port, List<Endpoint> endpoints, Consumer<JavalinConfig> configurer) {
-    super(port, endpoints);
+  JavalinServer(Integer port, List<Endpoint> endpoints, List<Validation> validations, AuthenticationProvider authenticationProvider, Consumer<JavalinConfig> configurer) {
+    super(port, endpoints, validations, authenticationProvider);
     this.configurer = configurer;
     this.exceptionHandler = new HashMap<>();
     setExceptionHandlers();
@@ -82,9 +83,10 @@ public final class JavalinServer extends Server {
     addExceptionHandler(Exception.class, 500);
   }
 
+  @SuppressWarnings("PMD.GuardLogStatement")
   public <T extends Exception> void addExceptionHandler(Class<T> type, int statusCode) {
     addExceptionHandler(type, (ex, ctx) -> {
-      LOG.error(ex.getMessage(), ex);
+      LOG.error("Cannot process request: {}", ex, ex.getMessage());
       ctx.status(statusCode).contentType("application/json")
           .result(createResponseMessage(ex, statusCode).toString());
     });
@@ -179,7 +181,7 @@ public final class JavalinServer extends Server {
         throw new ValidationException("Unexpected format.");
       }
 
-      if (!isValid(this.validations, new JSONObject(body))) {
+      if (!isValid(new JSONObject(body))) {
         throw new ValidationException("Invalid data. Please check log for detail.");
       }
     });
@@ -195,10 +197,6 @@ public final class JavalinServer extends Server {
 
   private static boolean isCrudRequest(String path) {
     return !StringUtils.containsAny(path.toLowerCase(), NON_CRUD_REQUEST_PATH);
-  }
-
-  private static boolean isValid(List<Validation> validations, JSONObject json) {
-    return validations == null || validations.stream().allMatch(validation -> validation.validate(json));
   }
 
   private void initEndpoint() {
