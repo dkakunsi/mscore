@@ -9,6 +9,7 @@ import com.devit.mscore.logging.ApplicationLogger;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.search.SearchRequest;
@@ -36,14 +37,15 @@ public class ElasticsearchService {
 
   private RestHighLevelClient client;
 
-  public ElasticsearchService(RestHighLevelClient client) {
-    this.client = client;
+  ElasticsearchService(Supplier<RestHighLevelClient> clientSupplier) {
+    this.client = clientSupplier.get();
   }
 
   void createIndex(Map<String, String> map) {
     map.forEach(this::buildIndex);
   }
 
+  @SuppressWarnings("PMD.GuardLogStatement")
   void buildIndex(String indexName, String mapping) {
     LOG.info("Building index {}.", indexName);
 

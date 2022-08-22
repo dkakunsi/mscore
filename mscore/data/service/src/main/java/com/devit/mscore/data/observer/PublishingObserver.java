@@ -22,6 +22,7 @@ public class PublishingObserver implements PostProcessObserver {
   }
 
   @Override
+  @SuppressWarnings("PMD.GuardLogStatement")
   public void notify(JSONObject json) {
     if (this.publisher == null) {
       LOG.warn("Publisher is not provided. By pass publishing.");

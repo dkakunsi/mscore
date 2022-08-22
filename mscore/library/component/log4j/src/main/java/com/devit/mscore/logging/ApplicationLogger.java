@@ -86,7 +86,7 @@ public class ApplicationLogger implements Logger {
 
   @Override
   public void warn(String message) {
-    warn("{}", getBreadcrumbId(), message);
+    warn("{}", message);
   }
 
   @Override

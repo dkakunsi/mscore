@@ -32,10 +32,11 @@ public class ServiceRegistrationTest {
   private ServiceRegistration serviceRegistration;
 
   @Before
-  public void setup() {
+  public void setup() throws CloneNotSupportedException {
     this.configuration = mock(Configuration.class);
     doReturn("data").when(this.configuration).getServiceName();
     this.registry = mock(Registry.class);
+    doReturn(this.registry).when(this.registry).clone();
     this.serviceRegistration = new ServiceRegistration(registry, configuration);
   }
 

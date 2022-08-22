@@ -37,6 +37,7 @@ public class EventListener extends Listener {
   }
 
   @Override
+  @SuppressWarnings("PMD.GuardLogStatement")
   public void consume(JSONObject message) {
     LOGGER.debug("Receive event message: {}", message);
     this.notifications.forEach(notification -> {

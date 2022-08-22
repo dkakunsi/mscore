@@ -28,10 +28,10 @@
     <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
     <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
     <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
-    <maven-pmd-plugin.version>3.14.0</maven-pmd-plugin.version>
-    <maven-jxr-plugin.version>2.3</maven-jxr-plugin.version>
+    <maven-pmd-plugin.version>3.17.0</maven-pmd-plugin.version>
+    <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
     <maven-eclipse-plugin.version>1.0.0</maven-eclipse-plugin.version>
-    <spotbugs-maven-plugin.version>4.1.3</spotbugs-maven-plugin.version>
+    <spotbugs-maven-plugin.version>4.4.2</spotbugs-maven-plugin.version>
     <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
     <flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
     <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
@@ -221,6 +221,16 @@
           <groupId>com.github.spotbugs</groupId>
           <artifactId>spotbugs-maven-plugin</artifactId>
           <version>${spotbugs-maven-plugin.version}</version>
+          <executions>
+            <execution>
+              <id>check</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>check</goal>
+                <goal>spotbugs</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
         <!-- Code Coverage Plugin -->
         <plugin>

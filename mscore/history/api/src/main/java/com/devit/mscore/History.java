@@ -6,4 +6,5 @@ public interface History {
 
   void create(JSONObject message) throws HistoryException;
 
+  void close();
 }

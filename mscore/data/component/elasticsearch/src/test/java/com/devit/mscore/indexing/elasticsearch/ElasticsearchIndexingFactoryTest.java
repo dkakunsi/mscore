@@ -7,6 +7,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -24,8 +25,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Optional;
 
+import org.apache.http.HttpHost;
 import org.elasticsearch.client.IndicesClient;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
@@ -35,10 +38,12 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class ElasticsearchIndexingFactoryTest {
 
-  private ElasticsearchIndexFactory manager;
+  // private ElasticsearchIndexFactory factory;
 
   private Registry registry;
 
@@ -54,47 +59,133 @@ public class ElasticsearchIndexingFactoryTest {
 
     this.registry = mock(Registry.class);
     this.client = mock(RestHighLevelClient.class);
-    this.manager = ElasticsearchIndexFactory.of(this.configuration, this.registry);
-    this.manager.setESClient(this.client);
+  }
+
+  private interface Executor {
+    void execute(ElasticsearchIndexFactory factory);
+  }
+
+  private void doTest(Executor executor) {
+    try (MockedStatic<ElasticsearchIndexFactory.Helper> utilities = Mockito
+        .mockStatic(ElasticsearchIndexFactory.Helper.class)) {
+      utilities.when(() -> ElasticsearchIndexFactory.Helper.getEsClient(any(Configuration.class), any(), anyBoolean()))
+          .thenReturn(this.client);
+
+      var factory = ElasticsearchIndexFactory.of(this.configuration, this.registry);
+      executor.execute(factory);
+    }
   }
 
   @Test
   public void testGetIndex() throws ConfigException, IOException, RegistryException {
-    var indices = mock(IndicesClient.class);
-    doReturn(false).when(indices).exists(any(GetIndexRequest.class), any(RequestOptions.class));
-    doReturn(new CreateIndexResponse(true, false, null)).when(indices).create(any(CreateIndexRequest.class),
-        any(RequestOptions.class));
-    doReturn(indices).when(this.client).indices();
-    doReturn("{\"a\":\"A\"}").when(this.registry).get(any());
+    doTest(factory -> {
+      try {
+        doReturn(Optional.of("http://ref-es:9200")).when(this.configuration).getConfig("platform.elasticsearch.host");
+        var indices = mock(IndicesClient.class);
+        doReturn(false).when(indices).exists(any(GetIndexRequest.class), any(RequestOptions.class));
+        doReturn(new CreateIndexResponse(true, false, null)).when(indices).create(any(CreateIndexRequest.class),
+            any(RequestOptions.class));
+        doReturn(indices).when(this.client).indices();
+        doReturn("{\"a\":\"A\"}").when(this.registry).get(any());
 
-    var index = this.manager.index("indexName");
-    assertNotNull(index);
+        var index = factory.index("indexName");
+        assertNotNull(index);
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
+      }
+    });
   }
 
   @Test
   public void testGetHost() throws ConfigException {
-    doReturn(Optional.of("http://ref-es:9200")).when(this.configuration).getConfig("platform.elasticsearch.host");
-    var hosts = this.manager.getHost();
-    assertNotNull(hosts);
-    assertThat(hosts.length, is(1));
-    assertThat(hosts[0].getSchemeName(), is("http"));
-    assertThat(hosts[0].getHostName(), is("ref-es"));
-    assertThat(hosts[0].getPort(), is(9200));
+    doTest(factory -> {
+      try {
+        doReturn(Optional.of("http://ref-es:9200")).when(this.configuration).getConfig("platform.elasticsearch.host");
+        var hosts = factory.getHost();
+        assertNotNull(hosts);
+        assertThat(hosts.length, is(1));
+        assertThat(hosts[0].getSchemeName(), is("http"));
+        assertThat(hosts[0].getHostName(), is("ref-es"));
+        assertThat(hosts[0].getPort(), is(9200));
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
+      }
+    });
   }
 
   @Test
   public void testGetHost_MalformedURL() throws ConfigException {
-    doReturn(Optional.of("###")).when(this.configuration).getConfig("platform.elasticsearch.host");
-    var ex = assertThrows(ConfigException.class, () -> this.manager.getHost());
-    assertThat(ex.getMessage(), is("Cannot create host: ###."));
-    assertThat(ex.getCause(), instanceOf(MalformedURLException.class));
+    doTest(factory -> {
+      try {
+        doReturn(Optional.of("###")).when(this.configuration).getConfig("platform.elasticsearch.host");
+        var ex = assertThrows(ConfigException.class, () -> factory.getHost());
+        assertThat(ex.getMessage(), is("Cannot create host: ###."));
+        assertThat(ex.getCause(), instanceOf(MalformedURLException.class));
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
+      }
+    });
   }
 
   @Test
   public void testGetHost_NotProvided() throws ConfigException {
-    doReturn(Optional.empty()).when(this.configuration).getConfig("platform.elasticsearch.host");
-    var ex = assertThrows(ConfigException.class, () -> this.manager.getHost());
-    assertThat(ex.getMessage(), is("No ES host is configured."));
+    doTest(factory -> {
+      try {
+        doReturn(Optional.empty()).when(this.configuration).getConfig("platform.elasticsearch.host");
+        var ex = assertThrows(ConfigException.class, () -> factory.getHost());
+        assertThat(ex.getMessage(), is("No ES host is configured."));
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
+      }
+    });
+  }
+
+  @Test
+  public void testIsSecure_Exception() throws ConfigException {
+    doTest(factory -> {
+      try {
+        doReturn(Optional.empty()).when(this.configuration).getConfig("platform.elasticsearch.secure");
+        assertFalse(factory.isSecure());
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
+      }
+    });
+  }
+
+  @Test
+  public void testRegisterMapping() throws ConfigException, ResourceException, RegistryException {
+    doTest(factory -> {
+      try {
+        var location = getLocation("resource");
+        doReturn(Optional.of(location)).when(this.configuration).getConfig("services.data.index.mapping.location");
+
+        factory.registerResources();
+
+        var captor = ArgumentCaptor.forClass(String.class);
+        verify(this.registry, times(1)).add(anyString(), captor.capture());
+
+        var argument = new JSONObject(captor.getValue());
+        assertThat(argument.getString("name"), is("resource"));
+        assertThat(argument.getString("content"), is("{\"id\":\"id\"}"));
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
+      }
+    });
+  }
+
+  @Test
+  public void testGetEsClient() throws ConfigException {
+    try (MockedStatic<RestClient> utilities = Mockito.mockStatic(RestClient.class)) {
+      doReturn(Optional.of("username")).when(this.configuration).getConfig("platform.elasticsearch.username");
+      doReturn(Optional.of("password")).when(this.configuration).getConfig("platform.elasticsearch.password");
+      var builder = mock(RestClientBuilder.class);
+      doReturn(mock(RestClient.class)).when(builder).build();
+
+      utilities.when(() -> RestClient.builder((HttpHost[]) any())).thenReturn(builder);
+
+      var client = ElasticsearchIndexFactory.Helper.getEsClient(this.configuration, null, true);
+      assertNotNull(client);
+    }
   }
 
   @Test
@@ -104,22 +195,17 @@ public class ElasticsearchIndexingFactoryTest {
     doReturn(Optional.of("password")).when(this.configuration).getConfig("platform.elasticsearch.password");
 
     var restClientBuilder = mock(RestClientBuilder.class);
-    this.manager.applyAuthentication(restClientBuilder);
+    ElasticsearchIndexFactory.Helper.applyAuthentication(this.configuration, restClientBuilder);
 
     verify(restClientBuilder, times(1)).setHttpClientConfigCallback(any());
-  }
-
-  @Test
-  public void testIsSecure_Exception() throws ConfigException {
-    doReturn(Optional.empty()).when(this.configuration).getConfig("platform.elasticsearch.secure");
-    assertFalse(this.manager.isSecure());
   }
 
   @Test
   public void testGetUsername_NotProvidedWhenSecure() throws ConfigException {
     doReturn(Optional.of("true")).when(this.configuration).getConfig("platform.elasticsearch.secure");
     doReturn(Optional.empty()).when(this.configuration).getConfig("platform.elasticsearch.username");
-    var ex = assertThrows(ConfigException.class, () -> this.manager.getUsername());
+    var ex = assertThrows(ConfigException.class,
+        () -> ElasticsearchIndexFactory.Helper.getUsername(this.configuration));
     assertThat(ex.getMessage(), is("ES username is not provided"));
   }
 
@@ -127,7 +213,8 @@ public class ElasticsearchIndexingFactoryTest {
   public void testGetUsername_NotProvidedWhenNotSecure() throws ConfigException {
     doReturn(Optional.of("false")).when(this.configuration).getConfig("platform.elasticsearch.secure");
     doReturn(Optional.empty()).when(this.configuration).getConfig("platform.elasticsearch.username");
-    var ex = assertThrows(ConfigException.class, () -> this.manager.getUsername());
+    var ex = assertThrows(ConfigException.class,
+        () -> ElasticsearchIndexFactory.Helper.getUsername(this.configuration));
     assertThat(ex.getMessage(), is("ES username is not provided"));
   }
 
@@ -135,7 +222,8 @@ public class ElasticsearchIndexingFactoryTest {
   public void testGetPassword_NotProvidedWhenSecure() throws ConfigException {
     doReturn(Optional.of("true")).when(this.configuration).getConfig("platform.elasticsearch.secure");
     doReturn(Optional.empty()).when(this.configuration).getConfig("platform.elasticsearch.password");
-    var ex = assertThrows(ConfigException.class, () -> this.manager.getPassword());
+    var ex = assertThrows(ConfigException.class,
+        () -> ElasticsearchIndexFactory.Helper.getPassword(this.configuration));
     assertThat(ex.getMessage(), is("ES password is not provided"));
   }
 
@@ -143,23 +231,9 @@ public class ElasticsearchIndexingFactoryTest {
   public void testGetPassword_NotProvidedWhenNotSecure() throws ConfigException {
     doReturn(Optional.of("false")).when(this.configuration).getConfig("platform.elasticsearch.secure");
     doReturn(Optional.empty()).when(this.configuration).getConfig("platform.elasticsearch.password");
-    var ex = assertThrows(ConfigException.class, () -> this.manager.getPassword());
+    var ex = assertThrows(ConfigException.class,
+        () -> ElasticsearchIndexFactory.Helper.getPassword(this.configuration));
     assertThat(ex.getMessage(), is("ES password is not provided"));
-  }
-
-  @Test
-  public void testRegisterMapping() throws ConfigException, ResourceException, RegistryException {
-    var location = getLocation("resource");
-    doReturn(Optional.of(location)).when(this.configuration).getConfig("services.data.index.mapping.location");
-
-    this.manager.registerResources();
-
-    var captor = ArgumentCaptor.forClass(String.class);
-    verify(this.registry, times(1)).add(anyString(), captor.capture());
-
-    var argument = new JSONObject(captor.getValue());
-    assertThat(argument.getString("name"), is("resource"));
-    assertThat(argument.getString("content"), is("{\"id\":\"id\"}"));
   }
 
   private String getLocation(String location) {

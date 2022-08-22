@@ -26,35 +26,31 @@ public abstract class Server implements Starter {
 
   protected List<Validation> validations;
 
-  protected Server(int port) {
+  protected Server(int port, List<Endpoint> endpoints, List<Validation> validations, AuthenticationProvider authenticationProvider) {
     this.port = port;
-    this.validations = new ArrayList<>();
-    this.endpoints = new ArrayList<>();
+    this.authenticationProvider = authenticationProvider;
+    this.validations = validations;
+    this.endpoints = endpoints;
   }
 
   protected Server(int port, List<Endpoint> endpoints) {
-    this(port);
-    this.endpoints = endpoints;
+    this(port, endpoints, new ArrayList<>(), null);
   }
 
   protected int getPort() {
     return this.port;
   }
 
+  protected List<Endpoint> getEndpoints() {
+    return this.endpoints;
+  }
+
   protected AuthenticationProvider getAuthenticationProvider() {
     return this.authenticationProvider;
   }
 
-  public void setAuthenticationProvider(AuthenticationProvider authenticationProvider) {
-    this.authenticationProvider = authenticationProvider;
-  }
-
-  public List<Validation> getValidations() {
-    return this.validations;
-  }
-
-  public void setValidations(List<Validation> validations) {
-    this.validations = validations;
+  protected boolean isValid(JSONObject json) {
+    return this.validations == null || this.validations.stream().allMatch(validation -> validation.validate(json));
   }
 
   protected JSONObject createResponseMessage(Exception ex, int statusCode) {

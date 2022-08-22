@@ -6,12 +6,15 @@ import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.logging.ApplicationLogger;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
 
 public class ZookeeperRegistry implements Registry {
@@ -26,9 +29,9 @@ public class ZookeeperRegistry implements Registry {
 
   private Map<String, String> cache;
 
-  public ZookeeperRegistry(String name, CuratorFramework client) throws RegistryException {
+  public ZookeeperRegistry(String name, String zkHost, RetryPolicy retryPolicy) throws RegistryException {
     this.name = name;
-    this.client = client;
+    this.client = CuratorFrameworkFactory.newClient(zkHost, retryPolicy);
     this.cache = new HashMap<>();
     init();
   }
@@ -48,7 +51,7 @@ public class ZookeeperRegistry implements Registry {
     try {
       var children = this.client.getChildren().forPath(parentPath);
       for (var child : children) {
-        var format = parentPath.equals(ROOT_PATH) ? "%s%s" : "%s/%s";
+        var format = ROOT_PATH.equals(parentPath) ? "%s%s" : "%s/%s";
         var key = String.format(format, parentPath, child);
         load(key);
       }
@@ -67,9 +70,9 @@ public class ZookeeperRegistry implements Registry {
     try {
       var stat = this.client.checkExists().forPath(key);
       if (stat == null) {
-        this.client.create().creatingParentsIfNeeded().forPath(key, value.getBytes());
+        this.client.create().creatingParentsIfNeeded().forPath(key, value.getBytes(StandardCharsets.UTF_8.name()));
       } else {
-        this.client.setData().forPath(key, value.getBytes());
+        this.client.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8.name()));
       }
 
       clearCache(getCacheKey(key));
@@ -83,7 +86,7 @@ public class ZookeeperRegistry implements Registry {
   }
 
   static String getCacheKey(String key) {
-    if (key.equals(ROOT_PATH)) {
+    if (ROOT_PATH.equals(key)) {
       return "root";
     }
 
@@ -103,7 +106,7 @@ public class ZookeeperRegistry implements Registry {
           return null;
         }
         var value = this.client.getData().forPath(registryKey);
-        return value != null ? new String(value) : null;
+        return value != null ? new String(value, StandardCharsets.UTF_8.name()) : null;
       } catch (Exception ex) {
         throw new ApplicationRuntimeException(new RegistryException("Cannot get register.", ex));
       }
@@ -114,7 +117,7 @@ public class ZookeeperRegistry implements Registry {
 
   @Override
   public Map<String, String> all() {
-    return this.cache;
+    return new HashMap<>(this.cache);
   }
 
   @Override
@@ -131,6 +134,11 @@ public class ZookeeperRegistry implements Registry {
   @Override
   public void close() {
     this.client.close();
+  }
+
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
   }
 
   @Override

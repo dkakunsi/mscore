@@ -10,6 +10,10 @@ public class InitializeProcess implements JavaDelegate {
 
   @Override
   public void execute(DelegateExecution execution) {
+    if (this.organisation == null) {
+      return;
+    }
+
     var organisationValue = this.organisation.getValue(execution).toString();
     execution.setVariable("organisation", organisationValue);
   }

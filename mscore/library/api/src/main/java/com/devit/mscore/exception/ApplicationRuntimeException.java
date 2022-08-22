@@ -13,6 +13,10 @@ public class ApplicationRuntimeException extends RuntimeException {
     super(ex);
   }
 
+  public ApplicationRuntimeException(Throwable ex) {
+    super(ex);
+  }
+
   public ApplicationRuntimeException(String message) {
     super(message);
   }

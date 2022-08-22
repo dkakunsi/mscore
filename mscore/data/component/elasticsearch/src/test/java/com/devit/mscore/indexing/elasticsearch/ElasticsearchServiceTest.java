@@ -46,7 +46,9 @@ public class ElasticsearchServiceTest {
   @Before
   public void setup() {
     this.client = mock(RestHighLevelClient.class);
-    this.index = new ElasticsearchService(this.client);
+    this.index = new ElasticsearchService(() -> {
+      return this.client;
+    });
   }
 
   @Test

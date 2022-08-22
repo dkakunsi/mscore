@@ -32,7 +32,7 @@ public class SchemaManager extends ResourceManager {
   }
 
   public List<Schema> getSchemas() {
-    return this.schemas;
+    return new ArrayList<>(this.schemas);
   }
 
   @Override

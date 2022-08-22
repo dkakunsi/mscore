@@ -6,7 +6,6 @@ import com.devit.mscore.exception.RegistryException;
 
 import java.util.Optional;
 
-import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryNTimes;
 
 public class ZookeeperRegistryFactory {
@@ -35,9 +34,7 @@ public class ZookeeperRegistryFactory {
     var sleepMsBetweenRetries = getSleepBetweenRetry(configuration);
     var maxRetries = getMaxRetry(configuration);
     var retryPolicy = new RetryNTimes(maxRetries, sleepMsBetweenRetries);
-
-    var client = CuratorFrameworkFactory.newClient(getZookeeperHost(configuration), retryPolicy);
-    return new ZookeeperRegistry(registryName, client);
+    return new ZookeeperRegistry(registryName, getZookeeperHost(configuration), retryPolicy);
   }
 
   static String getZookeeperHost(Configuration configuration)

@@ -37,7 +37,7 @@ public final class SynchronizationsExecutor implements Executor<Synchronization>
   }
 
   public Map<String, List<Synchronization>> getSynchronizations() {
-    return this.synchronizations;
+    return new HashMap<>(this.synchronizations);
   }
 
   /**
@@ -93,5 +93,10 @@ public final class SynchronizationsExecutor implements Executor<Synchronization>
         LOG.error("Cannot synchronize object {}", referenceId, ex);
       }
     });
+  }
+
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
   }
 }

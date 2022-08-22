@@ -17,6 +17,7 @@ public class SendNotification implements JavaDelegate {
   private static final Logger LOGGER = ApplicationLogger.getLogger(SendNotification.class);
 
   @Override
+  @SuppressWarnings("PMD.GuardLogStatement")
   public void execute(DelegateExecution execution) {
     var context = (FlowableApplicationContext) FlowableApplicationContext.of(execution);
     setContext(context);

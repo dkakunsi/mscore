@@ -67,6 +67,7 @@ public class ApplicationStarter implements Starter {
     }
   }
 
+  @SuppressWarnings("PMD.GuardLogStatement")
   private static void registerResource(ResourceManager resourceManager) {
     LOGGER.info("Register resource: {}.", resourceManager.getType());
     try {
@@ -78,6 +79,6 @@ public class ApplicationStarter implements Starter {
 
   @Override
   public void stop() {
-    System.exit(0);
+    throw new RuntimeException("Application is stopped.");
   }
 }

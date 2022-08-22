@@ -10,7 +10,7 @@ import java.util.Map;
  *
  * @author dkakunsi
  */
-public interface Registry {
+public interface Registry extends Cloneable {
 
   /**
    * Get registry name.
@@ -68,4 +68,6 @@ public interface Registry {
    * Close connection to registry.
    */
   void close();
+
+  Object clone() throws CloneNotSupportedException;
 }

@@ -12,7 +12,6 @@ import java.util.Optional;
 import org.json.JSONObject;
 
 import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation.Builder;
 import jakarta.ws.rs.core.MediaType;
@@ -26,11 +25,6 @@ public class JerseyClient implements com.devit.mscore.web.Client, Requester {
 
   JerseyClient(Client client) {
     this.client = client;
-  }
-
-  @Override
-  public com.devit.mscore.web.Client createNew() {
-    return new JerseyClient(ClientBuilder.newClient());
   }
 
   @Override
@@ -87,5 +81,10 @@ public class JerseyClient implements com.devit.mscore.web.Client, Requester {
     builder.accept(MediaType.APPLICATION_JSON);
 
     return builder;
+  }
+
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
   }
 }

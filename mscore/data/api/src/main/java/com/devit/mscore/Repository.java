@@ -14,7 +14,7 @@ import org.json.JSONObject;
  *
  * @author dkakunsi
  */
-public interface Repository {
+public interface Repository extends Cloneable {
 
   /**
    * Save data to persistence storage.
@@ -80,4 +80,6 @@ public interface Repository {
   default Optional<JSONArray> all() throws DataException {
     throw new DataException(new ImplementationException());
   }
+
+  Object clone() throws CloneNotSupportedException;
 }

@@ -75,7 +75,7 @@ public class ApplicationStarter implements Starter {
 
   private SynchronizationsExecutor synchronizationsExecutor;
 
-  public ApplicationStarter(String[] args) throws ConfigException {
+  public ApplicationStarter(String... args) throws ConfigException {
     this(FileConfigurationUtils.load(args));
   }
 
@@ -104,20 +104,8 @@ public class ApplicationStarter implements Starter {
     this.indices = new HashMap<>();
   }
 
-  public static ApplicationStarter of(String[] args) throws ConfigException {
-    var starter = new ApplicationStarter(args);
-    var schemaValidation = new SchemaValidation(starter.getSchemaRegistry());
-    starter.addWebValidations(schemaValidation);
-
-    return starter;
-  }
-
-  public void addWebValidations(Validation validation) {
-    this.webValidations.add(validation);
-  }
-
-  public Registry getSchemaRegistry() {
-    return this.schemaRegistry;
+  public static ApplicationStarter of(String... args) throws ConfigException {
+    return new ApplicationStarter(args);
   }
 
   @Override
@@ -131,6 +119,8 @@ public class ApplicationStarter implements Starter {
 
     // Create authentication
     var authentication = JWTAuthenticationProvider.of(this.configuration);
+
+    this.webValidations.add(new SchemaValidation(this.schemaRegistry));
 
     // Create component factories
     var repositoryFactory = MongoDatabaseFactory.of(this.configuration);
@@ -193,6 +183,7 @@ public class ApplicationStarter implements Starter {
     }
   }
 
+  @SuppressWarnings("PMD.GuardLogStatement")
   private static void registerResource(ResourceManager resourceManager) {
     LOGGER.info("Register resource: {}.", resourceManager.getType());
     try {
@@ -204,6 +195,6 @@ public class ApplicationStarter implements Starter {
 
   @Override
   public void stop() {
-    System.exit(0);
+    throw new RuntimeException("Application is stopped");
   }
 }

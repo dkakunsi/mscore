@@ -1,16 +1,12 @@
 package com.devit.mscore.web;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.hamcrest.core.Is.is;
 
-import java.util.List;
-
-import com.devit.mscore.AuthenticationProvider;
 import com.devit.mscore.exception.ApplicationException;
 import com.devit.mscore.exception.ValidationException;
+
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -86,15 +82,5 @@ public class ServerTest {
 
     assertThat(message.getString("message"), is("Error message"));
     assertThat(message.getString("type"), is("ERROR"));
-  }
-
-  @Test
-  public void testSetterGetterAdder() {
-    this.server.setAuthenticationProvider(mock(AuthenticationProvider.class));
-    this.server.setValidations(List.of());
-
-    assertNotNull(this.server.getAuthenticationProvider());
-    assertNotNull(this.server.getValidations());
-    assertNotEquals(0, this.server.getPort());
   }
 }

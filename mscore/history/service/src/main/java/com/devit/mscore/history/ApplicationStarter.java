@@ -1,7 +1,7 @@
 package com.devit.mscore.history;
 
 import com.devit.mscore.Configuration;
-import com.devit.mscore.GitHistoryFactory;
+import com.devit.mscore.GitHistory;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Starter;
 import com.devit.mscore.configuration.FileConfiguration;
@@ -28,9 +28,9 @@ public class ApplicationStarter implements Starter {
 
   private KafkaMessagingFactory messagingFactory;
 
-  private GitHistoryFactory historyFactory;
+  private GitHistory.Builder historyBuilder;
 
-  public ApplicationStarter(String[] args) throws ConfigException {
+  public ApplicationStarter(String... args) throws ConfigException {
     this(FileConfigurationUtils.load(args));
   }
 
@@ -42,7 +42,7 @@ public class ApplicationStarter implements Starter {
       this.configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
 
       this.messagingFactory = KafkaMessagingFactory.of(this.configuration);
-      this.historyFactory = GitHistoryFactory.of(this.configuration);
+      this.historyBuilder = GitHistory.Builder.of(this.configuration);
     } catch (RegistryException ex) {
       throw new ConfigException(ex);
     }
@@ -60,7 +60,7 @@ public class ApplicationStarter implements Starter {
     var topics = getTopicsToListen();
     if (!topics.isEmpty()) {
       EventListener.of(messagingFactory.subscriber())
-          .with(historyFactory.historyManager())
+          .with(historyBuilder.historyManager())
           .listen(topics.toArray(new String[0]));
     } else {
       LOGGER.warn("No topics to listen to");
@@ -69,6 +69,6 @@ public class ApplicationStarter implements Starter {
 
   @Override
   public void stop() {
-    System.exit(0);
+    throw new RuntimeException("Application is stopped.");
   }
 }

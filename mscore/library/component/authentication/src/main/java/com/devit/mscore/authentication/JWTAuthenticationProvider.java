@@ -12,12 +12,15 @@ import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.ImplementationException;
 import com.devit.mscore.logging.ApplicationLogger;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,8 +44,8 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
   private RSAPublicKey publicKey;
 
   protected JWTAuthenticationProvider(String publicKey, Map<String, Object> uri)
-      throws ConfigException {
-    this.publicKey = publicKey(publicKey.getBytes());
+      throws ConfigException, UnsupportedEncodingException {
+    this.publicKey = publicKey(publicKey.getBytes(StandardCharsets.UTF_8.name()));
     this.uri = uri;
   }
 
@@ -72,15 +75,15 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
       var jwt = verifier.verify(token);
       var payload = new JSONObject(decode(jwt.getPayload()));
       return getPrincipalData(payload);
-    } catch (JWTVerificationException ex) {
+    } catch (JWTVerificationException | JSONException | UnsupportedEncodingException ex) {
       LOG.error("Token is not valid: {}", token);
       throw new AuthenticationException("Token is not valid.", ex);
     }
   }
 
-  private static String decode(String encoded) {
-    var decoded = decode(encoded.getBytes());
-    return new String(decoded);
+  private static String decode(String encoded) throws UnsupportedEncodingException {
+    var decoded = decode(encoded.getBytes(StandardCharsets.UTF_8.name()));
+    return new String(decoded, StandardCharsets.UTF_8.name());
   }
 
   private static byte[] decode(byte[] encoded) {
@@ -103,7 +106,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
 
   @Override
   public Map<String, Object> getUri() {
-    return this.uri;
+    return new HashMap<>(this.uri);
   }
 
   public static JWTAuthenticationProvider of(Configuration configuration) throws ConfigException {
@@ -116,7 +119,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
       }
       var uris = new JSONObject(configuration.getConfig(secureUri).orElse("")).toMap();
       return new JWTAuthenticationProvider(publicKey, uris);
-    } catch (JSONException ex) {
+    } catch (JSONException | UnsupportedEncodingException ex) {
       throw new ConfigException("Invalid security configuration.", ex);
     }
   }

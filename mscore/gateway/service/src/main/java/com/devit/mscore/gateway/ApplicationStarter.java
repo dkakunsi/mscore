@@ -16,7 +16,7 @@ import com.devit.mscore.gateway.service.ResourceService;
 import com.devit.mscore.gateway.service.WorkflowService;
 import com.devit.mscore.registry.ZookeeperRegistryFactory;
 import com.devit.mscore.util.DateUtils;
-import com.devit.mscore.web.Client;
+import com.devit.mscore.web.jersey.JerseyClientFactory;
 
 import org.apache.commons.lang3.BooleanUtils;
 
@@ -32,11 +32,11 @@ public class ApplicationStarter implements Starter {
 
   private AuthenticationProvider authenticationProvider;
 
-  private Client webClient;
+  private JerseyClientFactory clientFactory;
 
   private ApiFactory apiFactory;
 
-  public ApplicationStarter(String[] args) throws ConfigException {
+  public ApplicationStarter(String... args) throws ConfigException {
     this(FileConfigurationUtils.load(args));
   }
 
@@ -53,13 +53,15 @@ public class ApplicationStarter implements Starter {
     DateUtils.setZoneId(this.configuration.getConfig(TIMEZONE).orElse("Asia/Makassar"));
     this.authenticationProvider = JWTAuthenticationProvider.of(configuration);
     this.apiFactory = ApiFactory.of(this.configuration, this.authenticationProvider);
+    this.clientFactory = JerseyClientFactory.of();
   }
 
   @Override
   public void start() throws ApplicationException {
+    var webClient = this.clientFactory.client();
     var useWorkflow = isUseWorkflow();
-    var workflowService = new WorkflowService(this.serviceRegistration, this.webClient);
-    var resourceService = new ResourceService(this.serviceRegistration, this.webClient, workflowService, useWorkflow);
+    var workflowService = new WorkflowService(this.serviceRegistration, webClient);
+    var resourceService = new ResourceService(this.serviceRegistration, webClient, workflowService, useWorkflow);
 
     this.apiFactory.add(resourceService);
 
@@ -82,6 +84,6 @@ public class ApplicationStarter implements Starter {
 
   @Override
   public void stop() {
-    System.exit(0);
+    throw new RuntimeException("Application is stopped.");
   }
 }

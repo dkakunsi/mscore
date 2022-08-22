@@ -67,15 +67,11 @@ public class MongoRepository implements Repository {
     }
   }
 
-  public void setCollection(MongoCollection<Document> collection) {
-    this.collection = collection;
-  }
-
   @Override
+  @SuppressWarnings("PMD.GuardLogStatement")
   public JSONObject save(JSONObject json) throws DataException {
-    LOG.trace("Saving entity to MongoDB: {}", getCode(json));
-
     try {
+      LOG.info("Saving entity to MongoDB: {}", getCode(json));
 
       var id = getOrCreateId(json);
       var target = find(id, false).orElse(new JSONObject());
@@ -176,5 +172,10 @@ public class MongoRepository implements Repository {
       document.put(MONGO_ID, mongoId);
     }
     return new JSONObject(document.toJson());
+  }
+
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
   }
 }

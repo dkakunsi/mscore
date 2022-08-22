@@ -2,6 +2,7 @@ package com.devit.mscore;
 
 import static java.net.InetAddress.getLocalHost;
 
+import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 
@@ -13,7 +14,7 @@ import java.util.function.Supplier;
  *
  * @author dkakunsi
  */
-public class ServiceRegistration {
+public class ServiceRegistration implements Cloneable {
 
   private static final String REGISTRY_STATIC = "platform.service.registry.static";
 
@@ -32,8 +33,12 @@ public class ServiceRegistration {
   private final Configuration configuration;
 
   public ServiceRegistration(Registry registry, Configuration configuration) {
-    this.registry = registry;
-    this.configuration = configuration;
+    try {
+      this.registry = (Registry) registry.clone();
+      this.configuration = configuration;
+    } catch (CloneNotSupportedException ex) {
+      throw new ApplicationRuntimeException(ex);
+    }
   }
 
   /**
@@ -110,5 +115,10 @@ public class ServiceRegistration {
 
   public void close() {
     this.registry.close();
+  }
+
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
   }
 }

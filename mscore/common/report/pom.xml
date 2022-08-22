@@ -15,11 +15,38 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>checkstyle-aggregate</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>checkstyle-aggregate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>pmd-aggregate</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>aggregate-pmd</goal>
+              <goal>aggregate-cpd</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>jacoco-report-aggregate</id>
+            <id>jacoco-aggregate</id>
             <phase>verify</phase>
             <goals>
               <goal>report-aggregate</goal>

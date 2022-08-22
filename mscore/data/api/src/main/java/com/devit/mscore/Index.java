@@ -14,7 +14,7 @@ import org.json.JSONObject;
  *
  * @author dkakunsi
  */
-public abstract class Index {
+public abstract class Index implements Cloneable {
 
   protected final String indexName;
 
@@ -67,4 +67,8 @@ public abstract class Index {
    */
   public abstract Optional<JSONObject> get(String id) throws IndexingException;
 
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
+  }
 }

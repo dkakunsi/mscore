@@ -3,59 +3,31 @@ package com.devit.mscore.registry;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-import com.devit.mscore.Registry;
 import com.devit.mscore.exception.RegistryException;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.Before;
 import org.junit.Test;
 
 public class MemoryRegistryTest {
 
-  private Map<String, String> register;
-
-  private Registry registry;
-
-  @Before
-  public void setup() {
-    new MemoryRegistry("name"); // just for coverage.
-
-    this.register = new HashMap<>();
-    this.registry = new MemoryRegistry("name", this.register);
-  }
-
   @Test
-  public void testAdd() throws RegistryException {
-    this.register.clear();
-    this.registry.add("name", "service-url");
+  public void testAddRegitry() throws RegistryException {
+    var registry = new MemoryRegistry("name"); // just for coverage.
 
-    assertThat(this.registry.all().size(), is(1));
-  }
+    // add
+    registry.add("name", "service-url");
+    assertThat(registry.all().size(), is(1));
 
-  @Test
-  public void testGet() throws RegistryException {
-    this.register.clear();
-    this.register.put("domain", "service-url");
-
-    var result = this.registry.get("domain");
+    // get
+    var result = registry.get("name");
     assertThat(result, is("service-url"));
-  }
 
-  @Test
-  public void testGetAll() throws RegistryException {
-    this.register.clear();
-    this.register.put("domain", "service-url");
-
-    var results = this.registry.all();
+    // all
+    var results = registry.all();
     assertThat(results.size(), is(1));
-    assertThat(results.get("domain"), is("service-url"));
-
-    var values = this.registry.values();
+    assertThat(results.get("name"), is("service-url"));
+    var values = registry.values();
     assertThat(values.get(0), is("service-url"));
-
-    var keys = this.registry.keys();
-    assertThat(keys.get(0), is("domain"));
+    var keys = registry.keys();
+    assertThat(keys.get(0), is("name"));
   }
 }

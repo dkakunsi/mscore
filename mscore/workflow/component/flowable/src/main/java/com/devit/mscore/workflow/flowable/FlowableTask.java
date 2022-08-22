@@ -8,10 +8,10 @@ import static com.devit.mscore.util.DateUtils.toZonedDateTime;
 import com.devit.mscore.WorkflowObject;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.flowable.engine.HistoryService;
 import org.flowable.identitylink.api.IdentityLinkInfo;
 import org.flowable.task.api.TaskInfo;
 import org.json.JSONObject;
@@ -26,14 +26,14 @@ public class FlowableTask implements WorkflowObject, TaskInfo {
 
   private TaskInfo task;
 
-  private HistoryService historyService;
-
   private String taskStatus;
 
-  public FlowableTask(TaskInfo task, HistoryService historyService) {
+  private Map<String, Object> variables;
+
+  public FlowableTask(TaskInfo task, Map<String, Object> variables) {
     this.task = task;
     this.taskStatus = ACTIVATED;
-    this.historyService = historyService;
+    this.variables = new HashMap<>(variables);
   }
 
   @Override
@@ -193,15 +193,15 @@ public class FlowableTask implements WorkflowObject, TaskInfo {
   }
 
   private String getOrganisation() {
-    var organisation = getVariables().get(ORGANISATION);
+    var organisation = this.variables.get(ORGANISATION);
     return organisation != null ? organisation.toString() : null;
   }
 
-  private Map<String, Object> getVariables() {
-    var historicProcessInstance = this.historyService.createHistoricProcessInstanceQuery()
-        .processInstanceId(getProcessInstanceId()).singleResult();
-    return historicProcessInstance.getProcessVariables();
-  }
+  // private Map<String, Object> getVariables() {
+  //   var historicProcessInstance = this.historyService.createHistoricProcessInstanceQuery()
+  //       .processInstanceId(getProcessInstanceId()).singleResult();
+  //   return historicProcessInstance.getProcessVariables();
+  // }
 
   @Override
   public String toString() {

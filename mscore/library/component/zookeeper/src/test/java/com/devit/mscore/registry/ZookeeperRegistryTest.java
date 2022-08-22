@@ -5,16 +5,18 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
+import com.devit.mscore.exception.RegistryException;
+
 import java.io.IOException;
 import java.util.List;
 
-import com.devit.mscore.exception.RegistryException;
-
+import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ExistsBuilder;
@@ -27,6 +29,8 @@ import org.apache.zookeeper.data.Stat;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class ZookeeperRegistryTest {
 
@@ -43,9 +47,7 @@ public class ZookeeperRegistryTest {
     var maxRetries = 3;
     var retryPolicy = new RetryNTimes(maxRetries, sleepMsBetweenRetries);
 
-    var client = CuratorFrameworkFactory.newClient("127.0.0.1:4000", retryPolicy);
-
-    registry = new ZookeeperRegistry("curator", client);
+    registry = new ZookeeperRegistry("curator", "127.0.0.1:4000", retryPolicy);
     registry.open();
   }
 
@@ -86,8 +88,13 @@ public class ZookeeperRegistryTest {
     doReturn(CuratorFrameworkState.STARTED).when(mockedClient).getState();
     doThrow(IllegalArgumentException.class).when(mockedClient).create();
 
-    var localRegistry = new ZookeeperRegistry("name", mockedClient);
-    assertThrows(RegistryException.class, () -> localRegistry.add("key", "value"));
+    try (MockedStatic<CuratorFrameworkFactory> utilities = Mockito.mockStatic(CuratorFrameworkFactory.class)) {
+      utilities.when(() -> CuratorFrameworkFactory.newClient(anyString(), any(RetryPolicy.class)))
+          .thenReturn(mockedClient);
+
+      var localRegistry = new ZookeeperRegistry("name", "host", mock(RetryPolicy.class));
+      assertThrows(RegistryException.class, () -> localRegistry.add("key", "value"));
+    }
   }
 
   @Test

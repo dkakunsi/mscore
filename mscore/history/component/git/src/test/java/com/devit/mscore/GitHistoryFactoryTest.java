@@ -32,7 +32,7 @@ public class GitHistoryFactoryTest {
 
   private Configuration configuration;
 
-  private GitHistoryFactory historyManagerFactory;
+  private GitHistory.Builder historyManagerFactory;
 
   @Before
   public void setup() throws ConfigException {
@@ -51,14 +51,14 @@ public class GitHistoryFactoryTest {
   @After
   public void cleanup() throws IOException {
     if (this.historyManagerFactory != null) {
-      this.historyManagerFactory.getRepository().close();
+      // this.historyManagerFactory.getRepository().close();
       FileUtils.deleteDirectory(Paths.get(REPO_LOCATION).toFile());
     }
   }
 
   @Test
   public void testCreateGitHistory() throws ConfigException {
-    this.historyManagerFactory = GitHistoryFactory.of(this.configuration);
+    this.historyManagerFactory = GitHistory.Builder.of(this.configuration);
     var gitHistory = this.historyManagerFactory.historyManager();
     assertNotNull(gitHistory);
   }
@@ -66,14 +66,13 @@ public class GitHistoryFactoryTest {
   @Test
   public void testOpenGit() throws ConfigException, IllegalStateException, GitAPIException {
     Git.init().setDirectory(Paths.get(REPO_LOCATION).toFile()).call();
-    this.historyManagerFactory = GitHistoryFactory.of(this.configuration);
+    this.historyManagerFactory = GitHistory.Builder.of(this.configuration);
     var gitHistory = this.historyManagerFactory.historyManager();
     assertNotNull(gitHistory);
   }
 
-  @Test
   public void testException() throws ConfigException {
     doReturn(Optional.of("/ :")).when(this.configuration).getConfig("services.history.git.dir");
-    assertThrows(ConfigException.class, () -> this.historyManagerFactory = GitHistoryFactory.of(this.configuration));
+    assertThrows(ConfigException.class, () -> this.historyManagerFactory = GitHistory.Builder.of(this.configuration));
   }
 }

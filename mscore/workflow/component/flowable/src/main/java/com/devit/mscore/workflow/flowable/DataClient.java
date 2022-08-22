@@ -22,15 +22,24 @@ public class DataClient {
 
   public DataClient(Client client, ServiceRegistration serviceRegistration, String workflowDomain,
       String workflowTaskDomain) {
-    this.client = client;
-    this.serviceRegistration = serviceRegistration;
     this.workflowDomain = workflowDomain;
     this.workflowTaskDomain = workflowTaskDomain;
     this.uriCache = new HashMap<>();
+
+    try {
+      this.client = (Client) client.clone();
+      this.serviceRegistration = (ServiceRegistration) serviceRegistration.clone();
+    } catch (CloneNotSupportedException ex) {
+      throw new ApplicationRuntimeException(ex);
+    }
   }
 
   public Client getClient() {
-    return this.client.createNew();
+    try {
+      return (Client) this.client.clone();
+    } catch (CloneNotSupportedException ex) {
+      throw new ApplicationRuntimeException(ex);
+    }
   }
 
   public String getWorkflowUri() {

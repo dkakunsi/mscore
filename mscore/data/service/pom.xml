@@ -15,7 +15,7 @@
 
   <properties>
     <revision>1.0-SNAPSHOT</revision>
-
+    <minimum.bundle.line.coverage>0.89</minimum.bundle.line.coverage>
     <minimum.class.line.coverage>0.82</minimum.class.line.coverage>
   </properties>
 

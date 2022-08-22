@@ -15,6 +15,10 @@ public class RepositoryTest {
   @Before
   public void setup() {
     this.repository = new Repository() {
+      @Override
+      public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+      }
     };
   }
 
