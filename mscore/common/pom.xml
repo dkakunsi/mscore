@@ -3,15 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.devit.mscore</groupId>
   <artifactId>parent</artifactId>
-  <version>2.1.3</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
 
   <name>MS Core :: Parent</name>
   <description>Parent project of all mscore components</description>
 
   <properties>
-    <parent.version>2.1.2</parent.version>
-
     <!-- Unify encoding for all the modules -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -380,6 +378,16 @@
           <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
           <version>${sonar-maven-plugin.version}</version>
+          <executions>
+            <execution>
+              <id>sonarcheck</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>sonar</goal>
+              </goals>
+            </execution>
+          </executions>
+
         </plugin>
 
         <!-- Maven lifecycles -->
@@ -448,54 +456,31 @@
     </plugins>
   </build>
 
-  <profiles>
-    <profile>
-      <id>useCustomRepo</id>
-      <repositories>
-        <repository>
-          <id>customRepo.read</id>
-          <url>${customRepo.read.url}</url>
-        </repository>
-      </repositories>
-      <distributionManagement>
-        <repository>
-          <id>customRepo.write</id>
-          <url>${customRepo.write.url}</url>
-        </repository>
-        <snapshotRepository>
-          <id>customRepo.write</id>
-          <url>${customRepo.write.url}</url>
-        </snapshotRepository>
-      </distributionManagement>
-    </profile>
-    <profile>
-      <id>mscore</id>
-      <repositories>
-        <repository>
-          <id>mscore</id>
-          <url>https://pkgs.dev.azure.com/iddevit/mscore/_packaging/mscore/maven/v1</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </repository>
-      </repositories>
-      <distributionManagement>
-        <repository>
-          <id>mscore</id>
-          <url>https://pkgs.dev.azure.com/iddevit/mscore/_packaging/mscore/maven/v1</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </repository>
-      </distributionManagement>
-    </profile>
-  </profiles>
+  <repositories>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/dkakunsi/olympus</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/dkakunsi/olympus</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </distributionManagement>
 
   <modules>
     <module>component</module>

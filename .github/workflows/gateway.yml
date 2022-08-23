@@ -14,11 +14,6 @@ on:
         description: 'Release Version'
         required: false
         type: boolean
-  # workflow_run:
-  #   workflows:
-  #     - "Library"
-  #   types:
-  #     - completed
 
 jobs:
   build:
@@ -69,14 +64,6 @@ jobs:
         profiles: >
           [
             {
-              "id": "useCustomRepo",
-              "name": "Profile for custom repostiory",
-              "properties": {
-                "customRepo.read.url": "${{ secrets.CUSTOMREPO_READ_URL }}",
-                "customRepo.write.url": "${{ secrets.CUSTOMREPO_WRITE_URL }}"
-              }
-            },
-            {
               "id": "useSonar",
               "name": "Profile for Sonarcloud.io",
               "properties": {
@@ -86,7 +73,9 @@ jobs:
           ]
 
     - name: Build with Maven
-      run: mvn --file mscore/gateway/pom.xml -PuseCustomRepo,useSonar -Drevision=$VERSION_NUMBER deploy sonar:sonar
+      run: mvn --file mscore/gateway/pom.xml -PuseSonar -Drevision=$VERSION_NUMBER deploy
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Log in to Docker Hub
       if: ${{ inputs.release }}

@@ -31,14 +31,6 @@ jobs:
         profiles: >
           [
             {
-              "id": "useCustomRepo",
-              "name": "Profile for custom repostiory",
-              "properties": {
-                "customRepo.read.url": "${{ secrets.CUSTOMREPO_READ_URL }}",
-                "customRepo.write.url": "${{ secrets.CUSTOMREPO_WRITE_URL }}"
-              }
-            },
-            {
               "id": "useSonar",
               "name": "Profile for Sonarcloud.io",
               "properties": {
@@ -48,4 +40,6 @@ jobs:
           ]
 
     - name: Build with Maven
-      run: mvn --file mscore/common/pom.xml -PuseCustomRepo deploy
+      run: mvn --file mscore/common/pom.xml deploy
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
