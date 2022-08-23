@@ -43,8 +43,8 @@ jobs:
             {
               "id": "github",
               "name": "Github package repository",
-              "username": ${{ env.GITHUB_ACTOR }},
-              "password": ${{ secrets.GITHUB_TOKEN }}
+              "username": "${{ env.GITHUB_ACTOR }}",
+              "password": "${{ secrets.GITHUB_TOKEN }}"
             }
           ]
 
