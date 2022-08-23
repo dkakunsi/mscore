@@ -5,9 +5,9 @@ on:
     branches:
       - master
     paths:
-      - "mscore/common/**"
-      - "!mscore/common/README.MD"
-      - "!mscore/common/.gitignore"
+      - "common/**"
+      - "!common/README.MD"
+      - "!common/.gitignore"
   workflow_dispatch: # enable manual trigger
 
 jobs:
@@ -40,6 +40,6 @@ jobs:
           ]
 
     - name: Build with Maven
-      run: mvn --file mscore/common/pom.xml deploy
+      run: mvn --file common/pom.xml deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
