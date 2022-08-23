@@ -25,7 +25,7 @@
     </dependency>
     <dependency>
       <groupId>com.devit.mscore</groupId>
-      <artifactId>authentication</artifactId>
+      <artifactId>jwt</artifactId>
       <version>${revision}</version>
     </dependency>
     <dependency>

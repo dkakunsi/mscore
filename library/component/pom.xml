@@ -27,7 +27,7 @@
 
   <modules>
     <module>log4j</module>
-    <module>authentication</module>
+    <module>jwt</module>
     <module>local</module>
     <module>zookeeper</module>
     <module>jersey</module>

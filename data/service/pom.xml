@@ -68,7 +68,7 @@
     </dependency>
     <dependency>
       <groupId>com.devit.mscore</groupId>
-      <artifactId>authentication</artifactId>
+      <artifactId>jwt</artifactId>
       <version>${library.version}</version>
     </dependency>
   </dependencies>

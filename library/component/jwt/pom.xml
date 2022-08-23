@@ -9,7 +9,7 @@
     <relativePath>..</relativePath>
   </parent>
 
-  <artifactId>authentication</artifactId>
+  <artifactId>jwt</artifactId>
   <packaging>jar</packaging>
   <name>MS Core :: Authentication :: JWT</name>
 
