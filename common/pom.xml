@@ -463,6 +463,10 @@
       <releases>
         <enabled>true</enabled>
       </releases>
+    </repository>
+    <repository>
+      <id>customRepo</id>
+      <url>${customRepo.read.url}</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
@@ -476,10 +480,14 @@
       <releases>
         <enabled>true</enabled>
       </releases>
+    </repository>
+    <snapshotRepository>
+      <id>customRepo</id>
+      <url>${customRepo.write.url}</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-    </repository>
+    </snapshotRepository>
   </distributionManagement>
 
   <modules>

@@ -35,18 +35,11 @@ jobs:
       with:
         VERSION_NUMBER: ${{ steps.latestTag.outputs.tag }}
 
-    - name: 'Get Next Version'
-      if: ${{ !inputs.release }}
-      id: semvers
-      uses: "WyriHaximus/github-action-next-semvers@v1"
-      with:
-        version: ${{ steps.latestTag.outputs.tag }}
-
-    - name: Set Snapshot Version
+    - name: Set Development Version
       if: ${{ !inputs.release }}
       uses: allenevans/set-env@v2.0.0
       with:
-        VERSION_NUMBER: ${{ steps.semvers.outputs.patch }}-SNAPSHOT
+        VERSION_NUMBER: ${{ steps.latestTag.outputs.tag }}.${ env.RUN_NUMBER }-SNAPSHOT
 
     - name: Print Version Number
       run: echo "Version number is $VERSION_NUMBER"
@@ -64,12 +57,17 @@ jobs:
         profiles: >
           [
             {
-              "id": "useSonar",
-              "name": "Profile for Sonarcloud.io",
+              "id": "default",
               "properties": {
+                "customRepo.read.url": "${{ secrets.CUSTOMREPO_READ_URL }}",
+                "customRepo.write.url": "${{ secrets.CUSTOMREPO_WRITE_URL }}",
                 "sonar.login": "${{ secrets.SONAR_LOGIN }}"
               }
             }
+          ]
+        active_profiles: >
+          [
+            "default"
           ]
         servers: >
           [
@@ -81,4 +79,4 @@ jobs:
           ]
 
     - name: Build with Maven
-      run: mvn --file library/pom.xml -PuseSonar -Drevision=$VERSION_NUMBER deploy
+      run: mvn --file library/pom.xml -Drevision=$VERSION_NUMBER deploy
