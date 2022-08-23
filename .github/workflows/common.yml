@@ -38,8 +38,15 @@ jobs:
               }
             }
           ]
+        servers: >
+          [
+            {
+              "id": "github",
+              "name": "Github package repository",
+              "username": ${{ env.GITHUB_ACTOR }},
+              "password": ${{ secrets.GITHUB_TOKEN }}
+            }
+          ]
 
     - name: Build with Maven
       run: mvn --file common/pom.xml deploy
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

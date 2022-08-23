@@ -458,7 +458,7 @@
 
   <repositories>
     <repository>
-      <id>mscore</id>
+      <id>github</id>
       <url>https://maven.pkg.github.com/dkakunsi/mscore</url>
       <releases>
         <enabled>true</enabled>
@@ -471,7 +471,7 @@
 
   <distributionManagement>
     <repository>
-      <id>mscore</id>
+      <id>github</id>
       <url>https://maven.pkg.github.com/dkakunsi/mscore</url>
       <releases>
         <enabled>true</enabled>
