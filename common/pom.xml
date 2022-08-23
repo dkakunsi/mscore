@@ -471,8 +471,8 @@
 
   <distributionManagement>
     <repository>
-      <id>github</id>
-      <url>https://maven.pkg.github.com/dkakunsi/olympus</url>
+      <id>mscore</id>
+      <url>https://maven.pkg.github.com/dkakunsi/mscore</url>
       <releases>
         <enabled>true</enabled>
       </releases>
