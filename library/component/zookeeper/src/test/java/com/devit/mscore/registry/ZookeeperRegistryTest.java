@@ -40,14 +40,14 @@ public class ZookeeperRegistryTest {
 
   @BeforeClass
   public static void startServer() throws Exception {
-    zookeeperServer = new TestingServer(4000);
+    zookeeperServer = new TestingServer(4001);
     zookeeperServer.start();
 
     var sleepMsBetweenRetries = 100;
     var maxRetries = 3;
     var retryPolicy = new RetryNTimes(maxRetries, sleepMsBetweenRetries);
 
-    registry = new ZookeeperRegistry("curator", "127.0.0.1:4000", retryPolicy);
+    registry = new ZookeeperRegistry("curator", "127.0.0.1:4001", retryPolicy);
     registry.open();
   }
 
