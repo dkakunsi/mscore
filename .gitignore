@@ -7,9 +7,6 @@
 # BlueJ files
 *.ctxt
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
 # Package Files #
 *.jar
 *.war
@@ -24,10 +21,3 @@ hs_err_pid*
 
 **/.DS_Store
 **/.vscode/**
-
-**/build/**
-**/.flutter-plugins**
-**/target/**
-**/dist/**
-**/.packages
-**/.dart_tool/**

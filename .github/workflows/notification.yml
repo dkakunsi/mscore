@@ -5,9 +5,9 @@ on:
     branches:
       - master
     paths:
-      - "mscore/notification/**"
-      - "!mscore/notification/README.MD"
-      - "!mscore/notification/.gitignore"
+      - "notification/**"
+      - "!notification/README.MD"
+      - "!notification/.gitignore"
   workflow_dispatch:
     inputs:
       release:
@@ -73,7 +73,7 @@ jobs:
           ]
 
     - name: Build with Maven
-      run: mvn --file mscore/notification/pom.xml -PuseSonar -Drevision=$VERSION_NUMBER deploy
+      run: mvn --file notification/pom.xml -PuseSonar -Drevision=$VERSION_NUMBER deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -88,8 +88,8 @@ jobs:
       if: ${{ inputs.release }}
       uses: docker/build-push-action@v3.1.1
       with:
-        context: "mscore/notification/service/target"
-        file: "mscore/notification/service/target/Dockerfile"
+        context: "notification/service/target"
+        file: "notification/service/target/Dockerfile"
         push: true
         tags: |
           devit16/mscore-notification-service:${{ env.VERSION_NUMBER }}

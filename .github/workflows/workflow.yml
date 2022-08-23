@@ -5,9 +5,9 @@ on:
     branches:
       - master
     paths:
-      - "mscore/workflow/**"
-      - "!mscore/workflow/README.MD"
-      - "!mscore/workflow/.gitignore"
+      - "workflow/**"
+      - "!workflow/README.MD"
+      - "!workflow/.gitignore"
   workflow_dispatch:
     inputs:
       release:
@@ -73,7 +73,7 @@ jobs:
           ]
 
     - name: Build with Maven
-      run: mvn --file mscore/workflow/pom.xml -PuseSonar -Drevision=$VERSION_NUMBER deploy
+      run: mvn --file workflow/pom.xml -PuseSonar -Drevision=$VERSION_NUMBER deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -88,8 +88,8 @@ jobs:
       if: ${{ inputs.release }}
       uses: docker/build-push-action@v3.1.1
       with:
-        context: "mscore/workflow/service/target"
-        file: "mscore/workflow/service/target/Dockerfile"
+        context: "workflow/service/target"
+        file: "workflow/service/target/Dockerfile"
         push: true
         tags: |
           devit16/mscore-workflow-service:${{ env.VERSION_NUMBER }}

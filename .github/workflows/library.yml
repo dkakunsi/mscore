@@ -5,9 +5,9 @@ on:
     branches:
       - master
     paths:
-      - "mscore/library/**"
-      - "!mscore/library/README.MD"
-      - "!mscore/library/.gitignore"
+      - "library/**"
+      - "!library/README.MD"
+      - "!library/.gitignore"
   workflow_dispatch:
     inputs:
       release:
@@ -73,6 +73,6 @@ jobs:
           ]
 
     - name: Build with Maven
-      run: mvn --file mscore/library/pom.xml -PuseSonar -Drevision=$VERSION_NUMBER deploy
+      run: mvn --file library/pom.xml -PuseSonar -Drevision=$VERSION_NUMBER deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

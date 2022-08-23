@@ -5,9 +5,9 @@ on:
     branches:
       - master
     paths:
-      - "mscore/gateway/**"
-      - "!mscore/gateway/README.MD"
-      - "!mscore/gateway/.gitignore"
+      - "gateway/**"
+      - "!gateway/README.MD"
+      - "!gateway/.gitignore"
   workflow_dispatch:
     inputs:
       release:
@@ -73,7 +73,7 @@ jobs:
           ]
 
     - name: Build with Maven
-      run: mvn --file mscore/gateway/pom.xml -PuseSonar -Drevision=$VERSION_NUMBER deploy
+      run: mvn --file gateway/pom.xml -PuseSonar -Drevision=$VERSION_NUMBER deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -88,8 +88,8 @@ jobs:
       if: ${{ inputs.release }}
       uses: docker/build-push-action@v3.1.1
       with:
-        context: "mscore/gateway/service/target"
-        file: "mscore/gateway/service/target/Dockerfile"
+        context: "gateway/service/target"
+        file: "gateway/service/target/Dockerfile"
         push: true
         tags: |
           devit16/mscore-gateway-service:${{ env.VERSION_NUMBER }}

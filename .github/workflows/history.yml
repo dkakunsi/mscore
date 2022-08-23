@@ -5,9 +5,9 @@ on:
     branches:
       - master
     paths:
-      - "mscore/history/**"
-      - "!mscore/history/README.MD"
-      - "!mscore/history/.gitignore"
+      - "history/**"
+      - "!history/README.MD"
+      - "!history/.gitignore"
   workflow_dispatch:
     inputs:
       release:
@@ -73,7 +73,7 @@ jobs:
           ]
 
     - name: Build with Maven
-      run: mvn --file mscore/history/pom.xml -PuseSonar -Drevision=$VERSION_NUMBER deploy
+      run: mvn --file history/pom.xml -PuseSonar -Drevision=$VERSION_NUMBER deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -88,8 +88,8 @@ jobs:
       if: ${{ inputs.release }}
       uses: docker/build-push-action@v3.1.1
       with:
-        context: "mscore/history/service/target"
-        file: "mscore/history/service/target/Dockerfile"
+        context: "history/service/target"
+        file: "history/service/target/Dockerfile"
         push: true
         tags: |
           devit16/mscore-history-service:${{ env.VERSION_NUMBER }}
