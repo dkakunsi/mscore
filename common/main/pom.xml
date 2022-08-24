@@ -26,7 +26,10 @@
     <sonar.java.checkstyle.reportPaths>${maven.multiModuleProjectDirectory}/service/target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
     <sonar.java.pmd.reportPaths>${maven.multiModuleProjectDirectory}/service/target/pmd.xml</sonar.java.pmd.reportPaths>
     <sonar.java.spotbugs.reportPaths>${maven.multiModuleProjectDirectory}/service/target/spotbugsXml.xml</sonar.java.spotbugs.reportPaths>
-    <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/service/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.coverage.jacoco.xmlReportPaths>
+      ${maven.multiModuleProjectDirectory}/service/target/site/jacoco-aggregate/jacoco.xml,
+      ${maven.multiModuleProjectDirectory}/service/target/site/jacoco/jacoco.xml
+    </sonar.coverage.jacoco.xmlReportPaths>
     <sonar.coverage.exclusions>**/*Exception*,**/ApplicationStarter.java,**/Main.java</sonar.coverage.exclusions>
   </properties>
 
