@@ -10,6 +10,20 @@ on:
       - "!solution/README.MD"
       - "!solution/.gitignore"
   workflow_dispatch: # enable manual build
+    inputs:
+      services:
+        description: 'Service to build'
+        required: false
+        type: choice
+        options:
+        - all
+        - configuration
+        - data
+        - gateway
+        - history
+        - logger
+        - notification
+        - workflow
 
 jobs:
   build:
@@ -40,6 +54,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push reference data service docker image
+      if: ${{ inputs.services }} == 'data' || ${{ inputs.services }} == 'all'
       uses: docker/build-push-action@v3.1.1
       with:
         context: "solution/data"
@@ -50,6 +65,7 @@ jobs:
           devit16/ref-data:latest
 
     - name: Build and push reference gateway service docker image
+      if: ${{ inputs.services }} == 'gateway' || ${{ inputs.services }} == 'all'
       uses: docker/build-push-action@v3.1.1
       with:
         context: "solution/gateway"
@@ -60,6 +76,7 @@ jobs:
           devit16/ref-gateway:latest
 
     - name: Build and push reference history service docker image
+      if: ${{ inputs.services }} == 'history' || ${{ inputs.services }} == 'all'
       uses: docker/build-push-action@v3.1.1
       with:
         context: "solution/history"
@@ -70,6 +87,7 @@ jobs:
           devit16/ref-history:latest
 
     - name: Build and push reference notification service docker image
+      if: ${{ inputs.services }} == 'notification' || ${{ inputs.services }} == 'all'
       uses: docker/build-push-action@v3.1.1
       with:
         context: "solution/notification"
@@ -80,6 +98,7 @@ jobs:
           devit16/ref-notification:latest
 
     - name: Build and push reference workflow service docker image
+      if: ${{ inputs.services }} == 'workflow' || ${{ inputs.services }} == 'all'
       uses: docker/build-push-action@v3.1.1
       with:
         context: "solution/workflow"
@@ -90,6 +109,7 @@ jobs:
           devit16/ref-workflow:latest
 
     - name: Build and push reference logger service docker image
+      if: ${{ inputs.services }} == 'logger' || ${{ inputs.services }} == 'all'
       uses: docker/build-push-action@v3.1.1
       with:
         context: "solution/logger"
@@ -100,10 +120,12 @@ jobs:
           devit16/ref-log:latest
 
     - name: Init configuration file
+      if: ${{ inputs.services }} == 'configuration' || ${{ inputs.services }} == 'all'
       working-directory: solution/configuration
       run: sh ./load.sh
 
     - name: Build and push reference configuration service docker image
+      if: ${{ inputs.services }} == 'configuration' || ${{ inputs.services }} == 'all'
       uses: docker/build-push-action@v3.1.1
       with:
         context: "solution/configuration"
