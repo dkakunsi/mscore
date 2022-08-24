@@ -13,10 +13,10 @@
   <description>Parent for aggregator project</description>
 
   <properties>
-    <sonar.java.checkstyle.reportPaths>report/target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
-    <sonar.java.pmd.reportPaths>report/target/pmd.xml</sonar.java.pmd.reportPaths>
-    <sonar.java.spotbugs.reportPaths>report/target/spotbugsXml.xml</sonar.java.spotbugs.reportPaths>
-    <sonar.coverage.jacoco.xmlReportPaths>report/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.java.checkstyle.reportPaths>${maven.multiModuleProjectDirectory}/report/target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
+    <sonar.java.pmd.reportPaths>${maven.multiModuleProjectDirectory}/report/target/pmd.xml</sonar.java.pmd.reportPaths>
+    <sonar.java.spotbugs.reportPaths>${maven.multiModuleProjectDirectory}/report/target/spotbugsXml.xml</sonar.java.spotbugs.reportPaths>
+    <sonar.coverage.jacoco.xmlReportPaths>${maven.multiModuleProjectDirectory}/report/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     <sonar.coverage.exclusions>**/*Exception*,**/ApplicationStarter.java,**/Main.java</sonar.coverage.exclusions>
   </properties>
 
