@@ -1,0 +1,19 @@
+Hi, {{ provider_name }}.
+
+{% if status == "Pengajuan ditolak" %}
+Pengajuan iklan/berita dengan judul '{{ name }}' ditolak dengan alasan '{{ closeReason }}'.
+{% elseif status == "Dokumen pembayaran telah dicetak" %}
+Dokumen pembayaran untuk pengajuan iklan/berita dengan judul '{{ name }}' telah dicetak.
+Silahkan mengunjungi Sekretariat Pemerintah Kabupaten Sangihe untuk penandatanganan dokumen.
+{% elseif status == "Pembayaran telah disetujui" %}
+Pembayaran untuk pengajuan iklan/berita dengan judul '{{ name }}' telah disetujui.
+Silahkan mengunjungi Sekretariat Pemerintah Kabupaten Sangihe untuk pembayaran.
+{% endif %}
+
+
+Terima kasih.
+
+--
+Bagian PDE. Pemerintah Kabupaten Sangihe
+
+https://sangihekab.go.id

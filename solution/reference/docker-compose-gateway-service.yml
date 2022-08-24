@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+
+    gateway:
+        image: ${REPO}/${SOLUTION}-gateway:${TAG}
+        container_name: ${SOLUTION}-gateway
+        ports:
+            - 2201:2000
+        depends_on:
+            - data
+            - workflow
+        volumes:
+            - ./logs/gateway-service:/opt/mscore/logs
+
+volumes:
+    gatewayservice:
+        driver: local

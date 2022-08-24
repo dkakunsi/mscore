@@ -1,0 +1,48 @@
+{
+    "properties": {
+        "id": {
+            "type": "keyword"
+        },
+        "code": {
+            "type": "keyword"
+        },
+        "name": {
+            "type": "text"
+        },
+        "url": {
+            "type": "text"
+        },
+        "status": {
+            "type": "keyword"
+        },
+        "closedReason": {
+            "type": "text"
+        },
+        "provider": {
+            "type": "nested",
+            "properties": {
+                "name": {
+                    "type": "text"
+                },
+                "email": {
+                    "type": "text"
+                },
+                "phone": {
+                    "type": "text"
+                }
+            }
+        },
+        "createdDate": {
+            "type": "date"
+        },
+        "lastUpdatedDate": {
+            "type": "date"
+        },
+        "createdBy": {
+            "type": "text"
+        },
+        "lastUpdatedBy": {
+            "type": "text"
+        }
+    }
+}

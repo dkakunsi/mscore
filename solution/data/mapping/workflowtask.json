@@ -1,0 +1,59 @@
+{
+    "properties": {
+        "id": {
+            "type": "keyword"
+        },
+        "name": {
+            "type": "keyword"
+        },
+        "processInstance": {
+            "type": "nested",
+            "properties": {
+                "id": {
+                    "type": "keyword"
+                },
+                "name": {
+                    "type": "keyword"
+                },
+                "action": {
+                    "type": "keyword"
+                },
+                "entity": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "domain": {
+                            "type": "keyword"
+                        },
+                        "code": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "keyword"
+                        }
+                    }
+                }
+            }
+        },
+        "dueDate": {
+            "type": "date"
+        },
+        "assignee": {
+            "type": "keyword"
+        },
+        "organisation": {
+            "type": "keyword"
+        },
+        "executionId": {
+            "type": "keyword"
+        },
+        "owner": {
+            "type": "keyword"
+        },
+        "status": {
+            "type": "keyword"
+        }
+    }
+}

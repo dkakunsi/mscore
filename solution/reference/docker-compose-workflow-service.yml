@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+
+    workflow:
+        image: ${REPO}/${SOLUTION}-workflow:${TAG}
+        container_name: ${SOLUTION}-workflow
+        ports:
+            - 2101:2000
+        depends_on:
+            - rdbms
+            - channel
+            - index
+        volumes:
+            - ./logs/workflow-service:/opt/mscore/logs
+
+volumes:
+    workflowservice:
+        driver: local

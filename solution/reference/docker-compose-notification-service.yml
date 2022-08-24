@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+
+    mail:
+        image: juanluisbaptiste/postfix:latest
+        container_name: ${SOLUTION}-postfix
+        ports:
+            - 1009:25
+            - 1010:587
+        environment:
+            - SMTP_SERVER=smtp.gmail.com
+            - SMTP_PORT=465
+            - SERVER_HOSTNAME=sangihekab.go.id
+            - SMTP_USERNAME=$POSTFIX_USERNAME
+            - SMTP_PASSWORD=$POSTFIX_PASSWORD
+
+    notification:
+        image: ${REPO}/${SOLUTION}-notification:${TAG}
+        container_name: ${SOLUTION}-notification
+        ports:
+            - 2102:2000
+        depends_on:
+            - channel
+            - mail
+        volumes:
+            - ./logs/notification-service:/opt/mscore/logs
+
+volumes:
+    notificationservice:
+        driver: local

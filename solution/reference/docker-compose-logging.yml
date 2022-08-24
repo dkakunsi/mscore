@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+
+  dashboard:
+    image: elastic/kibana:7.6.2
+    container_name: ${SOLUTION}-kibana
+    depends_on:
+      - index
+    environment:
+      SERVER_NAME: kibana
+      ELASTICSEARCH_HOSTS: http://index:9200
+      ELASTICSEARCH_USERNAME: ${ELASTIC_USERNAME}
+      ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
+    ports:
+      - "1008:5601"
+    volumes:
+      - kibanadata:/var/lib/kibana/data
+
+  logger:
+    image: ${REPO}/ref-log:${TAG}
+    container_name: ${SOLUTION}-filebeat
+    environment:
+      ELASTICSEARCH_HOST: http://index:9092
+      KIBANA_HOST: http://dashboard:5601
+      ELASTICSEARCH_USERNAME: ${ELASTIC_USERNAME}
+      ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
+    #   - setup.kibana.host: dashboard:5601
+    #   - output.elasticsearch.hosts: ["index:9200"]
+    #   - output.elasticsearch.username: ${ELASTIC_USERNAME}
+    #   - output.elasticsearch.password: ${ELASTIC_PASSWORD}
+    volumes:
+      - ~/logs:/home/logs
+    depends_on:
+      - index
+      - dashboard
+
+volumes:
+    kibanadata:
+        driver: local

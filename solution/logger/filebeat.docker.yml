@@ -1,0 +1,41 @@
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
+
+filebeat.inputs:
+  - type: log
+    enalbled: true
+    paths:
+      - "/home/logs/data-service/*"
+    fields:
+      service: data-service
+  - type: log
+    enalbled: true
+    paths:
+      - "/home/logs/workflow-service/*"
+    fields:
+      service: workflow-service
+  - type: log
+    enalbled: true
+    paths:
+      - "/home/logs/gateway-service/*"
+    fields:
+      service: gateway-service
+  - type: log
+    enalbled: true
+    paths:
+      - "/home/logs/notification-service/*"
+    fields:
+      service: notification-service
+  - type: log
+    enalbled: true
+    paths:
+      - "/home/logs/history-service/*"
+    fields:
+      service: history-service
+
+output.elasticsearch:
+  hosts: '${ELASTICSEARCH_HOSTS:index:9200}'
+  username: '${ELASTICSEARCH_USERNAME}'
+  password: '${ELASTICSEARCH_PASSWORD}'

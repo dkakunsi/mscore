@@ -1,0 +1,39 @@
+{
+    "properties": {
+        "id": {
+            "type": "keyword"
+        },
+        "workflowId": {
+            "type": "keyword"
+        },
+        "name": {
+            "type": "keyword"
+        },
+        "action": {
+            "type": "keyword"
+        },
+        "entity": {
+            "type": "nested",
+            "properties": {
+                "id": {
+                    "type": "keyword"
+                },
+                "domain": {
+                    "type": "keyword"
+                },
+                "code": {
+                    "type": "keyword"
+                },
+                "name": {
+                    "type": "keyword"
+                }
+            }
+        },
+        "owner": {
+            "type": "keyword"
+        },
+        "status": {
+            "type": "keyword"
+        }
+    }
+}
