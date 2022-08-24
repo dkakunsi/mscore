@@ -78,5 +78,8 @@ jobs:
             }
           ]
 
+    - name: Test with Maven
+      run: mvn --file pom.xml -Drevision=1.0-TESTING -Dlibrary.version=1.0-TESTING clean install
+
     - name: Build with Maven
       run: mvn --file library/pom.xml -PuseSonar -Drevision=$VERSION_NUMBER clean deploy sonar:sonar
