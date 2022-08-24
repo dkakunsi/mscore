@@ -22,6 +22,12 @@
 
     <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
     <docker-maven-plugin.version>0.38.0</docker-maven-plugin.version>
+
+    <sonar.java.checkstyle.reportPaths>service/target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
+    <sonar.java.pmd.reportPaths>service/target/pmd.xml</sonar.java.pmd.reportPaths>
+    <sonar.java.spotbugs.reportPaths>service/target/spotbugsXml.xml</sonar.java.spotbugs.reportPaths>
+    <sonar.coverage.jacoco.xmlReportPaths>service/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.coverage.exclusions>**/*Exception*,**/ApplicationStarter.java,**/Main.java</sonar.coverage.exclusions>
   </properties>
 
   <build>
