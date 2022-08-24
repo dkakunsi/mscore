@@ -122,7 +122,7 @@ jobs:
     - name: Init configuration file
       if: ${{ inputs.services == 'configuration' || inputs.services == 'all' }}
       working-directory: solution/configuration
-      run: sh ./load.sh
+      run: bash ./load.sh > ./init
 
     - name: Build and push reference configuration service docker image
       if: ${{ inputs.services == 'configuration' || inputs.services == 'all' }}
