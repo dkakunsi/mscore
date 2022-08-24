@@ -100,7 +100,8 @@ jobs:
           devit16/ref-log:latest
 
     - name: Init configuration file
-      run: cd solution/configuration && load.sh
+      working-directory: solution/configuration
+      run: sh ./load.sh
 
     - name: Build and push reference configuration service docker image
       uses: docker/build-push-action@v3.1.1
