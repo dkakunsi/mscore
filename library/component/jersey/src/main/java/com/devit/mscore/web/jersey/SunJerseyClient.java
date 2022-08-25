@@ -18,7 +18,7 @@ import com.sun.jersey.api.client.WebResource.Builder;
 
 public class SunJerseyClient implements com.devit.mscore.web.Client, Requester {
 
-  private static final Logger LOG = new ApplicationLogger(SunJerseyClient.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(SunJerseyClient.class);
 
   private Client client;
 

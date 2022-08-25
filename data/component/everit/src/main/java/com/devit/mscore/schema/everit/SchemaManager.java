@@ -20,7 +20,7 @@ import org.json.JSONObject;
 
 public class SchemaManager extends ResourceManager {
 
-  private static final Logger LOG = new ApplicationLogger(SchemaManager.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(SchemaManager.class);
 
   private static final String LOCATION = "services.%s.schema.resource.location";
 

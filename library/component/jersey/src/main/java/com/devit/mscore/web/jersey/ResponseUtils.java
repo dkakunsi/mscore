@@ -13,7 +13,7 @@ import jakarta.ws.rs.core.Response;
 
 public class ResponseUtils {
 
-  private static final Logger LOG = new ApplicationLogger(ResponseUtils.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(ResponseUtils.class);
 
   private ResponseUtils() {
   }

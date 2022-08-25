@@ -33,7 +33,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 
 public class JWTAuthenticationProvider implements AuthenticationProvider {
 
-  private static final Logger LOG = new ApplicationLogger(JWTAuthenticationProvider.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(JWTAuthenticationProvider.class);
 
   private static final String SECURE_URI = "services.%s.secure.uri";
 

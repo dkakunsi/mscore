@@ -37,7 +37,7 @@ import com.mongodb.client.model.ReplaceOptions;
  */
 public class MongoRepository implements Repository {
 
-  protected static final Logger LOG = new ApplicationLogger(MongoRepository.class);
+  protected static final Logger LOG = ApplicationLogger.getLogger(MongoRepository.class);
 
   protected static final String KEY_NOT_SUPPLIED = "The key is not supplied.";
 

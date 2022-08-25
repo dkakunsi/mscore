@@ -33,7 +33,7 @@ import org.json.JSONObject;
  */
 public class ElasticsearchService {
 
-  private static final Logger LOG = new ApplicationLogger(ElasticsearchService.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(ElasticsearchService.class);
 
   private RestHighLevelClient client;
 

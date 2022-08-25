@@ -19,7 +19,7 @@ import jakarta.ws.rs.core.Response;
 
 public class JerseyClient implements com.devit.mscore.web.Client, Requester {
 
-  private static final Logger LOG = new ApplicationLogger(JerseyClient.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(JerseyClient.class);
 
   private Client client;
 

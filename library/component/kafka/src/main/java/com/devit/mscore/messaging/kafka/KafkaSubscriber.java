@@ -16,7 +16,7 @@ import org.json.JSONObject;
 
 public class KafkaSubscriber implements Subscriber {
 
-  private static final Logger LOG = new ApplicationLogger(KafkaSubscriber.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(KafkaSubscriber.class);
 
   private static final Duration POLL_DURATION = Duration.ofMillis(10000);
 

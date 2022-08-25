@@ -11,7 +11,7 @@ public class ApplicationLogger implements Logger {
 
   private final org.slf4j.Logger logger;
 
-  public ApplicationLogger(Class<?> clazz) {
+  private ApplicationLogger(Class<?> clazz) {
     this.logger = LoggerFactory.getLogger(clazz);
   }
 
@@ -51,7 +51,7 @@ public class ApplicationLogger implements Logger {
 
   @Override
   public void error(String message, Throwable ex) {
-    error("{}", message);
+    error("{}", ex, message);
   }
 
   @Override

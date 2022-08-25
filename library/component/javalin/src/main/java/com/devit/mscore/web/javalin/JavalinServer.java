@@ -44,7 +44,7 @@ import io.javalin.http.ExceptionHandler;
  */
 public final class JavalinServer extends Server {
 
-  private static final Logger LOG = new ApplicationLogger(JavalinServer.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(JavalinServer.class);
 
   private static final String AUTHORIZATION = "Authorization";
 

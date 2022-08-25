@@ -25,7 +25,7 @@ import org.json.JSONObject;
  */
 public class SchemaValidation implements Validation {
 
-  private static final Logger LOG = new ApplicationLogger(SchemaValidation.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(SchemaValidation.class);
 
   private Registry registry;
 

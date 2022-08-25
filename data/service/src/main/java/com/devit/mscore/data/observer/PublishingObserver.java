@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 public class PublishingObserver implements PostProcessObserver {
 
-  private static final Logger LOG = new ApplicationLogger(PublishingObserver.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(PublishingObserver.class);
 
   private static final String PUBLISHING_ERROR = "Publishing message failed.";
 

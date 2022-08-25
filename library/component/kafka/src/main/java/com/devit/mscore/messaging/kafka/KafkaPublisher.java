@@ -27,7 +27,7 @@ import org.json.JSONObject;
 
 public class KafkaPublisher implements Publisher {
 
-  private static final Logger LOG = new ApplicationLogger(KafkaPublisher.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(KafkaPublisher.class);
 
   protected Producer<String, String> producer;
 

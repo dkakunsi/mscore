@@ -45,7 +45,7 @@ import org.json.JSONObject;
  */
 public class DefaultService implements Service, Synchronizer {
 
-  private static final Logger LOG = new ApplicationLogger(DefaultService.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(DefaultService.class);
 
   private static final String SYNCHRONIZATION_ERROR = "Synchronization failed.";
 

@@ -27,7 +27,7 @@ import org.json.JSONObject;
 
 public class ElasticsearchIndexFactory extends ResourceManager {
 
-  private static final Logger LOG = new ApplicationLogger(ElasticsearchIndexFactory.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(ElasticsearchIndexFactory.class);
 
   private static final String CONFIG_TEMPLATE = "platform.elasticsearch.%s";
 

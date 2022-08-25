@@ -33,7 +33,7 @@ import org.json.JSONObject;
  */
 public abstract class Enrichment {
 
-  private static final Logger LOG = new ApplicationLogger(Enrichment.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(Enrichment.class);
 
   protected final String domain;
 

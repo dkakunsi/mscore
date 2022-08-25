@@ -19,7 +19,7 @@ import org.apache.curator.framework.imps.CuratorFrameworkState;
 
 public class ZookeeperRegistry implements Registry {
 
-  private static final Logger LOG = new ApplicationLogger(ZookeeperRegistry.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(ZookeeperRegistry.class);
 
   private static final String ROOT_PATH = "/";
 

@@ -9,7 +9,7 @@ import java.util.List;
 
 public class FilterFactory {
 
-  private static final Logger LOGGER = new ApplicationLogger(FilterFactory.class);
+  private static final Logger LOGGER = ApplicationLogger.getLogger(FilterFactory.class);
 
   private static final String REMOVING = "services.%s.filter.remove";
 

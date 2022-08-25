@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class MemoryRegistry implements Registry {
 
-  private static final Logger LOG = new ApplicationLogger(MemoryRegistry.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(MemoryRegistry.class);
 
   private String name;
 

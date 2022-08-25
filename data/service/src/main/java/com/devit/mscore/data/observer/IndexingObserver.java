@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 public class IndexingObserver implements PostProcessObserver {
 
-  private static final Logger LOG = new ApplicationLogger(IndexingObserver.class);
+  private static final Logger LOG = ApplicationLogger.getLogger(IndexingObserver.class);
 
   private static final String INDEXING_ERROR = "Indexing document failed.";
 
