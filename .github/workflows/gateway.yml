@@ -39,7 +39,7 @@ jobs:
       if: ${{ !inputs.release }}
       uses: allenevans/set-env@v2.0.0
       with:
-        VERSION_NUMBER: ${{ steps.latestTag.outputs.tag }}.${{ env.RUN_NUMBER }}-SNAPSHOT
+        VERSION_NUMBER: ${{ steps.latestTag.outputs.tag }}.${ env.RUN_NUMBER }-SNAPSHOT
 
     - name: Print Version Number
       run: echo "Version number is $VERSION_NUMBER"
