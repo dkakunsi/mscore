@@ -12,7 +12,6 @@
   </properties>
 
   <modules>
-    <module>common</module>
     <module>library</module>
     <module>data</module>
     <module>gateway</module>
