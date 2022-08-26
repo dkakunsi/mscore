@@ -119,3 +119,77 @@ jobs:
         tags: |
           devit16/mscore-workflow-service:${{ env.VERSION_NUMBER }}
           devit16/mscore-workflow-service:latest
+
+    - name: Build and push reference data service docker image
+      uses: docker/build-push-action@v3.1.1
+      with:
+        context: "solution/data"
+        file: "solution/data/Dockerfile"
+        push: true
+        tags: |
+          devit16/ref-data:${{ env.VERSION_NUMBER }}
+          devit16/ref-data:latest
+
+    - name: Build and push reference gateway service docker image
+      uses: docker/build-push-action@v3.1.1
+      with:
+        context: "solution/gateway"
+        file: "solution/gateway/Dockerfile"
+        push: true
+        tags: |
+          devit16/ref-gateway:${{ env.VERSION_NUMBER }}
+          devit16/ref-gateway:latest
+
+    - name: Build and push reference history service docker image
+      uses: docker/build-push-action@v3.1.1
+      with:
+        context: "solution/history"
+        file: "solution/history/Dockerfile"
+        push: true
+        tags: |
+          devit16/ref-history:${{ env.VERSION_NUMBER }}
+          devit16/ref-history:latest
+
+    - name: Build and push reference notification service docker image
+      uses: docker/build-push-action@v3.1.1
+      with:
+        context: "solution/notification"
+        file: "solution/notification/Dockerfile"
+        push: true
+        tags: |
+          devit16/ref-notification:${{ env.VERSION_NUMBER }}
+          devit16/ref-notification:latest
+
+    - name: Build and push reference workflow service docker image
+      uses: docker/build-push-action@v3.1.1
+      with:
+        context: "solution/workflow"
+        file: "solution/workflow/Dockerfile"
+        push: true
+        tags: |
+          devit16/ref-workflow:${{ env.VERSION_NUMBER }}
+          devit16/ref-workflow:latest
+
+    - name: Build and push reference logger service docker image
+      uses: docker/build-push-action@v3.1.1
+      with:
+        context: "solution/logger"
+        file: "solution/logger/Dockerfile"
+        push: true
+        tags: |
+          devit16/ref-log:${{ env.VERSION_NUMBER }}
+          devit16/ref-log:latest
+
+    - name: Init configuration file
+      working-directory: solution/configuration
+      run: bash ./load.sh > ./init
+
+    - name: Build and push reference configuration service docker image
+      uses: docker/build-push-action@v3.1.1
+      with:
+        context: "solution/configuration"
+        file: "solution/configuration/Dockerfile"
+        push: true
+        tags: |
+          devit16/ref-configuration:${{ env.VERSION_NUMBER }}
+          devit16/ref-configuration:latest
