@@ -62,7 +62,7 @@ jobs:
           ]
 
     - name: Build with Maven
-      run: mvn --file pom.xml -PuseSonar -Drevision=$VERSION_NUMBER clean deploy sonar:sonar
+      run: mvn --file pom.xml -Drevision=$VERSION_NUMBER clean deploy
 
     - name: Log in to Docker Hub
       uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
