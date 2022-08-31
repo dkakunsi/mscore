@@ -1,62 +1,179 @@
 package com.devit.mscore.logging;
 
-import static org.mockito.Mockito.spy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.devit.mscore.Logger;
-
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.slf4j.LoggerFactory;
 
 public class ApplicationLoggerTest {
 
-  private Logger logger;
+  private org.slf4j.Logger logger;
+
+  private Exception exception;
 
   @Before
   public void setup() {
-    this.logger = spy(ApplicationLogger.getLogger(ApplicationLoggerTest.class));
+    this.logger = mock(org.slf4j.Logger.class);
+    this.exception = new Exception();
   }
 
   @Test
   public void testInfo() {
-    this.logger.info("INFO");
-    verify(this.logger, times(1)).info("INFO");
+    try (MockedStatic<LoggerFactory> utilities = Mockito.mockStatic(LoggerFactory.class)) {
+      utilities.when(() -> LoggerFactory.getLogger(any(Class.class))).thenReturn(this.logger);
+
+      var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
+      applicationLogger.info("INFO");
+      verify(this.logger, times(1)).info("BreadcrumbId: NOT-SPECIFIED. INFO");
+    }
+  }
+
+  @Test
+  public void testInfo_WithFormat() {
+    try (MockedStatic<LoggerFactory> utilities = Mockito.mockStatic(LoggerFactory.class)) {
+      utilities.when(() -> LoggerFactory.getLogger(any(Class.class))).thenReturn(this.logger);
+
+      var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
+      applicationLogger.info("{}", "INFO");
+      verify(this.logger, times(1)).info("BreadcrumbId: NOT-SPECIFIED. INFO");
+    }
   }
 
   @Test
   public void testDebug() {
-    this.logger.debug("DEBUG");
-    verify(this.logger, times(1)).debug("DEBUG");
+    try (MockedStatic<LoggerFactory> utilities = Mockito.mockStatic(LoggerFactory.class)) {
+      utilities.when(() -> LoggerFactory.getLogger(any(Class.class))).thenReturn(this.logger);
+
+      var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
+      applicationLogger.debug("DEBUG");
+      verify(this.logger, times(1)).debug("BreadcrumbId: NOT-SPECIFIED. DEBUG");
+    }
+  }
+
+  @Test
+  public void testDebug_WithFormat() {
+    try (MockedStatic<LoggerFactory> utilities = Mockito.mockStatic(LoggerFactory.class)) {
+      utilities.when(() -> LoggerFactory.getLogger(any(Class.class))).thenReturn(this.logger);
+
+      var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
+      applicationLogger.debug("{}", "DEBUG");
+      verify(this.logger, times(1)).debug("BreadcrumbId: NOT-SPECIFIED. DEBUG");
+    }
   }
 
   @Test
   public void testTrace() {
-    this.logger.trace("TRACE");
-    verify(this.logger, times(1)).trace("TRACE");
+    try (MockedStatic<LoggerFactory> utilities = Mockito.mockStatic(LoggerFactory.class)) {
+      utilities.when(() -> LoggerFactory.getLogger(any(Class.class))).thenReturn(this.logger);
+
+      var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
+      applicationLogger.trace("TRACE");
+      verify(this.logger, times(1)).trace("BreadcrumbId: NOT-SPECIFIED. TRACE");
+    }
+  }
+
+  @Test
+  public void testTrace_WithFormat() {
+    try (MockedStatic<LoggerFactory> utilities = Mockito.mockStatic(LoggerFactory.class)) {
+      utilities.when(() -> LoggerFactory.getLogger(any(Class.class))).thenReturn(this.logger);
+
+      var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
+      applicationLogger.trace("{}", "TRACE");
+      verify(this.logger, times(1)).trace("BreadcrumbId: NOT-SPECIFIED. TRACE");
+    }
   }
 
   @Test
   public void testWarn() {
-    this.logger.warn("WARN");
-    verify(this.logger, times(1)).warn("WARN");
+    try (MockedStatic<LoggerFactory> utilities = Mockito.mockStatic(LoggerFactory.class)) {
+      utilities.when(() -> LoggerFactory.getLogger(any(Class.class))).thenReturn(this.logger);
+
+      var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
+      applicationLogger.warn("WARN");
+      verify(this.logger, times(1)).warn("BreadcrumbId: NOT-SPECIFIED. WARN");
+    }
+  }
+
+  @Test
+  public void testWarn_WithFormat() {
+    try (MockedStatic<LoggerFactory> utilities = Mockito.mockStatic(LoggerFactory.class)) {
+      utilities.when(() -> LoggerFactory.getLogger(any(Class.class))).thenReturn(this.logger);
+
+      var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
+      applicationLogger.warn("{}", "WARN");
+      verify(this.logger, times(1)).warn("BreadcrumbId: NOT-SPECIFIED. WARN");
+    }
   }
 
   @Test
   public void testError() {
-    this.logger.error("ERROR");
-    verify(this.logger, times(1)).error("ERROR");
+    try (MockedStatic<LoggerFactory> utilities = Mockito.mockStatic(LoggerFactory.class)) {
+      utilities.when(() -> LoggerFactory.getLogger(any(Class.class))).thenReturn(this.logger);
+
+      var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
+      applicationLogger.error("ERROR");
+      verify(this.logger, times(1)).error("BreadcrumbId: NOT-SPECIFIED. ERROR");
+    }
   }
 
   @Test
-  public void testErrorWithArg() {
-    this.logger.error("ERROR: {}", "message");
-    verify(this.logger, times(1)).error("ERROR: {}", "message");
+  public void testError_WithThrowable() {
+    try (MockedStatic<LoggerFactory> utilities = Mockito.mockStatic(LoggerFactory.class)) {
+      utilities.when(() -> LoggerFactory.getLogger(any(Class.class))).thenReturn(this.logger);
+
+      var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
+      applicationLogger.error("ERROR", this.exception);
+      verify(this.logger, times(1)).error("BreadcrumbId: NOT-SPECIFIED. ERROR", this.exception);
+    }
   }
 
   @Test
-  public void testErrorWithFormat() {
-    this.logger.error("ERROR: {}. {}", "message", "message2");
-    verify(this.logger, times(1)).error("ERROR: {}. {}", "message", "message2");
+  public void testError_WithSingleArg() {
+    try (MockedStatic<LoggerFactory> utilities = Mockito.mockStatic(LoggerFactory.class)) {
+      utilities.when(() -> LoggerFactory.getLogger(any(Class.class))).thenReturn(this.logger);
+
+      var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
+      applicationLogger.error("ERROR: {}", "message");
+      verify(this.logger, times(1)).error("BreadcrumbId: NOT-SPECIFIED. ERROR: message");
+    }
+  }
+
+  @Test
+  public void testError_WithFormat() {
+    try (MockedStatic<LoggerFactory> utilities = Mockito.mockStatic(LoggerFactory.class)) {
+      utilities.when(() -> LoggerFactory.getLogger(any(Class.class))).thenReturn(this.logger);
+
+      var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
+      applicationLogger.error("ERROR: {}. {}", "message", "message2");
+      verify(this.logger, times(1)).error("BreadcrumbId: NOT-SPECIFIED. ERROR: message. message2");
+    }
+  }
+
+  @Test
+  public void testError_WithArgAndThrowable() {
+    try (MockedStatic<LoggerFactory> utilities = Mockito.mockStatic(LoggerFactory.class)) {
+      utilities.when(() -> LoggerFactory.getLogger(any(Class.class))).thenReturn(this.logger);
+
+      var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
+      applicationLogger.error("ERROR: {}", this.exception, "message");
+      verify(this.logger, times(1)).error("BreadcrumbId: NOT-SPECIFIED. ERROR: message", this.exception);
+    }
+  }
+
+  @Test
+  public void testError_WithFormatAndThrowable() {
+    try (MockedStatic<LoggerFactory> utilities = Mockito.mockStatic(LoggerFactory.class)) {
+      utilities.when(() -> LoggerFactory.getLogger(any(Class.class))).thenReturn(this.logger);
+
+      var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
+      applicationLogger.error("ERROR: {}. {}", this.exception, "message", "message2");
+      verify(this.logger, times(1)).error("BreadcrumbId: NOT-SPECIFIED. ERROR: message. message2", this.exception);
+    }
   }
 }

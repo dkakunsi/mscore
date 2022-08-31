@@ -20,10 +20,6 @@ public class ApplicationLogger implements Logger {
     return new ApplicationLogger(clazz);
   }
 
-  public static Logger of(Class<?> clazz) {
-    return new ApplicationLogger(clazz);
-  }
-
   @Override
   public void debug(String message) {
     this.logger.debug(getMessage(message));
