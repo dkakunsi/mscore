@@ -16,4 +16,7 @@ docker-compose \
     -f ./docker-compose-workflow-service.yml \
     up -d data history notification workflow gateway logger dashboard configuration
 
+docker-compose stop configuration
+docker-compose rm configuration
+
 cd ..

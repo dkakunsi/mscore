@@ -62,6 +62,12 @@ build
 
 # build configuration
 SERVICE=configuration
+cd $SERVICE
+./load.sh > ./init
+cd ..
 build
+cd $SERVICE
+rm init
+cd ..
 
 cd ..

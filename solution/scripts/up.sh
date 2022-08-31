@@ -11,4 +11,7 @@ docker-compose \
     -f ./docker-compose-workflow-service.yml \
     up -d
 
+docker-compose stop configuration
+docker-compose rm configuration
+
 cd ..
