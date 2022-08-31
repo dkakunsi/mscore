@@ -4,8 +4,11 @@ import static com.devit.mscore.ApplicationContext.getContext;
 
 import com.devit.mscore.Logger;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.FormattingTuple;
+import org.slf4j.helpers.MessageFormatter;
 
 public class ApplicationLogger implements Logger {
 
@@ -35,8 +38,7 @@ public class ApplicationLogger implements Logger {
 
   @Override
   public void debug(String format, Object... args) {
-    var messageFormat = "BreadcrumbId: {}. " + format;
-    this.logger.debug(messageFormat, getBreadcrumbId(), args);
+    this.logger.debug(getMessage(format, args));
   }
 
   @Override
@@ -61,7 +63,7 @@ public class ApplicationLogger implements Logger {
 
   @Override
   public void error(String format, Throwable ex, Object... args) {
-    this.logger.error(getMessageFormat(format), getBreadcrumbId(), args, ex);
+    this.logger.error(getMessage(format, args), ex);
   }
 
   @Override
@@ -71,7 +73,7 @@ public class ApplicationLogger implements Logger {
 
   @Override
   public void info(String format, Object... args) {
-    this.logger.info(getMessageFormat(format), getBreadcrumbId(), args);
+    this.logger.info(getMessage(format, args));
   }
 
   @Override
@@ -81,7 +83,7 @@ public class ApplicationLogger implements Logger {
 
   @Override
   public void trace(String format, Object... args) {
-    this.logger.trace(getMessageFormat(format), getBreadcrumbId(), args);
+    this.logger.trace(getMessage(format, args));
   }
 
   @Override
@@ -91,10 +93,17 @@ public class ApplicationLogger implements Logger {
 
   @Override
   public void warn(String format, Object... args) {
-    this.logger.warn(getMessageFormat(format), getBreadcrumbId(), args);
+    this.logger.warn(getMessage(format, args));
   }
 
-  private static String getMessageFormat(String originalFormat) {
-    return "BreadcrumbId: {}. " + originalFormat;
+  private String getMessage(String message, Object... args) {
+    Object[] breadcrumbId = { getBreadcrumbId() };
+    FormattingTuple formattingTuple;
+    if (args != null) {
+      formattingTuple = MessageFormatter.arrayFormat("BreadcrumbId: {}. " + message, ArrayUtils.addAll(breadcrumbId, args));
+    } else {
+      formattingTuple = MessageFormatter.arrayFormat("BreadcrumbId: {}. " + message, breadcrumbId);
+    }
+    return formattingTuple.getMessage();
   }
 }
