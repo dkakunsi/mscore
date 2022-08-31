@@ -4,10 +4,8 @@ import static com.devit.mscore.ApplicationContext.getContext;
 
 import com.devit.mscore.Logger;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.FormattingTuple;
 import org.slf4j.helpers.MessageFormatter;
 
 public class ApplicationLogger implements Logger {
@@ -22,18 +20,13 @@ public class ApplicationLogger implements Logger {
     return new ApplicationLogger(clazz);
   }
 
-  private String getBreadcrumbId() {
-    try {
-      var breadcrumbId = getContext().getBreadcrumbId();
-      return StringUtils.isBlank(breadcrumbId) ? "NOT-SPECIFIED" : breadcrumbId;
-    } catch (Exception ex) {
-      return "NOT-SPECIFIED";
-    }
+  public static Logger of(Class<?> clazz) {
+    return new ApplicationLogger(clazz);
   }
 
   @Override
   public void debug(String message) {
-    debug("{}", message);
+    this.logger.debug(getMessage(message));
   }
 
   @Override
@@ -43,22 +36,12 @@ public class ApplicationLogger implements Logger {
 
   @Override
   public void error(String message) {
-    error(message, (Throwable) null);
-  }
-
-  @Override
-  public void error(String format, String arg) {
-    error(format, null, arg);
+    this.logger.error(getMessage(message));
   }
 
   @Override
   public void error(String message, Throwable ex) {
-    error("{}", ex, message);
-  }
-
-  @Override
-  public void error(String format, Object... args) {
-    error(format, null, args);
+    this.logger.error(getMessage(message), ex);
   }
 
   @Override
@@ -67,8 +50,18 @@ public class ApplicationLogger implements Logger {
   }
 
   @Override
+  public void error(String format, String arg) {
+    this.logger.error(getMessage(format, arg));
+  }
+
+  @Override
+  public void error(String format, Object... args) {
+    this.logger.error(getMessage(format, args));
+  }
+
+  @Override
   public void info(String message) {
-    info("{}", message);
+    this.logger.info(getMessage(message));
   }
 
   @Override
@@ -78,7 +71,7 @@ public class ApplicationLogger implements Logger {
 
   @Override
   public void trace(String message) {
-    trace("{}", message);
+    this.logger.trace(getMessage(message));
   }
 
   @Override
@@ -88,7 +81,7 @@ public class ApplicationLogger implements Logger {
 
   @Override
   public void warn(String message) {
-    warn("{}", message);
+    this.logger.warn(getMessage(message));
   }
 
   @Override
@@ -96,14 +89,22 @@ public class ApplicationLogger implements Logger {
     this.logger.warn(getMessage(format, args));
   }
 
-  private String getMessage(String message, Object... args) {
-    Object[] breadcrumbId = { getBreadcrumbId() };
-    FormattingTuple formattingTuple;
-    if (args != null) {
-      formattingTuple = MessageFormatter.arrayFormat("BreadcrumbId: {}. " + message, ArrayUtils.addAll(breadcrumbId, args));
-    } else {
-      formattingTuple = MessageFormatter.arrayFormat("BreadcrumbId: {}. " + message, breadcrumbId);
+  private String getMessage(String format, Object... args) {
+    var formatter = MessageFormatter.arrayFormat(format, args);
+    return getMessage(formatter.getMessage());
+  }
+
+  private String getMessage(String message) {
+    var formatter = MessageFormatter.format("BreadcrumbId: {}. {}", getBreadcrumbId(), message);
+    return formatter.getMessage();
+  }
+
+  private String getBreadcrumbId() {
+    try {
+      var breadcrumbId = getContext().getBreadcrumbId();
+      return StringUtils.isBlank(breadcrumbId) ? "NOT-SPECIFIED" : breadcrumbId;
+    } catch (Exception ex) {
+      return "NOT-SPECIFIED";
     }
-    return formattingTuple.getMessage();
   }
 }
