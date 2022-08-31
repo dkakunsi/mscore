@@ -1,4 +1,4 @@
-name: History Platform
+name: History Service
 
 on:
   push:

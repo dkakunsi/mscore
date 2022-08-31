@@ -1,4 +1,4 @@
-name: Workflow Platform
+name: Workflow Service
 
 on:
   push:

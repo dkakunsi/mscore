@@ -1,0 +1,360 @@
+{
+    "properties": {
+        "id": {
+            "type": "keyword"
+        },
+        "createdDate": {
+            "type": "date"
+        },
+        "lastUpdatedDate": {
+            "type": "date"
+        },
+        "createdBy": {
+            "type": "text"
+        },
+        "lastUpdatedBy": {
+            "type": "text"
+        },
+        "code": {
+            "type": "keyword"
+        },
+        "name": {
+            "type": "text"
+        },
+        "description": {
+            "type": "text"
+        },
+        "location": {
+            "type": "text"
+        },
+        "budgets": {
+            "type": "nested",
+            "properties": {
+                "period": {
+                    "type": "nested",
+                    "properties": {
+                        "year": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "amount": {
+                    "type": "long"
+                }
+            }
+        },
+        "progresses": {
+            "type": "nested",
+            "properties": {
+                "period": {
+                    "type": "nested",
+                    "properties": {
+                        "year": {
+                            "type": "integer"
+                        },
+                        "month": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "amount": {
+                    "type": "long"
+                },
+                "physical": {
+                    "type": "integer"
+                },
+                "pictures": {
+                    "type": "text"
+                }
+            }
+        },
+        "department": {
+            "type": "nested",
+            "properties": {
+                "id": {
+                    "type": "keyword"
+                },
+                "createdDate": {
+                    "type": "date"
+                },
+                "lastUpdatedDate": {
+                    "type": "date"
+                },
+                "createdBy": {
+                    "type": "text"
+                },
+                "lastUpdatedBy": {
+                    "type": "text"
+                },
+                "code": {
+                    "type": "keyword"
+                },
+                "name": {
+                    "type": "text"
+                },
+                "description": {
+                    "type": "text"
+                },
+                "region": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "createdDate": {
+                            "type": "date"
+                        },
+                        "lastUpdatedDate": {
+                            "type": "date"
+                        },
+                        "createdBy": {
+                            "type": "text"
+                        },
+                        "lastUpdatedBy": {
+                            "type": "text"
+                        },
+                        "code": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "text"
+                        },
+                        "description": {
+                            "type": "text"
+                        },
+                        "postalCode": {
+                            "type": "text"
+                        },
+                        "type": {
+                            "type": "keyword"
+                        },
+                        "parent": {
+                            "type": "nested",
+                            "properties": {
+                                "id": {
+                                    "type": "keyword"
+                                },
+                                "createdDate": {
+                                    "type": "date"
+                                },
+                                "lastUpdatedDate": {
+                                    "type": "date"
+                                },
+                                "createdBy": {
+                                    "type": "text"
+                                },
+                                "lastUpdatedBy": {
+                                    "type": "text"
+                                },
+                                "code": {
+                                    "type": "keyword"
+                                },
+                                "name": {
+                                    "type": "text"
+                                },
+                                "description": {
+                                    "type": "text"
+                                },
+                                "postalCode": {
+                                    "type": "text"
+                                },
+                                "type": {
+                                    "type": "keyword"
+                                },
+                                "parent": {
+                                    "type": "nested",
+                                    "properties": {
+                                        "id": {
+                                            "type": "keyword"
+                                        },
+                                        "createdDate": {
+                                            "type": "date"
+                                        },
+                                        "lastUpdatedDate": {
+                                            "type": "date"
+                                        },
+                                        "createdBy": {
+                                            "type": "text"
+                                        },
+                                        "lastUpdatedBy": {
+                                            "type": "text"
+                                        },
+                                        "code": {
+                                            "type": "keyword"
+                                        },
+                                        "name": {
+                                            "type": "text"
+                                        },
+                                        "description": {
+                                            "type": "text"
+                                        },
+                                        "postalCode": {
+                                            "type": "text"
+                                        },
+                                        "type": {
+                                            "type": "keyword"
+                                        },
+                                        "parent": {
+                                            "type": "nested",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "keyword"
+                                                },
+                                                "createdDate": {
+                                                    "type": "date"
+                                                },
+                                                "lastUpdatedDate": {
+                                                    "type": "date"
+                                                },
+                                                "createdBy": {
+                                                    "type": "text"
+                                                },
+                                                "lastUpdatedBy": {
+                                                    "type": "text"
+                                                },
+                                                "code": {
+                                                    "type": "keyword"
+                                                },
+                                                "name": {
+                                                    "type": "text"
+                                                },
+                                                "description": {
+                                                    "type": "text"
+                                                },
+                                                "postalCode": {
+                                                    "type": "text"
+                                                },
+                                                "type": {
+                                                    "type": "keyword"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "chiefOfDepartment": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "text"
+                        },
+                        "code": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "parent": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "createdDate": {
+                            "type": "date"
+                        },
+                        "lastUpdatedDate": {
+                            "type": "date"
+                        },
+                        "createdBy": {
+                            "type": "text"
+                        },
+                        "lastUpdatedBy": {
+                            "type": "text"
+                        },
+                        "code": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "text"
+                        },
+                        "description": {
+                            "type": "text"
+                        },
+                        "region": {
+                            "type": "nested"
+                        },
+                        "chiefOfDepartment": {
+                            "type": "nested"
+                        },
+                        "parent": {
+                            "type": "nested",
+                            "properties": {
+                                "id": {
+                                    "type": "keyword"
+                                },
+                                "createdDate": {
+                                    "type": "date"
+                                },
+                                "lastUpdatedDate": {
+                                    "type": "date"
+                                },
+                                "createdBy": {
+                                    "type": "text"
+                                },
+                                "lastUpdatedBy": {
+                                    "type": "text"
+                                },
+                                "code": {
+                                    "type": "keyword"
+                                },
+                                "name": {
+                                    "type": "text"
+                                },
+                                "description": {
+                                    "type": "text"
+                                },
+                                "region": {
+                                    "type": "nested"
+                                },
+                                "chiefOfDepartment": {
+                                    "type": "nested"
+                                },
+                                "parent": {
+                                    "type": "nested",
+                                    "properties": {
+                                        "id": {
+                                            "type": "keyword"
+                                        },
+                                        "createdDate": {
+                                            "type": "date"
+                                        },
+                                        "lastUpdatedDate": {
+                                            "type": "date"
+                                        },
+                                        "createdBy": {
+                                            "type": "text"
+                                        },
+                                        "lastUpdatedBy": {
+                                            "type": "text"
+                                        },
+                                        "code": {
+                                            "type": "keyword"
+                                        },
+                                        "name": {
+                                            "type": "text"
+                                        },
+                                        "description": {
+                                            "type": "text"
+                                        },
+                                        "region": {
+                                            "type": "nested"
+                                        },
+                                        "chiefOfDepartment": {
+                                            "type": "nested"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

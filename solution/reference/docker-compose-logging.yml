@@ -19,7 +19,7 @@ services:
 
   logger:
     image: ${REPO}/ref-log:${TAG}
-    container_name: ${SOLUTION}-filebeat
+    container_name: ${SOLUTION}-logger
     environment:
       ELASTICSEARCH_HOST: http://index:9092
       KIBANA_HOST: http://dashboard:5601

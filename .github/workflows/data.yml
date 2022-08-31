@@ -1,4 +1,4 @@
-name: Data Platform
+name: Data Service
 
 on:
   push:

@@ -7,6 +7,7 @@ docker-compose \
     -f ./docker-compose-logging.yml \
     -f ./docker-compose-data-service.yml \
     -f ./docker-compose-gateway-service.yml \
+    -f ./docker-compose-notification-service.yml \
     -f ./docker-compose-workflow-service.yml \
     stop
 

@@ -1,0 +1,139 @@
+{
+    "properties": {
+        "id": {
+            "type": "keyword"
+        },
+        "createdDate": {
+            "type": "date"
+        },
+        "lastUpdatedDate": {
+            "type": "date"
+        },
+        "createdBy": {
+            "type": "text"
+        },
+        "lastUpdatedBy": {
+            "type": "text"
+        },
+        "code": {
+            "type": "keyword"
+        },
+        "name": {
+            "type": "text"
+        },
+        "description": {
+            "type": "text"
+        },
+        "postalCode": {
+            "type": "text"
+        },
+        "type": {
+            "type": "keyword"
+        },
+        "parent": {
+            "type": "nested",
+            "properties": {
+                "id": {
+                    "type": "keyword"
+                },
+                "createdDate": {
+                    "type": "date"
+                },
+                "lastUpdatedDate": {
+                    "type": "date"
+                },
+                "createdBy": {
+                    "type": "text"
+                },
+                "lastUpdatedBy": {
+                    "type": "text"
+                },
+                "code": {
+                    "type": "keyword"
+                },
+                "name": {
+                    "type": "text"
+                },
+                "description": {
+                    "type": "text"
+                },
+                "postalCode": {
+                    "type": "text"
+                },
+                "type": {
+                    "type": "keyword"
+                },
+                "parent": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "createdDate": {
+                            "type": "date"
+                        },
+                        "lastUpdatedDate": {
+                            "type": "date"
+                        },
+                        "createdBy": {
+                            "type": "text"
+                        },
+                        "lastUpdatedBy": {
+                            "type": "text"
+                        },
+                        "code": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "text"
+                        },
+                        "description": {
+                            "type": "text"
+                        },
+                        "postalCode": {
+                            "type": "text"
+                        },
+                        "type": {
+                            "type": "keyword"
+                        },
+                        "parent": {
+                            "type": "nested",
+                            "properties": {
+                                "id": {
+                                    "type": "keyword"
+                                },
+                                "createdDate": {
+                                    "type": "date"
+                                },
+                                "lastUpdatedDate": {
+                                    "type": "date"
+                                },
+                                "createdBy": {
+                                    "type": "text"
+                                },
+                                "lastUpdatedBy": {
+                                    "type": "text"
+                                },
+                                "code": {
+                                    "type": "keyword"
+                                },
+                                "name": {
+                                    "type": "text"
+                                },
+                                "description": {
+                                    "type": "text"
+                                },
+                                "postalCode": {
+                                    "type": "text"
+                                },
+                                "type": {
+                                    "type": "keyword"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,327 @@
+{
+    "properties": {
+        "id": {
+            "type": "keyword"
+        },
+        "createdDate": {
+            "type": "date"
+        },
+        "lastUpdatedDate": {
+            "type": "date"
+        },
+        "createdBy": {
+            "type": "text"
+        },
+        "lastUpdatedBy": {
+            "type": "text"
+        },
+        "code": {
+            "type": "keyword"
+        },
+        "name": {
+            "type": "text"
+        },
+        "description": {
+            "type": "text"
+        },
+        "location": {
+            "type": "text"
+        },
+        "period": {
+            "type": "nested",
+            "properties": {
+                "year": {
+                    "type": "integer"
+                }
+            }
+        },
+        "department": {
+            "type": "nested",
+            "properties": {
+                "id": {
+                    "type": "keyword"
+                },
+                "createdDate": {
+                    "type": "date"
+                },
+                "lastUpdatedDate": {
+                    "type": "date"
+                },
+                "createdBy": {
+                    "type": "text"
+                },
+                "lastUpdatedBy": {
+                    "type": "text"
+                },
+                "code": {
+                    "type": "keyword"
+                },
+                "name": {
+                    "type": "text"
+                },
+                "description": {
+                    "type": "text"
+                },
+                "region": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "createdDate": {
+                            "type": "date"
+                        },
+                        "lastUpdatedDate": {
+                            "type": "date"
+                        },
+                        "createdBy": {
+                            "type": "text"
+                        },
+                        "lastUpdatedBy": {
+                            "type": "text"
+                        },
+                        "code": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "text"
+                        },
+                        "description": {
+                            "type": "text"
+                        },
+                        "postalCode": {
+                            "type": "text"
+                        },
+                        "type": {
+                            "type": "keyword"
+                        },
+                        "parent": {
+                            "type": "nested",
+                            "properties": {
+                                "id": {
+                                    "type": "keyword"
+                                },
+                                "createdDate": {
+                                    "type": "date"
+                                },
+                                "lastUpdatedDate": {
+                                    "type": "date"
+                                },
+                                "createdBy": {
+                                    "type": "text"
+                                },
+                                "lastUpdatedBy": {
+                                    "type": "text"
+                                },
+                                "code": {
+                                    "type": "keyword"
+                                },
+                                "name": {
+                                    "type": "text"
+                                },
+                                "description": {
+                                    "type": "text"
+                                },
+                                "postalCode": {
+                                    "type": "text"
+                                },
+                                "type": {
+                                    "type": "keyword"
+                                },
+                                "parent": {
+                                    "type": "nested",
+                                    "properties": {
+                                        "id": {
+                                            "type": "keyword"
+                                        },
+                                        "createdDate": {
+                                            "type": "date"
+                                        },
+                                        "lastUpdatedDate": {
+                                            "type": "date"
+                                        },
+                                        "createdBy": {
+                                            "type": "text"
+                                        },
+                                        "lastUpdatedBy": {
+                                            "type": "text"
+                                        },
+                                        "code": {
+                                            "type": "keyword"
+                                        },
+                                        "name": {
+                                            "type": "text"
+                                        },
+                                        "description": {
+                                            "type": "text"
+                                        },
+                                        "postalCode": {
+                                            "type": "text"
+                                        },
+                                        "type": {
+                                            "type": "keyword"
+                                        },
+                                        "parent": {
+                                            "type": "nested",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "keyword"
+                                                },
+                                                "createdDate": {
+                                                    "type": "date"
+                                                },
+                                                "lastUpdatedDate": {
+                                                    "type": "date"
+                                                },
+                                                "createdBy": {
+                                                    "type": "text"
+                                                },
+                                                "lastUpdatedBy": {
+                                                    "type": "text"
+                                                },
+                                                "code": {
+                                                    "type": "keyword"
+                                                },
+                                                "name": {
+                                                    "type": "text"
+                                                },
+                                                "description": {
+                                                    "type": "text"
+                                                },
+                                                "postalCode": {
+                                                    "type": "text"
+                                                },
+                                                "type": {
+                                                    "type": "keyword"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "chiefOfDepartment": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "text"
+                        },
+                        "code": {
+                            "type": "keyword"
+                        }
+                    }
+                },
+                "parent": {
+                    "type": "nested",
+                    "properties": {
+                        "id": {
+                            "type": "keyword"
+                        },
+                        "createdDate": {
+                            "type": "date"
+                        },
+                        "lastUpdatedDate": {
+                            "type": "date"
+                        },
+                        "createdBy": {
+                            "type": "text"
+                        },
+                        "lastUpdatedBy": {
+                            "type": "text"
+                        },
+                        "code": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "text"
+                        },
+                        "description": {
+                            "type": "text"
+                        },
+                        "region": {
+                            "type": "nested"
+                        },
+                        "chiefOfDepartment": {
+                            "type": "nested"
+                        },
+                        "parent": {
+                            "type": "nested",
+                            "properties": {
+                                "id": {
+                                    "type": "keyword"
+                                },
+                                "createdDate": {
+                                    "type": "date"
+                                },
+                                "lastUpdatedDate": {
+                                    "type": "date"
+                                },
+                                "createdBy": {
+                                    "type": "text"
+                                },
+                                "lastUpdatedBy": {
+                                    "type": "text"
+                                },
+                                "code": {
+                                    "type": "keyword"
+                                },
+                                "name": {
+                                    "type": "text"
+                                },
+                                "description": {
+                                    "type": "text"
+                                },
+                                "region": {
+                                    "type": "nested"
+                                },
+                                "chiefOfDepartment": {
+                                    "type": "nested"
+                                },
+                                "parent": {
+                                    "type": "nested",
+                                    "properties": {
+                                        "id": {
+                                            "type": "keyword"
+                                        },
+                                        "createdDate": {
+                                            "type": "date"
+                                        },
+                                        "lastUpdatedDate": {
+                                            "type": "date"
+                                        },
+                                        "createdBy": {
+                                            "type": "text"
+                                        },
+                                        "lastUpdatedBy": {
+                                            "type": "text"
+                                        },
+                                        "code": {
+                                            "type": "keyword"
+                                        },
+                                        "name": {
+                                            "type": "text"
+                                        },
+                                        "description": {
+                                            "type": "text"
+                                        },
+                                        "region": {
+                                            "type": "nested"
+                                        },
+                                        "chiefOfDepartment": {
+                                            "type": "nested"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

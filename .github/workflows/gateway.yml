@@ -1,4 +1,4 @@
-name: Gateway Platform
+name: Gateway Service
 
 on:
   push:

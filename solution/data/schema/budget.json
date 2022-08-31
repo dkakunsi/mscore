@@ -1,0 +1,119 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "budget",
+    "title": "Budget",
+    "description": "The Budget Data Schema",
+    "type": "object",
+    "properties": {
+        "id": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "string",
+                    "maxLength": 256
+                }
+            ],
+            "unique": true
+        },
+        "code": {
+            "type": "string",
+            "maxLength": 100,
+            "unique": true
+        },
+        "domain": {
+            "type": "string",
+            "const": "budget"
+        },
+        "name": {
+            "type": "string",
+            "maxLength": 100
+        },
+        "description": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "string",
+                    "maxLength": 5000
+                }
+            ]
+        },
+        "department": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "maxLength": 256
+                        },
+                        "domain": {
+                            "type": "string",
+                            "const": "department"
+                        }
+                    }
+                }
+            ]
+        },
+        "period": {
+            "type": "object",
+            "properties": {
+                "year": {
+                    "type": "integer",
+                    "minimum": 2010,
+                    "maximum": 2100
+                }
+            }
+        },
+        "status": {
+            "type": "string",
+            "maxLength": 32
+        },
+        "createdDate": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "createdBy": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "lastUpdatedDate": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "lastUpdatedBy": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        }
+    }
+}

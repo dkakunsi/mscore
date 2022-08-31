@@ -23,6 +23,7 @@ COPY --from=packager "$JAVA_HOME" "$JAVA_HOME"
 ENV APP_HOME=/opt/mscore
 
 COPY app.jar $APP_HOME/app.jar
+COPY log4j2.properties $APP_HOME/log4j2.properties
 WORKDIR $APP_HOME
 RUN set -x && chmod 755 $APP_HOME
 
