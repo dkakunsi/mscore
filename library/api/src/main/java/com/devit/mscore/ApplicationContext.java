@@ -133,7 +133,7 @@ public abstract class ApplicationContext {
    *
    * @return true if available, false otherwise.
    */
-  protected boolean hasAction() {
+  public boolean hasAction() {
     return has(ACTION);
   }
 
