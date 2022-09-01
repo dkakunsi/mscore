@@ -108,11 +108,11 @@ public class DefaultService implements Service, Synchronizer {
     LOG.debug("Saving data {} to database.", getCode(json));
     setAuditAttribute(json);
     this.validator.execute(json);
-    this.enricher.execute(json);
 
     var result = this.repository.save(json);
 
     try {
+      this.enricher.execute(json);
       this.filter.execute(json);
       this.observers.forEach(observer -> observer.notify(result));
       return getId(result);
