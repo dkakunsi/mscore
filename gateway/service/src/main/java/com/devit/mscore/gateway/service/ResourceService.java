@@ -1,14 +1,11 @@
 package com.devit.mscore.gateway.service;
 
+import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.gateway.service.ServiceUtils.PAYLOAD;
 import static com.devit.mscore.gateway.service.ServiceUtils.WEBCLIENT_EXCEPTION_MESSAGE;
 import static com.devit.mscore.util.AttributeConstants.ID;
 import static com.devit.mscore.web.WebUtils.SUCCESS;
-
 import static com.devit.mscore.web.WebUtils.getMessageType;
-
-import java.util.Map;
-import java.util.Optional;
 
 import com.devit.mscore.Logger;
 import com.devit.mscore.ServiceRegistration;
@@ -16,6 +13,9 @@ import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.WebClientException;
 import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.web.Client;
+
+import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.json.JSONObject;
@@ -44,7 +44,7 @@ public class ResourceService extends AbstractGatewayService {
     try {
       var uri = getUri(domain);
       var result = this.client.post(uri, Optional.of(payload));
-      if (BooleanUtils.isTrue(this.useWorkflow) && isSuccess(result.getInt("code"))) {
+      if (shouldExecuteWorkflow(result)) {
         LOGGER.info("Executing workflow.");
         executeWorkflow(payload, result);
       }
@@ -53,6 +53,11 @@ public class ResourceService extends AbstractGatewayService {
       LOGGER.error("Cannot POST a resource.");
       throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
     }
+  }
+
+  private boolean shouldExecuteWorkflow(JSONObject result) {
+    var context = getContext();
+    return BooleanUtils.isTrue(this.useWorkflow) && isSuccess(result.getInt("code")) && context.hasAction();
   }
 
   private boolean isSuccess(int responseCode) {
