@@ -11,6 +11,6 @@ docker-compose \
     -f ./docker-compose-gateway-service.yml \
     -f ./docker-compose-notification-service.yml \
     -f ./docker-compose-workflow-service.yml \
-    start data history notification workflow gateway dashboard logger configuration
+    start data history notification workflow gateway dashboard logger
 
 cd ..
