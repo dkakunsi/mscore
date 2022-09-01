@@ -154,6 +154,10 @@ public class ApplicationStarter implements Starter {
       this.synchronizationsExecutor.add(service);
     }
 
+    for (var schema : schemaManager.getSchemas()) {
+      createEnrichment(schema, this.enrichmentsExecutor, this.indices);
+    }
+
     // Create listener
     var syncTopics = messagingFactory.getTopics(String.format(DEPENDENCY, configuration.getServiceName()));
     if (syncTopics.isPresent()) {
