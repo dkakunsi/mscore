@@ -1,6 +1,6 @@
 package com.devit.mscore.gateway.api.javalin;
 
-import static com.devit.mscore.gateway.service.ServiceUtils.PAYLOAD;
+import static com.devit.mscore.gateway.service.AbstractGatewayService.PAYLOAD;
 import static com.devit.mscore.util.AttributeConstants.CODE;
 import static com.devit.mscore.util.AttributeConstants.DOMAIN;
 import static com.devit.mscore.util.AttributeConstants.ID;

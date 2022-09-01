@@ -1,8 +1,6 @@
 package com.devit.mscore.gateway.service;
 
 import static com.devit.mscore.ApplicationContext.getContext;
-import static com.devit.mscore.gateway.service.ServiceUtils.PAYLOAD;
-import static com.devit.mscore.gateway.service.ServiceUtils.WEBCLIENT_EXCEPTION_MESSAGE;
 import static com.devit.mscore.util.AttributeConstants.ID;
 import static com.devit.mscore.web.WebUtils.SUCCESS;
 import static com.devit.mscore.web.WebUtils.getMessageType;

@@ -1,7 +1,6 @@
 package com.devit.mscore.gateway.service;
 
 import static com.devit.mscore.ApplicationContext.getContext;
-import static com.devit.mscore.gateway.service.ServiceUtils.WEBCLIENT_EXCEPTION_MESSAGE;
 
 import com.devit.mscore.Logger;
 import com.devit.mscore.ServiceRegistration;
@@ -35,8 +34,9 @@ public class WorkflowService extends AbstractGatewayService {
   public JSONObject createInstance(JSONObject payload) throws WebClientException {
     var context = getContext();
     try {
-      var uri = String.format("%s/instance/%s", getUri(PROCESS), context.getAction());
-      LOGGER.info(" Creating instance with action '{}'", context.getAction());
+      var action = context.getAction().get();
+      var uri = String.format("%s/instance/%s", getUri(PROCESS), action);
+      LOGGER.info(" Creating instance with action '{}'", action);
       return this.client.post(uri, Optional.of(payload));
     } catch (ApplicationRuntimeException ex) {
       throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
