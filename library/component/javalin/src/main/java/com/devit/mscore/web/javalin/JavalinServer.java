@@ -2,7 +2,6 @@ package com.devit.mscore.web.javalin;
 
 import static com.devit.mscore.ApplicationContext.setContext;
 import static com.devit.mscore.util.JsonUtils.isNotJsonString;
-import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
 
 import com.devit.mscore.AuthenticationProvider;
@@ -141,7 +140,6 @@ public final class JavalinServer extends Server {
       }
 
       ctx.req.setAttribute(PRINCIPAL, principal.toString());
-      ctx.req.setAttribute(BREADCRUMB_ID, applicationContext.getBreadcrumbId());
       applicationContext = JavalinApplicationContext.of(ctx);
       setContext(applicationContext);
       var requiredRole = getRequiredRole(role, ctx.method());
@@ -170,7 +168,7 @@ public final class JavalinServer extends Server {
   private void initBodyValidation() {
     this.app.before(ctx -> {
       var applicationContext = JavalinApplicationContext.of(ctx);
-      ctx.req.setAttribute(BREADCRUMB_ID, applicationContext.getBreadcrumbId());
+      setContext(applicationContext);
 
       if (!isValidatable(ctx.method(), ctx.path())) {
         return;
