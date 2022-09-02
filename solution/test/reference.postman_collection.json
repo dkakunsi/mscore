@@ -1,0 +1,2037 @@
+{
+	"info": {
+		"_postman_id": "06a71b2a-a302-4d59-b756-84ce243471a3",
+		"name": "reference automation test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "932629"
+	},
+	"item": [
+		{
+			"name": "authentication",
+			"item": [
+				{
+					"name": "Request Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Has access token\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"access_token\");\r",
+									"});\r",
+									"\r",
+									"// Set token to variable\r",
+									"var token = pm.response.json()[\"access_token\"];\r",
+									"pm.collectionVariables.set(\"authToken\", token);\r",
+									"\r",
+									"// continue to Create Province\r",
+									"postman.setNextRequest(\"186b1097-57a1-42ad-ae54-306f82f0c563\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"activeFlow\", \"create\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "reference",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "7FzEgqUIauLCmhyECd2lTE3HgFRo9spg",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "default",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "default",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}:{{keycloak_port}}/auth/realms/{{keycloak_realm}}/protocol/openid-connect/token",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{keycloak_port}}",
+							"path": [
+								"auth",
+								"realms",
+								"{{keycloak_realm}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "region",
+			"item": [
+				{
+					"name": "province",
+					"item": [
+						{
+							"name": "Create Province",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// set regionCode variable\r",
+											"const random = () => Math.floor(Math.random() * 1000);\r",
+											"const regionCode = random() + \"-\" + random() + \"-\" + random() + \"-\" + random() + \"-\" + random();\r",
+											"pm.collectionVariables.set(\"provinceCode\", regionCode);\r",
+											"\r",
+											"// Set expectedProvicneDescription variable\r",
+											"var expectedDescription = \"Province \" + regionCode + \" description\";\r",
+											"pm.collectionVariables.set(\"expectedProvinceDescription\", expectedDescription);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Has id\", () => {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"});\r",
+											"\r",
+											"// Set provinceId to variable to be used in another request\r",
+											"var regionId = pm.response.json().id;\r",
+											"pm.collectionVariables.set(\"provinceId\", regionId);\r",
+											"\r",
+											"// continue to Get Province by Id\r",
+											"postman.setNextRequest(\"7d57d771-930b-4cf0-87e1-e62294809530\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "breadcrumbId",
+										"value": "{{breadcrumbId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"domain\": \"region\",\r\n    \"code\": \"{{provinceCode}}\",\r\n    \"name\": \"Province {{provinceCode}}\",\r\n    \"type\": \"PROVINCE\",\r\n    \"description\": \"{{expectedProvinceDescription}}\",\r\n    \"postalCode\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{port_gateway}}/api/resource?domain=region",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port_gateway}}",
+									"path": [
+										"api",
+										"resource"
+									],
+									"query": [
+										{
+											"key": "domain",
+											"value": "region"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Province by Id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Check json values\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"code\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"postalCode\");\r",
+											"\r",
+											"    const expectedCode = pm.collectionVariables.get(\"provinceCode\");\r",
+											"    pm.expect(jsonData.code).to.eql(expectedCode);\r",
+											"    pm.expect(jsonData.domain).to.eql(\"region\");\r",
+											"    pm.expect(jsonData.type).to.eql(\"PROVINCE\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Has expected description\", () => {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    const expectedDescription = pm.collectionVariables.get(\"expectedProvinceDescription\");\r",
+											"    pm.expect(jsonData.description).to.equals(expectedDescription);\r",
+											"});\r",
+											"\r",
+											"// continue to Get Province by Code\r",
+											"postman.setNextRequest(\"c748b6ad-ebab-46d8-8c41-0d982a9d9457\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "breadcrumbId",
+										"value": "{{breadcrumbId}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}:{{port_gateway}}/api/resource/{{provinceId}}?domain=region",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port_gateway}}",
+									"path": [
+										"api",
+										"resource",
+										"{{provinceId}}"
+									],
+									"query": [
+										{
+											"key": "domain",
+											"value": "region"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Province by Code",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Check json values\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"code\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"postalCode\");\r",
+											"\r",
+											"    const expectedId = pm.collectionVariables.get(\"provinceId\");\r",
+											"    pm.expect(jsonData.id).to.eql(expectedId);\r",
+											"    pm.expect(jsonData.domain).to.eql(\"region\");\r",
+											"    pm.expect(jsonData.type).to.eql(\"PROVINCE\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Has expected description\", () => {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    const expectedDescription = pm.collectionVariables.get(\"expectedProvinceDescription\");\r",
+											"    pm.expect(jsonData.description).to.equals(expectedDescription);\r",
+											"});\r",
+											"\r",
+											"// continue to Search Province by Code\r",
+											"postman.setNextRequest(\"678dce90-3d66-42ab-8e15-06c9aab14a1a\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "breadcrumbId",
+										"value": "{{breadcrumbId}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}:{{port_gateway}}/api/resource/code/{{provinceCode}}?domain=region",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port_gateway}}",
+									"path": [
+										"api",
+										"resource",
+										"code",
+										"{{provinceCode}}"
+									],
+									"query": [
+										{
+											"key": "domain",
+											"value": "region"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Search Province by Code",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Check json values\", function () {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonData = jsonArray[0];\r",
+											"\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"code\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"postalCode\");\r",
+											"\r",
+											"    const expectedId = pm.collectionVariables.get(\"provinceId\");\r",
+											"    pm.expect(jsonData.id).to.eql(expectedId);\r",
+											"    pm.expect(jsonData.domain).to.eql(\"region\");\r",
+											"    pm.expect(jsonData.type).to.eql(\"PROVINCE\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Has expected description\", () => {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonData = jsonArray[0];\r",
+											"    const expectedDescription = pm.collectionVariables.get(\"expectedProvinceDescription\");\r",
+											"    pm.expect(jsonData.description).to.equals(expectedDescription);\r",
+											"});\r",
+											"\r",
+											"// continue to Search Province by Id\r",
+											"postman.setNextRequest(\"ad59f9a4-62e1-4c65-97e2-0281eaaaaf97\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "breadcrumbId",
+										"value": "{{breadcrumbId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\": 0,\r\n    \"size\": 2,\r\n    \"criteria\": [\r\n        {\r\n            \"attribute\": \"code\",\r\n            \"operator\": \"equals\",\r\n            \"value\": \"{{provinceCode}}\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{port_gateway}}/api/resource/search?domain=region",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port_gateway}}",
+									"path": [
+										"api",
+										"resource",
+										"search"
+									],
+									"query": [
+										{
+											"key": "domain",
+											"value": "region"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Search Province by Id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Check json values\", function () {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonData = jsonArray[0];\r",
+											"\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"code\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"postalCode\");\r",
+											"\r",
+											"    const expectedCode = pm.collectionVariables.get(\"provinceCode\");\r",
+											"    pm.expect(jsonData.code).to.eql(expectedCode);\r",
+											"    pm.expect(jsonData.domain).to.eql(\"region\");\r",
+											"    pm.expect(jsonData.type).to.eql(\"PROVINCE\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Has expected description\", () => {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonData = jsonArray[0];\r",
+											"    const expectedDescription = pm.collectionVariables.get(\"expectedProvinceDescription\");\r",
+											"    pm.expect(jsonData.description).to.equals(expectedDescription);\r",
+											"});\r",
+											"\r",
+											"// Next test\r",
+											"const activeFlow = pm.collectionVariables.get(\"activeFlow\");\r",
+											"if (activeFlow === \"create\") {\r",
+											"    // Continue to Create City\r",
+											"    postman.setNextRequest(\"747eb96a-9587-4b0c-9b59-529aba6dc535\");\r",
+											"} else {\r",
+											"    // continue to Get City by Id\r",
+											"    postman.setNextRequest(\"42c3459d-559f-416d-bc67-e449d8cc9d74\");\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "breadcrumbId",
+										"value": "{{breadcrumbId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\": 0,\r\n    \"size\": 2,\r\n    \"criteria\": [\r\n        {\r\n            \"attribute\": \"id\",\r\n            \"operator\": \"equals\",\r\n            \"value\": \"{{provinceId}}\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{port_gateway}}/api/resource/search?domain=region",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port_gateway}}",
+									"path": [
+										"api",
+										"resource",
+										"search"
+									],
+									"query": [
+										{
+											"key": "domain",
+											"value": "region"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Province",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Test description is updated\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    const expectedId = pm.collectionVariables.get(\"provinceId\");\r",
+											"    pm.expect(jsonData.id).to.equals(expectedId);\r",
+											"});\r",
+											"\r",
+											"setTimeout(() => {}, 5000);\r",
+											"\r",
+											"// Next test\r",
+											"postman.setNextRequest(\"7d57d771-930b-4cf0-87e1-e62294809530\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const provinceCode = pm.collectionVariables.get(\"provinceCode\");\r",
+											"var expectedDescription = \"Province \" + provinceCode + \" updated description\";\r",
+											"pm.collectionVariables.set(\"expectedProvinceDescription\", expectedDescription);\r",
+											"\r",
+											"pm.collectionVariables.set(\"activeFlow\", \"departmentUpdate\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "breadcrumbId",
+										"value": "{{breadcrumbId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"domain\": \"region\",\r\n    \"code\": \"{{provinceCode}}\",\r\n    \"type\": \"PROVINCE\",\r\n    \"name\": \"Province {{provinceCode}}\",\r\n    \"description\": \"{{expectedProvinceDescription}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{port_gateway}}/api/resource/{{provinceId}}?domain=region",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port_gateway}}",
+									"path": [
+										"api",
+										"resource",
+										"{{provinceId}}"
+									],
+									"query": [
+										{
+											"key": "domain",
+											"value": "region"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "city",
+					"item": [
+						{
+							"name": "Create City",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const random = () => Math.floor(Math.random() * 1000);\r",
+											"const regionCode = random() + \"-\" + random() + \"-\" + random() + \"-\" + random() + \"-\" + random();\r",
+											"pm.collectionVariables.set(\"cityCode\", regionCode);\r",
+											"\r",
+											"var expectedDescription = \"City \" + regionCode + \" description\";\r",
+											"pm.collectionVariables.set(\"expectedCityDescription\", expectedDescription);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Has id\", function () {\r",
+											"    var jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"});\r",
+											"\r",
+											"// Set cityId to variable to be used in another request\r",
+											"var regionId = pm.response.json().id;\r",
+											"pm.collectionVariables.set(\"cityId\", regionId);\r",
+											"\r",
+											"// continue to Get City by Id\r",
+											"postman.setNextRequest(\"42c3459d-559f-416d-bc67-e449d8cc9d74\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "breadcrumbId",
+										"value": "{{breadcrumbId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"domain\": \"region\",\r\n    \"code\": \"{{cityCode}}\",\r\n    \"name\": \"City {{cityCode}}\",\r\n    \"type\": \"CITY\",\r\n    \"description\": \"{{expectedCityDescription}}\",\r\n    \"postalCode\": 11,\r\n    \"parent\": {\r\n        \"domain\": \"region\",\r\n        \"id\": \"{{provinceId}}\"\r\n    }\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{port_gateway}}/api/resource?domain=region",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port_gateway}}",
+									"path": [
+										"api",
+										"resource"
+									],
+									"query": [
+										{
+											"key": "domain",
+											"value": "region"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get City by Id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Check json values\", function () {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"code\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"postalCode\");\r",
+											"    pm.expect(jsonData).to.have.property(\"parent\");\r",
+											"\r",
+											"    const expectedCode = pm.collectionVariables.get(\"cityCode\");\r",
+											"    pm.expect(jsonData.code).to.eql(expectedCode);\r",
+											"    pm.expect(jsonData.domain).to.eql(\"region\");\r",
+											"    pm.expect(jsonData.type).to.eql(\"CITY\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Check parent values\", function () {\r",
+											"    const jsonDataRoot = pm.response.json();\r",
+											"    const jsonData = jsonDataRoot.parent;\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"domain\");\r",
+											"\r",
+											"    const expectedId = pm.collectionVariables.get(\"provinceId\");\r",
+											"    pm.expect(jsonData.id).to.eql(expectedId);\r",
+											"    pm.expect(jsonData.domain).to.eql(\"region\");\r",
+											"});\r",
+											"\r",
+											"// continue to Get City by Code\r",
+											"postman.setNextRequest(\"307c0ebe-10cd-4d0e-b8e6-6771bdbaa5f8\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "breadcrumbId",
+										"value": "{{breadcrumbId}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}:{{port_gateway}}/api/resource/{{cityId}}?domain=region",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port_gateway}}",
+									"path": [
+										"api",
+										"resource",
+										"{{cityId}}"
+									],
+									"query": [
+										{
+											"key": "domain",
+											"value": "region"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get City by Code",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Check json values\", function () {\r",
+											"    const jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"code\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"postalCode\");\r",
+											"    pm.expect(jsonData).to.have.property(\"parent\");\r",
+											"\r",
+											"    const expectedId = pm.collectionVariables.get(\"cityId\");\r",
+											"    pm.expect(jsonData.id).to.eql(expectedId);\r",
+											"    pm.expect(jsonData.domain).to.eql(\"region\");\r",
+											"    pm.expect(jsonData.type).to.eql(\"CITY\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Check parent values\", function () {\r",
+											"    const jsonDataRoot = pm.response.json();\r",
+											"    const jsonData = jsonDataRoot.parent;\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"domain\");\r",
+											"\r",
+											"    const expectedId = pm.collectionVariables.get(\"provinceId\");\r",
+											"    pm.expect(jsonData.id).to.eql(expectedId);\r",
+											"    pm.expect(jsonData.domain).to.eql(\"region\");\r",
+											"});\r",
+											"\r",
+											"// continue to Search City by Code\r",
+											"postman.setNextRequest(\"7d8bb830-eac9-4877-8874-360203b8c2fd\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "breadcrumbId",
+										"value": "{{breadcrumbId}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}:{{port_gateway}}/api/resource/code/{{cityCode}}?domain=region",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port_gateway}}",
+									"path": [
+										"api",
+										"resource",
+										"code",
+										"{{cityCode}}"
+									],
+									"query": [
+										{
+											"key": "domain",
+											"value": "region"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Search City by Code",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Check json values\", function () {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonData = jsonArray[0];\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"code\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"postalCode\");\r",
+											"    pm.expect(jsonData).to.have.property(\"parent\");\r",
+											"\r",
+											"    const expectedCode = pm.collectionVariables.get(\"cityCode\");\r",
+											"    pm.expect(jsonData.code).to.eql(expectedCode);\r",
+											"    pm.expect(jsonData.domain).to.eql(\"region\");\r",
+											"    pm.expect(jsonData.type).to.eql(\"CITY\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Check parent values\", function () {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonDataRoot = jsonArray[0];\r",
+											"    const jsonData = jsonDataRoot.parent;\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"code\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"postalCode\");\r",
+											"\r",
+											"    const expectedId = pm.collectionVariables.get(\"provinceId\");\r",
+											"    pm.expect(jsonData.id).to.eql(expectedId);\r",
+											"    pm.expect(jsonData.domain).to.eql(\"region\");\r",
+											"    pm.expect(jsonData.type).to.eql(\"PROVINCE\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Has expected parent description\", () => {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonDataRoot = jsonArray[0];\r",
+											"\r",
+											"    const province = jsonDataRoot.parent;\r",
+											"    const expectedDescription = pm.collectionVariables.get(\"expectedProvinceDescription\");\r",
+											"    pm.expect(province.description).to.equals(expectedDescription);\r",
+											"});\r",
+											"\r",
+											"// Next testcontinue to Search City by Id\r",
+											"postman.setNextRequest(\"9e52a387-4277-4de1-97f0-75598a7dfede\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "breadcrumbId",
+										"value": "{{breadcrumbId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\": 0,\r\n    \"size\": 2,\r\n    \"criteria\": [\r\n        {\r\n            \"attribute\": \"code\",\r\n            \"operator\": \"equals\",\r\n            \"value\": \"{{cityCode}}\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{port_gateway}}/api/resource/search?domain=region",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port_gateway}}",
+									"path": [
+										"api",
+										"resource",
+										"search"
+									],
+									"query": [
+										{
+											"key": "domain",
+											"value": "region"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Search City by Id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Check json values\", function () {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonData = jsonArray[0];\r",
+											"\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"code\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"postalCode\");\r",
+											"\r",
+											"    const expectedCode = pm.collectionVariables.get(\"cityCode\");\r",
+											"    pm.expect(jsonData.code).to.eql(expectedCode);\r",
+											"    pm.expect(jsonData.domain).to.eql(\"region\");\r",
+											"    pm.expect(jsonData.type).to.eql(\"CITY\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Has expected parent description\", () => {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonDataRoot = jsonArray[0];\r",
+											"\r",
+											"    const province = jsonDataRoot.parent;\r",
+											"    const expectedDescription = pm.collectionVariables.get(\"expectedProvinceDescription\");\r",
+											"    pm.expect(province.description).to.equals(expectedDescription);\r",
+											"});\r",
+											"\r",
+											"// Next test\r",
+											"const activeFlow = pm.collectionVariables.get(\"activeFlow\");\r",
+											"if (activeFlow === \"create\") {\r",
+											"    // continue to Create Department\r",
+											"    postman.setNextRequest(\"d9bd265a-b8fa-4917-bc89-8bab0665a3f3\");\r",
+											"} else {\r",
+											"    // continue to Get Department by Code\r",
+											"    postman.setNextRequest(\"d45b4e47-884f-4c38-897c-4fb7b0d77d02\");\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "breadcrumbId",
+										"value": "{{breadcrumbId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\": 0,\r\n    \"size\": 2,\r\n    \"criteria\": [\r\n        {\r\n            \"attribute\": \"id\",\r\n            \"operator\": \"equals\",\r\n            \"value\": \"{{cityId}}\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{port_gateway}}/api/resource/search?domain=region",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port_gateway}}",
+									"path": [
+										"api",
+										"resource",
+										"search"
+									],
+									"query": [
+										{
+											"key": "domain",
+											"value": "region"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "department",
+			"item": [
+				{
+					"name": "Create Department",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// set regionCode variable\r",
+									"const random = () => Math.floor(Math.random() * 1000);\r",
+									"const departmentCode = random() + \"-\" + random() + \"-\" + random() + \"-\" + random() + \"-\" + random();\r",
+									"pm.collectionVariables.set(\"departmentCode\", departmentCode);\r",
+									"\r",
+									"var expectedDescription = \"Department \" + departmentCode + \" description\";\r",
+									"pm.collectionVariables.set(\"expectedDepartmentDescription\", expectedDescription);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Has id\", () => {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"});\r",
+									"\r",
+									"// Set departmentId to variable to be used in another request\r",
+									"var departmentId = pm.response.json().id;\r",
+									"pm.collectionVariables.set(\"departmentId\", departmentId);\r",
+									"\r",
+									"// Next test\r",
+									"postman.setNextRequest(\"d45b4e47-884f-4c38-897c-4fb7b0d77d02\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "breadcrumbId",
+								"value": "{{breadcrumbId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"domain\": \"department\",\r\n    \"code\": \"{{departmentCode}}\",\r\n    \"name\": \"Department {{departmentCode}}\",\r\n    \"description\": \"{{expectedDepartmentDescription}}\",\r\n    \"region\": {\r\n        \"domain\": \"region\",\r\n        \"id\": \"{{cityId}}\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}:{{port_gateway}}/api/resource?domain=department",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port_gateway}}",
+							"path": [
+								"api",
+								"resource"
+							],
+							"query": [
+								{
+									"key": "domain",
+									"value": "department"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Department by Code",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check json values\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"code\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+									"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+									"    pm.expect(jsonData).to.have.property(\"description\");\r",
+									"    pm.expect(jsonData).to.have.property(\"region\");\r",
+									"\r",
+									"    const expectedId = pm.collectionVariables.get(\"departmentId\");\r",
+									"    pm.expect(jsonData.id).to.eql(expectedId);\r",
+									"    pm.expect(jsonData.domain).to.eql(\"department\");\r",
+									"});\r",
+									"\r",
+									"// continue to Get Department by Id\r",
+									"postman.setNextRequest(\"047bab69-3208-4da9-adfe-8287ba2fd896\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "breadcrumbId",
+								"value": "{{breadcrumbId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}:{{port_gateway}}/api/resource/code/{{departmentCode}}?domain=department",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port_gateway}}",
+							"path": [
+								"api",
+								"resource",
+								"code",
+								"{{departmentCode}}"
+							],
+							"query": [
+								{
+									"key": "domain",
+									"value": "department"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Department by Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check json values\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"code\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+									"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+									"    pm.expect(jsonData).to.have.property(\"description\");\r",
+									"    pm.expect(jsonData).to.have.property(\"region\");\r",
+									"\r",
+									"    const expectedCode = pm.collectionVariables.get(\"departmentCode\");\r",
+									"    pm.expect(jsonData.code).to.eql(expectedCode);\r",
+									"    pm.expect(jsonData.domain).to.eql(\"department\");\r",
+									"});\r",
+									"\r",
+									"// continue to Search Department by Code\r",
+									"postman.setNextRequest(\"d6f29b6d-b28f-4355-bb3a-2d16767b42bf\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "breadcrumbId",
+								"value": "{{breadcrumbId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}:{{port_gateway}}/api/resource/{{departmentId}}?domain=department",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port_gateway}}",
+							"path": [
+								"api",
+								"resource",
+								"{{departmentId}}"
+							],
+							"query": [
+								{
+									"key": "domain",
+									"value": "department"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Department by Code",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check json values\", function () {\r",
+									"    const jsonArray = pm.response.json();\r",
+									"    const jsonData = jsonArray[0];\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"code\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+									"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+									"    pm.expect(jsonData).to.have.property(\"description\");\r",
+									"\r",
+									"    const expectedId = pm.collectionVariables.get(\"departmentId\");\r",
+									"    pm.expect(jsonData.id).to.eql(expectedId);\r",
+									"    pm.expect(jsonData.domain).to.eql(\"department\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Has expected province description\", () => {\r",
+									"    const jsonArray = pm.response.json();\r",
+									"    const jsonData = jsonArray[0].region.parent;\r",
+									"    const expectedDescription = pm.collectionVariables.get(\"expectedProvinceDescription\");\r",
+									"    pm.expect(jsonData.description).to.equals(expectedDescription);\r",
+									"});\r",
+									"\r",
+									"// Next test\r",
+									"const activeFlow = pm.collectionVariables.get(\"activeFlow\");\r",
+									"if (activeFlow === \"create\") {\r",
+									"    // continue to Create Project\r",
+									"    postman.setNextRequest(\"96b15224-5b65-4bdb-b2e4-e66fc19480bc\");\r",
+									"} else {\r",
+									"    // continue to Get Project by Code\r",
+									"    postman.setNextRequest(\"ea971632-bcdb-42a7-b460-f4bc6e3bf97c\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "breadcrumbId",
+								"value": "{{breadcrumbId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 0,\r\n    \"size\": 2,\r\n\t\"criteria\": [\r\n\t\t{\r\n\t\t\t\"attribute\": \"code\",\r\n\t\t\t\"operator\": \"equals\",\r\n\t\t\t\"value\": \"{{departmentCode}}\"\r\n\t\t}\r\n    ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}:{{port_gateway}}/api/resource/search?domain=department",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port_gateway}}",
+							"path": [
+								"api",
+								"resource",
+								"search"
+							],
+							"query": [
+								{
+									"key": "domain",
+									"value": "department"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "project",
+			"item": [
+				{
+					"name": "Create Project",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// set regionCode variable\r",
+									"const random = () => Math.floor(Math.random() * 1000);\r",
+									"const projectCode = random() + \"-\" + random() + \"-\" + random() + \"-\" + random() + \"-\" + random();\r",
+									"pm.collectionVariables.set(\"projectCode\", projectCode);\r",
+									"\r",
+									"var expectedDescription = \"Project \" + projectCode + \" description\";\r",
+									"pm.collectionVariables.set(\"expectedProjectDescription\", expectedDescription);\r",
+									"\r",
+									"pm.collectionVariables.set(\"expectedProjectStatus\", undefined);\r",
+									"pm.collectionVariables.set(\"expectedWorkflowStatus\", \"Active\");\r",
+									"pm.collectionVariables.set(\"expectedTaskStatus\", \"Active\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Has id\", () => {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"});\r",
+									"\r",
+									"// Set projectId to variable to be used in another request\r",
+									"var projectId = pm.response.json().id;\r",
+									"pm.collectionVariables.set(\"projectId\", projectId);\r",
+									"\r",
+									"// Next test\r",
+									"postman.setNextRequest(\"ea971632-bcdb-42a7-b460-f4bc6e3bf97c\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "action",
+								"value": "project.submit",
+								"type": "text"
+							},
+							{
+								"key": "breadcrumbId",
+								"value": "{{breadcrumbId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"domain\": \"project\",\r\n    \"code\": \"{{projectCode}}\",\r\n    \"name\": \"Project {{projectCode}}\",\r\n    \"description\": \"{{expectedProjectDescription}}\",\r\n    \"location\": \"Project {{projectCode}} location\",\r\n    \"department\": {\r\n        \"domain\": \"department\",\r\n        \"id\": \"{{departmentId}}\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}:{{port_gateway}}/api/resource?domain=project",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port_gateway}}",
+							"path": [
+								"api",
+								"resource"
+							],
+							"query": [
+								{
+									"key": "domain",
+									"value": "project"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Project by Code",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check json values\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"code\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+									"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+									"    pm.expect(jsonData).to.have.property(\"description\");\r",
+									"    pm.expect(jsonData).to.have.property(\"department\");\r",
+									"\r",
+									"    const expectedId = pm.collectionVariables.get(\"projectId\");\r",
+									"    pm.expect(jsonData.id).to.eql(expectedId);\r",
+									"    pm.expect(jsonData.domain).to.eql(\"project\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Has expected status\", () => {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    var expectedStatus = pm.collectionVariables.get(\"expectedProjectStatus\");\r",
+									"    if (expectedStatus == null) {\r",
+									"        // it is different between null and undefined\r",
+									"        expectedStatus = undefined;\r",
+									"    }\r",
+									"    pm.expect(jsonData.status).to.eql(expectedStatus);\r",
+									"});\r",
+									"\r",
+									"// continue to Get Project by Id\r",
+									"postman.setNextRequest(\"6a83974f-d741-40d1-b23e-96d42acaf725\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "breadcrumbId",
+								"value": "{{breadcrumbId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}:{{port_gateway}}/api/resource/code/{{projectCode}}?domain=project",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port_gateway}}",
+							"path": [
+								"api",
+								"resource",
+								"code",
+								"{{projectCode}}"
+							],
+							"query": [
+								{
+									"key": "domain",
+									"value": "project"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Project By Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check json values\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"code\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+									"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+									"    pm.expect(jsonData).to.have.property(\"description\");\r",
+									"    pm.expect(jsonData).to.have.property(\"department\");\r",
+									"\r",
+									"    const expectedCode = pm.collectionVariables.get(\"projectCode\");\r",
+									"    pm.expect(jsonData.code).to.eql(expectedCode);\r",
+									"    pm.expect(jsonData.domain).to.eql(\"project\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Has expected status\", () => {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    var expectedStatus = pm.collectionVariables.get(\"expectedProjectStatus\");\r",
+									"    if (expectedStatus == null) {\r",
+									"        // it is different between null and undefined\r",
+									"        expectedStatus = undefined;\r",
+									"    }\r",
+									"    pm.expect(jsonData.status).to.eql(expectedStatus);\r",
+									"});\r",
+									"\r",
+									"// continue to Search Project by Code\r",
+									"postman.setNextRequest(\"e178a879-7675-475f-a0c6-e9d5c4de20d8\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "breadcrumbId",
+								"value": "{{breadcrumbId}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}:{{port_gateway}}/api/resource/{{projectId}}?domain=project",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port_gateway}}",
+							"path": [
+								"api",
+								"resource",
+								"{{projectId}}"
+							],
+							"query": [
+								{
+									"key": "domain",
+									"value": "project"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Project by Code",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check json values\", function () {\r",
+									"    const jsonArray = pm.response.json();\r",
+									"    const jsonData = jsonArray[0];\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"code\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+									"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+									"    pm.expect(jsonData).to.have.property(\"description\");\r",
+									"    pm.expect(jsonData).to.have.property(\"department\");\r",
+									"\r",
+									"    const expectedId = pm.collectionVariables.get(\"projectId\");\r",
+									"    pm.expect(jsonData.id).to.eql(expectedId);\r",
+									"    pm.expect(jsonData.domain).to.eql(\"project\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Has expected status\", () => {\r",
+									"    const jsonArray = pm.response.json();\r",
+									"    const jsonData = jsonArray[0];\r",
+									"\r",
+									"    var expectedStatus = pm.collectionVariables.get(\"expectedProjectStatus\");\r",
+									"    if (expectedStatus == null) {\r",
+									"        // it is different between null and undefined\r",
+									"        expectedStatus = undefined;\r",
+									"    }\r",
+									"    pm.expect(jsonData.status).to.eql(expectedStatus);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Has expected province description\", () => {\r",
+									"    const jsonArray = pm.response.json();\r",
+									"    const jsonData = jsonArray[0].department.region.parent;\r",
+									"\r",
+									"    const expectedDescription = pm.collectionVariables.get(\"expectedProvinceDescription\");\r",
+									"    pm.expect(jsonData.description).to.equals(expectedDescription);\r",
+									"});\r",
+									"\r",
+									"// continue to Search Instance\r",
+									"postman.setNextRequest(\"b92b57f5-9731-4b43-9871-9cb32a697d5a\");\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "breadcrumbId",
+								"value": "{{breadcrumbId}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"page\": 0,\r\n    \"size\": 2,\r\n\t\"criteria\": [\r\n\t\t{\r\n\t\t\t\"attribute\": \"code\",\r\n\t\t\t\"operator\": \"equals\",\r\n\t\t\t\"value\": \"{{projectCode}}\"\r\n\t\t}\r\n\t]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}:{{port_gateway}}/api/resource/search?domain=project",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port_gateway}}",
+							"path": [
+								"api",
+								"resource",
+								"search"
+							],
+							"query": [
+								{
+									"key": "domain",
+									"value": "project"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "workflow",
+			"item": [
+				{
+					"name": "instance",
+					"item": [
+						{
+							"name": "Search Instance",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Check json values\", function () {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonData = jsonArray[0];\r",
+											"\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"action\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"entity\");\r",
+											"\r",
+											"    const expectedId = pm.collectionVariables.get(\"projectId\");\r",
+											"    pm.expect(jsonData.entity.id).to.eql(expectedId);\r",
+											"    pm.expect(jsonData.domain).to.eql(\"workflow\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Has expected status\", () => {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonData = jsonArray[0];\r",
+											"\r",
+											"    const expectedStatus = pm.collectionVariables.get(\"expectedWorkflowStatus\");\r",
+											"    if (expectedStatus == null) {\r",
+											"        // it is different between null and undefined\r",
+											"        expectedStatus = undefined;\r",
+											"    }\r",
+											"    pm.expect(jsonData.status).to.eql(expectedStatus);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Has expected project status\", () => {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonData = jsonArray[0];\r",
+											"\r",
+											"    var expectedStatus = pm.collectionVariables.get(\"expectedProjectStatus\");\r",
+											"    if (expectedStatus == null) {\r",
+											"        // it is different between null and undefined\r",
+											"        expectedStatus = undefined;\r",
+											"    }\r",
+											"    pm.expect(jsonData.entity.status).to.eql(expectedStatus);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Has expected province description\", () => {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonData = jsonArray[0].entity.department.region.parent;\r",
+											"\r",
+											"    const expectedDescription = pm.collectionVariables.get(\"expectedProvinceDescription\");\r",
+											"    pm.expect(jsonData.description).to.equals(expectedDescription);\r",
+											"});\r",
+											"\r",
+											"// continue to Search Task\r",
+											"postman.setNextRequest(\"03532895-78db-4b06-b60b-76a055d871f1\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "breadcrumbId",
+										"value": "{{breadcrumbId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\": 0,\r\n    \"size\": 2,\r\n    \"criteria\": [\r\n        {\r\n            \"attribute\": \"entity.code\",\r\n            \"operator\": \"equals\",\r\n            \"value\": \"{{projectCode}}\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{port_gateway}}/api/resource/search?domain=workflow",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port_gateway}}",
+									"path": [
+										"api",
+										"resource",
+										"search"
+									],
+									"query": [
+										{
+											"key": "domain",
+											"value": "workflow"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "task",
+					"item": [
+						{
+							"name": "Search Task",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Check json values\", function () {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonData = jsonArray[0];\r",
+											"\r",
+											"    pm.expect(jsonData).to.have.property(\"id\");\r",
+											"    pm.expect(jsonData).to.have.property(\"status\");\r",
+											"    pm.expect(jsonData).to.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.have.property(\"createdDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"lastUpdatedDate\");\r",
+											"    pm.expect(jsonData).to.have.property(\"processInstance\");\r",
+											"\r",
+											"    const expectedId = pm.collectionVariables.get(\"projectId\");\r",
+											"    pm.expect(jsonData.processInstance.entity.id).to.eql(expectedId);\r",
+											"    pm.expect(jsonData.domain).to.eql(\"workflowtask\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Has expected status\", () => {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonData = jsonArray[0];\r",
+											"    \r",
+											"    var expectedStatus = pm.collectionVariables.get(\"expectedTaskStatus\");\r",
+											"    if (expectedStatus == null) {\r",
+											"        // it is different between null and undefined\r",
+											"        expectedStatus = undefined;\r",
+											"    }\r",
+											"    pm.expect(jsonData.status).to.eql(expectedStatus);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Check Workflow Status\", () => {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonData = jsonArray[0];\r",
+											"\r",
+											"    var expectedStatus = pm.collectionVariables.get(\"expectedWorkflowStatus\");\r",
+											"    if (expectedStatus == null) {\r",
+											"        // it is different between null and undefined\r",
+											"        expectedStatus = undefined;\r",
+											"    }\r",
+											"    pm.expect(jsonData.processInstance.status).to.eql(expectedStatus);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Check Project Status\", () => {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonData = jsonArray[0];\r",
+											"\r",
+											"    var expectedStatus = pm.collectionVariables.get(\"expectedProjectStatus\");\r",
+											"    if (expectedStatus == null) {\r",
+											"        // it is different between null and undefined\r",
+											"        expectedStatus = undefined;\r",
+											"    }\r",
+											"    pm.expect(jsonData.processInstance.entity.status).to.eql(expectedStatus);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Has expected province description\", () => {\r",
+											"    const jsonArray = pm.response.json();\r",
+											"    const jsonData = jsonArray[0].processInstance.entity.department.region.parent;\r",
+											"    const expectedDescription = pm.collectionVariables.get(\"expectedProvinceDescription\");\r",
+											"    pm.expect(jsonData.description).to.equals(expectedDescription);\r",
+											"});\r",
+											"\r",
+											"// Set taskId for completion\r",
+											"const jsonArray = pm.response.json();\r",
+											"const jsonData = jsonArray[0];\r",
+											"pm.collectionVariables.set(\"taskId\", jsonData.id);\r",
+											"\r",
+											"// Next test\r",
+											"const activeFlow = pm.collectionVariables.get(\"activeFlow\");\r",
+											"if (activeFlow === \"create\") {\r",
+											"    // creation flow is complete, continue to Complete Task\r",
+											"    postman.setNextRequest(\"a3b3050a-2e76-44b7-95ad-64a923b70d6f\");\r",
+											"} else if (activeFlow === \"taskCompletion\") {\r",
+											"    // continue to Update Department\r",
+											"    postman.setNextRequest(\"a3e52d93-3c7d-4fbe-afbf-0b3784da25a5\");\r",
+											"} else {\r",
+											"    // all tests are complete\r",
+											"    postman.setNextRequest(null);\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "breadcrumbId",
+										"value": "{{breadcrumbId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"page\": 0,\r\n    \"size\": 2,\r\n    \"criteria\": [\r\n        {\r\n            \"attribute\": \"processInstance.entity.code\",\r\n            \"operator\": \"equals\",\r\n            \"value\": \"{{projectCode}}\"\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{port_gateway}}/api/resource/search?domain=workflowtask",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port_gateway}}",
+									"path": [
+										"api",
+										"resource",
+										"search"
+									],
+									"query": [
+										{
+											"key": "domain",
+											"value": "workflowtask"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Complete Task",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"expectedProjectStatus\", \"ACTIVE\");\r",
+											"pm.collectionVariables.set(\"expectedWorkflowStatus\", \"Complete\");\r",
+											"pm.collectionVariables.set(\"expectedTaskStatus\", \"Complete\");\r",
+											"\r",
+											"pm.collectionVariables.set(\"activeFlow\", \"taskCompletion\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// continue to Get Project by Code\r",
+											"postman.setNextRequest(\"ea971632-bcdb-42a7-b460-f4bc6e3bf97c\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "breadcrumbId",
+										"value": "{{breadcrumbId}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"domain\": \"project\",\r\n    \"approved\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}:{{port_gateway}}/api/workflow/{{taskId}}",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port_gateway}}",
+									"path": [
+										"api",
+										"workflow",
+										"{{taskId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "value",
+				"value": "{{authToken}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "Authorization",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"const random = () => Math.floor(Math.random() * 1000);",
+					"const breadcrumbId = random() + \"-\" + random() + \"-\" + random() + \"-\" + random() + \"-\" + random(); ",
+					"pm.collectionVariables.set(\"breadcrumbId\", breadcrumbId);",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.test(\"Status code is 200\", function () {",
+					"    pm.response.to.have.status(200);",
+					"});",
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "breadcrumbId",
+			"value": ""
+		},
+		{
+			"key": "projectCode",
+			"value": ""
+		},
+		{
+			"key": "projectId",
+			"value": ""
+		},
+		{
+			"key": "departmentId",
+			"value": ""
+		},
+		{
+			"key": "provinceCode",
+			"value": ""
+		},
+		{
+			"key": "cityCode",
+			"value": ""
+		},
+		{
+			"key": "provinceId",
+			"value": ""
+		},
+		{
+			"key": "cityId",
+			"value": ""
+		},
+		{
+			"key": "expectedCityDescription",
+			"value": ""
+		},
+		{
+			"key": "expectedProvinceDescription",
+			"value": ""
+		},
+		{
+			"key": "departmentCode",
+			"value": ""
+		},
+		{
+			"key": "expectedDepartmentDescription",
+			"value": ""
+		},
+		{
+			"key": "expectedProjectDescription",
+			"value": ""
+		},
+		{
+			"key": "taskId",
+			"value": ""
+		},
+		{
+			"key": "expectedProjectStatus",
+			"value": ""
+		},
+		{
+			"key": "expectedWorkflowStatus",
+			"value": ""
+		},
+		{
+			"key": "expectedTaskStatus",
+			"value": ""
+		},
+		{
+			"key": "authToken",
+			"value": ""
+		},
+		{
+			"key": "activeFlow",
+			"value": ""
+		}
+	]
+}
