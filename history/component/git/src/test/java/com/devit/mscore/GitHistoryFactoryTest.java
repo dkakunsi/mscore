@@ -40,7 +40,7 @@ public class GitHistoryFactoryTest {
     doReturn("history").when(this.configuration).getServiceName();
     doReturn(Optional.of(HOST_NAME)).when(this.configuration).getConfig("services.history.git.hostName");
     doReturn(Optional.of(HOST_KEY)).when(this.configuration).getConfig("services.history.git.hostKey");
-    doReturn(Optional.of("git@github.com:dkakunsi/git-test.git")).when(this.configuration)
+    doReturn(Optional.of("git@github.com:iddevit/git-test.git")).when(this.configuration)
         .getConfig("services.history.git.url");
     doReturn(Optional.of(REPO_LOCATION)).when(this.configuration).getConfig("services.history.git.dir");
     doReturn(Optional.of(PRIVATE_KEY)).when(this.configuration).getConfig("services.history.git.key");
