@@ -80,46 +80,6 @@ jobs:
           devit16/mscore-data-service:${{ env.VERSION_NUMBER }}
           devit16/mscore-data-service:latest
 
-    - name: Build and push Docker gateway image
-      uses: docker/build-push-action@v3.1.1
-      with:
-        context: "gateway/service/target"
-        file: "gateway/service/target/Dockerfile"
-        push: true
-        tags: |
-          devit16/mscore-gateway-service:${{ env.VERSION_NUMBER }}
-          devit16/mscore-gateway-service:latest
-
-    - name: Build and push Docker history image
-      uses: docker/build-push-action@v3.1.1
-      with:
-        context: "history/service/target"
-        file: "history/service/target/Dockerfile"
-        push: true
-        tags: |
-          devit16/mscore-history-service:${{ env.VERSION_NUMBER }}
-          devit16/mscore-history-service:latest
-
-    - name: Build and push Docker notification image
-      uses: docker/build-push-action@v3.1.1
-      with:
-        context: "notification/service/target"
-        file: "notification/service/target/Dockerfile"
-        push: true
-        tags: |
-          devit16/mscore-notification-service:${{ env.VERSION_NUMBER }}
-          devit16/mscore-notification-service:latest
-
-    - name: Build and push Docker workflow image
-      uses: docker/build-push-action@v3.1.1
-      with:
-        context: "workflow/service/target"
-        file: "workflow/service/target/Dockerfile"
-        push: true
-        tags: |
-          devit16/mscore-workflow-service:${{ env.VERSION_NUMBER }}
-          devit16/mscore-workflow-service:latest
-
     - name: Build and push reference data service docker image
       uses: docker/build-push-action@v3.1.1
       with:
@@ -129,6 +89,16 @@ jobs:
         tags: |
           devit16/ref-data:${{ env.VERSION_NUMBER }}
           devit16/ref-data:latest
+
+    - name: Build and push Docker gateway image
+      uses: docker/build-push-action@v3.1.1
+      with:
+        context: "gateway/service/target"
+        file: "gateway/service/target/Dockerfile"
+        push: true
+        tags: |
+          devit16/mscore-gateway-service:${{ env.VERSION_NUMBER }}
+          devit16/mscore-gateway-service:latest
 
     - name: Build and push reference gateway service docker image
       uses: docker/build-push-action@v3.1.1
@@ -140,6 +110,16 @@ jobs:
           devit16/ref-gateway:${{ env.VERSION_NUMBER }}
           devit16/ref-gateway:latest
 
+    - name: Build and push Docker history image
+      uses: docker/build-push-action@v3.1.1
+      with:
+        context: "history/service/target"
+        file: "history/service/target/Dockerfile"
+        push: true
+        tags: |
+          devit16/mscore-history-service:${{ env.VERSION_NUMBER }}
+          devit16/mscore-history-service:latest
+
     - name: Build and push reference history service docker image
       uses: docker/build-push-action@v3.1.1
       with:
@@ -150,6 +130,16 @@ jobs:
           devit16/ref-history:${{ env.VERSION_NUMBER }}
           devit16/ref-history:latest
 
+    - name: Build and push Docker notification image
+      uses: docker/build-push-action@v3.1.1
+      with:
+        context: "notification/service/target"
+        file: "notification/service/target/Dockerfile"
+        push: true
+        tags: |
+          devit16/mscore-notification-service:${{ env.VERSION_NUMBER }}
+          devit16/mscore-notification-service:latest
+
     - name: Build and push reference notification service docker image
       uses: docker/build-push-action@v3.1.1
       with:
@@ -159,6 +149,16 @@ jobs:
         tags: |
           devit16/ref-notification:${{ env.VERSION_NUMBER }}
           devit16/ref-notification:latest
+
+    - name: Build and push Docker workflow image
+      uses: docker/build-push-action@v3.1.1
+      with:
+        context: "workflow/service/target"
+        file: "workflow/service/target/Dockerfile"
+        push: true
+        tags: |
+          devit16/mscore-workflow-service:${{ env.VERSION_NUMBER }}
+          devit16/mscore-workflow-service:latest
 
     - name: Build and push reference workflow service docker image
       uses: docker/build-push-action@v3.1.1
