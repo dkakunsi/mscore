@@ -92,7 +92,7 @@
         <configuration>
           <excludes>
             <exclude>**/*Configs.*</exclude>
-            <exclude>**/FlowableProcessInstance.*</exclude>
+            <exclude>**/FlowableInstance.*</exclude>
             <exclude>**/FlowableTask.*</exclude>
           </excludes>
         </configuration>

@@ -12,16 +12,12 @@
     <exclusiveGateway id="decision" />
     <sequenceFlow sourceRef="decision" targetRef="approvedCall">
       <conditionExpression xsi:type="tFormalExpression">
-        <![CDATA[
-                    ${approved}
-                ]]>
+        <![CDATA[${approved}]]>
       </conditionExpression>
     </sequenceFlow>
     <sequenceFlow sourceRef="decision" targetRef="rejectedCall">
       <conditionExpression xsi:type="tFormalExpression">
-        <![CDATA[
-                    ${!approved}
-                ]]>
+        <![CDATA[${!approved}]]>
       </conditionExpression>
     </sequenceFlow>
 
