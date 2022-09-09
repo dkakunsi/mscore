@@ -6,7 +6,9 @@
     <serviceTask id="svc_set_status_active" name="Set Status 'ACTIVE'" activiti:class="com.devit.mscore.workflow.flowable.delegate.SetStatus">
       <extensionElements>
         <activiti:field name="status">
-          <activiti:string><![CDATA[ACTIVE]]></activiti:string>
+          <activiti:string>
+            <![CDATA[ACTIVE]]>
+          </activiti:string>
         </activiti:field>
       </extensionElements>
     </serviceTask>
@@ -14,7 +16,9 @@
     <sequenceFlow id="flow62" sourceRef="svc_set_status_active" targetRef="exclusivegateway1"></sequenceFlow>
     <userTask id="usr_validate" name="Validate"></userTask>
     <sequenceFlow id="flow_validated" sourceRef="exgw" targetRef="svc_set_status_active">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${approved == 'true'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression">
+        <![CDATA[${approved == 'true'}]]>
+      </conditionExpression>
     </sequenceFlow>
     <exclusiveGateway id="exgw" name="Exclusive Gateway" default="flow_declined"></exclusiveGateway>
     <sequenceFlow id="flow64" sourceRef="usr_validate" targetRef="exgw"></sequenceFlow>
