@@ -11,18 +11,6 @@ import org.json.JSONObject;
 
 public class FlowableDefinition extends WorkflowDefinition {
 
-  static final String WORKFLOW = "workflow";
-
-  static final String PROCESS = "process";
-
-  private static final String RESOURCE_TEMPLATE = "%s.%s.%s.bpmn20.xml";
-
-  private static final String NAME_TEMPLATE = "%s.%s";
-
-  private static final String CONTENT = "content";
-
-  private static final String RESOURCE_NAME = "resourceName";
-
   private String resourceName;
 
   /*
@@ -36,7 +24,7 @@ public class FlowableDefinition extends WorkflowDefinition {
   }
 
   public FlowableDefinition(JSONObject json) {
-    super(json.getString(NAME), json.getString(CONTENT));
+    super(json.getString(NAME), json.getString(CONTENT_CONSTANT));
     this.resourceName = json.getString(RESOURCE_NAME);
   }
 
@@ -51,7 +39,7 @@ public class FlowableDefinition extends WorkflowDefinition {
 
   @Override
   public JSONObject getMessage() {
-    return new JSONObject().put(RESOURCE_NAME, this.resourceName).put(NAME, this.name).put(CONTENT, this.content);
+    return new JSONObject().put(RESOURCE_NAME, this.resourceName).put(NAME, this.name).put(CONTENT_CONSTANT, this.content);
   }
 
   @Override

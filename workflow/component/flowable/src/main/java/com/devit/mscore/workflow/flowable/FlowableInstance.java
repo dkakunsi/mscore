@@ -1,68 +1,30 @@
 package com.devit.mscore.workflow.flowable;
 
 import static com.devit.mscore.util.AttributeConstants.DOMAIN;
-import static com.devit.mscore.util.AttributeConstants.ID;
 
-import com.devit.mscore.WorkflowObject;
+import com.devit.mscore.WorkflowInstance;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.runtime.ProcessInstance;
-import org.json.JSONObject;
 
 /**
  * Flowable ProcessInstance proxy.
  *
  * @author dkakunsi
  */
-public class FlowableProcessInstance implements WorkflowObject, ProcessInstance {
-
-  private static final String STATUS = "status";
-
-  private static final String OWNER = "owner";
-
-  private static final String ORGANISATION = "organisation";
+public class FlowableInstance extends WorkflowInstance implements ProcessInstance {
 
   private ProcessInstance processInstance;
 
-  private JSONObject json;
-
-  private String instanceStatus;
-
   private Map<String, Object> variables;
 
-  public FlowableProcessInstance(ProcessInstance processInstance, Map<String, Object> variables) {
+  public FlowableInstance(ProcessInstance processInstance, Map<String, Object> variables) {
     this.processInstance = processInstance;
-    this.instanceStatus = processInstance.isEnded() ? COMPLETED : ACTIVATED;
+    this.status = processInstance.isEnded() ? COMPLETED : ACTIVATED;
     this.variables = new HashMap<>(variables);
-    this.json = initJson();
-  }
-
-  private JSONObject initJson() {
-    var entity = new JSONObject();
-    entity.put(ID, getBusinessKey());
-    entity.put(DOMAIN, getDomain());
-
-    var jsonObj = new JSONObject();
-    jsonObj.put("entity", entity);
-
-    var ownerId = getOwner();
-    if (StringUtils.isNotBlank(ownerId)) {
-      jsonObj.put(OWNER, ownerId);
-    }
-
-    jsonObj.put(ORGANISATION, getOrganisation());
-    jsonObj.put("createdBy", getStartUserId());
-    jsonObj.put(DOMAIN, "workflow");
-    jsonObj.put(ID, getProcessInstanceId());
-    jsonObj.put("action", getAction());
-    jsonObj.put("name", getName());
-    jsonObj.put(STATUS, instanceStatus);
-
-    return jsonObj;
   }
 
   @Override
@@ -202,35 +164,33 @@ public class FlowableProcessInstance implements WorkflowObject, ProcessInstance 
 
   @Override
   public void complete() {
-    this.instanceStatus = COMPLETED;
+    this.status = COMPLETED;
   }
 
   public boolean isComplete() {
-    return COMPLETED.equals(this.instanceStatus);
+    return COMPLETED.equals(this.status);
   }
 
   @Override
-  public JSONObject toJson() {
-    this.json.put(STATUS, instanceStatus);
-    return new JSONObject(this.json.toString());
-  }
-
-  private String getOwner() {
+  protected String getOwner() {
     var owner = this.variables.get(OWNER);
     return owner != null ? owner.toString() : null;
   }
 
-  private String getOrganisation() {
+  @Override
+  protected String getOrganisation() {
     var organisation = this.variables.get(ORGANISATION);
     return organisation != null ? organisation.toString() : null;
   }
 
-  private String getDomain() {
+  @Override
+  protected String getDomain() {
     var domain = this.variables.get(DOMAIN);
     return domain != null ? domain.toString() : null;
   }
 
-  private String getAction() {
+  @Override
+  protected String getAction() {
     return this.getProcessDefinitionId().split(":")[0];
   }
 

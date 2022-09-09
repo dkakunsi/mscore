@@ -7,19 +7,27 @@ import org.json.JSONObject;
  *
  * @author dkakunsi
  */
-public interface WorkflowObject {
+public abstract class WorkflowObject {
 
-  String ACTIVATED = "Active";
+  protected static final String OWNER = "owner";
 
-  String COMPLETED = "Complete";
+  protected static final String ORGANISATION = "organisation";
 
-  String getId();
+  protected static final String STATUS_CONSTANT = "status";
 
-  String getName();
+  protected static final String ACTIVATED = "Active";
 
-  void complete();
+  protected static final String COMPLETED = "Complete";
 
-  default JSONObject toJson() {
-    return new JSONObject();
+  protected String status;
+
+  public void complete() {
+    this.status = COMPLETED;
   }
+
+  public abstract JSONObject toJson();
+
+  public abstract String getId();
+
+  public abstract String getName();
 }

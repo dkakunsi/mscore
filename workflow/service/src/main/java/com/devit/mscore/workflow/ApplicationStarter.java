@@ -4,11 +4,11 @@ import static com.devit.mscore.util.Utils.WORKFLOW;
 import static com.devit.mscore.workflow.flowable.DelegateUtils.NOTIFICATION;
 
 import com.devit.mscore.Configuration;
+import com.devit.mscore.DataClient;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Publisher;
 import com.devit.mscore.Registry;
 import com.devit.mscore.ResourceManager;
-import com.devit.mscore.Service;
 import com.devit.mscore.ServiceRegistration;
 import com.devit.mscore.Starter;
 import com.devit.mscore.authentication.JWTAuthenticationProvider;
@@ -27,9 +27,9 @@ import com.devit.mscore.util.DateUtils;
 import com.devit.mscore.web.Client;
 import com.devit.mscore.web.jersey.JerseyClientFactory;
 import com.devit.mscore.workflow.api.ApiFactory;
-import com.devit.mscore.workflow.flowable.DataClient;
 import com.devit.mscore.workflow.flowable.DelegateUtils;
 import com.devit.mscore.workflow.flowable.FlowableWorkflowFactory;
+import com.devit.mscore.workflow.service.WorkflowServiceImpl;
 
 import java.util.HashMap;
 
@@ -39,13 +39,13 @@ public class ApplicationStarter implements Starter {
 
   private static final String WORKFLOW_DOMAIN = "services.%s.domain.workflow";
 
-  private static final String TASK_DOMAIN = "services.%s.domain.task";
-
   private static final String TIMEZONE = "platform.service.timezone";
 
   private String serviceName;
 
   private Registry zookeeperRegistry;
+
+  private Registry workflowRegistry;
 
   private Configuration configuration;
 
@@ -68,6 +68,7 @@ public class ApplicationStarter implements Starter {
   public ApplicationStarter(FileConfiguration fileConfiguration) throws ConfigException {
     this.serviceName = fileConfiguration.getServiceName();
     try {
+      this.workflowRegistry = new MemoryRegistry(WORKFLOW);
       this.zookeeperRegistry = ZookeeperRegistryFactory.of(fileConfiguration).registry("platformCOnfig");
       zookeeperRegistry.open();
       this.configuration = new ZookeeperConfiguration(zookeeperRegistry, serviceName);
@@ -78,7 +79,7 @@ public class ApplicationStarter implements Starter {
       this.authenticationProvider = JWTAuthenticationProvider.of(this.configuration);
       this.webClient = JerseyClientFactory.of().client();
       this.apiFactory = ApiFactory.of(this.configuration, this.authenticationProvider);
-      this.workflowFactory = FlowableWorkflowFactory.of(this.configuration, new MemoryRegistry(WORKFLOW));
+      this.workflowFactory = FlowableWorkflowFactory.of(this.configuration, this.workflowRegistry);
       this.serviceRegistration = new ServiceRegistration(this.zookeeperRegistry, this.configuration);
     } catch (RegistryException ex) {
       throw new ConfigException(ex);
@@ -94,21 +95,22 @@ public class ApplicationStarter implements Starter {
     publishers.put(NOTIFICATION, this.messagingFactory.publisher(NOTIFICATION));
 
     var workflowDomain = getWorkflowDomain(WORKFLOW_DOMAIN);
-    var taskDomain = getWorkflowDomain(TASK_DOMAIN);
-    var dataClient = new DataClient(this.webClient, this.serviceRegistration, workflowDomain, taskDomain);
+    var dataClient = new DataClient(this.webClient, this.serviceRegistration, workflowDomain);
 
-    var workflowProcess = this.workflowFactory.workflowProcess(dataClient);
-    workflowProcess.start();
+    var definitionRepository = this.workflowFactory.definitionRepository();
+    var instanceRepository = this.workflowFactory.instanceRepository();
+    var taskRepository = this.workflowFactory.taskRepository();
+    var workflowService = new WorkflowServiceImpl(this.workflowRegistry, dataClient, definitionRepository, instanceRepository, taskRepository);
 
     for (var definition : this.workflowFactory.getDefinitions()) {
-      workflowProcess.deployDefinition(definition);
+      workflowService.deployDefinition(definition);
     }
 
     // Start service
-    var server = this.apiFactory.addService((Service) workflowProcess).server();
+    var server = this.apiFactory.addService(workflowService).server();
     server.start();
 
-    this.serviceRegistration.register((Service) workflowProcess);
+    this.serviceRegistration.register(workflowService);
 
     // This resources will be used by workflow delegates.
     DelegateUtils.setDataClient(dataClient);

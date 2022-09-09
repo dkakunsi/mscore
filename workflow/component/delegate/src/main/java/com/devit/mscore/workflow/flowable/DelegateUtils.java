@@ -1,6 +1,7 @@
 package com.devit.mscore.workflow.flowable;
 
 import com.devit.mscore.Configuration;
+import com.devit.mscore.DataClient;
 import com.devit.mscore.Publisher;
 
 import java.util.HashMap;
