@@ -1,189 +1,189 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "project",
-    "title": "Project",
-    "description": "The Project Data Schema",
-    "type": "object",
-    "properties": {
-        "id": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string",
-                    "maxLength": 36
-                }
-            ],
-            "unique": true
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "project",
+  "title": "Project",
+  "description": "The Project Data Schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "oneOf": [
+        {
+          "type": "null"
         },
-        "code": {
-            "type": "string",
-            "maxLength": 100,
-            "unique": true
-        },
-        "domain": {
-            "type": "string",
-            "const": "project"
-        },
-        "name": {
-            "type": "string",
-            "maxLength": 100
-        },
-        "description": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string",
-                    "maxLength": 5000
-                }
-            ]
-        },
-        "location": {
-            "type": "string",
-            "maxLength": 256
-        },
-        "department": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "string",
-                            "maxLength": 36
-                        },
-                        "domain": {
-                            "type": "string",
-                            "const": "department"
-                        }
-                    }
-                }
-            ]
-        },
-        "budgets": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "amount": {
-                                "type": "integer"
-                            },
-                            "period": {
-                                "type": "object",
-                                "properties": {
-                                    "year": {
-                                        "type": "integer",
-                                        "minimum": 2010,
-                                        "maximum": 2100
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            ]
-        },
-        "progresses": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "amount": {
-                                "type": "integer"
-                            },
-                            "period": {
-                                "type": "object",
-                                "properties": {
-                                    "year": {
-                                        "type": "integer",
-                                        "minimum": 2016,
-                                        "maximum": 2100
-                                    },
-                                    "month": {
-                                        "type": "integer",
-                                        "minimum": 1,
-                                        "maximum": 12
-                                    }
-                                }
-                            },
-                            "physical": {
-                                "type": "integer"
-                            },
-                            "pictures": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                }
-            ]
-        },
-        "status": {
-            "type": "string",
-            "maxLength": 32
-        },
-        "createdDate": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string"
-                }
-            ]
-        },
-        "createdBy": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string"
-                }
-            ]
-        },
-        "lastUpdatedDate": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string"
-                }
-            ]
-        },
-        "lastUpdatedBy": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string"
-                }
-            ]
+        {
+          "type": "string",
+          "maxLength": 36
         }
+      ],
+      "unique": true
     },
-    "required": [
-        "domain",
-        "code",
-        "name",
-        "location"
-    ]
+    "code": {
+      "type": "string",
+      "maxLength": 100,
+      "unique": true
+    },
+    "domain": {
+      "type": "string",
+      "const": "project"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "description": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "maxLength": 5000
+        }
+      ]
+    },
+    "location": {
+      "type": "string",
+      "maxLength": 256
+    },
+    "department": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "maxLength": 36
+            },
+            "domain": {
+              "type": "string",
+              "const": "department"
+            }
+          }
+        }
+      ]
+    },
+    "budgets": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "amount": {
+                "type": "integer"
+              },
+              "period": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "integer",
+                    "minimum": 2010,
+                    "maximum": 2100
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "progresses": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "amount": {
+                "type": "integer"
+              },
+              "period": {
+                "type": "object",
+                "properties": {
+                  "year": {
+                    "type": "integer",
+                    "minimum": 2016,
+                    "maximum": 2100
+                  },
+                  "month": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12
+                  }
+                }
+              },
+              "physical": {
+                "type": "integer"
+              },
+              "pictures": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "status": {
+      "type": "string",
+      "maxLength": 32
+    },
+    "createdDate": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "createdBy": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "lastUpdatedDate": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "lastUpdatedBy": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    }
+  },
+  "required": [
+    "domain",
+    "code",
+    "name",
+    "location"
+  ]
 }

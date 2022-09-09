@@ -1,39 +1,68 @@
 {
-    "properties": {
+  "properties": {
+    "id": {
+      "type": "keyword"
+    },
+    "workflowId": {
+      "type": "keyword"
+    },
+    "name": {
+      "type": "keyword"
+    },
+    "action": {
+      "type": "keyword"
+    },
+    "entity": {
+      "type": "nested",
+      "properties": {
         "id": {
-            "type": "keyword"
+          "type": "keyword"
         },
-        "workflowId": {
-            "type": "keyword"
+        "domain": {
+          "type": "keyword"
+        },
+        "code": {
+          "type": "keyword"
         },
         "name": {
-            "type": "keyword"
+          "type": "keyword"
+        }
+      }
+    },
+    "owner": {
+      "type": "keyword"
+    },
+    "status": {
+      "type": "keyword"
+    },
+    "task": {
+      "type": "nested",
+      "properties": {
+        "id": {
+          "type": "keyword"
         },
-        "action": {
-            "type": "keyword"
+        "name": {
+          "type": "keyword"
         },
-        "entity": {
-            "type": "nested",
-            "properties": {
-                "id": {
-                    "type": "keyword"
-                },
-                "domain": {
-                    "type": "keyword"
-                },
-                "code": {
-                    "type": "keyword"
-                },
-                "name": {
-                    "type": "keyword"
-                }
-            }
+        "dueDate": {
+          "type": "date"
+        },
+        "assignee": {
+          "type": "keyword"
+        },
+        "organisation": {
+          "type": "keyword"
+        },
+        "executionId": {
+          "type": "keyword"
         },
         "owner": {
-            "type": "keyword"
+          "type": "keyword"
         },
         "status": {
-            "type": "keyword"
+          "type": "keyword"
         }
+      }
     }
+  }
 }

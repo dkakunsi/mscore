@@ -1,108 +1,202 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "workflow",
-    "title": "Workflow",
-    "description": "The Workflow Data Schema",
-    "type": "object",
-    "properties": {
-        "domain": {
-            "const": "workflow"
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "workflow",
+  "title": "Workflow",
+  "description": "The Workflow Data Schema",
+  "type": "object",
+  "properties": {
+    "domain": {
+      "const": "workflow"
+    },
+    "id": {
+      "oneOf": [
+        {
+          "type": "null"
         },
+        {
+          "type": "string",
+          "maxLength": 36
+        }
+      ],
+      "unique": true
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "action": {
+      "type": "string"
+    },
+    "entity": {
+      "type": "object",
+      "properties": {
         "id": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string",
-                    "maxLength": 36
-                }
-            ],
-            "unique": true
+          "type": "string",
+          "maxLength": 36
         },
-        "name": {
-            "type": "string",
-            "maxLength": 100
+        "domain": {
+          "oneOf": [
+            {
+              "type": "string",
+              "const": "project"
+            },
+            {
+              "type": "string",
+              "const": "budget"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "domain"
+      ]
+    },
+    "owner": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "createdDate": {
+      "oneOf": [
+        {
+          "type": "null"
         },
-        "action": {
-            "type": "string"
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "createdBy": {
+      "oneOf": [
+        {
+          "type": "null"
         },
-        "entity": {
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "lastUpdatedDate": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "lastUpdatedBy": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "task": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
             "type": "object",
             "properties": {
-                "id": {
+              "id": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
                     "type": "string",
                     "maxLength": 36
-                },
-                "domain": {
-                    "oneOf": [
-                        {
-                            "type": "string",
-                            "const": "project"
-                        },
-                        {
-                            "type": "string",
-                            "const": "budget"
-                        }
-                    ]
-                }
+                  }
+                ],
+                "unique": true
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 100
+              },
+              "dueDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "assignee": {
+                "type": "string"
+              },
+              "organisation": {
+                "type": "string"
+              },
+              "executionId": {
+                "type": "string"
+              },
+              "owner": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "maxLength": 100
+              },
+              "createdDate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "createdBy": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "lastUpdatedDate": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "lastUpdatedBy": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              }
             },
             "required": [
-                "id",
-                "domain"
+              "id"
             ]
-        },
-        "owner": {
-            "type": "string"
-        },
-        "status": {
-            "type": "string"
-        },
-        "createdDate": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string"
-                }
-            ]
-        },
-        "createdBy": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string"
-                }
-            ]
-        },
-        "lastUpdatedDate": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string"
-                }
-            ]
-        },
-        "lastUpdatedBy": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string"
-                }
-            ]
+          }
         }
-    },
-    "required": [
-        "domain",
-        "name",
-        "action",
-        "entity"
-    ]
+      ]
+    }
+  },
+  "required": [
+    "domain",
+    "name",
+    "action",
+    "entity"
+  ]
 }

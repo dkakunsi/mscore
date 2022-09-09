@@ -1,131 +1,131 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "region",
-    "title": "Region",
-    "description": "The Region Data Schema",
-    "type": "object",
-    "properties": {
-        "id": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string",
-                    "maxLength": 36
-                }
-            ],
-            "unique": true
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "region",
+  "title": "Region",
+  "description": "The Region Data Schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "oneOf": [
+        {
+          "type": "null"
         },
-        "code": {
-            "type": "string",
-            "maxLength": 100,
-            "unique": true
-        },
-        "domain": {
-            "type": "string",
-            "const": "region"
-        },
-        "name": {
-            "type": "string",
-            "maxLength": 100
-        },
-        "description": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string",
-                    "maxLength": 5000
-                }
-            ]
-        },
-        "postalCode": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "integer",
-                    "maximum": 99999
-                }
-            ]
-        },
-        "type": {
-            "type": "string",
-            "enum": [
-                "PROVINCE",
-                "CITY",
-                "DISTRICT",
-                "SUBDISTRICT"
-            ]
-        },
-        "parent": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "type": "string",
-                            "maxLength": 36
-                        },
-                        "domain": {
-                            "type": "string",
-                            "const": "region"
-                        }
-                    }
-                }
-            ]
-        },
-        "createdDate": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string"
-                }
-            ]
-        },
-        "createdBy": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string"
-                }
-            ]
-        },
-        "lastUpdatedDate": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string"
-                }
-            ]
-        },
-        "lastUpdatedBy": {
-            "oneOf": [
-                {
-                    "type": "null"
-                },
-                {
-                    "type": "string"
-                }
-            ]
+        {
+          "type": "string",
+          "maxLength": 36
         }
+      ],
+      "unique": true
     },
-    "required": [
-        "domain",
-        "code",
-        "name",
-        "type"
-    ]
+    "code": {
+      "type": "string",
+      "maxLength": 100,
+      "unique": true
+    },
+    "domain": {
+      "type": "string",
+      "const": "region"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "description": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "maxLength": 5000
+        }
+      ]
+    },
+    "postalCode": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "integer",
+          "maximum": 99999
+        }
+      ]
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "PROVINCE",
+        "CITY",
+        "DISTRICT",
+        "SUBDISTRICT"
+      ]
+    },
+    "parent": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "maxLength": 36
+            },
+            "domain": {
+              "type": "string",
+              "const": "region"
+            }
+          }
+        }
+      ]
+    },
+    "createdDate": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "createdBy": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "lastUpdatedDate": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "lastUpdatedBy": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    }
+  },
+  "required": [
+    "domain",
+    "code",
+    "name",
+    "type"
+  ]
 }

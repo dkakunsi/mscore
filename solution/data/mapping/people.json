@@ -1,196 +1,196 @@
 {
-    "properties": {
-        "id": {
-            "type": "keyword"
+  "properties": {
+    "id": {
+      "type": "keyword"
+    },
+    "createdDate": {
+      "type": "date"
+    },
+    "lastUpdatedDate": {
+      "type": "date"
+    },
+    "createdBy": {
+      "type": "text"
+    },
+    "lastUpdatedBy": {
+      "type": "text"
+    },
+    "code": {
+      "type": "keyword"
+    },
+    "name": {
+      "type": "text"
+    },
+    "dateOfBirth": {
+      "type": "date"
+    },
+    "contacts": {
+      "type": "nested",
+      "properties": {
+        "detail": {
+          "type": "text"
         },
-        "createdDate": {
-            "type": "date"
+        "description": {
+          "type": "text"
         },
-        "lastUpdatedDate": {
-            "type": "date"
+        "type": {
+          "type": "keyword"
+        }
+      }
+    },
+    "addresses": {
+      "type": "nested",
+      "properties": {
+        "domain": {
+          "type": "text"
         },
-        "createdBy": {
-            "type": "text"
+        "detail": {
+          "type": "text"
         },
-        "lastUpdatedBy": {
-            "type": "text"
+        "primary": {
+          "type": "text"
         },
-        "code": {
-            "type": "keyword"
-        },
-        "name": {
-            "type": "text"
-        },
-        "dateOfBirth": {
-            "type": "date"
-        },
-        "contacts": {
-            "type": "nested",
-            "properties": {
-                "detail": {
-                    "type": "text"
+        "region": {
+          "type": "nested",
+          "properties": {
+            "id": {
+              "type": "keyword"
+            },
+            "createdDate": {
+              "type": "date"
+            },
+            "lastUpdatedDate": {
+              "type": "date"
+            },
+            "createdBy": {
+              "type": "text"
+            },
+            "lastUpdatedBy": {
+              "type": "text"
+            },
+            "code": {
+              "type": "keyword"
+            },
+            "name": {
+              "type": "text"
+            },
+            "description": {
+              "type": "text"
+            },
+            "postalCode": {
+              "type": "text"
+            },
+            "type": {
+              "type": "keyword"
+            },
+            "parent": {
+              "type": "nested",
+              "properties": {
+                "id": {
+                  "type": "keyword"
+                },
+                "createdDate": {
+                  "type": "date"
+                },
+                "lastUpdatedDate": {
+                  "type": "date"
+                },
+                "createdBy": {
+                  "type": "text"
+                },
+                "lastUpdatedBy": {
+                  "type": "text"
+                },
+                "code": {
+                  "type": "keyword"
+                },
+                "name": {
+                  "type": "text"
                 },
                 "description": {
-                    "type": "text"
+                  "type": "text"
+                },
+                "postalCode": {
+                  "type": "text"
                 },
                 "type": {
-                    "type": "keyword"
-                }
-            }
-        },
-        "addresses": {
-            "type": "nested",
-            "properties": {
-                "domain": {
-                    "type": "text"
+                  "type": "keyword"
                 },
-                "detail": {
-                    "type": "text"
-                },
-                "primary": {
-                    "type": "text"
-                },
-                "region": {
-                    "type": "nested",
-                    "properties": {
+                "parent": {
+                  "type": "nested",
+                  "properties": {
+                    "id": {
+                      "type": "keyword"
+                    },
+                    "createdDate": {
+                      "type": "date"
+                    },
+                    "lastUpdatedDate": {
+                      "type": "date"
+                    },
+                    "createdBy": {
+                      "type": "text"
+                    },
+                    "lastUpdatedBy": {
+                      "type": "text"
+                    },
+                    "code": {
+                      "type": "keyword"
+                    },
+                    "name": {
+                      "type": "text"
+                    },
+                    "description": {
+                      "type": "text"
+                    },
+                    "postalCode": {
+                      "type": "text"
+                    },
+                    "type": {
+                      "type": "keyword"
+                    },
+                    "parent": {
+                      "type": "nested",
+                      "properties": {
                         "id": {
-                            "type": "keyword"
+                          "type": "keyword"
                         },
                         "createdDate": {
-                            "type": "date"
+                          "type": "date"
                         },
                         "lastUpdatedDate": {
-                            "type": "date"
+                          "type": "date"
                         },
                         "createdBy": {
-                            "type": "text"
+                          "type": "text"
                         },
                         "lastUpdatedBy": {
-                            "type": "text"
+                          "type": "text"
                         },
                         "code": {
-                            "type": "keyword"
+                          "type": "keyword"
                         },
                         "name": {
-                            "type": "text"
+                          "type": "text"
                         },
                         "description": {
-                            "type": "text"
+                          "type": "text"
                         },
                         "postalCode": {
-                            "type": "text"
+                          "type": "text"
                         },
                         "type": {
-                            "type": "keyword"
-                        },
-                        "parent": {
-                            "type": "nested",
-                            "properties": {
-                                "id": {
-                                    "type": "keyword"
-                                },
-                                "createdDate": {
-                                    "type": "date"
-                                },
-                                "lastUpdatedDate": {
-                                    "type": "date"
-                                },
-                                "createdBy": {
-                                    "type": "text"
-                                },
-                                "lastUpdatedBy": {
-                                    "type": "text"
-                                },
-                                "code": {
-                                    "type": "keyword"
-                                },
-                                "name": {
-                                    "type": "text"
-                                },
-                                "description": {
-                                    "type": "text"
-                                },
-                                "postalCode": {
-                                    "type": "text"
-                                },
-                                "type": {
-                                    "type": "keyword"
-                                },
-                                "parent": {
-                                    "type": "nested",
-                                    "properties": {
-                                        "id": {
-                                            "type": "keyword"
-                                        },
-                                        "createdDate": {
-                                            "type": "date"
-                                        },
-                                        "lastUpdatedDate": {
-                                            "type": "date"
-                                        },
-                                        "createdBy": {
-                                            "type": "text"
-                                        },
-                                        "lastUpdatedBy": {
-                                            "type": "text"
-                                        },
-                                        "code": {
-                                            "type": "keyword"
-                                        },
-                                        "name": {
-                                            "type": "text"
-                                        },
-                                        "description": {
-                                            "type": "text"
-                                        },
-                                        "postalCode": {
-                                            "type": "text"
-                                        },
-                                        "type": {
-                                            "type": "keyword"
-                                        },
-                                        "parent": {
-                                            "type": "nested",
-                                            "properties": {
-                                                "id": {
-                                                    "type": "keyword"
-                                                },
-                                                "createdDate": {
-                                                    "type": "date"
-                                                },
-                                                "lastUpdatedDate": {
-                                                    "type": "date"
-                                                },
-                                                "createdBy": {
-                                                    "type": "text"
-                                                },
-                                                "lastUpdatedBy": {
-                                                    "type": "text"
-                                                },
-                                                "code": {
-                                                    "type": "keyword"
-                                                },
-                                                "name": {
-                                                    "type": "text"
-                                                },
-                                                "description": {
-                                                    "type": "text"
-                                                },
-                                                "postalCode": {
-                                                    "type": "text"
-                                                },
-                                                "type": {
-                                                    "type": "keyword"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                          "type": "keyword"
                         }
+                      }
                     }
+                  }
                 }
+              }
             }
+          }
         }
+      }
     }
+  }
 }

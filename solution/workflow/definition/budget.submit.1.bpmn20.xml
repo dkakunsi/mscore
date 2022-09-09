@@ -5,7 +5,9 @@
     <serviceTask id="svc_initialize_process" name="Initialize Process" activiti:class="com.devit.mscore.workflow.flowable.delegate.InitializeProcess">
       <extensionElements>
         <activiti:field name="organisation">
-          <activiti:string><![CDATA[PDE]]></activiti:string>
+          <activiti:string>
+            <![CDATA[PDE]]>
+          </activiti:string>
         </activiti:field>
       </extensionElements>
     </serviceTask>
@@ -15,7 +17,9 @@
     <serviceTask id="svc_set_status_active" name="Set Status = ACTIVE" activiti:class="com.devit.mscore.workflow.flowable.delegate.SetStatus">
       <extensionElements>
         <activiti:field name="status">
-          <activiti:string><![CDATA[Active]]></activiti:string>
+          <activiti:string>
+            <![CDATA[Active]]>
+          </activiti:string>
         </activiti:field>
       </extensionElements>
     </serviceTask>
@@ -23,13 +27,17 @@
     <serviceTask id="svc_set_status_declined" name="Set Status = DECLINED" activiti:class="com.devit.mscore.workflow.flowable.delegate.SetStatus">
       <extensionElements>
         <activiti:field name="status">
-          <activiti:string><![CDATA[Declined]]></activiti:string>
+          <activiti:string>
+            <![CDATA[Declined]]>
+          </activiti:string>
         </activiti:field>
       </extensionElements>
     </serviceTask>
     <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway" default="declined"></exclusiveGateway>
     <sequenceFlow id="approved" sourceRef="exclusivegateway1" targetRef="svc_set_status_active">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${approved == 'true'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression">
+        <![CDATA[${approved == 'true'}]]>
+      </conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="declined" sourceRef="exclusivegateway1" targetRef="svc_set_status_declined"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
