@@ -15,6 +15,9 @@
 
   <properties>
     <revision>1.0-SNAPSHOT</revision>
+    <unirest.version>3.4.00</unirest.version>
+    <minimum.bundle.line.coverage>0.89</minimum.bundle.line.coverage>
+    <minimum.class.line.coverage>0.89</minimum.class.line.coverage>
   </properties>
 
   <dependencies>
@@ -63,6 +66,13 @@
       <groupId>com.devit.mscore</groupId>
       <artifactId>zookeeper</artifactId>
       <version>${library.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.konghq</groupId>
+      <artifactId>unirest-java</artifactId>
+      <version>${unirest.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

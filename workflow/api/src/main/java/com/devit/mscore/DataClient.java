@@ -1,6 +1,5 @@
-package com.devit.mscore.workflow.flowable;
+package com.devit.mscore;
 
-import com.devit.mscore.ServiceRegistration;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.web.Client;
@@ -16,14 +15,10 @@ public class DataClient {
 
   private final String workflowDomain;
 
-  private final String workflowTaskDomain;
-
   private Map<String, String> uriCache;
 
-  public DataClient(Client client, ServiceRegistration serviceRegistration, String workflowDomain,
-      String workflowTaskDomain) {
+  public DataClient(Client client, ServiceRegistration serviceRegistration, String workflowDomain) {
     this.workflowDomain = workflowDomain;
-    this.workflowTaskDomain = workflowTaskDomain;
     this.uriCache = new HashMap<>();
 
     try {
@@ -44,10 +39,6 @@ public class DataClient {
 
   public String getWorkflowUri() {
     return getUri(this.workflowDomain);
-  }
-
-  public String getTaskUri() {
-    return getUri(this.workflowTaskDomain);
   }
 
   public String getDomainUri(String domain) {

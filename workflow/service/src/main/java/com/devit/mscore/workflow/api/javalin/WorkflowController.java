@@ -3,7 +3,7 @@ package com.devit.mscore.workflow.api.javalin;
 import static com.devit.mscore.util.Utils.VARIABLE;
 
 import com.devit.mscore.Service;
-import com.devit.mscore.WorkflowProcess;
+import com.devit.mscore.WorkflowService;
 import com.devit.mscore.exception.ApplicationException;
 import com.devit.mscore.web.javalin.JavalinController;
 
@@ -24,12 +24,12 @@ public class WorkflowController extends JavalinController {
 
   private static final String NO_WORKFLOW = "No workflow process is registered.";
 
-  private Optional<WorkflowProcess> workflowProcess;
+  private Optional<WorkflowService> workflowProcess;
 
   public WorkflowController(Service service) {
     super(service);
-    if (service instanceof WorkflowProcess) {
-      this.workflowProcess = Optional.of((WorkflowProcess) service);
+    if (service instanceof WorkflowService) {
+      this.workflowProcess = Optional.of((WorkflowService) service);
     } else {
       this.workflowProcess = Optional.empty();
     }

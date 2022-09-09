@@ -18,7 +18,6 @@ import com.devit.mscore.ServiceRegistration;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.ResourceException;
-import com.devit.mscore.web.Client;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,11 +33,7 @@ public class FlowableWorkflowFactoryTest {
 
   private Registry registry;
 
-  private DataClient dataClient;
-
   private ServiceRegistration serviceRegistration;
-
-  private Client client;
 
   private FlowableWorkflowFactory factory;
 
@@ -57,13 +52,8 @@ public class FlowableWorkflowFactoryTest {
     this.serviceRegistration = mock(ServiceRegistration.class);
     doReturn("toBeReturned").when(this.serviceRegistration).get(anyString());
 
-    this.client = mock(Client.class);
-    this.dataClient = new DataClient(this.client, this.serviceRegistration, "workflow", "task");
     this.registry = mock(Registry.class);
-
     this.factory = FlowableWorkflowFactory.of(this.configuration, this.registry);
-    var workflowProcess = factory.workflowProcess(this.dataClient);
-    assertNotNull(workflowProcess);
   }
 
   @Test
@@ -106,6 +96,12 @@ public class FlowableWorkflowFactoryTest {
     assertThat(definition.getName(), is("name"));
     assertThat(definition.getResourceName(), is("resourceName"));
     assertThat(definition.getContent(), is("content"));
+  }
+
+  @Test
+  public void testGetDataSource() throws ConfigException {
+    var dataSource = this.factory.getDataSource();
+    assertNotNull(dataSource);
   }
 
   @Test

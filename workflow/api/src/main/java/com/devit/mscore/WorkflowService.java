@@ -4,6 +4,7 @@ import com.devit.mscore.exception.ProcessException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.json.JSONObject;
 
@@ -12,7 +13,7 @@ import org.json.JSONObject;
  *
  * @author dkakunsi
  */
-public interface WorkflowProcess extends Starter {
+public interface WorkflowService extends Service {
 
   /**
    * Deploy process definition to process engine.
@@ -31,7 +32,7 @@ public interface WorkflowProcess extends Starter {
    * @return proxy of process instance
    * @throws ProcessException error in process update
    */
-  WorkflowObject createInstance(String processDefinitionId, JSONObject entity,
+  WorkflowInstance createInstance(String processDefinitionId, JSONObject entity,
       Map<String, Object> variables) throws ProcessException;
 
   /**
@@ -43,7 +44,7 @@ public interface WorkflowProcess extends Starter {
    * @return proxy of process instance
    * @throws ProcessException error in process update
    */
-  WorkflowObject createInstanceByAction(String action, JSONObject entity,
+  WorkflowInstance createInstanceByAction(String action, JSONObject entity,
       Map<String, Object> variables) throws ProcessException;
 
   /**
@@ -52,7 +53,7 @@ public interface WorkflowProcess extends Starter {
    * @param processInstanceId id
    * @return proxy of process instance.
    */
-  WorkflowObject getInstance(String processInstanceId);
+  Optional<WorkflowInstance> getInstance(String processInstanceId);
 
   /**
    * Retrieve list of tasks.
@@ -60,7 +61,7 @@ public interface WorkflowProcess extends Starter {
    * @param processInstanceId instance id.
    * @return list of task proxies.
    */
-  List<WorkflowObject> getTasks(String processInstanceId);
+  List<WorkflowTask> getTasks(String processInstanceId);
 
   /**
    * Complete the given task and continue the instance.
