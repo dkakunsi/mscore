@@ -28,11 +28,6 @@
     </dependency>
     <dependency>
       <groupId>com.devit.mscore</groupId>
-      <artifactId>flowable-delegate</artifactId>
-      <version>${revision}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.devit.mscore</groupId>
       <artifactId>javalin</artifactId>
       <version>${library.version}</version>
     </dependency>

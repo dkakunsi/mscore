@@ -12,7 +12,6 @@ import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.ProcessException;
 import com.devit.mscore.exception.WebClientException;
 import com.devit.mscore.logging.ApplicationLogger;
-import com.devit.mscore.workflow.flowable.FlowableApplicationContext;
 
 import java.util.HashMap;
 import java.util.Optional;

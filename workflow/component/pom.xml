@@ -37,6 +37,5 @@
 
   <modules>
     <module>flowable</module>
-    <module>delegate</module>
   </modules>
 </project>

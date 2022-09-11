@@ -1,7 +1,7 @@
 package com.devit.mscore.workflow;
 
 import static com.devit.mscore.util.Utils.WORKFLOW;
-import static com.devit.mscore.workflow.flowable.DelegateUtils.NOTIFICATION;
+import static com.devit.mscore.workflow.flowable.delegate.DelegateUtils.NOTIFICATION;
 
 import com.devit.mscore.Configuration;
 import com.devit.mscore.DataClient;
@@ -27,8 +27,8 @@ import com.devit.mscore.util.DateUtils;
 import com.devit.mscore.web.Client;
 import com.devit.mscore.web.jersey.JerseyClientFactory;
 import com.devit.mscore.workflow.api.ApiFactory;
-import com.devit.mscore.workflow.flowable.DelegateUtils;
 import com.devit.mscore.workflow.flowable.FlowableWorkflowFactory;
+import com.devit.mscore.workflow.flowable.delegate.DelegateUtils;
 import com.devit.mscore.workflow.service.WorkflowServiceImpl;
 
 import java.util.HashMap;

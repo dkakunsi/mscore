@@ -1,4 +1,4 @@
-package com.devit.mscore.workflow.flowable;
+package com.devit.mscore.workflow.flowable.delegate;
 
 import com.devit.mscore.Configuration;
 import com.devit.mscore.DataClient;
@@ -28,7 +28,7 @@ public class DelegateUtils {
     configuration = newConfiguration;
   }
 
-  static Publisher getPublisher(String target) {
+  public static Publisher getPublisher(String target) {
     return publisherMap.get(target);
   }
 
@@ -36,7 +36,7 @@ public class DelegateUtils {
     publisherMap = new HashMap<>(publishers);
   }
 
-  static DataClient getDataClient() {
+  public static DataClient getDataClient() {
     return dataClient;
   }
 

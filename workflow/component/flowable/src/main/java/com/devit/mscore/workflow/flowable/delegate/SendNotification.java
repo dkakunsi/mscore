@@ -2,11 +2,10 @@ package com.devit.mscore.workflow.flowable.delegate;
 
 import static com.devit.mscore.ApplicationContext.setContext;
 import static com.devit.mscore.util.AttributeConstants.getId;
-import static com.devit.mscore.workflow.flowable.DelegateUtils.NOTIFICATION;
+import static com.devit.mscore.workflow.flowable.delegate.DelegateUtils.NOTIFICATION;
 
 import com.devit.mscore.Logger;
 import com.devit.mscore.logging.ApplicationLogger;
-import com.devit.mscore.workflow.flowable.FlowableApplicationContext;
 
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;

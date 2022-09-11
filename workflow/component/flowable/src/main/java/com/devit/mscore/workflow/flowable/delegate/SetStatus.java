@@ -5,7 +5,6 @@ import static com.devit.mscore.ApplicationContext.setContext;
 import com.devit.mscore.Logger;
 import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.util.AttributeConstants;
-import com.devit.mscore.workflow.flowable.FlowableApplicationContext;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.api.delegate.Expression;

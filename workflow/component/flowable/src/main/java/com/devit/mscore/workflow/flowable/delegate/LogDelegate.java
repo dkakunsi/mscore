@@ -8,7 +8,7 @@ import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
 
 /**
- * Delegate that print message to log channle.
+ * Delegate that print message to log channel.
  *
  * @author dkakunsi
  */
