@@ -12,15 +12,15 @@ import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.Registry;
+import com.devit.mscore.WorkflowDataSource;
 import com.devit.mscore.exception.ConfigException;
+import com.devit.mscore.exception.ProcessException;
 import com.devit.mscore.exception.ResourceException;
 
 import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Optional;
-
-import javax.sql.DataSource;
 
 import org.json.JSONObject;
 import org.junit.Before;
@@ -43,8 +43,6 @@ public class FlowableTest {
 
   private ApplicationContext context;
 
-  private DataSource dataSource;
-
   @Before
   public void setup() throws ConfigException {
     var configuration = mock(Configuration.class);
@@ -59,25 +57,27 @@ public class FlowableTest {
     doReturn(true).when(configuration).has("workflow.definition.location");
 
     var registry = mock(Registry.class);
-    this.factory = FlowableWorkflowFactory.of(configuration, registry);
+    var dataSource = mock(WorkflowDataSource.class);
+    doReturn(this.pgRule.getEmbeddedPostgres().getPostgresDatabase()).when(dataSource).get();
+    doReturn(WorkflowDataSource.Type.SQL).when(dataSource).getType();
 
+    this.factory = FlowableWorkflowFactory.of(configuration, registry, dataSource);
     this.context = DefaultApplicationContext.of("test");
-    this.dataSource = this.pgRule.getEmbeddedPostgres().getPostgresDatabase();
   }
 
   @Test
-  public void integratedTest() throws ConfigException, URISyntaxException, ResourceException {
+  public void integratedTest() throws ConfigException, URISyntaxException, ResourceException, ProcessException {
     try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
       utilities.when(() -> ApplicationContext.getContext()).thenReturn(this.context);
 
       // deploy definition
-      var definitionRepository = this.factory.definitionRepository(this.dataSource);
+      var definitionRepository = this.factory.definitionRepository();
       var definitionFile = getResource("definition/domain.action.1.bpmn20.xml");
       var definition = new FlowableDefinition(definitionFile);
       definitionRepository.deploy(definition);
 
       // create instance
-      var instanceRepository = this.factory.instanceRepository(this.dataSource);
+      var instanceRepository = this.factory.instanceRepository();
       var definitionIdOpt = definitionRepository.getDefinitionId("domain.action.1.bpmn20.xml");
       assertTrue(definitionIdOpt.isPresent());
       var instance = instanceRepository.create(definitionIdOpt.get(), new JSONObject(VARIABLES).toMap());
@@ -90,7 +90,7 @@ public class FlowableTest {
       assertNotNull(instance);
 
       // check task
-      var taskRepository = this.factory.taskRepository(this.dataSource);
+      var taskRepository = this.factory.taskRepository();
       var tasks = taskRepository.getTasks(instance.getId());
       assertThat(tasks.size(), is(1));
       var task = (FlowableTask) tasks.get(0);

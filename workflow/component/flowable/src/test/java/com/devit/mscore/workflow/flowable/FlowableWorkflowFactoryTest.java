@@ -2,7 +2,6 @@ package com.devit.mscore.workflow.flowable;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -15,6 +14,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Registry;
 import com.devit.mscore.ServiceRegistration;
+import com.devit.mscore.WorkflowDataSource;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.ResourceException;
@@ -30,6 +30,8 @@ import org.junit.Test;
 public class FlowableWorkflowFactoryTest {
 
   private Configuration configuration;
+
+  private WorkflowDataSource<?> dataSource;
 
   private Registry registry;
 
@@ -53,7 +55,8 @@ public class FlowableWorkflowFactoryTest {
     doReturn("toBeReturned").when(this.serviceRegistration).get(anyString());
 
     this.registry = mock(Registry.class);
-    this.factory = FlowableWorkflowFactory.of(this.configuration, this.registry);
+    this.dataSource = mock(WorkflowDataSource.class);
+    this.factory = FlowableWorkflowFactory.of(this.configuration, this.registry, this.dataSource);
   }
 
   @Test
@@ -96,12 +99,6 @@ public class FlowableWorkflowFactoryTest {
     assertThat(definition.getName(), is("name"));
     assertThat(definition.getResourceName(), is("resourceName"));
     assertThat(definition.getContent(), is("content"));
-  }
-
-  @Test
-  public void testGetDataSource() throws ConfigException {
-    var dataSource = this.factory.getDataSource();
-    assertNotNull(dataSource);
   }
 
   @Test

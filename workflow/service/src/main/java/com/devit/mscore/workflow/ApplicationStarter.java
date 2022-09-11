@@ -28,6 +28,7 @@ import com.devit.mscore.web.Client;
 import com.devit.mscore.web.jersey.JerseyClientFactory;
 import com.devit.mscore.workflow.api.ApiFactory;
 import com.devit.mscore.workflow.flowable.FlowableWorkflowFactory;
+import com.devit.mscore.workflow.flowable.datasource.PgDataSource;
 import com.devit.mscore.workflow.flowable.delegate.DelegateUtils;
 import com.devit.mscore.workflow.service.WorkflowServiceImpl;
 
@@ -79,7 +80,8 @@ public class ApplicationStarter implements Starter {
       this.authenticationProvider = JWTAuthenticationProvider.of(this.configuration);
       this.webClient = JerseyClientFactory.of().client();
       this.apiFactory = ApiFactory.of(this.configuration, this.authenticationProvider);
-      this.workflowFactory = FlowableWorkflowFactory.of(this.configuration, this.workflowRegistry);
+      var workflowDataSource = new PgDataSource(this.configuration);
+      this.workflowFactory = FlowableWorkflowFactory.of(this.configuration, this.workflowRegistry, workflowDataSource);
       this.serviceRegistration = new ServiceRegistration(this.zookeeperRegistry, this.configuration);
     } catch (RegistryException ex) {
       throw new ConfigException(ex);

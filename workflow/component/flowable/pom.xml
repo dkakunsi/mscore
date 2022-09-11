@@ -95,6 +95,7 @@
             <exclude>**/FlowableInstance.*</exclude>
             <exclude>**/FlowableTask.*</exclude>
             <exclude>**/delegate/**</exclude>
+            <exclude>**/datasource/**</exclude>
           </excludes>
         </configuration>
       </plugin>
