@@ -16,6 +16,7 @@
   <properties>
     <revision>1.0-SNAPSHOT</revision>
     <mongo.version>3.12.8</mongo.version>
+    <embedded-mongo.version>3.4.9</embedded-mongo.version>
   </properties>
 
   <dependencies>
@@ -23,6 +24,13 @@
       <groupId>org.mongodb</groupId>
       <artifactId>mongo-java-driver</artifactId>
       <version>${mongo.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>de.flapdoodle.embed</groupId>
+      <artifactId>de.flapdoodle.embed.mongo</artifactId>
+      <version>${embedded-mongo.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

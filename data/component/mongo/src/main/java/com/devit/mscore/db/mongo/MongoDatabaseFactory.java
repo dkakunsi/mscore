@@ -5,7 +5,9 @@ import com.devit.mscore.Schema;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.ConfigException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -13,12 +15,13 @@ import org.bson.Document;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
-import com.mongodb.MongoClientSettings.Builder;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
 
 /**
  *
@@ -60,8 +63,34 @@ public class MongoDatabaseFactory {
   public MongoRepository repository(Schema schema) {
     var domain = schema.getDomain();
     this.repositories.computeIfAbsent(domain,
-        key -> new MongoRepository(collection(domain), schema.getUniqueAttributes()));
+        key -> {
+          var collection = collection(domain);
+          var uniqueAttributes = schema.getUniqueAttributes();
+          createIndex(collection, uniqueAttributes);
+          return new MongoRepository(collection);
+        });
     return this.repositories.get(domain);
+  }
+
+  private static void createIndex(MongoCollection<Document> collection, List<String> uniqueAttributes) {
+    var missingIndeces = getMissingIndex(collection, uniqueAttributes);
+    if (!missingIndeces.isEmpty()) {
+      createMissingIndex(collection, missingIndeces);
+    }
+  }
+
+  private static List<String> getMissingIndex(MongoCollection<Document> collection, List<String> uniqueAttributes) {
+    var nonExistingIndex = new ArrayList<String>(uniqueAttributes);
+    for (var index : collection.listIndexes()) {
+      var indexName = index.get("name").toString();
+      nonExistingIndex.remove(indexName);
+    }
+    return nonExistingIndex;
+  }
+
+  private static void createMissingIndex(MongoCollection<Document> collection, List<String> missingIndeces) {
+    var indexOptions = new IndexOptions().unique(true);
+    missingIndeces.forEach(index -> collection.createIndex(Indexes.ascending(index), indexOptions));
   }
 
   public MongoCollection<Document> collection(String collection) {
@@ -80,6 +109,10 @@ public class MongoDatabaseFactory {
     return this.mongoDatabase;
   }
 
+  private String getDatabaseName() throws ConfigException {
+    return getConfig(DATABASE).orElseThrow(() -> new ConfigException("Mongo database is not configured."));
+  }
+
   public MongoClient mongoClient() throws ConfigException {
     if (this.client != null) {
       return this.client;
@@ -87,13 +120,14 @@ public class MongoDatabaseFactory {
 
     var databaseName = getDatabaseName();
     var settingsBuilder = MongoClientSettings.builder();
-    applyAuthentication(settingsBuilder, databaseName, createConnectionString());
-    this.client = MongoClients.create(settingsBuilder.build());
-    return this.client;
-  }
+    settingsBuilder.applyConnectionString(createConnectionString());
 
-  private String getDatabaseName() throws ConfigException {
-    return getConfig(DATABASE).orElseThrow(() -> new ConfigException("Mongo database is not configured."));
+    var isSecure = getIsSecure();
+    if (Boolean.parseBoolean(isSecure)) {
+      settingsBuilder.credential(getCredential(databaseName));
+    }
+
+    return this.client = MongoClients.create(settingsBuilder.build());
   }
 
   protected ConnectionString createConnectionString() throws ConfigException {
@@ -110,19 +144,15 @@ public class MongoDatabaseFactory {
     return getConfig(PORT).orElseThrow(() -> new ConfigException("Mongo port is not configured."));
   }
 
-  protected void applyAuthentication(Builder builder, String databaseName, ConnectionString connectionString)
-      throws ConfigException {
-    var isSecure = getIsSecure();
-    if (Boolean.parseBoolean(isSecure)) {
-      var username = getUsername();
-      var password = getPassword();
-      var credential = MongoCredential.createCredential(username, databaseName, password.toCharArray());
-      builder.applyConnectionString(connectionString).credential(credential);
-    }
-  }
-
   private String getIsSecure() throws ConfigException {
     return getConfig(SECURE).orElse("false");
+  }
+
+  protected MongoCredential getCredential(String databaseName)
+      throws ConfigException {
+    var username = getUsername();
+    var password = getPassword();
+    return MongoCredential.createCredential(username, databaseName, password.toCharArray());
   }
 
   private String getUsername() throws ConfigException {
@@ -136,10 +166,5 @@ public class MongoDatabaseFactory {
   private Optional<String> getConfig(String key) throws ConfigException {
     var configName = String.format(CONFIG_TEMPLATE, key);
     return this.configuration.getConfig(configName);
-  }
-
-  // TODO remove this after implementing embedded-mongo for testing.
-  public void setMongoClient(MongoClient mongoClient) {
-    this.client = mongoClient;
   }
 }

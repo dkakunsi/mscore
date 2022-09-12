@@ -12,7 +12,6 @@ import com.devit.mscore.exception.DataDuplicationException;
 import com.devit.mscore.exception.DataException;
 import com.devit.mscore.logging.ApplicationLogger;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,10 +23,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.mongodb.DuplicateKeyException;
+import com.mongodb.MongoWriteException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.IndexOptions;
-import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
 
 /**
@@ -43,28 +42,13 @@ public class MongoRepository implements Repository {
 
   private static final String MONGO_ID = "_id";
 
+  private static final String DUPLICATE_MESSAGE = "E11000 duplicate key error";
+
   protected MongoCollection<Document> collection;
 
-  MongoRepository(MongoCollection<Document> collection, List<String> uniqueAttributes) {
+  MongoRepository(MongoCollection<Document> collection) {
     super();
     this.collection = collection;
-    createIndex(collection, uniqueAttributes);
-  }
-
-  private void createIndex(MongoCollection<Document> collection, List<String> uniqueAttributes) {
-    var nonExistIndeces = new ArrayList<>(uniqueAttributes);
-    for (var index : collection.listIndexes()) {
-      var indexName = index.get("name");
-      if (nonExistIndeces.contains(indexName)) {
-        nonExistIndeces.remove(indexName);
-      }
-    }
-
-    if (!nonExistIndeces.isEmpty()) {
-      LOG.info("Creating indeces for: {}", nonExistIndeces);
-      var indexOptions = new IndexOptions().unique(true);
-      nonExistIndeces.forEach(index -> this.collection.createIndex(Indexes.ascending(index), indexOptions));
-    }
   }
 
   @Override
@@ -91,8 +75,14 @@ public class MongoRepository implements Repository {
       return target;
     } catch (DuplicateKeyException ex) {
       throw new DataDuplicationException("Key is duplicated", ex);
+    } catch (MongoWriteException ex) {
+      if (ex.getMessage().contains(DUPLICATE_MESSAGE)) {
+        throw new DataDuplicationException("Key is duplicated", ex);
+      } else {
+        throw new DataException(ex);
+      }
     } catch (Exception ex) {
-      throw new DataException(ex.getMessage(), ex);
+      throw new DataException(ex);
     }
   }
 
@@ -104,10 +94,10 @@ public class MongoRepository implements Repository {
     return getId(json);
   }
 
-  private Document toDocument(JSONObject target) {
-    var document = new Document(target.toMap());
-    if (target.has(MONGO_ID)) {
-      document.put(MONGO_ID, new ObjectId(target.getString(MONGO_ID)));
+  private Document toDocument(JSONObject source) {
+    var document = new Document(source.toMap());
+    if (source.has(MONGO_ID)) {
+      document.put(MONGO_ID, new ObjectId(source.getString(MONGO_ID)));
     }
     return document;
   }
@@ -135,14 +125,15 @@ public class MongoRepository implements Repository {
 
   @Override
   public Optional<JSONArray> find(String field, Object value) {
-    var result = this.collection.find(new Document(field, value));
+    var filter = Filters.eq(field, value);
+    var result = this.collection.find(filter);
     return loadResult(result);
   }
 
   @Override
   public Optional<JSONArray> find(List<String> keys) {
-    var query = new Document(ID, keys);
-    var result = this.collection.find(query);
+    var filter = Filters.in(ID, keys);
+    var result = this.collection.find(filter);
     return loadResult(result);
   }
 
@@ -164,7 +155,6 @@ public class MongoRepository implements Repository {
   }
 
   private JSONObject toJson(Document document, boolean removeMongoId) {
-
     if (removeMongoId) {
       document.remove(MONGO_ID);
     } else {
