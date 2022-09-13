@@ -32,6 +32,10 @@ public class KafkaMessagingFactory {
 
   private static final String SERVICE_CONFIG_TEMPLATE = "services.%s.kafka.%s";
 
+  private static final String POLL_INTERVAL = "poll.interval";
+
+  private static final String DEFAULT_POLL_INTERVAL = "10000";
+
   private static final List<String> PRODUCER_CONFIG_OPTIONS = Arrays.asList(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
       ProducerConfig.ACKS_CONFIG, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
       ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG);
@@ -113,7 +117,13 @@ public class KafkaMessagingFactory {
   protected Properties getProperties(List<String> configOptions) {
     var properties = new Properties();
     properties.setProperty(this.kafkaClientId.getKey(), this.kafkaClientId.getValue());
-    configOptions.forEach(option -> properties.put(option, getTemplatedConfig(option).orElse(null)));
+    configOptions.forEach(option -> {
+      try {
+        properties.put(option, getTemplatedConfig(option).orElseThrow(() -> new ConfigException("No config for " + option)));
+      } catch (ConfigException ex) {
+        throw new ApplicationRuntimeException(ex);
+      }
+    });
     return properties;
   }
 
@@ -157,9 +167,15 @@ public class KafkaMessagingFactory {
     return Optional.of(result.split(","));
   }
 
+  private long getPollInterval() {
+    var opt = getTemplatedConfig(POLL_INTERVAL);
+    var pollInterval = opt.orElse(DEFAULT_POLL_INTERVAL);
+    return Long.valueOf(pollInterval);
+  }
+
   public KafkaSubscriber subscriber() {
     if (this.kafkaSubscriber == null) {
-      this.kafkaSubscriber = new KafkaSubscriber(consumer());
+      this.kafkaSubscriber = new KafkaSubscriber(consumer(), getPollInterval());
     }
     return this.kafkaSubscriber;
   }

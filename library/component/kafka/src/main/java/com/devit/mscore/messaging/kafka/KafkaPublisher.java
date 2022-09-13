@@ -56,11 +56,11 @@ public class KafkaPublisher implements Publisher {
     }
 
     // @formatter:off
-        var headers = buildHeader();
-        LOG.debug("Publishing message to topic {}. Headers: {}. Message: {}", this.topic, headers, json);
-        var producerRecord = new ProducerRecord<String, String>(this.topic, null, getId(json), json.toString(), headers);
-        this.producer.send(producerRecord);
-        // @formatter:on
+    var headers = buildHeader();
+    LOG.debug("Publishing message to topic {}. Headers: {}. Message: {}", this.topic, headers, json);
+    var producerRecord = new ProducerRecord<String, String>(this.topic, null, getId(json), json.toString(), headers);
+    this.producer.send(producerRecord);
+    // @formatter:on
   }
 
   private static List<Header> buildHeader() {

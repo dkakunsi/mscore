@@ -18,16 +18,17 @@ public class KafkaSubscriber implements Subscriber {
 
   private static final Logger LOG = ApplicationLogger.getLogger(KafkaSubscriber.class);
 
-  private static final Duration POLL_DURATION = Duration.ofMillis(10000);
-
   private Consumer<String, String> consumer;
 
   private Map<String, java.util.function.Consumer<JSONObject>> topicHandlers;
 
   private boolean consuming;
 
-  KafkaSubscriber(Consumer<String, String> consumer) {
+  private long pollDuration;
+
+  KafkaSubscriber(Consumer<String, String> consumer, long pollDuration) {
     this.consumer = consumer;
+    this.pollDuration = pollDuration;
     this.topicHandlers = new HashMap<>();
   }
 
@@ -38,8 +39,8 @@ public class KafkaSubscriber implements Subscriber {
 
   @Override
   public void subscribe(String topic, java.util.function.Consumer<JSONObject> handler) {
-    LOG.info("Registering kafka consumer for topic {}", topic);
     this.topicHandlers.put(topic, handler);
+    LOG.info("Registering kafka consumer for topic {}", topic);
   }
 
   @Override
@@ -49,7 +50,7 @@ public class KafkaSubscriber implements Subscriber {
 
     new Thread(() -> {
       while (consuming) {
-        var records = this.consumer.poll(POLL_DURATION);
+        var records = this.consumer.poll(Duration.ofMillis(this.pollDuration));
         records.forEach(this::handleMessage);
       }
     }).start();
