@@ -1,5 +1,7 @@
 package com.devit.mscore.messaging.kafka;
 
+import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
+import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -7,12 +9,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+
+import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Configuration;
+import com.devit.mscore.DefaultApplicationContext;
+import com.devit.mscore.exception.ConfigException;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -20,10 +30,26 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+
+import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
+import net.mguenther.kafka.junit.SendValues;
 
 public class KafkaSubscriberTest {
+
+  private static final String TEST_TOPIC = "testing";
+
+  private EmbeddedKafkaCluster kafka;
+
+  private KafkaMessagingFactory factory;
+
+  private Configuration configuration;
+
+  private ApplicationContext context;
 
   private KafkaSubscriber subscriber;
 
@@ -31,13 +57,65 @@ public class KafkaSubscriberTest {
 
   @SuppressWarnings("unchecked")
   @Before
-  public void setup() {
+  public void setup() throws ConfigException {
+    this.kafka = provisionWith(defaultClusterConfig());
+    this.kafka.start();
+
+    this.configuration = mock(Configuration.class);
+    doReturn("test").when(this.configuration).getServiceName();
+    doReturn(Optional.of("test")).when(this.configuration).getConfig("services.test.kafka.group.id");
+    doReturn(Optional.of("localhost:9092")).when(this.configuration).getConfig("platform.kafka.bootstrap.servers");
+    doReturn(Optional.of("1")).when(this.configuration).getConfig("platform.kafka.acks");
+    doReturn(Optional.of("org.apache.kafka.common.serialization.StringSerializer")).when(this.configuration)
+        .getConfig("platform.kafka.key.serializer");
+    doReturn(Optional.of("org.apache.kafka.common.serialization.StringSerializer")).when(this.configuration)
+        .getConfig("platform.kafka.value.serializer");
+    doReturn(Optional.of("true")).when(this.configuration).getConfig("platform.kafka.enable.auto.commit");
+    doReturn(Optional.of("10000")).when(this.configuration).getConfig("platform.kafka.auto.commit.interval.ms");
+    doReturn(Optional.of("1000")).when(this.configuration).getConfig("platform.kafka.poll.interval");
+    doReturn(Optional.of("org.apache.kafka.common.serialization.StringDeserializer")).when(this.configuration)
+        .getConfig("platform.kafka.key.deserializer");
+    doReturn(Optional.of("org.apache.kafka.common.serialization.StringDeserializer")).when(this.configuration)
+        .getConfig("platform.kafka.value.deserializer");
+    doReturn(Optional.of(TEST_TOPIC)).when(this.configuration).getConfig("platform.kafka.topic.testing");
+
+    this.factory = KafkaMessagingFactory.of(this.configuration);
     this.consumer = mock(Consumer.class);
-    this.subscriber = new KafkaSubscriber(consumer);
+    this.subscriber = new KafkaSubscriber(consumer, 1000);
+    this.context = DefaultApplicationContext.of("test");
+  }
+
+  @After
+  public void tearDown() {
+    this.kafka.stop();
+    this.kafka = null;
+  }
+
+  class Checker {
+    boolean check(String valueToCheck) {
+      return StringUtils.isNotBlank(valueToCheck);
+    }
   }
 
   @Test
-  public void testSubscribe() {
+  public void testSubscribe() throws InterruptedException {
+    try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+      utilities.when(() -> ApplicationContext.getContext()).thenReturn(this.context);
+
+      var checker = spy(new Checker());
+
+      var subscriber = this.factory.subscriber();
+      subscriber.subscribe(TEST_TOPIC, theMessage -> {
+        checker.check(theMessage.getString("id"));
+      });
+      subscriber.start();
+
+      this.kafka.send(SendValues.to(TEST_TOPIC, "{\"id\":\"id\"}"));
+    }
+  }
+
+  @Test
+  public void testGetChannel() {
     java.util.function.Consumer<JSONObject> consumer = json -> {
     };
     this.subscriber.subscribe("topic", consumer);

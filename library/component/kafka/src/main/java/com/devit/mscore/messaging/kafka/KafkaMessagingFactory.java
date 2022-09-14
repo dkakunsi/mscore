@@ -95,23 +95,14 @@ public class KafkaMessagingFactory {
     return this.producer;
   }
 
-  // TODO remove this after implementing embedded-kafka for testing.
-  void setProducer(Producer<String, String> producer) {
-    this.producer = producer;
-  }
-
   public Consumer<String, String> consumer() {
     if (this.consumer == null) {
       var properties = getProperties(CONSUMER_CONFIG_OPTIONS);
       properties.setProperty(this.kafkaGroupId.getKey(), this.kafkaGroupId.getValue());
+      properties.setProperty(this.kafkaClientId.getKey(), "consumer" + this.kafkaClientId.getValue());
       this.consumer = new KafkaConsumer<>(properties);
     }
     return this.consumer;
-  }
-
-  // TODO remove this after implementing embedded-kafka for testing.
-  void setConsumer(Consumer<String, String> consumer) {
-    this.consumer = consumer;
   }
 
   protected Properties getProperties(List<String> configOptions) {
@@ -167,7 +158,7 @@ public class KafkaMessagingFactory {
     return Optional.of(result.split(","));
   }
 
-  private long getPollInterval() {
+  private Long getPollInterval() {
     var opt = getTemplatedConfig(POLL_INTERVAL);
     var pollInterval = opt.orElse(DEFAULT_POLL_INTERVAL);
     return Long.valueOf(pollInterval);

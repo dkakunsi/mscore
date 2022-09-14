@@ -15,7 +15,7 @@
 
   <properties>
     <revision>1.0-SNAPSHOT</revision>
-    <kafka.version>3.0.0</kafka.version>
+    <kafka.version>3.2.0</kafka.version>
     <minimum.bundle.line.coverage>0.88</minimum.bundle.line.coverage>
   </properties>
 
@@ -28,6 +28,11 @@
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-clients</artifactId>
+      <version>${kafka.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.mguenther.kafka</groupId>
+      <artifactId>kafka-junit</artifactId>
       <version>${kafka.version}</version>
     </dependency>
   </dependencies>

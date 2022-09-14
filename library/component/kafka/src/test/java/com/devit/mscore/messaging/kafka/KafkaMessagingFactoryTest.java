@@ -14,8 +14,6 @@ import com.devit.mscore.exception.ConfigException;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.producer.Producer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -73,24 +71,5 @@ public class KafkaMessagingFactoryTest {
     var key = "services.data.kafka.topic.dependency";
     var topics = this.factory.getTopics(key);
     assertThat(topics.get().length, is(2));
-  }
-
-  @SuppressWarnings("unchecked")
-  @Test
-  public void testGetPublisher() throws ConfigException {
-    doReturn(Optional.of("topic.name")).when(this.configuration).getConfig("platform.kafka.topic.name");
-    var producer = mock(Producer.class);
-    this.factory.setProducer(producer);
-    var publisher = this.factory.publisher("name");
-    assertNotNull(publisher);
-  }
-
-  @SuppressWarnings("unchecked")
-  @Test
-  public void testGetSubscriber() {
-    var consumer = mock(Consumer.class);
-    this.factory.setConsumer(consumer);
-    var subscriber = this.factory.subscriber();
-    assertNotNull(subscriber);
   }
 }

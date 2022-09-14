@@ -45,7 +45,8 @@ public class KafkaSubscriber implements Subscriber {
 
   @Override
   public void start() {
-    this.consumer.subscribe(this.topicHandlers.keySet());
+    var topics = this.topicHandlers.keySet();
+    this.consumer.subscribe(topics);
     this.consuming = true;
 
     new Thread(() -> {
