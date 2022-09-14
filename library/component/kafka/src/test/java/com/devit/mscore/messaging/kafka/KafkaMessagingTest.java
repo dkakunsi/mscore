@@ -4,6 +4,7 @@ import static net.mguenther.kafka.junit.EmbeddedKafkaCluster.provisionWith;
 import static net.mguenther.kafka.junit.EmbeddedKafkaClusterConfig.defaultClusterConfig;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,9 +38,10 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import net.mguenther.kafka.junit.EmbeddedKafkaCluster;
+import net.mguenther.kafka.junit.ObserveKeyValues;
 import net.mguenther.kafka.junit.SendValues;
 
-public class KafkaSubscriberTest {
+public class KafkaMessagingTest {
 
   private static final String TEST_TOPIC = "testing";
 
@@ -115,7 +117,7 @@ public class KafkaSubscriberTest {
   }
 
   @Test
-  public void testGetChannel() {
+  public void testGetConsumerChannel() {
     java.util.function.Consumer<JSONObject> consumer = json -> {
     };
     this.subscriber.subscribe("topic", consumer);
@@ -166,5 +168,41 @@ public class KafkaSubscriberTest {
 
     assertNotNull(result.get("json"));
     assertThat(result.getJSONObject("json").getString("id"), is("id"));
+  }
+
+  @Test
+  public void testGetPublisherChannel() {
+    var publisher = this.factory.publisher(TEST_TOPIC);
+    assertThat(publisher.getChannel(), is(TEST_TOPIC));
+  }
+
+  @Test
+  public void testPublish() throws InterruptedException {
+    try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+      utilities.when(() -> ApplicationContext.getContext()).thenReturn(this.context);
+
+      var publisher = this.factory.publisher(TEST_TOPIC);
+      var message = "{\"id\":\"id\"}";
+      publisher.publish(new JSONObject(message));
+
+      var records = this.kafka.observe(ObserveKeyValues.on(TEST_TOPIC, 1));
+      assertThat(records.size(), greaterThan(0));
+      assertThat(records.get(0).getValue(), is(message));
+    }
+  }
+
+  @Test
+  public void testPublish_EmptyJson() throws InterruptedException {
+    try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+      utilities.when(() -> ApplicationContext.getContext())
+          .thenReturn(this.context);
+
+      var testTopic = "testing";
+      var publisher = this.factory.publisher(testTopic);
+      publisher.publish(new JSONObject());
+
+      var records = this.kafka.observe(ObserveKeyValues.on(TEST_TOPIC, 0));
+      assertThat(records.size(), is(0));
+    }
   }
 }
