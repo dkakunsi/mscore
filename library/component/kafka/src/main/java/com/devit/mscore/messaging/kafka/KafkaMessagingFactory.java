@@ -99,7 +99,7 @@ public class KafkaMessagingFactory {
     if (this.consumer == null) {
       var properties = getProperties(CONSUMER_CONFIG_OPTIONS);
       properties.setProperty(this.kafkaGroupId.getKey(), this.kafkaGroupId.getValue());
-      properties.setProperty(this.kafkaClientId.getKey(), "consumer" + this.kafkaClientId.getValue());
+      properties.setProperty(this.kafkaClientId.getKey(), this.kafkaClientId.getValue());
       this.consumer = new KafkaConsumer<>(properties);
     }
     return this.consumer;
