@@ -15,7 +15,8 @@ public final class Event {
   public static enum Type {
     CREATE("create"),
     UPDATE("update"),
-    REMOVE("remove");
+    REMOVE("remove"),
+    COMPLETE("complete");
 
     private String name;
 
@@ -70,6 +71,12 @@ public final class Event {
 
   public JSONObject getData() {
     return new JSONObject(this.data.toMap());
+  }
+
+  public boolean isDomainEvent() {
+    return Type.CREATE.equals(this.type)
+    || Type.UPDATE.equals(this.type)
+    || Type.REMOVE.equals(this.type);
   }
 
   public JSONObject toJson() {
