@@ -56,6 +56,14 @@ public final class Event {
     }
   }
 
+  public String getDomain() {
+    return this.domain;
+  }
+
+  public Type getType() {
+    return this.type;
+  }
+
   public String getAction() {
     return String.format("%s.%s", this.domain, this.type);
   }

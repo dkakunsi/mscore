@@ -26,6 +26,8 @@ public class EventTest {
     assertThat(event.getAction(), is("domain.create"));
     assertTrue(event.getData().similar(jsonData));
     assertTrue(event.toJson().similar(json));
+    assertThat(event.getType(), is(Event.Type.CREATE));
+    assertThat(event.getDomain(), is("domain"));
   }
 
   @Test
