@@ -42,7 +42,12 @@ public class JavalinController implements Cloneable {
     this.synchronizer = synchronizer;
   }
 
+  @Deprecated
   public String getDomain() {
+    return getBasePath();
+  }
+
+  public String getBasePath() {
     return this.service.getDomain();
   }
 

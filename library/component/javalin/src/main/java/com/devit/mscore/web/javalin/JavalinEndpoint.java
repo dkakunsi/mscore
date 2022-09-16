@@ -40,7 +40,7 @@ public class JavalinEndpoint implements Endpoint {
 
   public List<EndpointGroup> getEndpoints() {
     var endpoints = new ArrayList<EndpointGroup>();
-    endpoints.add(() -> path(this.controller.getDomain(), () -> {
+    endpoints.add(() -> path(this.controller.getBasePath(), () -> {
       post(this.controller.post());
       post("search", this.controller.search());
       post("sync", this.controller.syncAll());
