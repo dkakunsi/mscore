@@ -44,11 +44,11 @@ public class JavalinController implements Cloneable {
 
   @Deprecated
   public String getDomain() {
-    return getBasePath();
+    return this.service.getDomain();
   }
 
   public String getBasePath() {
-    return this.service.getDomain();
+    return getDomain();
   }
 
   public Handler post() {
