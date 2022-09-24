@@ -19,7 +19,7 @@ public class WorkflowEndpoint extends JavalinEndpoint {
   @Override
   public List<EndpointGroup> getEndpoints() {
     WorkflowController workflowController = (WorkflowController) this.controller;
-    return List.of(() -> path(this.controller.getDomain(), () -> {
+    return List.of(() -> path(this.controller.getBasePath(), () -> {
       post("definition/:" + WorkflowController.DEFINITION_ID, workflowController.createInstance());
       post("instance/:" + WorkflowController.ACTION, workflowController.createInstanceByAction());
       put("task/:" + WorkflowController.TASK_ID, workflowController.completeTask());
