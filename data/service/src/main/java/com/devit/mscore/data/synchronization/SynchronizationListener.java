@@ -11,6 +11,8 @@ import com.devit.mscore.logging.ApplicationLogger;
 
 import org.json.JSONObject;
 
+@Deprecated(forRemoval = true)
+// TODO: Remove this listener once event stream is implemented
 public class SynchronizationListener extends Listener {
 
   private static final Logger LOG = ApplicationLogger.getLogger(SynchronizationListener.class);
