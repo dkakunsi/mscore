@@ -4,9 +4,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import com.devit.mscore.Event;
@@ -63,6 +65,25 @@ public class EventListenerTest {
     verify(domainService).delete(argumentCaptor.capture());
     var argument = argumentCaptor.getValue();
     assertTrue("id".equals(argument));
+  }
+
+  @Test
+  public void testListeningToTaskCompleteEvent() throws ApplicationException {
+    var subscriber = mock(Subscriber.class);
+    var domainService = mock(Service.class);
+    var services = Map.of("domain", domainService);
+    var eventListener = EventListener.of(subscriber, services);
+
+    var message = new JSONObject();
+    message.put(Event.EVENT, "complete");
+    message.put(Event.DOMAIN, "domain");
+    var jsonData = new JSONObject("{\"id\":\"id\"}");
+    message.put(Event.DATA, jsonData);
+
+    eventListener.consume(message);
+
+    verify(domainService, never()).delete(any());
+    verify(domainService, never()).save(any());
   }
 
   @Test
