@@ -9,6 +9,7 @@ import com.devit.mscore.Logger;
 import com.devit.mscore.Registry;
 import com.devit.mscore.ResourceManager;
 import com.devit.mscore.Schema;
+import com.devit.mscore.Service;
 import com.devit.mscore.ServiceRegistration;
 import com.devit.mscore.Starter;
 import com.devit.mscore.Validation;
@@ -21,8 +22,8 @@ import com.devit.mscore.data.enrichment.IndexEnrichment;
 import com.devit.mscore.data.filter.FilterFactory;
 import com.devit.mscore.data.observer.IndexingObserver;
 import com.devit.mscore.data.observer.PublishingObserver;
+import com.devit.mscore.data.observer.SynchronizationObserver;
 import com.devit.mscore.data.service.DefaultService;
-import com.devit.mscore.data.synchronization.SynchronizationListener;
 import com.devit.mscore.data.synchronization.SynchronizationsExecutor;
 import com.devit.mscore.data.validation.ValidationsExecutor;
 import com.devit.mscore.db.mongo.MongoDatabaseFactory;
@@ -49,7 +50,7 @@ public class ApplicationStarter implements Starter {
 
   private static final Logger LOGGER = ApplicationLogger.getLogger(ApplicationStarter.class);
 
-  private static final String DEPENDENCY = "services.%s.kafka.topic.dependency";
+  private static final String EVENT_TOPIC = "platform.kafka.topic.domain";
 
   private static final String TIMEZONE = "platform.service.timezone";
 
@@ -130,6 +131,8 @@ public class ApplicationStarter implements Starter {
 
     var filter = filterFactory.filters(this.configuration);
     var registration = new ServiceRegistration(this.serviceRegistry, this.configuration);
+    var services = new HashMap<String, Service>();
+    var syncObserver = new SynchronizationObserver();
 
     // Generate service and it's dependencies from schema.
     var delay = getPublishingDelay();
@@ -146,24 +149,28 @@ public class ApplicationStarter implements Starter {
       var service = new DefaultService(schema, repository, index, this.validationsExecutor, filter,
           this.enrichmentsExecutor)
           .addObserver(indexingObserver)
-          .addObserver(publishingObserver);
+          .addObserver(publishingObserver)
+          .addObserver(syncObserver);
 
       apiFactory.add(service);
       registration.register(service);
 
+      services.put(service.getDomain(), service);
       this.synchronizationsExecutor.add(service);
     }
+
+    syncObserver.setExecutor(this.synchronizationsExecutor);
 
     for (var schema : schemaManager.getSchemas()) {
       createEnrichment(schema, this.enrichmentsExecutor, this.indices);
     }
 
     // Create listener
-    var syncTopics = messagingFactory.getTopics(String.format(DEPENDENCY, configuration.getServiceName()));
-    if (syncTopics.isPresent()) {
+    var eventTopic = messagingFactory.getTopics(EVENT_TOPIC);
+    if (eventTopic.isPresent()) {
       var subscriber = messagingFactory.subscriber();
-      var syncListener = new SynchronizationListener(subscriber, this.synchronizationsExecutor);
-      syncListener.listen(syncTopics.get());
+      var eventListener = EventListener.of(subscriber, services);
+      eventListener.listen(eventTopic.get());
     }
 
     // Start API server
