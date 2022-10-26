@@ -42,6 +42,8 @@ public class ApplicationStarter implements Starter {
 
   private static final String TIMEZONE = "platform.service.timezone";
 
+  private static final String EVENT_TOPIC = "platform.kafka.topic.domain";
+
   private String serviceName;
 
   private Registry zookeeperRegistry;
@@ -106,6 +108,14 @@ public class ApplicationStarter implements Starter {
 
     for (var definition : this.workflowFactory.getDefinitions()) {
       workflowService.deployDefinition(definition);
+    }
+
+    // Create listener
+    var eventTopic = messagingFactory.getTopics(EVENT_TOPIC);
+    if (eventTopic.isPresent()) {
+      var subscriber = messagingFactory.subscriber();
+      var eventListener = EventListener.of(subscriber, workflowService);
+      eventListener.listen(eventTopic.get());
     }
 
     // Start service
