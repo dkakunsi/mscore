@@ -114,7 +114,7 @@ public class WorkflowServiceImpl implements WorkflowService {
   private void sync(WorkflowInstance instance, Event.Type eventType) {
     var tasks = this.taskRepository.getTasks(instance.getId());
     var jsonData = instance.toJson(tasks);
-    var event = Event.of(eventType, "workflow", jsonData);
+    var event = Event.of(eventType, WORKFLOW, jsonData);
     var message = event.toJson();
     publisher.publish(message);
   }
