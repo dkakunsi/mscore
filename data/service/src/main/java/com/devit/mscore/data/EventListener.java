@@ -41,8 +41,10 @@ public class EventListener extends Listener {
     try {
       if (Event.Type.CREATE.equals(event.getType()) || Event.Type.UPDATE.equals(event.getType())) {
         service.save(event.getData());
-      } else {
+      } else if (Event.Type.REMOVE.equals(event.getType())) {
         service.delete(getId(event.getData()));
+      } else {
+        LOGGER.info("Cannot process event type: {}", event.getType());
       }
     } catch (ApplicationException ex) {
       LOGGER.error("Fail processing the event.", ex);

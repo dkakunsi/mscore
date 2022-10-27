@@ -1,5 +1,6 @@
 package com.devit.mscore.workflow;
 
+import static com.devit.mscore.util.AttributeConstants.DOMAIN;
 import static com.devit.mscore.util.Utils.WORKFLOW;
 import static com.devit.mscore.workflow.flowable.delegate.DelegateUtils.NOTIFICATION;
 
@@ -32,7 +33,7 @@ import com.devit.mscore.workflow.flowable.datasource.PgDataSource;
 import com.devit.mscore.workflow.flowable.delegate.DelegateUtils;
 import com.devit.mscore.workflow.service.WorkflowServiceImpl;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class ApplicationStarter implements Starter {
 
@@ -41,6 +42,8 @@ public class ApplicationStarter implements Starter {
   private static final String WORKFLOW_DOMAIN = "services.%s.domain.workflow";
 
   private static final String TIMEZONE = "platform.service.timezone";
+
+  private static final String EVENT_TOPIC = "platform.kafka.topic.domain";
 
   private String serviceName;
 
@@ -93,8 +96,10 @@ public class ApplicationStarter implements Starter {
     registerResource(this.workflowFactory);
 
     // Create publisher
-    var publishers = new HashMap<String, Publisher>();
-    publishers.put(NOTIFICATION, this.messagingFactory.publisher(NOTIFICATION));
+    var notificationPublisher = this.messagingFactory.publisher(NOTIFICATION);
+    var domainEventPublisher = this.messagingFactory.publisher(DOMAIN);
+
+    Map<String, Publisher> publishers = Map.of(NOTIFICATION, notificationPublisher, DOMAIN, domainEventPublisher);
 
     var workflowDomain = getWorkflowDomain(WORKFLOW_DOMAIN);
     var dataClient = new DataClient(this.webClient, this.serviceRegistration, workflowDomain);
@@ -102,10 +107,19 @@ public class ApplicationStarter implements Starter {
     var definitionRepository = this.workflowFactory.definitionRepository();
     var instanceRepository = this.workflowFactory.instanceRepository();
     var taskRepository = this.workflowFactory.taskRepository();
-    var workflowService = new WorkflowServiceImpl(this.workflowRegistry, dataClient, definitionRepository, instanceRepository, taskRepository);
+    var workflowService = new WorkflowServiceImpl(this.workflowRegistry, domainEventPublisher, definitionRepository,
+        instanceRepository, taskRepository);
 
     for (var definition : this.workflowFactory.getDefinitions()) {
       workflowService.deployDefinition(definition);
+    }
+
+    // Create listener
+    var eventTopic = messagingFactory.getTopics(EVENT_TOPIC);
+    if (eventTopic.isPresent()) {
+      var subscriber = messagingFactory.subscriber();
+      var eventListener = EventListener.of(subscriber, workflowService);
+      eventListener.listen(eventTopic.get());
     }
 
     // Start service

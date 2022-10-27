@@ -48,6 +48,11 @@
       <artifactId>log4j</artifactId>
       <version>${library.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.devit.mscore</groupId>
+      <artifactId>kafka</artifactId>
+      <version>${library.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

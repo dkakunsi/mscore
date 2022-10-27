@@ -114,7 +114,9 @@ public class DefaultService implements Service, Synchronizer {
     try {
       this.enricher.execute(json);
       this.filter.execute(json);
-      this.observers.forEach(observer -> observer.notify(result));
+      this.observers.forEach(observer -> new Thread(() -> {
+        observer.notify(result);
+      }).start());
       return getId(result);
     } catch (JSONException e) {
       throw new ApplicationException(e);

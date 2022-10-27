@@ -1,6 +1,8 @@
 package com.devit.mscore.messaging.kafka;
 
 import com.devit.mscore.Configuration;
+import com.devit.mscore.Publisher;
+import com.devit.mscore.Subscriber;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.ConfigException;
 
@@ -164,14 +166,14 @@ public class KafkaMessagingFactory {
     return Long.valueOf(pollInterval);
   }
 
-  public KafkaSubscriber subscriber() {
+  public Subscriber subscriber() {
     if (this.kafkaSubscriber == null) {
       this.kafkaSubscriber = new KafkaSubscriber(consumer(), getPollInterval());
     }
     return this.kafkaSubscriber;
   }
 
-  public KafkaPublisher publisher(String name) {
+  public Publisher publisher(String name) {
     this.kafkaPublishers.computeIfAbsent(name, publisherName -> {
       try {
         var topic = getTemplatedTopics(publisherName)

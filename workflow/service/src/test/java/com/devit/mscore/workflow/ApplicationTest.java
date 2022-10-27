@@ -7,14 +7,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.devit.mscore.Configuration;
-import com.devit.mscore.DataClient;
+import com.devit.mscore.Publisher;
 import com.devit.mscore.Registry;
 import com.devit.mscore.Service;
 import com.devit.mscore.WorkflowDefinitionRepository;
@@ -25,7 +24,6 @@ import com.devit.mscore.WorkflowTaskRepository;
 import com.devit.mscore.exception.ApplicationException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.WebClientException;
-import com.devit.mscore.web.Client;
 import com.devit.mscore.workflow.api.ApiFactory;
 import com.devit.mscore.workflow.service.WorkflowServiceImpl;
 
@@ -52,25 +50,21 @@ public class ApplicationTest {
 
   private Registry registry;
 
-  private Client client;
+  private Publisher publisher;
 
   @Before
   public void setup() throws Exception {
     this.configuration = mock(Configuration.class);
     doReturn("workflow").when(configuration).getServiceName();
 
+    this.publisher = mock(Publisher.class);
     this.definitionRepository = mock(WorkflowDefinitionRepository.class);
     this.instanceRepository = mock(WorkflowInstanceRepository.class);
     this.taskRepository = mock(WorkflowTaskRepository.class);
     this.registry = mock(Registry.class);
     doReturn(this.registry).when(registry).clone();
 
-    this.client = mock(Client.class);
-    var dataClient = mock(DataClient.class);
-    doReturn(this.client).when(dataClient).getClient();
-    doReturn("http://data/workflow").when(dataClient).getWorkflowUri();
-
-    var service = new WorkflowServiceImpl(registry, dataClient, definitionRepository, instanceRepository,
+    var service = new WorkflowServiceImpl(registry, this.publisher, definitionRepository, instanceRepository,
         taskRepository);
 
     this.apiFactory = ApiFactory.of(this.configuration, null);
@@ -88,7 +82,7 @@ public class ApplicationTest {
     var baseUrl = "http://localhost:12000";
     var createInstancePath = "/process/instance/domain.action";
     var expectedResponseBody = new JSONObject("{\"instanceId\":\"workflowId\"}");
-    var createdInstance = testCreateInstance(baseUrl, createInstancePath, null, true, expectedResponseBody);
+    var createdInstance = testCreateInstance(baseUrl, createInstancePath, true, expectedResponseBody);
     testCompleteTask(createdInstance, baseUrl);
 
     server.stop();
@@ -104,24 +98,8 @@ public class ApplicationTest {
     var baseUrl = "http://localhost:12001";
     var createInstancePath = "/process/definition/definitionId";
     var expectedResponseBody = new JSONObject("{\"instanceId\":\"workflowId\"}");
-    var createdInstance = testCreateInstance(baseUrl, createInstancePath, null, true, expectedResponseBody);
+    var createdInstance = testCreateInstance(baseUrl, createInstancePath, true, expectedResponseBody);
     testCompleteTask(createdInstance, baseUrl);
-
-    server.stop();
-  }
-
-  @Test
-  public void testCreateInstance_WithFailureSync() throws Exception {
-    doReturn(Optional.of("12002")).when(this.configuration).getConfig("services.workflow.web.port");
-
-    var server = this.apiFactory.server();
-    server.start();
-
-    var baseUrl = "http://localhost:12002";
-    var createInstancePath = "/process/definition/definitionId";
-    var dataServiceResponse = new JSONObject("{\"code\":400,\"payload\":\"bad request\"}");
-    var expectedResponseBody = new JSONObject("{\"instanceId\":\"workflowId\"}");
-    testCreateInstance(baseUrl, createInstancePath, dataServiceResponse, true, expectedResponseBody);
 
     server.stop();
   }
@@ -140,12 +118,12 @@ public class ApplicationTest {
     var baseUrl = "http://localhost:12003";
     var createInstancePath = "/process/definition/definitionId";
     var expectedResponseBody = new JSONObject("{\"message\":\"No workflow process is registered.\",\"type\":\"SERVER ERROR\"}");
-    testCreateInstance(baseUrl, createInstancePath, null, false, expectedResponseBody);
+    testCreateInstance(baseUrl, createInstancePath, false, expectedResponseBody);
 
     server.stop();
   }
 
-  private WorkflowInstance testCreateInstance(String baseUrl, String createInstancePath, JSONObject dataServiceResponse, boolean success, JSONObject expectedResponseBody) throws RegistryException, WebClientException {
+  private WorkflowInstance testCreateInstance(String baseUrl, String createInstancePath, boolean success, JSONObject expectedResponseBody) throws RegistryException, WebClientException {
     var createdInstance = mock(WorkflowInstance.class);
     var activeTask = mock(WorkflowTask.class);
 
@@ -156,11 +134,6 @@ public class ApplicationTest {
     doReturn(new JSONObject()).when(createdInstance).toJson(anyList());
     doReturn("definitionId").when(this.registry).get("action");
 
-    if (dataServiceResponse == null) {
-      dataServiceResponse = new JSONObject("{\"code\":200,\"payload\":\"success\"}");
-    }
-    doReturn(dataServiceResponse).when(this.client).post(anyString(), any());
-
     var createInstacePayload = "{\"id\":\"entityid\",\"name\":\"name\",\"domain\":\"domain\"}";
     var createInstanceUrl = baseUrl + createInstancePath;
     var serverResponse = Unirest.post(createInstanceUrl).body(createInstacePayload).asString();
@@ -169,9 +142,9 @@ public class ApplicationTest {
     assertTrue(serverResponseBody.similar(expectedResponseBody));
 
     if (success) {
-      verify(client, times(1)).post(eq("http://data/workflow"), any());
+      verify(this.publisher, times(1)).publish(any(JSONObject.class));
     }
-
+    
     return createdInstance;
   }
 
@@ -186,6 +159,6 @@ public class ApplicationTest {
     var completeTaskPayload = "{\"domain\":\"project\",\"approved\":true}";
     var serverResponse = Unirest.put(completeTaskUrl).body(completeTaskPayload).asString();
     assertTrue(serverResponse.isSuccess());
-    verify(client, times(2)).post(eq("http://data/workflow"), any());
+    verify(this.publisher, times(2)).publish(any(JSONObject.class));
   }
 }

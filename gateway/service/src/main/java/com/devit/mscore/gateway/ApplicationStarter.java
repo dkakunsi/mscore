@@ -1,5 +1,7 @@
 package com.devit.mscore.gateway;
 
+import static com.devit.mscore.util.AttributeConstants.DOMAIN;
+
 import com.devit.mscore.AuthenticationProvider;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.ServiceRegistration;
@@ -12,8 +14,10 @@ import com.devit.mscore.exception.ApplicationException;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.gateway.api.ApiFactory;
+import com.devit.mscore.gateway.service.EventEmitter;
 import com.devit.mscore.gateway.service.ResourceService;
 import com.devit.mscore.gateway.service.WorkflowService;
+import com.devit.mscore.messaging.kafka.KafkaMessagingFactory;
 import com.devit.mscore.registry.ZookeeperRegistryFactory;
 import com.devit.mscore.util.DateUtils;
 import com.devit.mscore.web.jersey.JerseyClientFactory;
@@ -59,11 +63,15 @@ public class ApplicationStarter implements Starter {
   @Override
   public void start() throws ApplicationException {
     var webClient = this.clientFactory.client();
+    var messagingFactory = KafkaMessagingFactory.of(this.configuration);
     var useWorkflow = isUseWorkflow();
     var workflowService = new WorkflowService(this.serviceRegistration, webClient);
     var resourceService = new ResourceService(this.serviceRegistration, webClient, workflowService, useWorkflow);
+    var publisher = messagingFactory.publisher(DOMAIN);
+    var eventEmitter = new EventEmitter(publisher);
 
     this.apiFactory.add(resourceService);
+    this.apiFactory.add(eventEmitter);
 
     if (BooleanUtils.isTrue(useWorkflow)) {
       this.apiFactory.add(workflowService);
