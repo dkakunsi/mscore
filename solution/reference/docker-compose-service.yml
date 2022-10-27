@@ -1,0 +1,58 @@
+version: "3"
+
+services:
+
+  data:
+    image: ${REPO}/${SOLUTION}-data:${TAG}
+    container_name: ${SOLUTION}-data
+    ports:
+      - 2001:2000
+    command: java -jar
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./logs/data-service:/opt/mscore/logs
+
+  workflow:
+    image: ${REPO}/${SOLUTION}-workflow:${TAG}
+    container_name: ${SOLUTION}-workflow
+    ports:
+      - 2101:2000
+    volumes:
+      - ./logs/workflow-service:/opt/mscore/logs
+
+  gateway:
+    image: ${REPO}/${SOLUTION}-gateway:${TAG}
+    container_name: ${SOLUTION}-gateway
+    ports:
+      - 2201:2000
+    volumes:
+      - ./logs/gateway-service:/opt/mscore/logs
+
+  history:
+    image: ${REPO}/${SOLUTION}-history:${TAG}
+    container_name: ${SOLUTION}-history
+    #environment:
+    #    JAVA_OPTS: -Xdebug -Xrunjdwp:transport=dt_socket,address=0.0.0.0:5000,server=y,suspend=n
+    volumes:
+      - ./logs/history-service:/opt/mscore/logs
+
+  notification:
+    image: ${REPO}/${SOLUTION}-notification:${TAG}
+    container_name: ${SOLUTION}-notification
+    ports:
+      - 2102:2000
+    volumes:
+      - ./logs/notification-service:/opt/mscore/logs
+
+volumes:
+  dataservice:
+    driver: local
+  historyservice:
+    driver: local
+  workflowservice:
+    driver: local
+  gatewayservice:
+    driver: local
+  notificationservice:
+    driver: local

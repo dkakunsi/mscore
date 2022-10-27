@@ -2,18 +2,28 @@
 
 cd ../reference
 
-docker-compose start
+docker-compose \
+  -f ./docker-compose-infrastructure.yml \
+  start
+
+sleep 5
 
 docker-compose \
-    -f ./docker-compose.yml \
-    -f ./docker-compose-logging.yml \
-    -f ./docker-compose-data-service.yml \
-    -f ./docker-compose-gateway-service.yml \
-    -f ./docker-compose-notification-service.yml \
-    -f ./docker-compose-workflow-service.yml \
-    up -d
+  -f ./docker-compose-configuration.yml \
+  up -d
 
-docker-compose stop configuration
-docker-compose rm configuration
+sleep 5
+
+docker-compose \
+  -f ./docker-compose-service.yml \
+  up -d
+
+docker-compose \
+  -f ./docker-compose-configuration.yml \
+  stop configuration
+
+docker-compose \
+  -f ./docker-compose-configuration.yml \
+  rm configuration
 
 cd ..
