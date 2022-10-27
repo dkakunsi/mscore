@@ -11,6 +11,6 @@ public class JerseyClientFactoryTest {
     var factory = JerseyClientFactory.of();
     var client = factory.client();
 
-    assertTrue(client instanceof SunJerseyClient);
+    assertTrue(client instanceof JerseyClient);
   }
 }
