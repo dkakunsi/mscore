@@ -40,12 +40,5 @@
       <artifactId>jaxb-impl</artifactId>
       <version>${jersey.version}</version>
     </dependency>
-
-    <!-- Old version of Jersey -->
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-client</artifactId>
-      <version>${sun-jersey.version}</version>
-    </dependency>
   </dependencies>
 </project>

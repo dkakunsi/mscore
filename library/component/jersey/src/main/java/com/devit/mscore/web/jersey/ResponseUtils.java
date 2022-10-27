@@ -7,8 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.sun.jersey.api.client.ClientResponse;
-
 import jakarta.ws.rs.core.Response;
 
 public class ResponseUtils {
@@ -20,12 +18,6 @@ public class ResponseUtils {
 
   static JSONObject buildResponse(String uri, Response response) {
     var output = response.hasEntity() ? response.getEntity().toString() : "";
-    var status = response.getStatus();
-    return buildResponse(uri, output, status);
-  }
-
-  static JSONObject buildResponse(String uri, ClientResponse response) {
-    var output = response.hasEntity() ? response.getEntity(String.class) : "";
     var status = response.getStatus();
     return buildResponse(uri, output, status);
   }

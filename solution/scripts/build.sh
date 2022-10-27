@@ -3,32 +3,22 @@
 cd ../reference
 
 docker-compose \
-    -f ./docker-compose.yml \
-    -f ./docker-compose-logging.yml \
-    -f ./docker-compose-data-service.yml \
-    -f ./docker-compose-gateway-service.yml \
-    -f ./docker-compose-notification-service.yml \
-    -f ./docker-compose-workflow-service.yml \
-    stop data gateway history notification workflow logger configuration
+  -f ./docker-compose-configuration.yml \
+  -f ./docker-compose-service.yml \
+  stop
 
 docker-compose \
-    -f ./docker-compose.yml \
-    -f ./docker-compose-logging.yml \
-    -f ./docker-compose-data-service.yml \
-    -f ./docker-compose-gateway-service.yml \
-    -f ./docker-compose-notification-service.yml \
-    -f ./docker-compose-workflow-service.yml \
-    rm data history gateway notification workflow logger configuration
-
-# docker-compose stop
+  -f ./docker-compose-configuration.yml \
+  -f ./docker-compose-service.yml \
+  rm
 
 cd ..
 
 build () {
-    printf "\n=== BUILDING $SERVICE === \n"
-    cd ./$SERVICE
-    docker build -t $REPO/$SOLUTION-$SERVICE:$VERSION .
-    cd ..
+  printf "\n=== BUILDING $SERVICE === \n"
+  cd ./$SERVICE
+  docker build -t $REPO/$SOLUTION-$SERVICE:$VERSION .
+  cd ..
 }
 
 REPO=devit16
