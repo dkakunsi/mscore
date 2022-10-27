@@ -2,11 +2,12 @@ package com.devit.mscore.workflow.flowable.delegate;
 
 import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.ApplicationContext.setContext;
+import static com.devit.mscore.util.AttributeConstants.DOMAIN;
 import static com.devit.mscore.util.AttributeConstants.getDomain;
-import static com.devit.mscore.util.AttributeConstants.getId;
 import static com.devit.mscore.web.WebUtils.SUCCESS;
 import static com.devit.mscore.web.WebUtils.getMessageType;
 
+import com.devit.mscore.Event;
 import com.devit.mscore.Logger;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.ProcessException;
@@ -14,7 +15,6 @@ import com.devit.mscore.exception.WebClientException;
 import com.devit.mscore.logging.ApplicationLogger;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 import org.flowable.common.engine.api.delegate.Expression;
 import org.flowable.engine.delegate.DelegateExecution;
@@ -80,21 +80,11 @@ public class SetAttribute implements JavaDelegate {
   @SuppressWarnings("PMD.GuardLogStatement")
   protected void updateEntity(JSONObject entity) {
     var context = (FlowableApplicationContext) getContext();
-    var dataClient = context.getDataClient();
     var domain = getDomain(entity);
-    var uri = String.format("%s/%s", dataClient.getDomainUri(domain), getId(entity));
-    var client = dataClient.getClient();
+    var event = Event.of(Event.Type.UPDATE, domain, entity);
 
-    try {
-      var response = client.put(uri, Optional.of(entity));
-      if (response == null || !isSuccess(response.getInt("code"))) {
-        LOGGER.error("Cannot update entity: {}", entity.getString("payload"));
-        throw new ApplicationRuntimeException(new ProcessException("Cannot update entity."));
-      }
-    } catch (WebClientException ex) {
-      LOGGER.error("Cannot update entity: {}", getId(entity));
-      throw new ApplicationRuntimeException(ex);
-    }
+    var publisher = context.getPublisher(DOMAIN);
+    publisher.publish(event.toJson());
   }
 
   protected static boolean isSuccess(int code) {

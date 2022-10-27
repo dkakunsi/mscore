@@ -4,11 +4,10 @@ import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.util.AttributeConstants.getId;
 import static com.devit.mscore.util.AttributeConstants.getName;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
-import static com.devit.mscore.web.WebUtils.INFORMATION;
-import static com.devit.mscore.web.WebUtils.SUCCESS;
 
-import com.devit.mscore.DataClient;
+import com.devit.mscore.Event;
 import com.devit.mscore.Logger;
+import com.devit.mscore.Publisher;
 import com.devit.mscore.Registry;
 import com.devit.mscore.WorkflowDefinition;
 import com.devit.mscore.WorkflowDefinitionRepository;
@@ -20,18 +19,14 @@ import com.devit.mscore.WorkflowTaskRepository;
 import com.devit.mscore.exception.ApplicationException;
 import com.devit.mscore.exception.ProcessException;
 import com.devit.mscore.exception.RegistryException;
-import com.devit.mscore.exception.WebClientException;
 import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.util.AttributeConstants;
-import com.devit.mscore.web.WebUtils;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.json.JSONObject;
-
-import liquibase.repackaged.org.apache.commons.lang3.StringUtils;
 
 public class WorkflowServiceImpl implements WorkflowService {
 
@@ -41,7 +36,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
   private Registry registry;
 
-  private DataClient dataClient;
+  private Publisher publisher;
 
   private WorkflowDefinitionRepository definitionRepository;
 
@@ -49,12 +44,12 @@ public class WorkflowServiceImpl implements WorkflowService {
 
   private WorkflowTaskRepository taskRepository;
 
-  public WorkflowServiceImpl(Registry registry, DataClient dataClient, WorkflowDefinitionRepository definitionRepository,
+  public WorkflowServiceImpl(Registry registry, Publisher publisher, WorkflowDefinitionRepository definitionRepository,
       WorkflowInstanceRepository instanceRepository, WorkflowTaskRepository taskRepository)
       throws ApplicationException {
     try {
       this.registry = (Registry) registry.clone();
-      this.dataClient = dataClient;
+      this.publisher = publisher;
       this.definitionRepository = definitionRepository;
       this.instanceRepository = instanceRepository;
       this.taskRepository = taskRepository;
@@ -94,7 +89,7 @@ public class WorkflowServiceImpl implements WorkflowService {
   public WorkflowInstance createInstance(String definitionId, JSONObject entity, Map<String, Object> variables)
       throws ProcessException {
     var instance = this.instanceRepository.create(definitionId, populateVariables(entity, variables));
-    sync(instance);
+    syncCreate(instance);
     return instance;
   }
 
@@ -108,23 +103,20 @@ public class WorkflowServiceImpl implements WorkflowService {
     return variables;
   }
 
-  @SuppressWarnings("PMD.GuardLogStatement")
-  private void sync(WorkflowInstance instance) {
+  private void syncCreate(WorkflowInstance instance) {
+    sync(instance, Event.Type.CREATE);
+  }
+
+  private void syncUpdate(WorkflowInstance instance) {
+    sync(instance, Event.Type.UPDATE);
+  }
+
+  private void sync(WorkflowInstance instance, Event.Type eventType) {
     var tasks = this.taskRepository.getTasks(instance.getId());
-    var json = instance.toJson(tasks);
-
-    try {
-      var client = this.dataClient.getClient();
-      var uri = this.dataClient.getWorkflowUri();
-
-      var response = client.post(uri, Optional.of(json));
-      var responseType = WebUtils.getMessageType(response.getInt("code"));
-      if (!StringUtils.equalsAny(responseType, INFORMATION, SUCCESS)) {
-        LOGGER.error("Cannot synchronize workflow instance: {}.", response.getString("payload"));
-      }
-    } catch (WebClientException ex) {
-      LOGGER.error("Cannot synchronize workflow instance: {}.", ex, instance);
-    }
+    var jsonData = instance.toJson(tasks);
+    var event = Event.of(eventType, "workflow", jsonData);
+    var message = event.toJson();
+    publisher.publish(message);
   }
 
   @Override
@@ -171,7 +163,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     if (this.instanceRepository.isCompleted(instanceId)) {
       instance.complete();
     }
-    sync(instance);
+    syncUpdate(instance);
   }
 
   @Override
