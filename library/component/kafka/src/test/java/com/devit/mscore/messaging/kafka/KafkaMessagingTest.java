@@ -15,6 +15,7 @@ import static org.mockito.Mockito.spy;
 import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.DefaultApplicationContext;
+import com.devit.mscore.exception.ApplicationException;
 import com.devit.mscore.exception.ConfigException;
 
 import java.time.Duration;
@@ -100,7 +101,7 @@ public class KafkaMessagingTest {
   }
 
   @Test
-  public void testSubscribe() throws InterruptedException {
+  public void testSubscribe() throws InterruptedException, ApplicationException {
     try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
       utilities.when(() -> ApplicationContext.getContext()).thenReturn(this.context);
 
