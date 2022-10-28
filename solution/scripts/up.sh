@@ -4,7 +4,7 @@ cd ../reference
 
 docker-compose \
   -f ./docker-compose-infrastructure.yml \
-  start
+  up -d
 
 sleep 5
 
