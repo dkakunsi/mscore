@@ -114,7 +114,7 @@ public class EnrichmentTest {
     json.put(ATTRIBUTE_TO_ENRICH, createJsonObject("domain", "throwexception"));
 
     var ex = assertThrows(EnrichmentException.class, () -> this.enrichment.enrich(json));
-    assertThat(ex.getMessage(), is("Cannot enrich object."));
+    assertThat(ex.getMessage(), is("Cannot enrich object"));
     assertThat(ex.getCause(), instanceOf(DataException.class));
   }
 

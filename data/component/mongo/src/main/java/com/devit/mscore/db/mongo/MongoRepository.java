@@ -38,7 +38,7 @@ public class MongoRepository implements Repository {
 
   protected static final Logger LOG = ApplicationLogger.getLogger(MongoRepository.class);
 
-  protected static final String KEY_NOT_SUPPLIED = "The key is not supplied.";
+  protected static final String KEY_NOT_SUPPLIED = "The key is not supplied";
 
   private static final String MONGO_ID = "_id";
 
@@ -52,7 +52,6 @@ public class MongoRepository implements Repository {
   }
 
   @Override
-  @SuppressWarnings("PMD.GuardLogStatement")
   public JSONObject save(JSONObject json) throws DataException {
     try {
       LOG.info("Saving entity to MongoDB: {}", getCode(json));

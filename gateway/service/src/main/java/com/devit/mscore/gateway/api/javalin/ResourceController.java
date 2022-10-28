@@ -110,7 +110,7 @@ public class ResourceController extends JavalinController {
     return ctx -> {
       var criteria = ctx.body();
       if (StringUtils.isEmpty(criteria)) {
-        throw new ValidationException("Search criteria is invalid.");
+        throw new ValidationException("Search criteria is invalid");
       }
 
       var json = new JSONObject(criteria);

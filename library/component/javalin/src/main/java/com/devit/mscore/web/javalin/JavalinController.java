@@ -53,11 +53,10 @@ public class JavalinController implements Cloneable {
 
   public Handler post() {
     return ctx -> {
-      LOG.debug("Posting data.");
+      LOG.info("Receiving post request at {}", ctx.path());
       var payload = ctx.body();
       var id = this.service.save(new JSONObject(payload));
-      var data = new JSONObject();
-      data.put(ID, id);
+      var data = new JSONObject().put(ID, id);
 
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
     };
@@ -66,15 +65,13 @@ public class JavalinController implements Cloneable {
   public Handler put() {
     return ctx -> {
       var key = ctx.pathParam(ID);
-      LOG.debug("Putting data: {}.", key);
+      LOG.info("Receiving put request at {} with key {}", ctx.path(), key);
 
       var payload = ctx.body();
-      var data = new JSONObject(payload);
-      data.put(ID, key);
+      var data = new JSONObject(payload).put(ID, key);
 
       var id = this.service.save(data);
-      data = new JSONObject();
-      data.put(ID, id);
+      data = new JSONObject().put(ID, id);
 
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
     };
@@ -83,11 +80,8 @@ public class JavalinController implements Cloneable {
   public Handler getOne() {
     return ctx -> {
       var key = ctx.pathParam(ID);
-
-      LOG.debug("Get data with id: {}.", key);
+      LOG.info("Receiving get request at {} for key {}", ctx.path(), key);
       var data = this.service.find(key);
-
-      LOG.trace("Retrieved data for id: {}. {}", key, data);
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
     };
   }
@@ -95,51 +89,45 @@ public class JavalinController implements Cloneable {
   public Handler getOneByCode() {
     return ctx -> {
       var code = ctx.pathParam(CODE);
-
-      LOG.debug("Get data with code: {}.", code);
+      LOG.info("Receiving get request at {} for code {}", ctx.path(), code);
       var data = this.service.findByCode(code);
-
-      LOG.trace("Retrieved data for code: {}. {}", code, data);
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
     };
   }
 
   public Handler getMany() {
     return ctx -> {
-      var listOfId = ctx.queryParam("ids");
-      if (listOfId == null) {
+      var listId = ctx.queryParam("ids");
+      if (listId == null) {
         throw new ValidationException("List of IDs is not provided");
       }
 
-      LOG.debug("Get data with keys: {}.", listOfId);
-      var keys = Arrays.asList(listOfId.split(","));
+      LOG.info("Receiving get request at {} for keys {}", ctx.path(), listId);
+      var keys = Arrays.asList(listId.split(","));
       var data = this.service.find(keys);
-
-      LOG.trace("Retrieved data for id: {}. {}", listOfId, data);
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
     };
   }
 
   public Handler all() {
     return ctx -> {
+      LOG.info("Receiving get request for all data at {}", ctx.path());
       var data = this.service.all();
-
-      LOG.debug("Retrieved all data. {}", data);
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
     };
   }
 
   public Handler delete() {
     return ctx -> {
-      throw new ImplementationException("Delete is not supported.");
+      throw new ImplementationException("Delete is not supported");
     };
   }
 
   public Handler search() {
     return ctx -> {
+      LOG.info("Receiving search request at {}", ctx.path());
       var criteria = ctx.body();
       var result = this.service.search(new JSONObject(criteria));
-
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(result.toString());
     };
   }
@@ -147,10 +135,8 @@ public class JavalinController implements Cloneable {
   public Handler syncById() {
     return ctx -> {
       var key = ctx.pathParam(ID);
-
-      LOG.debug("Sync data with id: {}.", key);
+      LOG.info("Receiving sync request at {} for key {}", ctx.path(), key);
       this.synchronizer.synchronize(key);
-
       var data = getSyncMessage();
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
     };
@@ -158,8 +144,7 @@ public class JavalinController implements Cloneable {
 
   public Handler syncAll() {
     return ctx -> {
-      LOG.debug("Sync all.");
-
+      LOG.info("Receiving sync request for all data at {}", ctx.path());
       this.synchronizer.synchronize();
       var data = getSyncMessage();
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
@@ -167,9 +152,7 @@ public class JavalinController implements Cloneable {
   }
 
   private JSONObject getSyncMessage() {
-    var jsonResponse = new JSONObject();
-    jsonResponse.put("message", "Synchronization process is in progress.");
-    return jsonResponse;
+    return new JSONObject().put("message", "Synchronization process is in progress");
   }
 
   @Override

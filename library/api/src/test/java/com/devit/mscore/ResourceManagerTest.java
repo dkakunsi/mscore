@@ -88,7 +88,7 @@ public class ResourceManagerTest {
     doThrow(new RegistryException("message")).when(this.registry).add(anyString(), anyString());
 
     var ex = assertThrows(ResourceException.class, () -> this.manager.registerResources());
-    assertThat(ex.getMessage(), is("Cannot register resource."));
+    assertThat(ex.getMessage(), is("Cannot register resource"));
     assertThat(ex.getCause(), instanceOf(RegistryException.class));
   }
 

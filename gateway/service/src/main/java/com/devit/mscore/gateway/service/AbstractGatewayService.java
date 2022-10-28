@@ -10,7 +10,7 @@ public abstract class AbstractGatewayService implements Service {
 
   public static final String PAYLOAD = "payload";
 
-  protected static final String WEBCLIENT_EXCEPTION_MESSAGE = "Cannot retrieve the url from registry.";
+  protected static final String WEBCLIENT_EXCEPTION_MESSAGE = "Cannot retrieve the url from registry";
 
   protected Client client;
 

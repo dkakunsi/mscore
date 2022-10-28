@@ -100,7 +100,7 @@ public class MailNotificationTest {
       utilities.when(() -> ApplicationContext.getContext()).thenReturn(this.context);
 
       var ex = assertThrows(NotificationException.class, () -> this.notification.send(json));
-      assertThat(ex.getMessage(), is("Cannot send notification. No email template found in request."));
+      assertThat(ex.getMessage(), is("Cannot send notification. No email template found in request"));
     }
   }
 
@@ -116,7 +116,7 @@ public class MailNotificationTest {
       utilities.when(() -> ApplicationContext.getContext()).thenReturn(this.context);
 
       var ex = assertThrows(NotificationException.class, () -> this.notification.send(json));
-      assertThat(ex.getMessage(), is("Cannot load email template."));
+      assertThat(ex.getMessage(), is("Cannot load email template"));
       assertThat(ex.getCause(), instanceOf(RegistryException.class));
     }
   }
@@ -139,7 +139,7 @@ public class MailNotificationTest {
       utilities.when(() -> ApplicationContext.getContext()).thenReturn(this.context);
 
       var ex = assertThrows(NotificationException.class, () -> this.notification.send(json));
-      assertThat(ex.getMessage(), is("Cannot send email."));
+      assertThat(ex.getMessage(), is("Cannot send email"));
       assertThat(ex.getCause(), instanceOf(MessagingException.class));
     }
 

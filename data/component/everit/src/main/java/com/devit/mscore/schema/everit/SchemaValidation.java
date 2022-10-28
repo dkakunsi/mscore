@@ -38,10 +38,9 @@ public class SchemaValidation implements Validation {
   }
 
   @Override
-  @SuppressWarnings("PMD.GuardLogStatement")
   public boolean validate(JSONObject json) {
     if (!hasDomain(json)) {
-      var cause = new ValidationException("Invalid data. No domain found.");
+      var cause = new ValidationException("Invalid data. No domain found");
       throw new ApplicationRuntimeException(cause);
     }
 

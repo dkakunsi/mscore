@@ -66,7 +66,7 @@ public class JSONSchemaTest {
     var json = "{\"domain\":\"unknown\",\"id\":\"toolongid\",\"name\":\"toolongname\"}";
 
     var ex = assertThrows(ValidationException.class, () -> actual.validate(new JSONObject(json)));
-    assertThat(ex.getMessage(), is("Failed to validate JSON."));
+    assertThat(ex.getMessage(), is("Failed to validate JSON"));
     assertThat(ex.getCause(), instanceOf(org.everit.json.schema.ValidationException.class));
   }
 

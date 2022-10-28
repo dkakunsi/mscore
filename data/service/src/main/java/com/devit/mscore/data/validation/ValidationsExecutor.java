@@ -24,7 +24,7 @@ import org.json.JSONObject;
  */
 public class ValidationsExecutor implements Executor<Validation> {
 
-  private static final String INVALID_DATA = "The given data is not valid. Check the log for detail.";
+  private static final String INVALID_DATA = "The given data is not valid. Check the log for detail";
 
   private Map<String, List<Validation>> validations;
 

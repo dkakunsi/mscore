@@ -12,9 +12,10 @@ import com.devit.mscore.exception.ResourceException;
 import com.devit.mscore.logging.ApplicationLogger;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -79,22 +80,11 @@ public class ElasticsearchIndexFactory extends ResourceManager {
   }
 
   protected HttpHost[] getHost() throws ConfigException {
-    var addresses = getConfigValue(this.configuration, HOST).orElseThrow(() -> new ConfigException("No ES host is configured.")).split(",");
-    var hosts = new HttpHost[addresses.length];
-
-    LOG.debug("Trying to connect to ES host: {}", (Object[]) addresses);
-
-    try {
-      var i = 0;
-      for (var address : addresses) {
-        var url = new URL(address);
-        hosts[i] = new HttpHost(url.getHost(), url.getPort(), url.getProtocol());
-        i++;
-      }
-    } catch (MalformedURLException ex) {
-      throw new ConfigException(String.format("Cannot create host: %s.", (Object[]) addresses), ex);
-    }
-    return hosts;
+    var addresses = getConfigValue(this.configuration, HOST).orElseThrow(() -> new ConfigException("No ES host is configured")).split(",");
+    var hosts = new ArrayList<HttpHost>();
+    LOG.info("Connecting to ES on {}", List.of(addresses));
+    Stream.of(addresses).forEach(a -> hosts.add(HttpHost.create(a)));
+    return hosts.toArray(new HttpHost[0]);
   }
 
   protected boolean isSecure() {
@@ -130,7 +120,7 @@ public class ElasticsearchIndexFactory extends ResourceManager {
     protected static RestHighLevelClient getEsClient(Configuration configuration, HttpHost[] hosts, boolean isSecure) throws ConfigException {
       var builder = RestClient.builder(hosts);
       if (isSecure) {
-        LOG.info("Applying secure connection to ES.");
+        LOG.info("Applying secure connection to ES");
         applyAuthentication(configuration, builder);
       }
       return new RestHighLevelClient(builder);

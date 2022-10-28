@@ -153,7 +153,7 @@ public class JavalinWebTest {
   public void testSave_InvalidBody() {
     var body = "invalid body";
     var response = Unirest.post(BASE_URL).body(body).asString();
-    assertErrorResponse(response, 400, "REQUEST ERROR", "Unexpected format.");
+    assertErrorResponse(response, 400, "REQUEST ERROR", "Unexpected format");
   }
 
   @Test
@@ -284,7 +284,7 @@ public class JavalinWebTest {
     assertNotNull(responseBody);
 
     var jsonResponse = new JSONObject(responseBody);
-    assertThat(jsonResponse.getString("message"), is("Delete is not supported."));
+    assertThat(jsonResponse.getString("message"), is("Delete is not supported"));
     assertThat(jsonResponse.getString("type"), is("SERVER ERROR"));
   }
 
@@ -342,7 +342,7 @@ public class JavalinWebTest {
     assertNotNull(responseBody);
 
     var jsonResponse = new JSONObject(responseBody);
-    assertThat(jsonResponse.getString("message"), is("Synchronization process is in progress."));
+    assertThat(jsonResponse.getString("message"), is("Synchronization process is in progress"));
   }
 
   @Test
@@ -355,7 +355,7 @@ public class JavalinWebTest {
     assertNotNull(responseBody);
 
     var jsonResponse = new JSONObject(responseBody);
-    assertThat(jsonResponse.getString("message"), is("Synchronization process is in progress."));
+    assertThat(jsonResponse.getString("message"), is("Synchronization process is in progress"));
   }
 
   private void assertErrorResponse(HttpResponse<String> response, int status, String errorType, String message) {
@@ -467,7 +467,7 @@ public class JavalinWebTest {
     assertNotNull(responseBody);
 
     var jsonResponse = new JSONObject(responseBody);
-    assertThat(jsonResponse.getString("message"), is("Delete is not supported."));
+    assertThat(jsonResponse.getString("message"), is("Delete is not supported"));
     assertThat(jsonResponse.getString("type"), is("SERVER ERROR"));
   }
 

@@ -16,7 +16,7 @@ import org.json.JSONObject;
  */
 public class Resource {
 
-  private static final String RESOURCE_FAILURE_MESSAGE = "Cannot read resource file.";
+  private static final String RESOURCE_FAILURE_MESSAGE = "Cannot read resource file";
 
   protected String name;
 
@@ -41,7 +41,7 @@ public class Resource {
 
   public static List<File> getFiles(File directory) throws ResourceException {
     if (!directory.isDirectory()) {
-      throw new ResourceException("Location is not a directory.", new IOException(directory.getAbsolutePath()));
+      throw new ResourceException("Location is not a directory", new IOException(directory.getAbsolutePath()));
     }
 
     var files = directory.listFiles();

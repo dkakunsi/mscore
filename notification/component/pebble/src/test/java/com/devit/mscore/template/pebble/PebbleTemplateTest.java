@@ -1,9 +1,9 @@
 package com.devit.mscore.template.pebble;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThrows;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
@@ -32,7 +32,7 @@ public class PebbleTemplateTest {
     var pebble = new PebbleTemplate();
 
     var ex = assertThrows(TemplateException.class, () -> pebble.build(template, object));
-    assertThat(ex.getMessage(), is("Cannot load template."));
+    assertThat(ex.getMessage(), is("Cannot load template"));
     assertThat(ex.getCause(), instanceOf(RuntimeException.class));
   }
 }

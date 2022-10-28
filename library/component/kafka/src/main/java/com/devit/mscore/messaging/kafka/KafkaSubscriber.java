@@ -49,6 +49,8 @@ public class KafkaSubscriber implements Subscriber {
     this.consumer.subscribe(topics);
     this.consuming = true;
 
+    LOG.info("Start subscribing to {}", topics);
+
     new Thread(() -> {
       while (consuming) {
         var records = this.consumer.poll(Duration.ofMillis(this.pollDuration));
@@ -57,10 +59,9 @@ public class KafkaSubscriber implements Subscriber {
     }).start();
   }
 
-  @SuppressWarnings("PMD.GuardLogStatement")
   private void handleMessage(ConsumerRecord<String, String> message) {
     new Thread(() -> {
-      LOG.debug(String.format("Receiving message from topic '%s', partition '%s', offset '%s': %s",
+      LOG.info(String.format("Receiving message from topic '%s', partition '%s', offset '%s': %s",
           message.topic(), message.partition(), message.offset(), message.value()));
       setContext(KafkaApplicationContext.of(message.headers()));
       this.topicHandlers.get(message.topic()).accept(new JSONObject(message.value()));

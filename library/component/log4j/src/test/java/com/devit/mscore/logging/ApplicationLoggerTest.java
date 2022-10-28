@@ -1,8 +1,8 @@
 package com.devit.mscore.logging;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
@@ -20,6 +20,11 @@ public class ApplicationLoggerTest {
   @Before
   public void setup() {
     this.logger = mock(org.slf4j.Logger.class);
+    doReturn(true).when(this.logger).isDebugEnabled();
+    doReturn(true).when(this.logger).isInfoEnabled();
+    doReturn(true).when(this.logger).isWarnEnabled();
+    doReturn(true).when(this.logger).isErrorEnabled();
+    doReturn(true).when(this.logger).isTraceEnabled();
     this.exception = new Exception();
   }
 
@@ -30,7 +35,7 @@ public class ApplicationLoggerTest {
 
       var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
       applicationLogger.info("INFO");
-      verify(this.logger, times(1)).info("BreadcrumbId: NOT-SPECIFIED. INFO");
+      verify(this.logger).info("BreadcrumbId: NOT-SPECIFIED. INFO");
     }
   }
 
@@ -41,7 +46,7 @@ public class ApplicationLoggerTest {
 
       var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
       applicationLogger.info("{}", "INFO");
-      verify(this.logger, times(1)).info("BreadcrumbId: NOT-SPECIFIED. INFO");
+      verify(this.logger).info("BreadcrumbId: NOT-SPECIFIED. INFO");
     }
   }
 
@@ -52,7 +57,7 @@ public class ApplicationLoggerTest {
 
       var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
       applicationLogger.debug("DEBUG");
-      verify(this.logger, times(1)).debug("BreadcrumbId: NOT-SPECIFIED. DEBUG");
+      verify(this.logger).debug("BreadcrumbId: NOT-SPECIFIED. DEBUG");
     }
   }
 
@@ -63,7 +68,7 @@ public class ApplicationLoggerTest {
 
       var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
       applicationLogger.debug("{}", "DEBUG");
-      verify(this.logger, times(1)).debug("BreadcrumbId: NOT-SPECIFIED. DEBUG");
+      verify(this.logger).debug("BreadcrumbId: NOT-SPECIFIED. DEBUG");
     }
   }
 
@@ -74,7 +79,7 @@ public class ApplicationLoggerTest {
 
       var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
       applicationLogger.trace("TRACE");
-      verify(this.logger, times(1)).trace("BreadcrumbId: NOT-SPECIFIED. TRACE");
+      verify(this.logger).trace("BreadcrumbId: NOT-SPECIFIED. TRACE");
     }
   }
 
@@ -85,7 +90,7 @@ public class ApplicationLoggerTest {
 
       var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
       applicationLogger.trace("{}", "TRACE");
-      verify(this.logger, times(1)).trace("BreadcrumbId: NOT-SPECIFIED. TRACE");
+      verify(this.logger).trace("BreadcrumbId: NOT-SPECIFIED. TRACE");
     }
   }
 
@@ -96,7 +101,7 @@ public class ApplicationLoggerTest {
 
       var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
       applicationLogger.warn("WARN");
-      verify(this.logger, times(1)).warn("BreadcrumbId: NOT-SPECIFIED. WARN");
+      verify(this.logger).warn("BreadcrumbId: NOT-SPECIFIED. WARN");
     }
   }
 
@@ -107,7 +112,7 @@ public class ApplicationLoggerTest {
 
       var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
       applicationLogger.warn("{}", "WARN");
-      verify(this.logger, times(1)).warn("BreadcrumbId: NOT-SPECIFIED. WARN");
+      verify(this.logger).warn("BreadcrumbId: NOT-SPECIFIED. WARN");
     }
   }
 
@@ -118,7 +123,7 @@ public class ApplicationLoggerTest {
 
       var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
       applicationLogger.error("ERROR");
-      verify(this.logger, times(1)).error("BreadcrumbId: NOT-SPECIFIED. ERROR");
+      verify(this.logger).error("BreadcrumbId: NOT-SPECIFIED. ERROR");
     }
   }
 
@@ -129,7 +134,7 @@ public class ApplicationLoggerTest {
 
       var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
       applicationLogger.error("ERROR", this.exception);
-      verify(this.logger, times(1)).error("BreadcrumbId: NOT-SPECIFIED. ERROR", this.exception);
+      verify(this.logger).error("BreadcrumbId: NOT-SPECIFIED. ERROR", this.exception);
     }
   }
 
@@ -140,7 +145,7 @@ public class ApplicationLoggerTest {
 
       var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
       applicationLogger.error("ERROR: {}", "message");
-      verify(this.logger, times(1)).error("BreadcrumbId: NOT-SPECIFIED. ERROR: message");
+      verify(this.logger).error("BreadcrumbId: NOT-SPECIFIED. ERROR: message");
     }
   }
 
@@ -151,7 +156,7 @@ public class ApplicationLoggerTest {
 
       var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
       applicationLogger.error("ERROR: {}. {}", "message", "message2");
-      verify(this.logger, times(1)).error("BreadcrumbId: NOT-SPECIFIED. ERROR: message. message2");
+      verify(this.logger).error("BreadcrumbId: NOT-SPECIFIED. ERROR: message. message2");
     }
   }
 
@@ -162,7 +167,7 @@ public class ApplicationLoggerTest {
 
       var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
       applicationLogger.error("ERROR: {}", this.exception, "message");
-      verify(this.logger, times(1)).error("BreadcrumbId: NOT-SPECIFIED. ERROR: message", this.exception);
+      verify(this.logger).error("BreadcrumbId: NOT-SPECIFIED. ERROR: message", this.exception);
     }
   }
 
@@ -173,7 +178,7 @@ public class ApplicationLoggerTest {
 
       var applicationLogger = ApplicationLogger.getLogger(ApplicationLoggerTest.class);
       applicationLogger.error("ERROR: {}. {}", this.exception, "message", "message2");
-      verify(this.logger, times(1)).error("BreadcrumbId: NOT-SPECIFIED. ERROR: message. message2", this.exception);
+      verify(this.logger).error("BreadcrumbId: NOT-SPECIFIED. ERROR: message. message2", this.exception);
     }
   }
 }

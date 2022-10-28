@@ -27,9 +27,9 @@ public class MailNotification implements Notification {
 
   private static final Logger LOGGER = ApplicationLogger.getLogger(MailNotification.class);
 
-  private static final String NO_TEMPLATE_MESSAGE = "Cannot send notification. No email template found in request.";
+  private static final String NO_TEMPLATE_MESSAGE = "Cannot send notification. No email template found in request";
 
-  private static final String CANNOT_LOAD_TEMPLATE_MESSAGE = "Cannot load email template.";
+  private static final String CANNOT_LOAD_TEMPLATE_MESSAGE = "Cannot load email template";
 
   private Registry registry;
 
@@ -62,7 +62,7 @@ public class MailNotification implements Notification {
   public void send(JSONObject entity) throws NotificationException {
     var optional = extract(entity, this.possibleAttributes);
     if (optional.isEmpty()) {
-      LOGGER.warn("No email available in entity.");
+      LOGGER.warn("No email available in entity");
       return;
     }
 
@@ -76,7 +76,7 @@ public class MailNotification implements Notification {
         this.sender.send(this.sendInfo, to, emailSubject, text);
       }
     } catch (MessagingException | TemplateException ex) {
-      throw new NotificationException("Cannot send email.", ex);
+      throw new NotificationException("Cannot send email", ex);
     }
   }
 
@@ -84,7 +84,7 @@ public class MailNotification implements Notification {
     var context = getContext();
     var templateName = context.getAction().orElse(entity.optString(ACTION));
     if (StringUtils.isBlank(templateName)) {
-      LOGGER.warn("Message: {}.", NO_TEMPLATE_MESSAGE);
+      LOGGER.warn("Message: {}", NO_TEMPLATE_MESSAGE);
       throw new NotificationException(NO_TEMPLATE_MESSAGE);
     }
 
@@ -92,7 +92,7 @@ public class MailNotification implements Notification {
       var templateRegister = this.registry.get(templateName);
       return new JSONObject(templateRegister).getString("content");
     } catch (JSONException | RegistryException ex) {
-      LOGGER.error("Message: {}.", CANNOT_LOAD_TEMPLATE_MESSAGE);
+      LOGGER.error("Message: {}", CANNOT_LOAD_TEMPLATE_MESSAGE);
       throw new NotificationException(CANNOT_LOAD_TEMPLATE_MESSAGE, ex);
     }
   }

@@ -42,12 +42,12 @@ public class IndexEnrichment extends Enrichment {
       if (index != null) {
         return index.get(id);
       } else {
-        LOG.warn("Cannot enrich: {}. No index available for domain: {}.", id, domain);
+        LOG.warn("Cannot enrich: {}. No index available for domain: {}", id, domain);
         return Optional.empty();
       }
     } catch (IndexingException ex) {
       LOG.error("Cannot load '{}' from '{}' domain", id, domain);
-      throw new DataException("Cannot load data from index.", ex);
+      throw new DataException("Cannot load data from index", ex);
     }
   }
 }

@@ -117,6 +117,7 @@ public class ApplicationStarter implements Starter {
     // Create listener
     var eventTopic = messagingFactory.getTopics(EVENT_TOPIC);
     if (eventTopic.isPresent()) {
+      LOGGER.info("Listening to topics {}", eventTopic);
       var subscriber = messagingFactory.subscriber();
       var eventListener = EventListener.of(subscriber, workflowService);
       eventListener.listen(eventTopic.get());
@@ -140,18 +141,17 @@ public class ApplicationStarter implements Starter {
         .orElseThrow(() -> new ConfigException(configName + " is not configured"));
   }
 
-  @SuppressWarnings("PMD.GuardLogStatement")
   private void registerResource(ResourceManager resourceManager) {
-    LOGGER.info("Register resource: {}.", resourceManager.getType());
+    LOGGER.info("Register resource: {}", resourceManager.getType());
     try {
       resourceManager.registerResources();
     } catch (ResourceException ex) {
-      LOGGER.warn("Cannot register resource {}.", resourceManager.getType(), ex);
+      LOGGER.warn("Cannot register resource {}", resourceManager.getType(), ex);
     }
   }
 
   @Override
   public void stop() {
-    throw new RuntimeException("Application is stopped.");
+    throw new RuntimeException("Application is stopped");
   }
 }

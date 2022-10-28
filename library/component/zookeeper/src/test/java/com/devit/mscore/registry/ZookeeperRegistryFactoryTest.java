@@ -69,36 +69,36 @@ public class ZookeeperRegistryFactoryTest {
   public void testGetZookeeperRegistry_NoZookeeperHost_ThrowRegistryException() {
     var ex = assertThrows(RegistryException.class, () -> this.factory.registry("domain"));
     var exceptionMessage = ex.getMessage();
-    assertThat(exceptionMessage, is("No zookeeper host was configured."));
+    assertThat(exceptionMessage, is("No zookeeper host was configured"));
   }
 
   @Test
   public void testGetZookeeperHost_ThrowException() throws ConfigException {
     var configuration = mock(Configuration.class);
-    doThrow(new ConfigException("Error message.")).when(configuration).getConfig("zookeeper.host");
+    doThrow(new ConfigException("Error message")).when(configuration).getConfig("zookeeper.host");
 
     var ex = assertThrows(RegistryException.class, () -> ZookeeperRegistryFactory.getZookeeperHost(configuration));
-    assertThat(ex.getMessage(), is("Error message."));
+    assertThat(ex.getMessage(), is("Error message"));
     assertThat(ex.getCause(), instanceOf(ConfigException.class));
   }
 
   @Test
   public void testGetSleepBetweenReply_ThrowException() throws ConfigException {
     var configuration = mock(Configuration.class);
-    doThrow(new ConfigException("Error message.")).when(configuration).getConfig("zookeeper.retry.sleep");
+    doThrow(new ConfigException("Error message")).when(configuration).getConfig("zookeeper.retry.sleep");
 
     var ex = assertThrows(RegistryException.class, () -> ZookeeperRegistryFactory.getSleepBetweenRetry(configuration));
-    assertThat(ex.getMessage(), is("Error message."));
+    assertThat(ex.getMessage(), is("Error message"));
     assertThat(ex.getCause(), instanceOf(ConfigException.class));
   }
 
   @Test
   public void testGetMaxRetry_ThrowException() throws ConfigException {
     var configuration = mock(Configuration.class);
-    doThrow(new ConfigException("Error message.")).when(configuration).getConfig("zookeeper.retry.max");
+    doThrow(new ConfigException("Error message")).when(configuration).getConfig("zookeeper.retry.max");
 
     var ex = assertThrows(RegistryException.class, () -> ZookeeperRegistryFactory.getMaxRetry(configuration));
-    assertThat(ex.getMessage(), is("Error message."));
+    assertThat(ex.getMessage(), is("Error message"));
     assertThat(ex.getCause(), instanceOf(ConfigException.class));
   }
 

@@ -37,15 +37,14 @@ public class EventListener extends Listener {
   }
 
   @Override
-  @SuppressWarnings("PMD.GuardLogStatement")
   public void consume(JSONObject message) {
     LOGGER.debug("Receive event message: {}", message);
     this.notifications.forEach(notification -> {
       try {
-        LOGGER.info("Sending '{}' notification.", notification.getType());
+        LOGGER.info("Sending '{}' notification", notification.getType());
         notification.send(message);
       } catch (NotificationException ex) {
-        LOGGER.error("Notification failed.", ex);
+        LOGGER.error("Notification failed", ex);
       }
     });
   }

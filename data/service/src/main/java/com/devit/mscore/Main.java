@@ -18,7 +18,7 @@ public class Main {
       starter.start();
       LOGGER.info("Service is started!");
     } catch (ApplicationException ex) {
-      LOGGER.error("Cannot start the application.", ex);
+      LOGGER.error("Cannot start the application", ex);
       starter.stop();
     }
   }

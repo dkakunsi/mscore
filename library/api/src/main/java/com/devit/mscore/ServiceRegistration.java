@@ -77,11 +77,11 @@ public class ServiceRegistration implements Cloneable {
       throws ConfigException, RegistryException {
     if (useStaticAddress) {
       var configKey = String.format(REGISTRY_ADDRESS, this.configuration.getServiceName());
-      Supplier<ConfigException> throwingElse = () -> new ConfigException("No config for registry address.");
+      Supplier<ConfigException> throwingElse = () -> new ConfigException("No config for registry address");
       var baseAddress = this.configuration.getConfig(configKey).orElseThrow(throwingElse);
       return String.format("%s/%s", baseAddress, domain);
     } else {
-      Supplier<ConfigException> throwingElse = () -> new ConfigException("No config for web port.");
+      Supplier<ConfigException> throwingElse = () -> new ConfigException("No config for web port");
       var protocol = getProtocol(this.configuration);
       var localAddress = getLocalAddress();
       var port = this.configuration.getConfig(WEB_PORT).orElseThrow(throwingElse);
@@ -101,7 +101,7 @@ public class ServiceRegistration implements Cloneable {
     try {
       return getLocalHost().getHostAddress();
     } catch (UnknownHostException ex) {
-      throw new RegistryException("Cannot retrieve local address.", ex);
+      throw new RegistryException("Cannot retrieve local address", ex);
     }
   }
 

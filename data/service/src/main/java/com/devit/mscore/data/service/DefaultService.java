@@ -47,7 +47,7 @@ public class DefaultService implements Service, Synchronizer {
 
   private static final Logger LOG = ApplicationLogger.getLogger(DefaultService.class);
 
-  private static final String SYNCHRONIZATION_ERROR = "Synchronization failed.";
+  private static final String SYNCHRONIZATION_ERROR = "Synchronization failed";
 
   protected Schema schema;
 
@@ -98,14 +98,13 @@ public class DefaultService implements Service, Synchronizer {
   }
 
   @Override
-  @SuppressWarnings("PMD.GuardLogStatement")
   public String save(final JSONObject json) throws ApplicationException {
     if (json == null || json.isEmpty()) {
-      LOG.warn("Cannot save empty data.");
-      throw new ValidationException("Cannot save empty data.");
+      LOG.warn("Cannot save empty data");
+      throw new ValidationException("Cannot save empty data");
     }
 
-    LOG.debug("Saving data {} to database.", getCode(json));
+    LOG.debug("Saving data {} to database", getCode(json));
     setAuditAttribute(json);
     this.validator.execute(json);
 
@@ -141,16 +140,16 @@ public class DefaultService implements Service, Synchronizer {
   @Override
   public void delete(String id) throws ApplicationException {
     if (StringUtils.isEmpty(id)) {
-      throw new ValidationException("Id cannot be empty.");
+      throw new ValidationException("Id cannot be empty");
     }
-    LOG.debug("Deleting data: {}.", id);
+    LOG.debug("Deleting data: {}", id);
     this.repository.delete(id);
   }
 
   @Override
   public JSONObject find(String id) throws ApplicationException {
     if (StringUtils.isEmpty(id)) {
-      throw new ValidationException("Id cannot be empty.");
+      throw new ValidationException("Id cannot be empty");
     }
 
     var optional = this.repository.find(id);
@@ -160,14 +159,14 @@ public class DefaultService implements Service, Synchronizer {
     var json = optional.get();
     this.filter.execute(json);
 
-    LOG.debug("Found data for id {}: {}.", id, json);
+    LOG.debug("Found data for id {}: {}", id, json);
     return json;
   }
 
   @Override
   public JSONArray find(List<String> ids) throws ApplicationException {
     if (ids == null || ids.isEmpty()) {
-      throw new ValidationException("Keys cannot be empty.");
+      throw new ValidationException("Keys cannot be empty");
     }
 
     var optional = this.repository.find(ids);
@@ -178,7 +177,7 @@ public class DefaultService implements Service, Synchronizer {
     try {
       var jsons = optional.get();
       this.filter.execute(jsons);
-      LOG.debug("Found data for ids {}: {}.", ids, jsons);
+      LOG.debug("Found data for ids {}: {}", ids, jsons);
 
       return jsons;
     } catch (JSONException e) {
@@ -189,7 +188,7 @@ public class DefaultService implements Service, Synchronizer {
   @Override
   public JSONObject findByCode(String code) throws ApplicationException {
     if (StringUtils.isEmpty(code)) {
-      throw new ValidationException("Code cannot be empty.");
+      throw new ValidationException("Code cannot be empty");
     }
 
     try {
@@ -200,7 +199,7 @@ public class DefaultService implements Service, Synchronizer {
       var json = array.get().getJSONObject(0);
       this.filter.execute(json);
 
-      LOG.debug("Found data for code {}: {}.", code, json);
+      LOG.debug("Found data for code {}: {}", code, json);
       return json;
     } catch (JSONException e) {
       throw new DataException(e);
@@ -223,12 +222,11 @@ public class DefaultService implements Service, Synchronizer {
   }
 
   @Override
-  @SuppressWarnings("PMD.GuardLogStatement")
   public void synchronize(String id) throws SynchronizationException {
     try {
       var json = this.repository.find(id);
       if (json.isEmpty()) {
-        LOG.info("Cannot synchronize. No data to synchronize in domain {}.", getDomain());
+        LOG.info("Cannot synchronize. No data to synchronize in domain {}", getDomain());
         return;
       }
       synchronize(json.get());
@@ -238,13 +236,12 @@ public class DefaultService implements Service, Synchronizer {
   }
 
   @Override
-  @SuppressWarnings("PMD.GuardLogStatement")
   public void synchronize(String searchAttribute, String value)
       throws SynchronizationException {
     try {
       var jsons = this.repository.find(searchAttribute, value);
       if (jsons.isEmpty()) {
-        LOG.info("Cannot synchronize. No data to synchronize in domain {}.", getDomain());
+        LOG.info("Cannot synchronize. No data to synchronize in domain {}", getDomain());
         return;
       }
       for (Object object : jsons.get()) {

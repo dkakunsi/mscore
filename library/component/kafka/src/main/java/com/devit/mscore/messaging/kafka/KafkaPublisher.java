@@ -47,17 +47,17 @@ public class KafkaPublisher implements Publisher {
   public void publish(JSONObject json) {
 
     if (StringUtils.isEmpty(this.topic)) {
-      LOG.warn("Cannot publish message. Topic is not provided.");
+      LOG.warn("Cannot publish message. Topic is not provided");
       return;
     }
     if (json == null || json.isEmpty()) {
-      LOG.warn("Cannot publish an empty message.");
+      LOG.warn("Cannot publish an empty message");
       return;
     }
 
     // @formatter:off
     var headers = buildHeader();
-    LOG.debug("Publishing message to topic {}. Headers: {}. Message: {}", this.topic, headers, json);
+    LOG.info("Publishing message to topic {}. Headers: {}. Message: {}", this.topic, headers, json);
     var producerRecord = new ProducerRecord<String, String>(this.topic, null, getId(json), json.toString(), headers);
     this.producer.send(producerRecord);
     // @formatter:on

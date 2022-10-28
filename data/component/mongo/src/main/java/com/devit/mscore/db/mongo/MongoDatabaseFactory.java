@@ -110,7 +110,7 @@ public class MongoDatabaseFactory {
   }
 
   private String getDatabaseName() throws ConfigException {
-    return getConfig(DATABASE).orElseThrow(() -> new ConfigException("Mongo database is not configured."));
+    return getConfig(DATABASE).orElseThrow(() -> new ConfigException("Mongo database is not configured"));
   }
 
   public MongoClient mongoClient() throws ConfigException {
@@ -137,11 +137,11 @@ public class MongoDatabaseFactory {
   }
 
   private String getHost() throws ConfigException {
-    return getConfig(HOST).orElseThrow(() -> new ConfigException("Mongo host is not configured."));
+    return getConfig(HOST).orElseThrow(() -> new ConfigException("Mongo host is not configured"));
   }
 
   private String getPort() throws ConfigException {
-    return getConfig(PORT).orElseThrow(() -> new ConfigException("Mongo port is not configured."));
+    return getConfig(PORT).orElseThrow(() -> new ConfigException("Mongo port is not configured"));
   }
 
   private String getIsSecure() throws ConfigException {
@@ -156,11 +156,11 @@ public class MongoDatabaseFactory {
   }
 
   private String getUsername() throws ConfigException {
-    return getConfig(USERNAME).orElseThrow(() -> new ConfigException("Mongo username is not provided."));
+    return getConfig(USERNAME).orElseThrow(() -> new ConfigException("Mongo username is not provided"));
   }
 
   private String getPassword() throws ConfigException {
-    return getConfig(PASSWORD).orElseThrow(() -> new ConfigException("Mongo password is not provided."));
+    return getConfig(PASSWORD).orElseThrow(() -> new ConfigException("Mongo password is not provided"));
   }
 
   private Optional<String> getConfig(String key) throws ConfigException {

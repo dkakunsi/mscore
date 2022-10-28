@@ -33,10 +33,10 @@ public class EventListener extends Listener {
     return new EventListener(subscriber, services);
   }
 
-  @SuppressWarnings("PMD.GuardLogStatement")
   @Override
   protected void consume(JSONObject message) {
     var event = Event.of(message);
+    LOGGER.info("Processing {} event for domain {}", event.getAction(), event.getDomain());
     var service = this.services.get(message.getString(Event.DOMAIN));
     try {
       if (Event.Type.CREATE.equals(event.getType()) || Event.Type.UPDATE.equals(event.getType())) {
@@ -47,7 +47,7 @@ public class EventListener extends Listener {
         LOGGER.info("Cannot process event type: {}", event.getType());
       }
     } catch (ApplicationException ex) {
-      LOGGER.error("Fail processing the event.", ex);
+      LOGGER.error("Fail processing the event", ex);
     }
   }
 }

@@ -67,18 +67,17 @@ public class ApplicationStarter implements Starter {
     }
   }
 
-  @SuppressWarnings("PMD.GuardLogStatement")
   private static void registerResource(ResourceManager resourceManager) {
-    LOGGER.info("Register resource: {}.", resourceManager.getType());
+    LOGGER.info("Register resource: {}", resourceManager.getType());
     try {
       resourceManager.registerResources();
     } catch (ResourceException ex) {
-      LOGGER.warn("Cannot register resource {}.", resourceManager.getType(), ex);
+      LOGGER.warn("Cannot register resource {}", resourceManager.getType(), ex);
     }
   }
 
   @Override
   public void stop() {
-    throw new RuntimeException("Application is stopped.");
+    throw new RuntimeException("Application is stopped");
   }
 }

@@ -68,13 +68,12 @@ public class WorkflowServiceImpl implements WorkflowService {
       }
       registerWorkflow(definition);
     } catch (RegistryException ex) {
-      throw new ProcessException("Cannot register process deployment.", ex);
+      throw new ProcessException("Cannot register process deployment", ex);
     } catch (Exception ex) {
-      throw new ProcessException("Definition deployment failed.", ex);
+      throw new ProcessException("Definition deployment failed", ex);
     }
   }
 
-  @SuppressWarnings("PMD.GuardLogStatement")
   private void registerWorkflow(WorkflowDefinition definition) throws RegistryException {
     var definitionId = this.definitionRepository.getDefinitionId(definition.getResourceName());
     if (definitionId.isEmpty()) {
@@ -82,7 +81,7 @@ public class WorkflowServiceImpl implements WorkflowService {
       throw new RegistryException(message);
     }
     this.registry.add(definition.getName(), definitionId.get());
-    LOGGER.info("Workflow {} is added to registry.", definition.getName());
+    LOGGER.info("Workflow {} is added to registry", definition.getName());
   }
 
   @Override

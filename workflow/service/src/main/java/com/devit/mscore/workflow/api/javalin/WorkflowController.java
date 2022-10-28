@@ -22,7 +22,7 @@ public class WorkflowController extends JavalinController {
 
   static final String TASK_ID = "taskId";
 
-  private static final String NO_WORKFLOW = "No workflow process is registered.";
+  private static final String NO_WORKFLOW = "No workflow process is registered";
 
   private Optional<WorkflowService> workflowProcess;
 

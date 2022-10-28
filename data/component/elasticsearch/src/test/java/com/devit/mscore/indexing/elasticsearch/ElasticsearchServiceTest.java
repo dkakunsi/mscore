@@ -234,7 +234,7 @@ public class ElasticsearchServiceTest {
 
     var ex = assertThrows(IndexingException.class,
         () -> this.index.index("indexName", new JSONObject("{\"id\":\"id\"}")));
-    assertThat(ex.getMessage(), is("Fail to search index."));
+    assertThat(ex.getMessage(), is("Fail to search index"));
     assertThat(ex.getCause(), instanceOf(IOException.class));
   }
 }

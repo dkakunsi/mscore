@@ -92,6 +92,6 @@ public class ApplicationStarter implements Starter {
 
   @Override
   public void stop() {
-    throw new RuntimeException("Application is stopped.");
+    throw new RuntimeException("Application is stopped");
   }
 }

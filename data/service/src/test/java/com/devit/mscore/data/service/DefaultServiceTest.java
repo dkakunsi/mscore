@@ -112,7 +112,7 @@ public class DefaultServiceTest {
   @Test
   public void testSave_WithEmptyJson() throws ApplicationException {
     var ex = assertThrows(ValidationException.class, () -> this.service.save(new JSONObject()));
-    assertThat(ex.getMessage(), is("Cannot save empty data."));
+    assertThat(ex.getMessage(), is("Cannot save empty data"));
   }
 
   @Test
@@ -124,7 +124,7 @@ public class DefaultServiceTest {
   @Test
   public void testDelete_WithEmptyId() throws ApplicationException {
     var ex = assertThrows(ValidationException.class, () -> this.service.delete(""));
-    assertThat(ex.getMessage(), is("Id cannot be empty."));
+    assertThat(ex.getMessage(), is("Id cannot be empty"));
   }
 
   @Test
@@ -146,7 +146,7 @@ public class DefaultServiceTest {
   @Test
   public void testFindId_WithEmptyId() throws ApplicationException {
     var ex = assertThrows(ValidationException.class, () -> this.service.find(""));
-    assertThat(ex.getMessage(), is("Id cannot be empty."));
+    assertThat(ex.getMessage(), is("Id cannot be empty"));
   }
 
   @Test
@@ -170,7 +170,7 @@ public class DefaultServiceTest {
   @Test
   public void testFindCode_WithEmptyCode() throws ApplicationException {
     var ex = assertThrows(ValidationException.class, () -> this.service.findByCode(""));
-    assertThat(ex.getMessage(), is("Code cannot be empty."));
+    assertThat(ex.getMessage(), is("Code cannot be empty"));
   }
 
   @SuppressWarnings("unchecked")
@@ -199,7 +199,7 @@ public class DefaultServiceTest {
   @Test
   public void testFindList_WithEmptyList() throws ApplicationException {
     var ex = assertThrows(ValidationException.class, () -> this.service.find(List.of()));
-    assertThat(ex.getMessage(), is("Keys cannot be empty."));
+    assertThat(ex.getMessage(), is("Keys cannot be empty"));
   }
 
   @Test
@@ -235,7 +235,7 @@ public class DefaultServiceTest {
   public void testSynchronizeId_ThrowsDataException() throws SynchronizationException, DataException {
     doThrow(new DataException("")).when(this.repository).find("id");
     var ex = assertThrows(SynchronizationException.class, () -> this.service.synchronize("id"));
-    assertThat(ex.getMessage(), is("Synchronization failed."));
+    assertThat(ex.getMessage(), is("Synchronization failed"));
     assertThat(ex.getCause(), instanceOf(DataException.class));
   }
 
@@ -243,7 +243,7 @@ public class DefaultServiceTest {
   public void testSynchronizeAttributeValue_ThrowsDataException() throws SynchronizationException, DataException {
     doThrow(new DataException("")).when(this.repository).find("attribute", "id");
     var ex = assertThrows(SynchronizationException.class, () -> this.service.synchronize("attribute", "id"));
-    assertThat(ex.getMessage(), is("Synchronization failed."));
+    assertThat(ex.getMessage(), is("Synchronization failed"));
     assertThat(ex.getCause(), instanceOf(DataException.class));
   }
 

@@ -2,7 +2,6 @@ package com.devit.mscore.indexing.elasticsearch;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
@@ -22,7 +21,6 @@ import com.devit.mscore.exception.ResourceException;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.Optional;
 
 import org.apache.http.HttpHost;
@@ -114,26 +112,12 @@ public class ElasticsearchIndexingFactoryTest {
   }
 
   @Test
-  public void testGetHost_MalformedURL() throws ConfigException {
-    doTest(factory -> {
-      try {
-        doReturn(Optional.of("###")).when(this.configuration).getConfig("platform.elasticsearch.host");
-        var ex = assertThrows(ConfigException.class, () -> factory.getHost());
-        assertThat(ex.getMessage(), is("Cannot create host: ###."));
-        assertThat(ex.getCause(), instanceOf(MalformedURLException.class));
-      } catch (Exception ex) {
-        throw new RuntimeException(ex);
-      }
-    });
-  }
-
-  @Test
   public void testGetHost_NotProvided() throws ConfigException {
     doTest(factory -> {
       try {
         doReturn(Optional.empty()).when(this.configuration).getConfig("platform.elasticsearch.host");
         var ex = assertThrows(ConfigException.class, () -> factory.getHost());
-        assertThat(ex.getMessage(), is("No ES host is configured."));
+        assertThat(ex.getMessage(), is("No ES host is configured"));
       } catch (Exception ex) {
         throw new RuntimeException(ex);
       }
