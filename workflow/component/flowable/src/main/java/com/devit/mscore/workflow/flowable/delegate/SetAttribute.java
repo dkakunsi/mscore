@@ -30,7 +30,6 @@ public class SetAttribute implements JavaDelegate {
   private Expression value;
 
   @Override
-  @SuppressWarnings("PMD.GuardLogStatement")
   public void execute(DelegateExecution execution) {
     var context = FlowableApplicationContext.of(execution);
     setContext(context);
@@ -40,7 +39,7 @@ public class SetAttribute implements JavaDelegate {
     var targetAttribute = this.attribute.getValue(execution).toString();
     var targetValue = this.value.getValue(execution).toString();
 
-    LOGGER.info("Action: {}. Updating attribute {} of domain {} to {}.", context.getAction(), targetAttribute, domain,
+    LOGGER.info("Action: {}. Updating attribute {} of domain {} to {}", context.getAction(), targetAttribute, domain,
         targetValue);
 
     var entity = getEntity(domain, entityId, targetAttribute, targetValue);
@@ -49,7 +48,7 @@ public class SetAttribute implements JavaDelegate {
     updateEntity(entity);
 
     execution.setVariable("entity", entity.toString());
-    LOGGER.info("Entity process variable is updated.");
+    LOGGER.info("Entity process variable is updated");
   }
 
   protected JSONObject getEntity(String domain, String entityId, String targetAttribute, String targetValue)
@@ -62,22 +61,21 @@ public class SetAttribute implements JavaDelegate {
     try {
       var entity = client.get(uri, new HashMap<>());
       if (entity == null || !isSuccess(entity.getInt("code"))) {
-        LOGGER.error("Cannot update attribute {} to {}.", targetAttribute, targetValue);
-        throw new ApplicationRuntimeException(new ProcessException("Cannot update status."));
+        LOGGER.error("Cannot update attribute {} to {}", targetAttribute, targetValue);
+        throw new ApplicationRuntimeException(new ProcessException("Cannot update status"));
       }
       var payload = entity.getJSONObject("payload");
       if (payload == null || payload.isEmpty()) {
-        LOGGER.error("Cannot update attribute {} to {}. Entity is not found.", targetAttribute, targetValue);
-        throw new ApplicationRuntimeException(new ProcessException("Cannot update status. Entity is not found."));
+        LOGGER.error("Cannot update attribute {} to {}. Entity is not found", targetAttribute, targetValue);
+        throw new ApplicationRuntimeException(new ProcessException("Cannot update status. Entity is not found"));
       }
       return payload;
     } catch (WebClientException ex) {
-      LOGGER.error("Cannot update attribute {} to {}.", targetAttribute, targetValue);
+      LOGGER.error("Cannot update attribute {} to {}", targetAttribute, targetValue);
       throw new ApplicationRuntimeException(ex);
     }
   }
 
-  @SuppressWarnings("PMD.GuardLogStatement")
   protected void updateEntity(JSONObject entity) {
     var context = (FlowableApplicationContext) getContext();
     var domain = getDomain(entity);
@@ -93,6 +91,6 @@ public class SetAttribute implements JavaDelegate {
 
   protected void setVariable(DelegateExecution execution, String variable, Object value) {
     execution.setVariable("entity", value.toString());
-    LOGGER.info("Process variable {} is updated.", variable);
+    LOGGER.info("Process variable {} is updated", variable);
   }
 }

@@ -1,4 +1,4 @@
-FROM devit16/mscore-history-service
+FROM dkakunsi/mscore-history
 
 COPY *.config $APP_HOME/
 COPY *.properties $APP_HOME/

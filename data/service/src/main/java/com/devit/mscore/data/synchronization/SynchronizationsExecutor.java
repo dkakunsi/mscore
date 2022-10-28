@@ -48,7 +48,7 @@ public final class SynchronizationsExecutor implements Executor<Synchronization>
   public void add(Synchronizer synchronizer) {
     var resource = synchronizer.getSchema();
     if (!(resource instanceof Schema)) {
-      LOG.info("Cannot sync data because schema is not found.");
+      LOG.info("Cannot sync data because schema is not found");
       return;
     }
 
@@ -75,7 +75,7 @@ public final class SynchronizationsExecutor implements Executor<Synchronization>
     var referenceDomain = getDomain(json);
     var referenceId = getId(json);
     if (StringUtils.isEmpty(referenceDomain)) {
-      LOG.warn("Fail to synchronize object {}. Domain is not provided.", referenceId);
+      LOG.warn("Fail to synchronize object {}. Domain is not provided", referenceId);
       return;
     }
     synchronize(this.synchronizations.get(referenceDomain), referenceId);

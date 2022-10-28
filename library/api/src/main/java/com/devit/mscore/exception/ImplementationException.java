@@ -4,7 +4,7 @@ public class ImplementationException extends ApplicationException {
 
   private static final long serialVersionUID = 1L;
 
-  private static final String DEFAULT_MESSAGE = "Method is not available.";
+  private static final String DEFAULT_MESSAGE = "Method is not available";
 
   public ImplementationException() {
     this(DEFAULT_MESSAGE);

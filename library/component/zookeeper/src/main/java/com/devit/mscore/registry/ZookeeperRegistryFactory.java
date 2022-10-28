@@ -41,7 +41,7 @@ public class ZookeeperRegistryFactory {
       throws RegistryException {
     try {
       var zookeperHost = configuration.getConfig(ZOOKEEPER_HOST);
-      return zookeperHost.orElseThrow(() -> new RegistryException("No zookeeper host was configured."));
+      return zookeperHost.orElseThrow(() -> new RegistryException("No zookeeper host was configured"));
     } catch (ConfigException ex) {
       throw new RegistryException(ex);
     }

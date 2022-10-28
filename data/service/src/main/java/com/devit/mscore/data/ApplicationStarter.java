@@ -8,7 +8,6 @@ import com.devit.mscore.Index;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Registry;
 import com.devit.mscore.ResourceManager;
-import com.devit.mscore.Schema;
 import com.devit.mscore.Service;
 import com.devit.mscore.ServiceRegistration;
 import com.devit.mscore.Starter;
@@ -28,6 +27,7 @@ import com.devit.mscore.data.synchronization.SynchronizationsExecutor;
 import com.devit.mscore.data.validation.ValidationsExecutor;
 import com.devit.mscore.db.mongo.MongoDatabaseFactory;
 import com.devit.mscore.exception.ApplicationException;
+import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.ResourceException;
@@ -136,38 +136,41 @@ public class ApplicationStarter implements Starter {
 
     // Generate service and it's dependencies from schema.
     var delay = getPublishingDelay();
-    for (var schema : schemaManager.getSchemas()) {
-      var index = indexFactory.index(schema.getDomain());
-      this.indices.put(schema.getDomain(), index.build());
+    schemaManager.getSchemas().stream().forEach(schema -> {
+      try {
+        var index = indexFactory.index(schema.getDomain());
+        this.indices.put(schema.getDomain(), index.build());
 
-      createEnrichment(schema, this.enrichmentsExecutor, this.indices);
+        // createEnrichment(schema, this.enrichmentsExecutor, this.indices);
 
-      var repository = repositoryFactory.repository(schema);
-      var publisher = messagingFactory.publisher(schema.getDomain());
-      var indexingObserver = new IndexingObserver(index);
-      var publishingObserver = new PublishingObserver(publisher, delay);
-      var service = new DefaultService(schema, repository, index, this.validationsExecutor, filter,
-          this.enrichmentsExecutor)
-          .addObserver(indexingObserver)
-          .addObserver(publishingObserver)
-          .addObserver(syncObserver);
+        var repository = repositoryFactory.repository(schema);
+        var publisher = messagingFactory.publisher(schema.getDomain());
+        var indexingObserver = new IndexingObserver(index);
+        var publishingObserver = new PublishingObserver(publisher, delay);
+        var service = new DefaultService(schema, repository, index, this.validationsExecutor, filter,
+            this.enrichmentsExecutor)
+            .addObserver(indexingObserver)
+            .addObserver(publishingObserver)
+            .addObserver(syncObserver);
 
-      apiFactory.add(service);
-      registration.register(service);
+        apiFactory.add(service);
+        registration.register(service);
 
-      services.put(service.getDomain(), service);
-      this.synchronizationsExecutor.add(service);
-    }
+        services.put(service.getDomain(), service);
+        synchronizationsExecutor.add(service);
+      } catch (RegistryException ex) {
+        throw new ApplicationRuntimeException(ex);
+      }
+    });
 
     syncObserver.setExecutor(this.synchronizationsExecutor);
-
-    for (var schema : schemaManager.getSchemas()) {
-      createEnrichment(schema, this.enrichmentsExecutor, this.indices);
-    }
+    schemaManager.getSchemas().forEach(s -> s.getReferenceNames()
+        .forEach(attr -> enrichmentsExecutor.add(new IndexEnrichment(indices, s.getDomain(), attr))));
 
     // Create listener
     var eventTopic = messagingFactory.getTopics(EVENT_TOPIC);
     if (eventTopic.isPresent()) {
+      LOGGER.info("Listening to topics {}", eventTopic);
       var subscriber = messagingFactory.subscriber();
       var eventListener = EventListener.of(subscriber, services);
       eventListener.listen(eventTopic.get());
@@ -188,19 +191,12 @@ public class ApplicationStarter implements Starter {
     }
   }
 
-  private static void createEnrichment(Schema schema, EnrichmentsExecutor enricher, Map<String, Index> indices) {
-    for (var attribute : schema.getReferenceNames()) {
-      enricher.add(new IndexEnrichment(indices, schema.getDomain(), attribute));
-    }
-  }
-
-  @SuppressWarnings("PMD.GuardLogStatement")
   private static void registerResource(ResourceManager resourceManager) {
-    LOGGER.info("Register resource: {}.", resourceManager.getType());
+    LOGGER.info("Register resource: {}", resourceManager.getType());
     try {
       resourceManager.registerResources();
     } catch (ResourceException ex) {
-      LOGGER.warn("Cannot register resource {}.", resourceManager.getType(), ex);
+      LOGGER.warn("Cannot register resource {}", resourceManager.getType(), ex);
     }
   }
 

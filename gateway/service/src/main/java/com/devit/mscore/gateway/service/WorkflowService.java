@@ -30,7 +30,6 @@ public class WorkflowService extends AbstractGatewayService {
     return DOMAIN;
   }
 
-  @SuppressWarnings("PMD.GuardLogStatement")
   public JSONObject createInstance(JSONObject payload) throws WebClientException {
     var context = getContext();
     try {

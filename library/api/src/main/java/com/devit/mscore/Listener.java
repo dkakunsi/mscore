@@ -2,6 +2,8 @@ package com.devit.mscore;
 
 import com.devit.mscore.exception.ApplicationException;
 
+import java.util.List;
+
 import org.json.JSONObject;
 
 /**
@@ -11,10 +13,13 @@ import org.json.JSONObject;
  */
 public abstract class Listener implements Starter {
 
+  protected Logger logger;
+
   protected Subscriber subscriber;
 
-  protected Listener(Subscriber subscriber) {
+  protected Listener(Subscriber subscriber, Logger logger) {
     this.subscriber = subscriber;
+    this.logger = logger;
   }
 
   /**
@@ -33,7 +38,7 @@ public abstract class Listener implements Starter {
     for (var topic : topics) {
       this.subscriber.subscribe(topic, this::consume);
     }
-
+    logger.info("Listening to topic: {}", List.of(topics));
     start();
   }
 

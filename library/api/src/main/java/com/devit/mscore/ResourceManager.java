@@ -50,7 +50,7 @@ public abstract class ResourceManager extends Manager {
         registerResource(resourceFile);
       }
     } catch (RegistryException | ConfigException ex) {
-      throw new ResourceException("Cannot register resource.", ex);
+      throw new ResourceException("Cannot register resource", ex);
     }
   }
 

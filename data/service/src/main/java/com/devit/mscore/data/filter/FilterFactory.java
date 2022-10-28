@@ -32,7 +32,7 @@ public class FilterFactory {
         executors.add(new RemovingFilter(attributes));
       });
     } catch (ConfigException ex) {
-      LOGGER.warn("Cannot add removing filter.", ex);
+      LOGGER.warn("Cannot add removing filter", ex);
     }
   }
 }

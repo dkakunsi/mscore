@@ -47,7 +47,7 @@ public class ValidationsExecutorTest {
     var ex = assertThrows(ApplicationRuntimeException.class, () -> this.executor.execute(json));
 
     assertThat(ex.getCause(), instanceOf(ValidationException.class));
-    assertThat(ex.getCause().getMessage(), is("The given data is not valid. Check the log for detail."));
+    assertThat(ex.getCause().getMessage(), is("The given data is not valid. Check the log for detail"));
   }
 
   @Test
@@ -59,6 +59,6 @@ public class ValidationsExecutorTest {
     var ex = assertThrows(ApplicationRuntimeException.class, () -> this.executor.execute((JSONObject) null));
 
     assertThat(ex.getCause(), instanceOf(ValidationException.class));
-    assertThat(ex.getCause().getMessage(), is("The given data is not valid. Check the log for detail."));
+    assertThat(ex.getCause().getMessage(), is("The given data is not valid. Check the log for detail"));
   }
 }

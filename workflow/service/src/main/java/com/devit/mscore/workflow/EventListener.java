@@ -28,25 +28,25 @@ public class EventListener extends Listener {
     return new EventListener(subscriber, service);
   }
 
-  @SuppressWarnings("PMD.GuardLogStatement")
   @Override
   protected void consume(JSONObject message) {
     var event = Event.of(message);
+    LOGGER.info("Processing event {} for domain {}", event.getAction(), event.getDomain());
     try {
       if (event.isDomainEvent()) {
         var instance = this.service.createInstanceByAction(event.getAction(), event.getData(), new HashMap<>());
-        LOGGER.info(String.format("Instance is created with id: %s", instance.getId()));
+        LOGGER.info("Instance is created with id {}", instance.getId());
       } else {
         var data = event.getData();
         var taskId = data.getString("id");
         this.service.completeTask(taskId, data.getJSONObject("response"));
-        LOGGER.info(String.format("Task '%s' is completed.", taskId));
+        LOGGER.info("Task '{}' is completed", taskId);
       }
     } catch (ProcessException ex) {
       if (ex.getCause() instanceof RegistryException) {
         LOGGER.warn("Cannot process event. " + ex.getMessage());
       } else {
-        LOGGER.error("Fail processing event.", ex);
+        LOGGER.error("Fail processing event", ex);
       }
     }
   }

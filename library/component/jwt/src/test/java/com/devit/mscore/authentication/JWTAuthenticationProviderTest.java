@@ -76,7 +76,7 @@ public class JWTAuthenticationProviderTest {
     doReturn(Optional.of(PUBLIC_KEY)).when(configuration).getConfig("platform.keycloak.public.key");
 
     var ex = assertThrows(ConfigException.class, () -> JWTAuthenticationProvider.of(configuration));
-    assertThat(ex.getMessage(), is("Invalid security configuration."));
+    assertThat(ex.getMessage(), is("Invalid security configuration"));
     assertThat(ex.getCause(), instanceOf(JSONException.class));
   }
 
@@ -104,7 +104,7 @@ public class JWTAuthenticationProviderTest {
     doReturn(Optional.of("asd")).when(this.configuration).getConfig("platform.keycloak.public.key");
 
     var ex = assertThrows(ApplicationException.class, () -> JWTAuthenticationProvider.of(this.configuration));
-    assertThat(ex.getMessage(), is("Cannot create RSA key for authentication."));
+    assertThat(ex.getMessage(), is("Cannot create RSA key for authentication"));
     assertThat(ex.getCause(), instanceOf(InvalidKeySpecException.class));
   }
 
@@ -113,7 +113,7 @@ public class JWTAuthenticationProviderTest {
     doReturn(Optional.empty()).when(this.configuration).getConfig("platform.keycloak.public.key");
 
     var ex = assertThrows(ApplicationException.class, () -> JWTAuthenticationProvider.of(this.configuration));
-    assertThat(ex.getMessage(), is("Public key is not configured correctly."));
+    assertThat(ex.getMessage(), is("Public key is not configured correctly"));
     assertThat(ex, instanceOf(ConfigException.class));
   }
 
@@ -122,7 +122,7 @@ public class JWTAuthenticationProviderTest {
     var token = "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJzOHFsNE5LanJ6TDl3YS1fcHpVNzdSQ1c0ZHA1YjBKVWdJb0g4dEpCT0drIn0.eyJleHAiOjE2MjM1NjE4NzgsImlhdCI6MTYyMzU2MTU3OCwianRpIjoiOTE5ZmEzYWMtNzZjMC00OTk2LTk3YjUtNzkxNzBiNDI4NzQ4IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDoxMDEwL2F1dGgvcmVhbG1zL2FkdmVydG9yaWFsIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6IjEzOGEwNGQxLThlZTgtNDk5Yy1hZmJiLTNiMWI4OTI1MDgxZiIsInR5cCI6IkJlYXJlciIsImF6cCI6IkdBVEVXQVkiLCJzZXNzaW9uX3N0YXRlIjoiMDNlZjEzNjktMDJhZi00ZWY0LWJhZDQtNTIzZjM2ZGQ1OTQ3IiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLWFkdmVydG9yaWFsIiwib2ZmbGluZV9hY2Nlc3MiLCJBRFZFUlRPUklBTCIsInVtYV9hdXRob3JpemF0aW9uIiwiVVNFUiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwibmFtZSI6IkRlZGR5IEtha3Vuc2kiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJka2FrdW5zaSIsImdpdmVuX25hbWUiOiJEZWRkeSIsImZhbWlseV9uYW1lIjoiS2FrdW5zaSIsImVtYWlsIjoiZGVkZHkua2FrdW5zaUBnbWFpbC5jb20ifQ.YkspSZOY7NqS85OeCWf5V2G1FkihdGVRUGkCuBu1JvlkqY2KaMOeNUK2Gkt47QA7XyMeaUgo59kzn99cCgZyVOUnN8GoWA2P6PBUH4Erg6Siqlo705S3A3_he0oCOUxsuAQRS_7wupYtqKQzElVrb9fykoySvVER0AvLhPGsOstpQXalPucyG40rXPxZ7mYJ-9rhJuwJMK8IwpPQbKwpsaa1eoGCTSsHFOjRV5OiBXg7r4GO1YJOa7rmuT6hSE0L0AGPQhQnZcAE1R2s19OvU6x7Nc85m2XBVxjRfJQlBQfiUNDUbzjq9MzN-kbkCHqmE5iC9nmGoRhVX1TR9d4EhQ";
 
     var ex = assertThrows(AuthenticationException.class, () -> this.provider.verify(token));
-    assertThat(ex.getMessage(), is("Token is not valid."));
+    assertThat(ex.getMessage(), is("Token is not valid"));
     assertThat(ex.getCause(), instanceOf(TokenExpiredException.class));
   }
 

@@ -25,7 +25,8 @@ public class ListenerTest {
   @Test
   public void testListen() throws ApplicationException {
     var subscriber = mockSubscriber();
-    var listener = listener(subscriber);
+    var logger = mock(Logger.class);
+    var listener = listener(subscriber, logger);
     var spiedListener = spy(listener);
 
     spiedListener.listen("topic1", "topic2");
@@ -40,12 +41,13 @@ public class ListenerTest {
   @Test
   public void testListen_StartError() throws ApplicationException {
     var subscriber = mock(Subscriber.class);
-    doThrow(new ApplicationException("Cannot start consumer.")).when(subscriber).start();
-    var listener = listener(subscriber);
+    doThrow(new ApplicationException("Cannot start consumer")).when(subscriber).start();
+    var logger = mock(Logger.class);
+    var listener = listener(subscriber, logger);
     var spiedListener = spy(listener);
 
     var ex = assertThrows(ApplicationException.class, () -> spiedListener.listen("topic1", "topic2"));
-    assertEquals("Cannot start consumer.", ex.getMessage());
+    assertEquals("Cannot start consumer", ex.getMessage());
     verify(subscriber).start();
   }
 
@@ -66,8 +68,8 @@ public class ListenerTest {
 
   }
 
-  private Listener listener(Subscriber subscriber) {
-    return new Listener(subscriber) {
+  private Listener listener(Subscriber subscriber, Logger logger) {
+    return new Listener(subscriber, logger) {
 
       @Override
       public void consume(JSONObject message) {

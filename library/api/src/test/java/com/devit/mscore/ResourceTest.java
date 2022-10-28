@@ -35,7 +35,7 @@ public class ResourceTest {
     doThrow(new RuntimeException()).when(resourceFile).toPath();
 
     var ex = assertThrows(ResourceException.class, () -> new Resource(resourceFile).getMessage());
-    assertThat(ex.getMessage(), is("Cannot read resource file."));
+    assertThat(ex.getMessage(), is("Cannot read resource file"));
     assertThat(ex.getCause(), instanceOf(RuntimeException.class));
   }
 
@@ -57,7 +57,7 @@ public class ResourceTest {
     doReturn(false).when(directory).isDirectory();
 
     var ex = assertThrows(ResourceException.class, () -> Resource.getFiles(directory));
-    assertThat(ex.getMessage(), is("Location is not a directory."));
+    assertThat(ex.getMessage(), is("Location is not a directory"));
   }
 
   @Test

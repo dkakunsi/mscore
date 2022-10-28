@@ -1,4 +1,4 @@
-FROM devit16/mscore-workflow-service
+FROM dkakunsi/mscore-workflow
 
 COPY ./definition $APP_HOME/definition
 COPY *.config $APP_HOME/

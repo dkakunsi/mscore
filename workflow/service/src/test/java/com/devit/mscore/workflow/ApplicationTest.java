@@ -2,6 +2,7 @@ package com.devit.mscore.workflow;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -117,7 +118,7 @@ public class ApplicationTest {
 
     var baseUrl = "http://localhost:12003";
     var createInstancePath = "/process/definition/definitionId";
-    var expectedResponseBody = new JSONObject("{\"message\":\"No workflow process is registered.\",\"type\":\"SERVER ERROR\"}");
+    var expectedResponseBody = new JSONObject("{\"message\":\"No workflow process is registered\",\"type\":\"SERVER ERROR\"}");
     testCreateInstance(baseUrl, createInstancePath, false, expectedResponseBody);
 
     server.stop();
@@ -139,7 +140,7 @@ public class ApplicationTest {
     var serverResponse = Unirest.post(createInstanceUrl).body(createInstacePayload).asString();
     assertThat(serverResponse.isSuccess(), is(success));
     var serverResponseBody = new JSONObject(serverResponse.getBody());
-    assertTrue(serverResponseBody.similar(expectedResponseBody));
+    assertEquals(expectedResponseBody.toString(), serverResponseBody.toString());
 
     if (success) {
       verify(this.publisher, times(1)).publish(any(JSONObject.class));

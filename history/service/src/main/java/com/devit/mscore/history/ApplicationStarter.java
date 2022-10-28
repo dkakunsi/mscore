@@ -51,7 +51,7 @@ public class ApplicationStarter implements Starter {
   private List<String> getTopicsToListen() throws ConfigException {
     var topicConfigName = String.format(TOPICS_KEY, this.configuration.getServiceName());
     var topics = configuration.getConfig(topicConfigName)
-        .orElseThrow(() -> new ConfigException("No topic provided."));
+        .orElseThrow(() -> new ConfigException("No topic provided"));
     return Stream.of(topics.split(",")).collect(Collectors.toList());
   }
 
@@ -69,6 +69,6 @@ public class ApplicationStarter implements Starter {
 
   @Override
   public void stop() {
-    throw new RuntimeException("Application is stopped.");
+    throw new RuntimeException("Application is stopped");
   }
 }

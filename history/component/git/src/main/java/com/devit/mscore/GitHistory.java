@@ -9,7 +9,6 @@ import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.logging.ApplicationLogger;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -42,7 +41,6 @@ public class GitHistory implements History {
   }
 
   @Override
-  @SuppressWarnings("PMD.GuardLogStatement")
   public void create(JSONObject message) throws HistoryException {
     LOGGER.info("Creating history of '{}'", getId(message));
     try {
@@ -90,7 +88,7 @@ public class GitHistory implements History {
       throw new HistoryException(ex);
     }
 
-    try (var writer = new FileWriter(filePath.toFile(), StandardCharsets.UTF_8)) {
+    try (var writer = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8)) {
       LOGGER.debug("Writing file to '{}'", filePath);
       writer.write(message.toString(2));
     } catch (IOException ex) {
@@ -196,7 +194,7 @@ public class GitHistory implements History {
     }
 
     private static String getGitUrl(Configuration configuration) throws ConfigException {
-      return getConfig(configuration, GIT_URL).orElseThrow(() -> new ConfigException("No git uri is provided."));
+      return getConfig(configuration, GIT_URL).orElseThrow(() -> new ConfigException("No git uri is provided"));
     }
 
     private static Optional<String> getConfig(Configuration configuration, String key) throws ConfigException {
@@ -224,19 +222,19 @@ public class GitHistory implements History {
     }
 
     private static String getHostName(Configuration configuration) throws ConfigException {
-      return getConfig(configuration, HOST_NAME).orElseThrow(() -> new ConfigException("No host name configured."));
+      return getConfig(configuration, HOST_NAME).orElseThrow(() -> new ConfigException("No host name configured"));
     }
 
     private static String getHostKey(Configuration configuration) throws ConfigException {
-      return getConfig(configuration, HOST_KEY).orElseThrow(() -> new ConfigException("No host key configured."));
+      return getConfig(configuration, HOST_KEY).orElseThrow(() -> new ConfigException("No host key configured"));
     }
 
     private static String getPrivateKey(Configuration configuration) throws ConfigException {
-      return getConfig(configuration, PRIVATE_KEY).orElseThrow(() -> new ConfigException("No private key configured."));
+      return getConfig(configuration, PRIVATE_KEY).orElseThrow(() -> new ConfigException("No private key configured"));
     }
 
     private static String getPassphrase(Configuration configuration) throws ConfigException {
-      return getConfig(configuration, PASS_PHRASE).orElseThrow(() -> new ConfigException("No passphrase configured."));
+      return getConfig(configuration, PASS_PHRASE).orElseThrow(() -> new ConfigException("No passphrase configured"));
     }
   }
 }

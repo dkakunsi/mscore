@@ -30,8 +30,8 @@ public class PebbleTemplate implements Template {
       engine.getTemplate(template).evaluate(writer, flatten(object).toMap());
       return writer.toString();
     } catch (Exception ex) {
-      LOGGER.error("Cannot load template.");
-      throw new TemplateException("Cannot load template.", ex);
+      LOGGER.error("Cannot load template");
+      throw new TemplateException("Cannot load template", ex);
     }
   }
 }

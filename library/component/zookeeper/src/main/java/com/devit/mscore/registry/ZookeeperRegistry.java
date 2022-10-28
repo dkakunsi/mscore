@@ -77,7 +77,7 @@ public class ZookeeperRegistry implements Registry {
 
       clearCache(getCacheKey(key));
     } catch (Exception ex) {
-      throw new RegistryException("Cannot create register.", ex);
+      throw new RegistryException("Cannot create register", ex);
     }
   }
 
@@ -102,13 +102,13 @@ public class ZookeeperRegistry implements Registry {
       try {
         var stat = this.client.checkExists().forPath(registryKey);
         if (stat == null) {
-          LOG.warn("No configuration value for key: {}.", registryKey);
+          LOG.warn("No configuration value for key: {}", registryKey);
           return null;
         }
         var value = this.client.getData().forPath(registryKey);
         return value != null ? new String(value, StandardCharsets.UTF_8.name()) : null;
       } catch (Exception ex) {
-        throw new ApplicationRuntimeException(new RegistryException("Cannot get register.", ex));
+        throw new ApplicationRuntimeException(new RegistryException("Cannot get register", ex));
       }
     });
 

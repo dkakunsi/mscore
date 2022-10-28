@@ -45,7 +45,7 @@ public final class EnrichmentsExecutor implements Executor<Enrichment> {
     var domain = getDomain(json);
     enrich(this.enrichments.get(ALL), json);
     if (StringUtils.isEmpty(domain)) {
-      LOG.warn("Fail to enrich domain-specific attributes of {}. Domain is not provided.", json);
+      LOG.warn("Fail to enrich domain-specific attributes of {}. Domain is not provided", json);
       return;
     }
     enrich(this.enrichments.get(domain), json);

@@ -18,7 +18,7 @@ public class Main {
       applicationStarter.start();
       LOGGER.info("Service is started!");
     } catch (RuntimeException ex) {
-      throw new ApplicationException("Service is fail to start.", ex);
+      throw new ApplicationException("Service is fail to start", ex);
     }
   }
 }

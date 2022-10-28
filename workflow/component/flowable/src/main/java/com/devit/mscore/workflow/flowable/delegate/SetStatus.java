@@ -20,7 +20,6 @@ public class SetStatus extends SetAttribute {
   private Expression closeReason;
 
   @Override
-  @SuppressWarnings("PMD.GuardLogStatement")
   public void execute(DelegateExecution execution) {
     var context = FlowableApplicationContext.of(execution);
     setContext(context);
@@ -29,7 +28,7 @@ public class SetStatus extends SetAttribute {
     var entityId = execution.getVariable("businessKey", String.class);
     var targetValue = this.status.getValue(execution).toString();
 
-    LOGGER.info("Action: {}. Updating status of {} in domain {} to {}.", context.getAction(), entityId, domain,
+    LOGGER.info("Action: {}. Updating status of {} in domain {} to {}", context.getAction(), entityId, domain,
         targetValue);
 
     var entity = getEntity(domain, entityId, "status", targetValue);
@@ -43,7 +42,7 @@ public class SetStatus extends SetAttribute {
     updateEntity(entity);
 
     execution.setVariable("entity", entity.toString());
-    LOGGER.info("BreadcrumbId: {}. Entity process variable is updated.", context.getBreadcrumbId());
+    LOGGER.info("BreadcrumbId: {}. Entity process variable is updated", context.getBreadcrumbId());
   }
 
   private String getCloseReason(DelegateExecution execution) {

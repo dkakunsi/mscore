@@ -22,12 +22,11 @@ public class FlowableDefinitionRepository implements WorkflowDefinitionRepositor
   }
 
   @Override
-  @SuppressWarnings("PMD.GuardLogStatement")
   public void deploy(WorkflowDefinition definition) {
     if (!isExists(definition)) {
       this.repositoryService.createDeployment().addString(definition.getResourceName(), definition.getContent())
           .deploy();
-      LOGGER.debug("Definition {} is deployed to Flowable.", definition.getName());
+      LOGGER.debug("Definition {} is deployed to Flowable", definition.getName());
     }
   }
 

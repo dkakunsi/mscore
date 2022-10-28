@@ -1,10 +1,5 @@
 package com.devit.mscore.web.jersey;
 
-import static com.devit.mscore.web.jersey.ResponseUtils.buildResponse;
-
-import com.devit.mscore.Logger;
-import com.devit.mscore.logging.ApplicationLogger;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -17,9 +12,7 @@ import jakarta.ws.rs.client.Invocation.Builder;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-public class JerseyClient implements com.devit.mscore.web.Client, Requester {
-
-  private static final Logger LOG = ApplicationLogger.getLogger(JerseyClient.class);
+public class JerseyClient extends Requester implements com.devit.mscore.web.Client {
 
   private Client client;
 
@@ -29,21 +22,21 @@ public class JerseyClient implements com.devit.mscore.web.Client, Requester {
 
   @Override
   public JSONObject delete(String uri) {
-    LOG.debug("Sending DELETE {}", uri);
+    logger.info("Sending DELETE {}", uri);
     var response = request(uri, new HashMap<>(), new HashMap<>()).delete();
     return buildResponse(uri, response);
   }
 
   @Override
   public JSONObject get(String uri, Map<String, String> params) {
-    LOG.debug("Sending GET {}. Entity: {}", uri, params);
+    logger.info("Sending GET {}. Params: {}", uri, params);
     var response = request(uri, params, new HashMap<>()).get();
     return buildResponse(uri, response);
   }
 
   @Override
   public JSONObject post(String uri, Optional<JSONObject> payload) {
-    LOG.debug("Sending POST {}. Entity: {}", uri, payload);
+    logger.info("Sending POST {}", uri, payload);
     Response response;
     if (payload.isPresent()) {
       response = request(uri, new HashMap<>(), new HashMap<>()).post(Entity.json(payload.get().toString()));
@@ -55,7 +48,7 @@ public class JerseyClient implements com.devit.mscore.web.Client, Requester {
 
   @Override
   public JSONObject put(String uri, Optional<JSONObject> payload) {
-    LOG.debug("Sending PUT {}. Entity: {}", uri, payload);
+    logger.info("Sending PUT {}", uri, payload);
     Response response;
     if (payload.isPresent()) {
       response = request(uri, new HashMap<>(), new HashMap<>()).put(Entity.json(payload.get().toString()));

@@ -19,7 +19,7 @@ public class InitializeProcess implements JavaDelegate {
       var organisationValue = this.organisation.getValue(execution).toString();
       execution.setVariable("organisation", organisationValue);
     } catch (NullPointerException ex) {
-      LOG.warn("No organisation is provided.");
+      LOG.warn("No organisation is provided");
     }
   }
 }

@@ -43,12 +43,12 @@ public class ResourceService extends AbstractGatewayService {
       var uri = getUri(domain);
       var result = this.client.post(uri, Optional.of(payload));
       if (shouldExecuteWorkflow(result)) {
-        LOGGER.info("Executing workflow.");
+        LOGGER.info("Executing workflow");
         executeWorkflow(payload, result);
       }
       return result;
     } catch (ApplicationRuntimeException ex) {
-      LOGGER.error("Cannot POST a resource.");
+      LOGGER.error("Cannot POST a resource");
       throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
     }
   }
@@ -69,7 +69,7 @@ public class ResourceService extends AbstractGatewayService {
     try {
       this.workflowService.createInstance(payload);
     } catch (WebClientException ex) {
-      LOGGER.error("Cannot start a workflow instance.", ex);
+      LOGGER.error("Cannot start a workflow instance", ex);
     }
   }
 

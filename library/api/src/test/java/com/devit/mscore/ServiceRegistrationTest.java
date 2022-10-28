@@ -102,13 +102,13 @@ public class ServiceRegistrationTest {
 
   @Test
   public void testRegister_ThrowException() throws RegistryException, UnknownHostException, ConfigException {
-    doThrow(new ConfigException("Error message.")).when(this.configuration)
+    doThrow(new ConfigException("Error message")).when(this.configuration)
         .getConfig("platform.service.registry.static");
     var ex = assertThrows(RegistryException.class, () -> this.serviceRegistration.register("domain"));
 
     var actualEx = ex.getCause();
     assertThat(actualEx, instanceOf(ConfigException.class));
-    assertThat(actualEx.getMessage(), is("Error message."));
+    assertThat(actualEx.getMessage(), is("Error message"));
   }
 
   @Test

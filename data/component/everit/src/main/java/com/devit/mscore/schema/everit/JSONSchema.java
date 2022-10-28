@@ -1,5 +1,7 @@
 package com.devit.mscore.schema.everit;
 
+import static com.devit.mscore.util.AttributeConstants.DOMAIN;
+
 import com.devit.mscore.Schema;
 import com.devit.mscore.exception.ResourceException;
 import com.devit.mscore.exception.ValidationException;
@@ -89,8 +91,8 @@ public class JSONSchema extends Schema {
 
     List<String> domains = new ArrayList<>();
     var properties = json.getJSONObject(PROPERTIES);
-    if (properties.has("domain")) {
-      var domain = properties.getJSONObject("domain");
+    if (properties.has(DOMAIN)) {
+      var domain = properties.getJSONObject(DOMAIN);
       if (domain.has(CONST)) {
         domains.add(domain.getString(CONST));
       } else if (domain.has(ONE_OF)) {
@@ -136,7 +138,7 @@ public class JSONSchema extends Schema {
       var everitSchema = loader.load().build();
       everitSchema.validate(json);
     } catch (org.everit.json.schema.ValidationException ex) {
-      throw new ValidationException("Failed to validate JSON.", ex);
+      throw new ValidationException("Failed to validate JSON", ex);
     }
   }
 

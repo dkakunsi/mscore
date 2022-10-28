@@ -2,8 +2,10 @@ package com.devit.mscore.gateway.api.javalin;
 
 import static com.devit.mscore.util.AttributeConstants.ID;
 
+import com.devit.mscore.Logger;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.gateway.service.EventEmitter;
+import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.web.javalin.JavalinController;
 
 import org.json.JSONObject;
@@ -11,6 +13,8 @@ import org.json.JSONObject;
 import io.javalin.http.Handler;
 
 public class WorkflowEventController extends JavalinController {
+
+  private static final Logger LOGGER = ApplicationLogger.getLogger(WorkflowEventController.class);
 
   private EventEmitter eventEmitter;
 
@@ -32,11 +36,10 @@ public class WorkflowEventController extends JavalinController {
   public Handler put() {
     return ctx -> {
       var taskId = ctx.pathParam(ID);
+      LOGGER.info("Receiving put request at {}", ctx.path());
       var taskResponse = new JSONObject(ctx.body());
       var resourceId = this.eventEmitter.complete(taskId, taskResponse);
-
-      var result = new JSONObject();
-      result.put(ID, resourceId);
+      var result = new JSONObject().put(ID, resourceId);
       ctx.status(200).contentType(CONTENT_TYPE).result(result.toString());
     };
   }

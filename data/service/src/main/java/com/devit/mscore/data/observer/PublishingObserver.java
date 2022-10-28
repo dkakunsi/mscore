@@ -1,5 +1,7 @@
 package com.devit.mscore.data.observer;
 
+import static com.devit.mscore.util.AttributeConstants.getId;
+
 import com.devit.mscore.Logger;
 import com.devit.mscore.Publisher;
 import com.devit.mscore.logging.ApplicationLogger;
@@ -10,7 +12,7 @@ public class PublishingObserver implements PostProcessObserver {
 
   private static final Logger LOG = ApplicationLogger.getLogger(PublishingObserver.class);
 
-  private static final String PUBLISHING_ERROR = "Publishing message failed.";
+  private static final String PUBLISHING_ERROR = "Publishing message failed";
 
   protected Publisher publisher;
 
@@ -22,10 +24,9 @@ public class PublishingObserver implements PostProcessObserver {
   }
 
   @Override
-  @SuppressWarnings("PMD.GuardLogStatement")
   public void notify(JSONObject json) {
     if (this.publisher == null) {
-      LOG.warn("Publisher is not provided. By pass publishing.");
+      LOG.warn("Publisher is not provided. By pass publishing");
       return;
     }
 
@@ -39,7 +40,7 @@ public class PublishingObserver implements PostProcessObserver {
       }
     }
 
-    LOG.debug("Publishing message to topic {}: {}.", this.publisher.getChannel(), json);
+    LOG.info("Publishing message to topic {} for key {}", this.publisher.getChannel(), getId(json));
     this.publisher.publish(json);
   }
 }

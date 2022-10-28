@@ -24,6 +24,6 @@ public class SynchronizationObserver implements PostProcessObserver {
   @Override
   public void notify(JSONObject message) {
     this.executor.execute(message);
-    LOG.debug("Dependency is synced: {}", message);
+    LOG.info("Dependencies are synced");
   }
 }

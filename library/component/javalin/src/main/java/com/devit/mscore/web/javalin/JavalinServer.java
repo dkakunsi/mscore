@@ -82,7 +82,6 @@ public final class JavalinServer extends Server {
     addExceptionHandler(Exception.class, 500);
   }
 
-  @SuppressWarnings("PMD.GuardLogStatement")
   public <T extends Exception> void addExceptionHandler(Class<T> type, int statusCode) {
     addExceptionHandler(type, (ex, ctx) -> {
       LOG.error("Cannot process request: {}", ex, ex.getMessage());
@@ -130,13 +129,14 @@ public final class JavalinServer extends Server {
       if (isPreflightRequest(ctx.method())) {
         return;
       }
+      LOG.info("Validating security for endpoint {}", uri);
 
       var applicationContext = JavalinApplicationContext.of(ctx);
       setContext(applicationContext);
       var sessionKey = ctx.header(AUTHORIZATION);
       var principal = this.authenticationProvider.verify(sessionKey);
       if (principal == null) {
-        throw new AuthenticationException("Not authenticated.");
+        throw new AuthenticationException("Not authenticated");
       }
 
       ctx.req.setAttribute(PRINCIPAL, principal.toString());
@@ -144,7 +144,7 @@ public final class JavalinServer extends Server {
       setContext(applicationContext);
       var requiredRole = getRequiredRole(role, ctx.method());
       if (StringUtils.isNotBlank(requiredRole) && !applicationContext.hasRole(requiredRole)) {
-        throw new AuthorizationException("Not authorized.");
+        throw new AuthorizationException("Not authorized");
       }
     }));
   }
@@ -176,11 +176,11 @@ public final class JavalinServer extends Server {
 
       var body = ctx.body();
       if (isNotJsonString(body)) {
-        throw new ValidationException("Unexpected format.");
+        throw new ValidationException("Unexpected format");
       }
 
       if (!isValid(new JSONObject(body))) {
-        throw new ValidationException("Invalid data. Please check log for detail.");
+        throw new ValidationException("Invalid data. Please check log for detail");
       }
     });
   }

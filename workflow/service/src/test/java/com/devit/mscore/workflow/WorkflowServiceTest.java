@@ -64,7 +64,7 @@ public class WorkflowServiceTest {
     doThrow(new RuntimeException()).when(this.definitionRepository).deploy(any(WorkflowDefinition.class));
 
     var ex = assertThrows(ProcessException.class, () -> this.service.deployDefinition(definition));
-    assertThat(ex.getMessage(), is("Definition deployment failed."));
+    assertThat(ex.getMessage(), is("Definition deployment failed"));
   }
 
   @Test
@@ -98,6 +98,6 @@ public class WorkflowServiceTest {
     doReturn(Optional.empty()).when(this.definitionRepository).getDefinitionId(anyString());
 
     var ex = assertThrows(ProcessException.class, () -> this.service.deployDefinition(definition));
-    assertThat(ex.getMessage(), is("Cannot register process deployment."));
+    assertThat(ex.getMessage(), is("Cannot register process deployment"));
   }
 }

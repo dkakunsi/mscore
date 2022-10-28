@@ -55,15 +55,15 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
       var keyFactory = KeyFactory.getInstance("RSA");
       return (RSAPublicKey) keyFactory.generatePublic(keySpec);
     } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-      LOG.error("Failed to create RSA public key.");
-      throw new ConfigException("Cannot create RSA key for authentication.", ex);
+      LOG.error("Failed to create RSA public key");
+      throw new ConfigException("Cannot create RSA key for authentication", ex);
     }
   }
 
   @Override
   public JSONObject verify(String key) throws AuthenticationException {
     if (StringUtils.isBlank(key)) {
-      LOG.info("Session key is not provided.");
+      LOG.info("Session key is not provided");
       return null;
     }
 
@@ -77,7 +77,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
       return getPrincipalData(payload);
     } catch (JWTVerificationException | JSONException | UnsupportedEncodingException ex) {
       LOG.error("Token is not valid: {}", token);
-      throw new AuthenticationException("Token is not valid.", ex);
+      throw new AuthenticationException("Token is not valid", ex);
     }
   }
 
@@ -92,16 +92,14 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
 
   private static JSONObject getPrincipalData(JSONObject token) {
     LOG.debug("Verified session: {}", token);
-    // @formatter:off
-        return new JSONObject()
-                .put(REQUESTED_BY, token.getString("name"))
-                .put(ROLE, token.getJSONObject("realm_access").getJSONArray("roles"));
-        // @formatter:on
+    return new JSONObject()
+        .put(REQUESTED_BY, token.getString("name"))
+        .put(ROLE, token.getJSONObject("realm_access").getJSONArray("roles"));
   }
 
   @Override
   public void storeToken(JSONObject token) throws ApplicationException {
-    throw new ImplementationException("Not implemented yet.");
+    throw new ImplementationException("Not implemented yet");
   }
 
   @Override
@@ -112,7 +110,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
   public static JWTAuthenticationProvider of(Configuration configuration) throws ConfigException {
     var secureUri = String.format(SECURE_URI, configuration.getServiceName());
     var publicKey = configuration.getConfig(PUBLIC_KEY)
-        .orElseThrow(() -> new ConfigException("Public key is not configured correctly."));
+        .orElseThrow(() -> new ConfigException("Public key is not configured correctly"));
     try {
       if (!configuration.has(secureUri) || configuration.getConfig(secureUri).isEmpty()) {
         return new JWTAuthenticationProvider(publicKey, Map.of());
@@ -120,7 +118,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
       var uris = new JSONObject(configuration.getConfig(secureUri).orElse("")).toMap();
       return new JWTAuthenticationProvider(publicKey, uris);
     } catch (JSONException | UnsupportedEncodingException ex) {
-      throw new ConfigException("Invalid security configuration.", ex);
+      throw new ConfigException("Invalid security configuration", ex);
     }
   }
 }
