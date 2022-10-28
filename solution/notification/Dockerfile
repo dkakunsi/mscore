@@ -1,4 +1,4 @@
-FROM devit16/mscore-notification-service
+FROM dkakunsi/mscore-notification
 
 COPY ./template $APP_HOME/template
 COPY *.config $APP_HOME/

@@ -1,4 +1,4 @@
-FROM devit16/mscore-gateway-service
+FROM dkakunsi/mscore-gateway
 
 COPY *.config $APP_HOME/
 COPY *.properties $APP_HOME/

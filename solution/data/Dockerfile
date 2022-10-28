@@ -1,4 +1,4 @@
-FROM devit16/mscore-data-service
+FROM dkakunsi/mscore-data
 
 COPY ./schema $APP_HOME/schema
 COPY ./mapping $APP_HOME/mapping
