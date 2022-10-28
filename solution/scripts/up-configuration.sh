@@ -12,12 +12,6 @@ docker-compose \
   -f ./docker-compose-configuration.yml \
   up -d
 
-sleep 5
-
-docker-compose \
-  -f ./docker-compose-service.yml \
-  up -d
-
 docker-compose \
   -f ./docker-compose-configuration.yml \
   stop configuration

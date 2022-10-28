@@ -9,7 +9,7 @@ docker-compose \
 sleep 5
 
 docker-compose \
-  -f ./docker-compose-comfiguration.yml \
+  -f ./docker-compose-configuration.yml \
   start
 
 sleep 5
