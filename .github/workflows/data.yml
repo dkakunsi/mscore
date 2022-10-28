@@ -94,8 +94,8 @@ jobs:
         file: "data/service/target/Dockerfile"
         push: true
         tags: |
-          devit16/mscore-data-service:${{ env.VERSION_NUMBER }}
-          devit16/mscore-data-service:latest
+          dkakunsi/mscore-data:${{ env.VERSION_NUMBER }}
+          dkakunsi/mscore-data:latest
 
     - name: Build and push reference docker image
       uses: docker/build-push-action@v3.1.1
@@ -104,5 +104,5 @@ jobs:
         file: "solution/data/Dockerfile"
         push: true
         tags: |
-          devit16/ref-data:${{ env.VERSION_NUMBER }}
-          devit16/ref-data:latest
+          dkakunsi/reference-data:${{ env.VERSION_NUMBER }}
+          dkakunsi/reference-data:latest

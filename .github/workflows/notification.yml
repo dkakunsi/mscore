@@ -94,8 +94,8 @@ jobs:
         file: "notification/service/target/Dockerfile"
         push: true
         tags: |
-          devit16/mscore-notification-service:${{ env.VERSION_NUMBER }}
-          devit16/mscore-notification-service:latest
+          dkakunsi/mscore-notification:${{ env.VERSION_NUMBER }}
+          dkakunsi/mscore-notification:latest
 
     - name: Build and push reference docker image
       uses: docker/build-push-action@v3.1.1
@@ -104,5 +104,5 @@ jobs:
         file: "solution/notification/Dockerfile"
         push: true
         tags: |
-          devit16/ref-notification:${{ env.VERSION_NUMBER }}
-          devit16/ref-notification:latest
+          dkakunsi/reference-notification:${{ env.VERSION_NUMBER }}
+          dkakunsi/reference-notification:latest

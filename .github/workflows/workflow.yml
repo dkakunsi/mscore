@@ -94,8 +94,8 @@ jobs:
         file: "workflow/service/target/Dockerfile"
         push: true
         tags: |
-          devit16/mscore-workflow-service:${{ env.VERSION_NUMBER }}
-          devit16/mscore-workflow-service:latest
+          dkakunsi/mscore-workflow:${{ env.VERSION_NUMBER }}
+          dkakunsi/mscore-workflow:latest
 
     - name: Build and push reference docker image
       uses: docker/build-push-action@v3.1.1
@@ -104,5 +104,5 @@ jobs:
         file: "solution/workflow/Dockerfile"
         push: true
         tags: |
-          devit16/ref-workflow:${{ env.VERSION_NUMBER }}
-          devit16/ref-workflow:latest
+          dkakunsi/reference-workflow:${{ env.VERSION_NUMBER }}
+          dkakunsi/reference-workflow:latest
