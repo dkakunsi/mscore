@@ -75,9 +75,4 @@ public class JerseyClient extends Requester implements com.devit.mscore.web.Clie
 
     return builder;
   }
-
-  @Override
-  public Object clone() throws CloneNotSupportedException {
-    return super.clone();
-  }
 }

@@ -1,7 +1,6 @@
 package com.devit.mscore.data.observer;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -15,7 +14,6 @@ public class SynchronizationObserverTest {
   @Test
   public void testNotify() throws CloneNotSupportedException {
     var executor = mock(SynchronizationsExecutor.class);
-    doReturn(executor).when(executor).clone();
     var syncObserver = new SynchronizationObserver();
     syncObserver.setExecutor(executor);
     var message = new JSONObject();

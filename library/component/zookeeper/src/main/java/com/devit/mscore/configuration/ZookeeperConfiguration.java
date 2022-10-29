@@ -2,7 +2,6 @@ package com.devit.mscore.configuration;
 
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Registry;
-import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 
@@ -21,13 +20,9 @@ public class ZookeeperConfiguration implements Configuration {
   private String serviceName;
 
   public ZookeeperConfiguration(Registry registry, String serviceName) throws ConfigException {
-    try {
-      this.registry = (Registry) registry.clone();
-      this.serviceName = serviceName;
-      init();
-    } catch (CloneNotSupportedException ex) {
-      throw new ApplicationRuntimeException(ex);
-    }
+    this.registry = registry;
+    this.serviceName = serviceName;
+    init();
   }
 
   private void init() throws ConfigException {

@@ -56,10 +56,5 @@ public class RegistryTest {
     public List<String> keys() throws RegistryException {
       return null;
     }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-      return super.clone();
-    }
   }
 }

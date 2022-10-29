@@ -3,7 +3,6 @@ package com.devit.mscore.gateway.api.javalin;
 import static com.devit.mscore.util.AttributeConstants.ID;
 
 import com.devit.mscore.Logger;
-import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.gateway.service.EventEmitter;
 import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.web.javalin.JavalinController;
@@ -20,11 +19,7 @@ public class WorkflowEventController extends JavalinController {
 
   public WorkflowEventController(EventEmitter eventEmitter) {
     super(eventEmitter);
-    try {
-      this.eventEmitter = (EventEmitter) eventEmitter.clone();
-    } catch (CloneNotSupportedException ex) {
-      throw new ApplicationRuntimeException(ex);
-    }
+    this.eventEmitter = eventEmitter;
   }
 
   @Override

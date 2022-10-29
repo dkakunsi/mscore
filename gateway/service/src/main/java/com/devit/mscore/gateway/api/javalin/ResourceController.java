@@ -5,7 +5,6 @@ import static com.devit.mscore.util.AttributeConstants.CODE;
 import static com.devit.mscore.util.AttributeConstants.DOMAIN;
 import static com.devit.mscore.util.AttributeConstants.ID;
 
-import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.ValidationException;
 import com.devit.mscore.gateway.service.ResourceService;
 import com.devit.mscore.web.javalin.JavalinController;
@@ -21,11 +20,7 @@ public class ResourceController extends JavalinController {
 
   public ResourceController(ResourceService resourceService) {
     super(resourceService);
-    try {
-      this.resourceService = (ResourceService) resourceService.clone();
-    } catch (CloneNotSupportedException ex) {
-      throw new ApplicationRuntimeException(ex);
-    }
+    this.resourceService = resourceService;
   }
 
   @Override

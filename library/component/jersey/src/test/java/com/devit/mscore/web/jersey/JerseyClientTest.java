@@ -2,7 +2,6 @@ package com.devit.mscore.web.jersey;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -152,11 +151,5 @@ public class JerseyClientTest {
     assertThat(result.length(), is(2));
     assertThat(result.getInt("code"), is(400));
     assertThat(result.getJSONObject("payload").getString("message"), is("Invalid Message"));
-  }
-
-  @Test
-  public void testClone() throws CloneNotSupportedException {
-    var clone = this.webClient.clone();
-    assertNotEquals(clone, this.webClient);
   }
 }

@@ -27,7 +27,6 @@ public class ZookeeperConfigurationTest {
   @Before
   public void setup() throws CloneNotSupportedException {
     this.registry = mock(Registry.class);
-    doReturn(this.registry).when(this.registry).clone();
   }
 
   @Test
@@ -86,7 +85,6 @@ public class ZookeeperConfigurationTest {
   public void testGetConfigByKey() throws ConfigException, RegistryException, CloneNotSupportedException {
     var mockedRegistry = mock(Registry.class);
     doReturn("serviceGroup1").when(mockedRegistry).get("/platform/kafka/group.id");
-    doReturn(mockedRegistry).when(mockedRegistry).clone();
 
     var configuration = new ZookeeperConfiguration(mockedRegistry, "serviceName");
     assertThat(configuration.getPrefixSeparator(), is("."));

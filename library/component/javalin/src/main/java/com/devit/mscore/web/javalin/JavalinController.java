@@ -21,7 +21,7 @@ import io.javalin.http.Handler;
  *
  * @author dkakunsi
  */
-public class JavalinController implements Cloneable {
+public class JavalinController {
 
   private static final Logger LOG = ApplicationLogger.getLogger(JavalinController.class);
 
@@ -153,10 +153,5 @@ public class JavalinController implements Cloneable {
 
   private JSONObject getSyncMessage() {
     return new JSONObject().put("message", "Synchronization process is in progress");
-  }
-
-  @Override
-  public Object clone() throws CloneNotSupportedException {
-    return super.clone();
   }
 }

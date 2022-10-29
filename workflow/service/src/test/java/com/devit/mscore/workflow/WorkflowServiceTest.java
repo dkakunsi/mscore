@@ -48,7 +48,6 @@ public class WorkflowServiceTest {
   public void setup() throws ApplicationException, CloneNotSupportedException {
     this.publisher = mock(Publisher.class);
     this.registry = mock(Registry.class);
-    doReturn(this.registry).when(this.registry).clone();
 
     this.definitionRepository = mock(WorkflowDefinitionRepository.class);
     this.instanceRepository = mock(WorkflowInstanceRepository.class);

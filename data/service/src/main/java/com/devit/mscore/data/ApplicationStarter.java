@@ -133,6 +133,7 @@ public class ApplicationStarter implements Starter {
     var registration = new ServiceRegistration(this.serviceRegistry, this.configuration);
     var services = new HashMap<String, Service>();
     var syncObserver = new SynchronizationObserver();
+    syncObserver.setExecutor(this.synchronizationsExecutor);
 
     // Generate service and it's dependencies from schema.
     var delay = getPublishingDelay();
@@ -141,7 +142,8 @@ public class ApplicationStarter implements Starter {
         var index = indexFactory.index(schema.getDomain());
         this.indices.put(schema.getDomain(), index.build());
 
-        // createEnrichment(schema, this.enrichmentsExecutor, this.indices);
+        schema.getReferenceNames()
+            .forEach(attr -> enrichmentsExecutor.add(new IndexEnrichment(indices, schema.getDomain(), attr)));
 
         var repository = repositoryFactory.repository(schema);
         var publisher = messagingFactory.publisher(schema.getDomain());
@@ -162,10 +164,6 @@ public class ApplicationStarter implements Starter {
         throw new ApplicationRuntimeException(ex);
       }
     });
-
-    syncObserver.setExecutor(this.synchronizationsExecutor);
-    schemaManager.getSchemas().forEach(s -> s.getReferenceNames()
-        .forEach(attr -> enrichmentsExecutor.add(new IndexEnrichment(indices, s.getDomain(), attr))));
 
     // Create listener
     var eventTopic = messagingFactory.getTopics(EVENT_TOPIC);

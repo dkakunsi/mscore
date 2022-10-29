@@ -47,15 +47,11 @@ public class WorkflowServiceImpl implements WorkflowService {
   public WorkflowServiceImpl(Registry registry, Publisher publisher, WorkflowDefinitionRepository definitionRepository,
       WorkflowInstanceRepository instanceRepository, WorkflowTaskRepository taskRepository)
       throws ApplicationException {
-    try {
-      this.registry = (Registry) registry.clone();
-      this.publisher = publisher;
-      this.definitionRepository = definitionRepository;
-      this.instanceRepository = instanceRepository;
-      this.taskRepository = taskRepository;
-    } catch (CloneNotSupportedException ex) {
-      throw new ApplicationException(ex);
-    }
+    this.registry = registry;
+    this.publisher = publisher;
+    this.definitionRepository = definitionRepository;
+    this.instanceRepository = instanceRepository;
+    this.taskRepository = taskRepository;
   }
 
   @Override
@@ -168,10 +164,5 @@ public class WorkflowServiceImpl implements WorkflowService {
   @Override
   public String getDomain() {
     return WorkflowDefinition.PROCESS;
-  }
-
-  @Override
-  public Object clone() throws CloneNotSupportedException {
-    return super.clone();
   }
 }

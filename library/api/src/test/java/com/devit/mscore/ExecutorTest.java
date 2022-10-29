@@ -40,9 +40,5 @@ public class ExecutorTest {
     @Override
     public void execute(JSONObject json) throws ApplicationRuntimeException {
     }
-
-    public Object clone() throws CloneNotSupportedException {
-      return super.clone();
-    }
   }
 }

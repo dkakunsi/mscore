@@ -2,7 +2,6 @@ package com.devit.mscore.data.observer;
 
 import com.devit.mscore.Logger;
 import com.devit.mscore.data.synchronization.SynchronizationsExecutor;
-import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.logging.ApplicationLogger;
 
 import org.json.JSONObject;
@@ -14,11 +13,7 @@ public class SynchronizationObserver implements PostProcessObserver {
   private SynchronizationsExecutor executor;
 
   public void setExecutor(SynchronizationsExecutor executor) {
-    try {
-      this.executor = (SynchronizationsExecutor) executor.clone();
-    } catch (CloneNotSupportedException ex) {
-      throw new ApplicationRuntimeException(ex);
-    }
+    this.executor = executor;
   }
 
   @Override
