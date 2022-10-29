@@ -15,8 +15,6 @@ public class PublishingObserver implements PostProcessObserver {
 
   private static final Logger LOG = ApplicationLogger.getLogger(PublishingObserver.class);
 
-  private static final String PUBLISHING_ERROR = "Publishing message failed";
-
   protected Publisher publisher;
 
   protected Long delay;
@@ -33,24 +31,14 @@ public class PublishingObserver implements PostProcessObserver {
       return;
     }
 
-    if (this.delay != null) {
-      try {
-        // Without delay the synchronization chain will not get the correct data.
-        Thread.sleep(this.delay);
-      } catch (InterruptedException ex) {
-        LOG.error(PUBLISHING_ERROR, ex);
-        Thread.currentThread().interrupt();
-      }
-    }
-
-    var event = createEvent(json);
     LOG.info("Publishing message to topic {} for key {}", this.publisher.getChannel(), getId(json));
+    var event = createEvent(json);
     this.publisher.publish(event.toJson());
   }
 
   private Event createEvent(JSONObject json) {
     var context = ApplicationContext.getContext();
-    var eventType = Event.Type.valueOf(context.getAction().get().toUpperCase());
+    var eventType = Event.Type.valueOf(context.getEventType().get().toUpperCase());
     return Event.of(eventType, getDomain(json), json);
   }
 }
