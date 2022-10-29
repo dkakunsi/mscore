@@ -141,6 +141,14 @@ public class KafkaMessagingFactory {
     return checkTopicsResult(topics);
   }
 
+  public Optional<String> getTopic(String configKey) throws ConfigException {
+    var topics = getTemplatedTopics(configKey);
+    if (topics.isEmpty()) {
+      return Optional.empty();
+    }
+    return Optional.of(topics.get()[0]);
+  }
+
   private Optional<String[]> checkTopicsResult(Optional<String> resultOptional) {
     if (resultOptional.isEmpty()) {
       return Optional.empty();
