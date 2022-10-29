@@ -18,8 +18,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
@@ -58,7 +60,8 @@ public class KafkaPublisher implements Publisher {
 
     // @formatter:off
     var headers = buildHeader();
-    LOG.info("Publishing message to topic {}. Headers: {}. Message: {}", this.topic, headers, json);
+    var printableHeaders = headers.stream().map(h -> Pair.of(h.key(), new String(h.value()))).collect(Collectors.toList());
+    LOG.info("Publishing message to topic {}. Headers: {}. Message: {}", this.topic, printableHeaders, json);
     var producerRecord = new ProducerRecord<String, String>(this.topic, null, getId(json), json.toString(), headers);
     this.producer.send(producerRecord);
     // @formatter:on

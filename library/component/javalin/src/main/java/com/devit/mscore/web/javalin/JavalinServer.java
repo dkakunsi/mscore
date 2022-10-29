@@ -221,7 +221,7 @@ public final class JavalinServer extends Server {
   }
 
   private String getEventType(Context ctx) {
-    switch (ctx.method()) {
+    switch (ctx.method().toLowerCase()) {
       case "post":
         return Event.Type.CREATE.toString();
       case "put":
