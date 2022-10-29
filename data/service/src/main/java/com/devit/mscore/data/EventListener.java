@@ -4,7 +4,6 @@ import static com.devit.mscore.util.AttributeConstants.getId;
 
 import com.devit.mscore.Event;
 import com.devit.mscore.Listener;
-import com.devit.mscore.Logger;
 import com.devit.mscore.Service;
 import com.devit.mscore.Subscriber;
 import com.devit.mscore.exception.ApplicationException;
@@ -17,12 +16,10 @@ import org.json.JSONObject;
 
 public class EventListener extends Listener {
 
-  private static final Logger LOGGER = ApplicationLogger.getLogger(EventListener.class);
-
   private Map<String, Service> services;
 
   private EventListener(Subscriber subscriber, Map<String, Service> services) {
-    super(subscriber);
+    super(subscriber, ApplicationLogger.getLogger(EventListener.class));
     this.services = services;
   }
 
@@ -36,7 +33,7 @@ public class EventListener extends Listener {
   @Override
   protected void consume(JSONObject message) {
     var event = Event.of(message);
-    LOGGER.info("Processing {} event for domain {}", event.getAction(), event.getDomain());
+    logger.info("Processing {} event for domain {}", event.getAction(), event.getDomain());
     var service = this.services.get(message.getString(Event.DOMAIN));
     try {
       if (Event.Type.CREATE.equals(event.getType()) || Event.Type.UPDATE.equals(event.getType())) {
@@ -44,10 +41,10 @@ public class EventListener extends Listener {
       } else if (Event.Type.REMOVE.equals(event.getType())) {
         service.delete(getId(event.getData()));
       } else {
-        LOGGER.info("Cannot process event type: {}", event.getType());
+        logger.info("Cannot process event type: {}", event.getType());
       }
     } catch (ApplicationException ex) {
-      LOGGER.error("Fail processing the event", ex);
+      logger.error("Fail processing the event", ex);
     }
   }
 }
