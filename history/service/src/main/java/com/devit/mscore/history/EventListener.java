@@ -1,5 +1,6 @@
 package com.devit.mscore.history;
 
+import com.devit.mscore.Event;
 import com.devit.mscore.History;
 import com.devit.mscore.HistoryException;
 import com.devit.mscore.Listener;
@@ -33,7 +34,8 @@ public class EventListener extends Listener {
   public void consume(JSONObject message) {
     logger.debug("Receive event message: {}", message);
     try {
-      this.history.create(message);
+      var event = Event.of(message);
+      this.history.create(event.getData());
     } catch (HistoryException ex) {
       logger.error("Failed to create history", ex);
     }

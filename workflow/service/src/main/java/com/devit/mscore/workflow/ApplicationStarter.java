@@ -43,7 +43,7 @@ public class ApplicationStarter implements Starter {
 
   private static final String TIMEZONE = "platform.service.timezone";
 
-  private static final String EVENT_TOPIC = "platform.kafka.topic.domain";
+  private static final String EVENT_TOPIC = "services.%s.workflow.topics";
 
   private String serviceName;
 
@@ -115,7 +115,8 @@ public class ApplicationStarter implements Starter {
     }
 
     // Create listener
-    var eventTopic = messagingFactory.getTopics(EVENT_TOPIC);
+    var topicConfig = String.format(EVENT_TOPIC, this.serviceName);
+    var eventTopic = messagingFactory.getTopics(topicConfig);
     if (eventTopic.isPresent()) {
       LOGGER.info("Listening to topics {}", eventTopic);
       var subscriber = messagingFactory.subscriber();

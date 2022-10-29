@@ -1,7 +1,10 @@
 package com.devit.mscore.data.observer;
 
+import static com.devit.mscore.util.AttributeConstants.getDomain;
 import static com.devit.mscore.util.AttributeConstants.getId;
 
+import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Event;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Publisher;
 import com.devit.mscore.logging.ApplicationLogger;
@@ -40,7 +43,14 @@ public class PublishingObserver implements PostProcessObserver {
       }
     }
 
+    var event = createEvent(json);
     LOG.info("Publishing message to topic {} for key {}", this.publisher.getChannel(), getId(json));
-    this.publisher.publish(json);
+    this.publisher.publish(event.toJson());
+  }
+
+  private Event createEvent(JSONObject json) {
+    var context = ApplicationContext.getContext();
+    var eventType = Event.Type.valueOf(context.getAction().get().toUpperCase());
+    return Event.of(eventType, getDomain(json), json);
   }
 }
