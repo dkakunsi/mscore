@@ -59,28 +59,27 @@ public class KafkaPublisher implements Publisher {
     }
 
     // @formatter:off
-    var headers = buildHeader();
-    var printableHeaders = headers.stream().map(h -> Pair.of(h.key(), new String(h.value()))).collect(Collectors.toList());
-    LOG.info("Publishing message to topic {}. Headers: {}. Message: {}", this.topic, printableHeaders, json);
+    var headerPairs = buildHeaderPairs();
+    var headers = headerPairs.stream().map(p -> createHeader(p.getKey(), p.getValue())).collect(Collectors.toList());
+    LOG.info("Publishing message to topic {}. Headers: {}. Message: {}", this.topic, headerPairs, json);
     var producerRecord = new ProducerRecord<String, String>(this.topic, null, getId(json), json.toString(), headers);
     this.producer.send(producerRecord);
     // @formatter:on
   }
 
-  private static List<Header> buildHeader() {
+  private static List<Pair<String, String>> buildHeaderPairs() {
     var context = getContext();
-
-    List<Header> headers = new ArrayList<>();
-    Optional.of(context.getBreadcrumbId()).ifPresent(b -> addHeader(headers, BREADCRUMB_ID, b));
-    context.getPrincipal().ifPresent(p -> addHeader(headers, PRINCIPAL, p.toString()));
-    context.getAction().ifPresent(a -> addHeader(headers, ACTION, a));
-    context.getEventType().ifPresent(et -> addHeader(headers, EVENT_TYPE, et));
-    return headers;
+    var headerPairs = new ArrayList<Pair<String, String>>();
+    Optional.of(context.getBreadcrumbId()).ifPresent(b -> headerPairs.add(Pair.of(BREADCRUMB_ID, b)));
+    context.getPrincipal().ifPresent(p -> headerPairs.add(Pair.of(PRINCIPAL, p.toString())));
+    context.getAction().ifPresent(a -> headerPairs.add(Pair.of(ACTION, a)));
+    context.getEventType().ifPresent(et -> headerPairs.add(Pair.of(EVENT_TYPE, et)));
+    return headerPairs;
   }
 
-  private static void addHeader(List<Header> headers, String key, String value) {
+  private static Header createHeader(String key, String value) {
     try {
-      headers.add(new RecordHeader(key, value.getBytes(StandardCharsets.UTF_8.name())));
+      return new RecordHeader(key, value.getBytes(StandardCharsets.UTF_8.name()));
     } catch (UnsupportedEncodingException ex) {
       throw new ApplicationRuntimeException(new ConfigException(ex));
     }
