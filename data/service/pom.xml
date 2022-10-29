@@ -9,7 +9,7 @@
     <relativePath>../../common/main/pom.xml</relativePath>
   </parent>
 
-  <artifactId>data-service</artifactId>
+  <artifactId>data</artifactId>
   <version>${revision}</version>
   <name>MSCore :: Data Service</name>
 

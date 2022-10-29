@@ -15,13 +15,13 @@
   <properties>
     <assembly.mainClass>com.devit.mscore.Main</assembly.mainClass>
 
+    <owner.name>dkakunsi</owner.name>
     <group.name>mscore</group.name>
     <component.name>${project.artifactId}</component.name>
-    <docker.build.dir>${project.build.directory}</docker.build.dir>
-    <docker.output.dir>/docker</docker.output.dir>
+    <docker.output.dir>${project.basedir}/docker</docker.output.dir>
 
     <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-    <docker-maven-plugin.version>0.38.0</docker-maven-plugin.version>
+    <docker-maven-plugin.version>0.40.2</docker-maven-plugin.version>
 
     <sonar.java.checkstyle.reportPaths>${maven.multiModuleProjectDirectory}/service/target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
     <sonar.java.pmd.reportPaths>${maven.multiModuleProjectDirectory}/service/target/pmd.xml</sonar.java.pmd.reportPaths>
@@ -106,9 +106,9 @@
             <outputDirectory>${docker.output.dir}</outputDirectory>
             <images>
               <image>
-                <name>${group.name}/${component.name}</name>
+                <name>${owner.name}/${group.name}-${component.name}</name>
                 <build>
-                  <dockerFile>${docker.build.dir}/Dockerfile</dockerFile>
+                  <dockerFile>${project.build.directory}/Dockerfile</dockerFile>
                   <tags>
                     <tag>latest</tag>
                     <tag>${project.version}</tag>
