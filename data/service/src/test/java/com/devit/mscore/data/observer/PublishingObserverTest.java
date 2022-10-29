@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -22,9 +23,11 @@ import org.mockito.Mockito;
 
 public class PublishingObserverTest {
 
+  private static final String PUBLISHING_CHANNEL = "channel1";
+
   @Test
   public void testNotify_NullPublisher() {
-    var spiedObserver = spy(new PublishingObserver(null, 0L));
+    var spiedObserver = spy(new PublishingObserver(null, PUBLISHING_CHANNEL));
     spiedObserver.notify(new JSONObject());
     verify(spiedObserver).notify(any(JSONObject.class));
   }
@@ -38,16 +41,16 @@ public class PublishingObserverTest {
       utilities.when(() -> ApplicationContext.getContext()).thenReturn(context);
 
       var publisher = mock(Publisher.class);
-      doThrow(new RuntimeException("Test")).when(publisher).publish(any(JSONObject.class));
+      doThrow(new RuntimeException("Test")).when(publisher).publish(eq(PUBLISHING_CHANNEL), any(JSONObject.class));
   
-      var publishingObserver = new PublishingObserver(publisher, 0L);
+      var publishingObserver = new PublishingObserver(publisher, PUBLISHING_CHANNEL);
   
       var json = new JSONObject();
       var ex = assertThrows(RuntimeException.class, () -> {
         publishingObserver.notify(json);
       });
   
-      verify(publisher).publish(any(JSONObject.class));
+      verify(publisher).publish(eq(PUBLISHING_CHANNEL), any(JSONObject.class));
       assertThat("Test", is(ex.getMessage()));
     }
   }

@@ -9,6 +9,7 @@ import com.devit.mscore.Logger;
 import com.devit.mscore.Publisher;
 import com.devit.mscore.logging.ApplicationLogger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 public class PublishingObserver implements PostProcessObserver {
@@ -17,23 +18,23 @@ public class PublishingObserver implements PostProcessObserver {
 
   protected Publisher publisher;
 
-  protected Long delay;
+  protected String publishingChannel;
 
-  public PublishingObserver(Publisher publisher, Long delay) {
+  public PublishingObserver(Publisher publisher, String publishingChannel) {
     this.publisher = publisher;
-    this.delay = delay;
+    this.publishingChannel = publishingChannel;
   }
 
   @Override
   public void notify(JSONObject json) {
-    if (this.publisher == null) {
-      LOG.warn("Publisher is not provided. By pass publishing");
+    if (publisher == null || StringUtils.isBlank(publishingChannel)) {
+      LOG.warn("Cannot publish event for publisher {} and channel {}", publisher, publishingChannel);
       return;
     }
 
-    LOG.info("Publishing message to topic {} for key {}", this.publisher.getChannel(), getId(json));
+    LOG.info("Publishing message to topic {} for key {}", publishingChannel, getId(json));
     var event = createEvent(json);
-    this.publisher.publish(event.toJson());
+    publisher.publish(publishingChannel, event.toJson());
   }
 
   private Event createEvent(JSONObject json) {

@@ -54,8 +54,6 @@ public class ApplicationStarter implements Starter {
 
   private static final String TIMEZONE = "platform.service.timezone";
 
-  private static final String PUBLISHING_DELAY = "platform.kafka.publishing.delay";
-
   private static final String DEFAULT_ZONE_ID = "Asia/Makassar";
 
   private Configuration configuration;
@@ -134,9 +132,9 @@ public class ApplicationStarter implements Starter {
     var services = new HashMap<String, Service>();
     var syncObserver = new SynchronizationObserver();
     syncObserver.setExecutor(this.synchronizationsExecutor);
+    var publisher = messagingFactory.publisher();
 
     // Generate service and it's dependencies from schema.
-    var delay = getPublishingDelay();
     schemaManager.getSchemas().stream().forEach(schema -> {
       try {
         var index = indexFactory.index(schema.getDomain());
@@ -146,9 +144,9 @@ public class ApplicationStarter implements Starter {
             .forEach(attr -> enrichmentsExecutor.add(new IndexEnrichment(indices, schema.getDomain(), attr)));
 
         var repository = repositoryFactory.repository(schema);
-        var publisher = messagingFactory.publisher(schema.getDomain());
         var indexingObserver = new IndexingObserver(index);
-        var publishingObserver = new PublishingObserver(publisher, delay);
+        var eventChannel = messagingFactory.getTemplatedTopics(schema.getDomain()).orElse(new String[] {""});
+        var publishingObserver = new PublishingObserver(publisher, eventChannel[0]);
         var service = new DefaultService(schema, repository, index, this.validationsExecutor, filter,
             this.enrichmentsExecutor)
             .addObserver(indexingObserver)
@@ -160,7 +158,7 @@ public class ApplicationStarter implements Starter {
 
         services.put(service.getDomain(), service);
         synchronizationsExecutor.add(service);
-      } catch (RegistryException ex) {
+      } catch (RegistryException | ConfigException ex) {
         throw new ApplicationRuntimeException(ex);
       }
     });
@@ -178,15 +176,6 @@ public class ApplicationStarter implements Starter {
     apiFactory.server().start();
 
     this.serviceRegistry.close();
-  }
-
-  private Long getPublishingDelay() throws ConfigException {
-    var wait = this.configuration.getConfig(PUBLISHING_DELAY).orElse("0");
-    try {
-      return Long.parseLong(wait);
-    } catch (NumberFormatException ex) {
-      return 0L;
-    }
   }
 
   private static void registerResource(ResourceManager resourceManager) {

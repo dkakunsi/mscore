@@ -45,6 +45,8 @@ import org.mockito.Mockito;
 
 public class DefaultServiceTest {
 
+  private static final String PUBLISHING_CHANNEL = "channel1";
+
   private DefaultService service;
 
   private Repository repository;
@@ -65,7 +67,7 @@ public class DefaultServiceTest {
     var filter = mock(FiltersExecutor.class);
     var enricher = mock(EnrichmentsExecutor.class);
     var indexingObserver = new IndexingObserver(this.index);
-    var publishingObserver = new PublishingObserver(this.publisher, 0L);
+    var publishingObserver = new PublishingObserver(this.publisher,PUBLISHING_CHANNEL);
     this.service = new DefaultService(this.schema, this.repository, this.index, validator, filter, enricher)
         .addObserver(indexingObserver).addObserver(publishingObserver);
 
