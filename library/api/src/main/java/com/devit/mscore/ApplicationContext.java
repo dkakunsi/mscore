@@ -3,6 +3,7 @@ package com.devit.mscore;
 import static com.devit.mscore.util.Utils.ACTION;
 import static com.devit.mscore.util.Utils.AUTHORIZATION;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
+import static com.devit.mscore.util.Utils.EVENT_TYPE;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
 import static com.devit.mscore.util.Utils.REQUESTED_BY;
 import static com.devit.mscore.util.Utils.ROLE;
@@ -116,6 +117,15 @@ public abstract class ApplicationContext {
    */
   public Optional<JSONObject> getPrincipal() {
     return Optional.ofNullable(getJsonObject(PRINCIPAL));
+  }
+
+  /**
+   * Get event type. This will be used in event stream.
+   * 
+   * @return event type
+   */
+  public Optional<String> getEventType() {
+    return Optional.ofNullable(getString(EVENT_TYPE));
   }
 
   /**

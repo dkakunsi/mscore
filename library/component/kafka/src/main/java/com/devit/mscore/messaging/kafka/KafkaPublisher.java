@@ -4,6 +4,7 @@ import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.util.AttributeConstants.getId;
 import static com.devit.mscore.util.Utils.ACTION;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
+import static com.devit.mscore.util.Utils.EVENT_TYPE;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
 
 import com.devit.mscore.Logger;
@@ -67,9 +68,10 @@ public class KafkaPublisher implements Publisher {
     var context = getContext();
 
     List<Header> headers = new ArrayList<>();
-    Optional.of(context.getBreadcrumbId()).ifPresent(breadcrumbId -> addHeader(headers, BREADCRUMB_ID, breadcrumbId));
-    context.getPrincipal().ifPresent(principal -> addHeader(headers, PRINCIPAL, principal.toString()));
-    context.getAction().ifPresent(action -> addHeader(headers, ACTION, action));
+    Optional.of(context.getBreadcrumbId()).ifPresent(b -> addHeader(headers, BREADCRUMB_ID, b));
+    context.getPrincipal().ifPresent(p -> addHeader(headers, PRINCIPAL, p.toString()));
+    context.getAction().ifPresent(a -> addHeader(headers, ACTION, a));
+    context.getEventType().ifPresent(et -> addHeader(headers, EVENT_TYPE, et));
     return headers;
   }
 

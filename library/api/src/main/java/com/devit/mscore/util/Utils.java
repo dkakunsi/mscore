@@ -8,6 +8,8 @@ public final class Utils {
 
   public static final String BREADCRUMB_ID = "breadcrumbId";
 
+  public static final String EVENT_TYPE = "eventType";
+
   public static final String INDEX_MAP = "indexmap";
 
   public static final String ORGANISATION = "organisation";

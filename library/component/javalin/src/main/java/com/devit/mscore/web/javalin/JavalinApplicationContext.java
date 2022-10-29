@@ -3,6 +3,7 @@ package com.devit.mscore.web.javalin;
 import static com.devit.mscore.util.Utils.ACTION;
 import static com.devit.mscore.util.Utils.AUTHORIZATION;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
+import static com.devit.mscore.util.Utils.EVENT_TYPE;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
 
 import com.devit.mscore.ApplicationContext;
@@ -20,8 +21,7 @@ public class JavalinApplicationContext extends ApplicationContext {
     super(contextData);
   }
 
-  public static ApplicationContext of(Context ctx) {
-    var contextData = new HashMap<String, Object>();
+  public static ApplicationContext of(Context ctx, Map<String, Object> contextData) {
     contextData.putAll(ctx.headerMap());
 
     var context = new JavalinApplicationContext(contextData);
@@ -29,8 +29,14 @@ public class JavalinApplicationContext extends ApplicationContext {
     context.breadcrumbId(ctx);
     context.action(ctx);
     context.authorization(ctx);
+    context.eventType(ctx);
 
     return context;
+  }
+  
+  public static ApplicationContext of(Context ctx) {
+    var contextData = new HashMap<String, Object>();
+    return of(ctx, contextData);
   }
 
   private void breadcrumbId(Context ctx) {
@@ -59,6 +65,13 @@ public class JavalinApplicationContext extends ApplicationContext {
     var action = ctx.header(ACTION);
     if (StringUtils.isNotBlank(action)) {
       this.contextData.put(ACTION, action);
+    }
+  }
+
+  private void eventType(Context ctx) {
+    var eventType = ctx.header(EVENT_TYPE);
+    if (StringUtils.isNotBlank(eventType)) {
+      this.contextData.put(EVENT_TYPE, eventType);
     }
   }
 
