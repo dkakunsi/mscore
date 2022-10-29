@@ -17,8 +17,14 @@ public class EventEmitter implements Service {
 
   private Publisher publisher;
 
-  public EventEmitter(Publisher publisher) {
+  private String domainEventChannel;
+
+  private String workflowEventChannel;
+
+  public EventEmitter(Publisher publisher, String domainEventChannel, String workflowEventChannel) {
     this.publisher = publisher;
+    this.domainEventChannel = domainEventChannel;
+    this.workflowEventChannel = workflowEventChannel;
   }
 
   @Override
@@ -27,29 +33,29 @@ public class EventEmitter implements Service {
   }
 
   public String create(JSONObject data) {
-    return emitEvent(data, Event.Type.CREATE);
+    return emitEvent(data, Event.Type.CREATE, domainEventChannel);
   }
 
   public String update(JSONObject data) {
-    return emitEvent(data, Event.Type.UPDATE);
+    return emitEvent(data, Event.Type.UPDATE, domainEventChannel);
   }
 
   public String remove(JSONObject data) {
-    return emitEvent(data, Event.Type.REMOVE);
+    return emitEvent(data, Event.Type.REMOVE, domainEventChannel);
   }
 
-  public String complete(String taskId, JSONObject taskResponse) {
+  public String updateTask(String taskId, JSONObject taskResponse) {
     var data = new JSONObject();
     data.put(ID, taskId);
     data.put("response", taskResponse);
-    return emitEvent(data, Event.Type.COMPLETE);
+    return emitEvent(data, Event.Type.TASK, workflowEventChannel);
   }
 
-  public String emitEvent(JSONObject data, Event.Type eventType) {
+  public String emitEvent(JSONObject data, Event.Type eventType, String channel) {
     var id = getOrCreateId(data);
     var domain = AttributeConstants.getDomain(data);
     var event = Event.of(eventType, domain, data);
-    this.publisher.publish(event.toJson());
+    this.publisher.publish(channel, event.toJson());
     return id;
   }
 

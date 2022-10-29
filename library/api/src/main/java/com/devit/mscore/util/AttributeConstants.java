@@ -8,6 +8,8 @@ public final class AttributeConstants {
 
   public static final String DOMAIN = "domain";
 
+  public static final String WORKFLOW = "workflow";
+
   public static final String ID = "id";
 
   public static final String CODE = "code";

@@ -24,29 +24,6 @@ public class ResourceController extends JavalinController {
   }
 
   @Override
-  public Handler post() {
-    return ctx -> {
-      var domain = ctx.queryParam(DOMAIN);
-      var payload = ctx.body();
-      var response = this.resourceService.post(domain, new JSONObject(payload));
-
-      ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
-    };
-  }
-
-  @Override
-  public Handler put() {
-    return ctx -> {
-      var domain = ctx.queryParam(DOMAIN);
-      var id = ctx.pathParam(ID);
-      var payload = ctx.body();
-      var response = this.resourceService.put(domain, id, new JSONObject(payload));
-
-      ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
-    };
-  }
-
-  @Override
   public Handler getOne() {
     return ctx -> {
       var domain = ctx.queryParam(DOMAIN);

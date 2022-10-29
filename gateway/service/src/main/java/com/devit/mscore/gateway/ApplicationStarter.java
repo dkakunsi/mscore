@@ -16,19 +16,17 @@ import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.gateway.api.ApiFactory;
 import com.devit.mscore.gateway.service.EventEmitter;
 import com.devit.mscore.gateway.service.ResourceService;
-import com.devit.mscore.gateway.service.WorkflowService;
 import com.devit.mscore.messaging.kafka.KafkaMessagingFactory;
 import com.devit.mscore.registry.ZookeeperRegistryFactory;
 import com.devit.mscore.util.DateUtils;
 import com.devit.mscore.web.jersey.JerseyClientFactory;
 
-import org.apache.commons.lang3.BooleanUtils;
-
 public class ApplicationStarter implements Starter {
 
-  private static final String WORKFLOW_SERVICES = "services.%s.workflow.enabled";
-
   private static final String TIMEZONE = "platform.service.timezone";
+
+  // TODO: use constant from api package
+  private static final java.lang.String WORKFLOW = "workflow";
 
   private Configuration configuration;
 
@@ -63,31 +61,23 @@ public class ApplicationStarter implements Starter {
   @Override
   public void start() throws ApplicationException {
     var webClient = this.clientFactory.client();
+    var resourceService = new ResourceService(this.serviceRegistration, webClient);
+
     var messagingFactory = KafkaMessagingFactory.of(this.configuration);
-    var useWorkflow = isUseWorkflow();
-    var workflowService = new WorkflowService(this.serviceRegistration, webClient);
-    var resourceService = new ResourceService(this.serviceRegistration, webClient, workflowService, useWorkflow);
-    var publisher = messagingFactory.publisher(DOMAIN);
-    var eventEmitter = new EventEmitter(publisher);
+    var domainTopics = messagingFactory.getTopics(DOMAIN).orElse(new String[] {""});
+    var workflowTopics = messagingFactory.getTopics(WORKFLOW).orElse(new String[] {""});
+    var publisher = messagingFactory.publisher();
+    var eventEmitter = new EventEmitter(publisher, domainTopics[0], workflowTopics[0]);
 
     this.apiFactory.add(resourceService);
     this.apiFactory.add(eventEmitter);
-
-    if (BooleanUtils.isTrue(useWorkflow)) {
-      this.apiFactory.add(workflowService);
-    }
 
     var server = this.apiFactory.server();
     server.start();
 
     this.serviceRegistration.open();
     this.serviceRegistration.register(resourceService);
-    this.serviceRegistration.register(workflowService);
-  }
-
-  private boolean isUseWorkflow() throws ConfigException {
-    var configName = String.format(WORKFLOW_SERVICES, this.configuration.getServiceName());
-    return Boolean.valueOf(this.configuration.getConfig(configName).orElse("false"));
+    this.serviceRegistration.register(eventEmitter);
   }
 
   @Override

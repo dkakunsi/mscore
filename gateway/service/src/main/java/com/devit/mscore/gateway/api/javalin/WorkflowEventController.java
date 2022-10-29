@@ -33,7 +33,7 @@ public class WorkflowEventController extends JavalinController {
       var taskId = ctx.pathParam(ID);
       LOGGER.info("Receiving put request at {}", ctx.path());
       var taskResponse = new JSONObject(ctx.body());
-      var resourceId = this.eventEmitter.complete(taskId, taskResponse);
+      var resourceId = this.eventEmitter.updateTask(taskId, taskResponse);
       var result = new JSONObject().put(ID, resourceId);
       ctx.status(200).contentType(CONTENT_TYPE).result(result.toString());
     };
