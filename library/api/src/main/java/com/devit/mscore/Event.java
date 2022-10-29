@@ -16,6 +16,7 @@ public final class Event {
     CREATE("create"),
     UPDATE("update"),
     REMOVE("remove"),
+    TASK("task"),
     COMPLETE("complete");
 
     private String name;
@@ -77,6 +78,10 @@ public final class Event {
     return Type.CREATE.equals(this.type)
     || Type.UPDATE.equals(this.type)
     || Type.REMOVE.equals(this.type);
+  }
+
+  public boolean isWorkflowEvent() {
+    return Type.TASK.equals(this.type);
   }
 
   public JSONObject toJson() {
