@@ -3,12 +3,10 @@
 cd ../reference
 
 docker-compose \
-  -f ./docker-compose-configuration.yml \
   -f ./docker-compose-service.yml \
   stop
 
 docker-compose \
-  -f ./docker-compose-configuration.yml \
   -f ./docker-compose-service.yml \
   rm
 
@@ -45,19 +43,5 @@ build
 # build history
 SERVICE=history
 build
-
-# build logger
-SERVICE=logger
-build
-
-# build configuration
-SERVICE=configuration
-cd $SERVICE
-./load.sh > ./init
-cd ..
-build
-cd $SERVICE
-rm init
-cd ..
 
 cd ..

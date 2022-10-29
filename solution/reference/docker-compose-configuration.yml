@@ -9,7 +9,7 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes
 
   logger:
-    image: ${REPO}/ref-log:${TAG}
+    image: ${REPO}/reference-logger:${TAG}
     container_name: ${SOLUTION}-logger
     environment:
       ELASTICSEARCH_HOST: http://index:9092

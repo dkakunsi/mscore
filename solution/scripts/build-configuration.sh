@@ -19,8 +19,8 @@ build () {
   cd ..
 }
 
-REPO=devit16
-SOLUTION=ref
+REPO=dkakunsi
+SOLUTION=reference
 SERVICE=nothing
 VERSION=latest
 
