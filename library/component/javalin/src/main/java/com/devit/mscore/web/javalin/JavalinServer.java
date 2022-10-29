@@ -2,9 +2,11 @@ package com.devit.mscore.web.javalin;
 
 import static com.devit.mscore.ApplicationContext.setContext;
 import static com.devit.mscore.util.JsonUtils.isNotJsonString;
+import static com.devit.mscore.util.Utils.EVENT_TYPE;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
 
 import com.devit.mscore.AuthenticationProvider;
+import com.devit.mscore.Event;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Validation;
 import com.devit.mscore.exception.ApplicationException;
@@ -34,6 +36,7 @@ import org.json.JSONObject;
 
 import io.javalin.Javalin;
 import io.javalin.core.JavalinConfig;
+import io.javalin.http.Context;
 import io.javalin.http.ExceptionHandler;
 
 /**
@@ -57,7 +60,8 @@ public final class JavalinServer extends Server {
 
   private Map<Class<Exception>, ExceptionHandler<Exception>> exceptionHandler;
 
-  JavalinServer(Integer port, List<Endpoint> endpoints, List<Validation> validations, AuthenticationProvider authenticationProvider, Consumer<JavalinConfig> configurer) {
+  JavalinServer(Integer port, List<Endpoint> endpoints, List<Validation> validations,
+      AuthenticationProvider authenticationProvider, Consumer<JavalinConfig> configurer) {
     super(port, endpoints, validations, authenticationProvider);
     this.configurer = configurer;
     this.exceptionHandler = new HashMap<>();
@@ -167,7 +171,9 @@ public final class JavalinServer extends Server {
 
   private void initBodyValidation() {
     this.app.before(ctx -> {
-      var applicationContext = JavalinApplicationContext.of(ctx);
+      var contextData = new HashMap<String, Object>();
+      contextData.put(EVENT_TYPE, getEventType(ctx));
+      var applicationContext = JavalinApplicationContext.of(ctx, contextData);
       setContext(applicationContext);
 
       if (!isValidatable(ctx.method(), ctx.path())) {
@@ -211,6 +217,19 @@ public final class JavalinServer extends Server {
   private void initTypeAdapter() {
     for (var entry : this.exceptionHandler.entrySet()) {
       this.app.exception(entry.getKey(), entry.getValue());
+    }
+  }
+
+  private String getEventType(Context ctx) {
+    switch (ctx.method()) {
+      case "post":
+        return Event.Type.CREATE.toString();
+      case "put":
+        return Event.Type.UPDATE.toString();
+      case "delete":
+        return Event.Type.REMOVE.toString();
+      default:
+        return "retrieve";
     }
   }
 }
