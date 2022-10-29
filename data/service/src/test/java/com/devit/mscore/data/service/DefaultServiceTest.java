@@ -31,6 +31,7 @@ import com.devit.mscore.exception.DataException;
 import com.devit.mscore.exception.SynchronizationException;
 import com.devit.mscore.exception.ValidationException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -204,23 +205,37 @@ public class DefaultServiceTest {
 
   @Test
   public void testSynchronize() throws SynchronizationException, DataException {
-    var object = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"code\":\"code\"}");
-    var result = new JSONArray().put(object);
-    doReturn(Optional.of(result)).when(this.repository).find(eq("parent"), any());
-    doReturn(object).when(this.repository).save(any(JSONObject.class));
-    this.service.synchronize();
+    var contextData = new HashMap<String, Object>();
+    contextData.put("action", "create");
+    var context = DefaultApplicationContext.of("test", contextData);
+    try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+      utilities.when(() -> ApplicationContext.getContext()).thenReturn(context);
 
-    verify(this.repository).save(any(JSONObject.class));
+      var object = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"code\":\"code\"}");
+      var result = new JSONArray().put(object);
+      doReturn(Optional.of(result)).when(this.repository).find(eq("parent"), any());
+      doReturn(object).when(this.repository).save(any(JSONObject.class));
+      this.service.synchronize();
+  
+      verify(this.repository).save(any(JSONObject.class));
+      }
   }
 
   @Test
   public void testSynchronizeId() throws SynchronizationException, DataException {
-    var result = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"code\":\"code\"}");
-    doReturn(Optional.of(result)).when(this.repository).find("id");
-    doReturn(result).when(this.repository).save(any(JSONObject.class));
-    this.service.synchronize("id");
+    var contextData = new HashMap<String, Object>();
+    contextData.put("action", "create");
+    var context = DefaultApplicationContext.of("test", contextData);
+    try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+      utilities.when(() -> ApplicationContext.getContext()).thenReturn(context);
 
-    verify(this.repository).save(any(JSONObject.class));
+      var result = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"code\":\"code\"}");
+      doReturn(Optional.of(result)).when(this.repository).find("id");
+      doReturn(result).when(this.repository).save(any(JSONObject.class));
+      this.service.synchronize("id");
+  
+      verify(this.repository).save(any(JSONObject.class));
+      }
   }
 
   @Test
