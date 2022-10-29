@@ -172,19 +172,13 @@ public class KafkaMessagingTest {
   }
 
   @Test
-  public void testGetPublisherChannel() {
-    var publisher = this.factory.publisher(TEST_TOPIC);
-    assertThat(publisher.getChannel(), is(TEST_TOPIC));
-  }
-
-  @Test
   public void testPublish() throws InterruptedException {
     try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
       utilities.when(() -> ApplicationContext.getContext()).thenReturn(this.context);
 
-      var publisher = this.factory.publisher(TEST_TOPIC);
+      var publisher = this.factory.publisher();
       var message = "{\"id\":\"id\"}";
-      publisher.publish(new JSONObject(message));
+      publisher.publish(TEST_TOPIC, new JSONObject(message));
 
       var records = this.kafka.observe(ObserveKeyValues.on(TEST_TOPIC, 1));
       assertThat(records.size(), greaterThan(0));
@@ -198,9 +192,8 @@ public class KafkaMessagingTest {
       utilities.when(() -> ApplicationContext.getContext())
           .thenReturn(this.context);
 
-      var testTopic = "testing";
-      var publisher = this.factory.publisher(testTopic);
-      publisher.publish(new JSONObject());
+      var publisher = this.factory.publisher();
+      publisher.publish(TEST_TOPIC, new JSONObject());
 
       var records = this.kafka.observe(ObserveKeyValues.on(TEST_TOPIC, 0));
       assertThat(records.size(), is(0));

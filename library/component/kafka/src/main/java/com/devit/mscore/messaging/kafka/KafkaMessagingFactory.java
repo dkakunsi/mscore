@@ -7,9 +7,7 @@ import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.ConfigException;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
@@ -46,10 +44,6 @@ public class KafkaMessagingFactory {
       ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,
       ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG);
 
-  private Map<String, KafkaPublisher> kafkaPublishers;
-
-  private KafkaSubscriber kafkaSubscriber;
-
   private Producer<String, String> producer;
 
   private Consumer<String, String> consumer;
@@ -61,9 +55,7 @@ public class KafkaMessagingFactory {
   private Pair<String, String> kafkaGroupId;
 
   protected KafkaMessagingFactory(Configuration configuration) throws ConfigException {
-    this.kafkaPublishers = new HashMap<>();
     this.configuration = configuration;
-
     initKafkaIds();
   }
 
@@ -167,22 +159,10 @@ public class KafkaMessagingFactory {
   }
 
   public Subscriber subscriber() {
-    if (this.kafkaSubscriber == null) {
-      this.kafkaSubscriber = new KafkaSubscriber(consumer(), getPollInterval());
-    }
-    return this.kafkaSubscriber;
+    return new KafkaSubscriber(consumer(), getPollInterval());
   }
 
-  public Publisher publisher(String name) {
-    this.kafkaPublishers.computeIfAbsent(name, publisherName -> {
-      try {
-        var topic = getTemplatedTopics(publisherName)
-            .orElseThrow(() -> new ApplicationRuntimeException(String.format("No topic for %s", name)));
-        return new KafkaPublisher(topic[0], producer());
-      } catch (ConfigException ex) {
-        throw new ApplicationRuntimeException(ex);
-      }
-    });
-    return this.kafkaPublishers.get(name);
+  public Publisher publisher() {
+    return new KafkaPublisher(producer());
   }
 }

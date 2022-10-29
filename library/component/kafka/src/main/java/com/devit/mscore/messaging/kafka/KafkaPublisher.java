@@ -34,26 +34,17 @@ public class KafkaPublisher implements Publisher {
 
   protected Producer<String, String> producer;
 
-  protected String topic;
-
-  KafkaPublisher(String topic, Producer<String, String> producer) {
+  KafkaPublisher(Producer<String, String> producer) {
     this.producer = producer;
-    this.topic = topic;
   }
 
   @Override
-  public String getChannel() {
-    return this.topic;
-  }
-
-  @Override
-  public void publish(JSONObject json) {
-
-    if (StringUtils.isEmpty(this.topic)) {
+  public void publish(String channel, JSONObject message) {
+    if (StringUtils.isEmpty(channel)) {
       LOG.warn("Cannot publish message. Topic is not provided");
       return;
     }
-    if (json == null || json.isEmpty()) {
+    if (message == null || message.isEmpty()) {
       LOG.warn("Cannot publish an empty message");
       return;
     }
@@ -61,8 +52,8 @@ public class KafkaPublisher implements Publisher {
     // @formatter:off
     var headerPairs = buildHeaderPairs();
     var headers = headerPairs.stream().map(p -> createHeader(p.getKey(), p.getValue())).collect(Collectors.toList());
-    LOG.info("Publishing message to topic {}. Headers: {}. Message: {}", this.topic, headerPairs, json);
-    var producerRecord = new ProducerRecord<String, String>(this.topic, null, getId(json), json.toString(), headers);
+    LOG.info("Publishing message to topic {}. Headers: {}. Message: {}", channel, headerPairs, message);
+    var producerRecord = new ProducerRecord<String, String>(channel, null, getId(message), message.toString(), headers);
     this.producer.send(producerRecord);
     // @formatter:on
   }

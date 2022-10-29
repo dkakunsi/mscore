@@ -12,13 +12,8 @@ public interface Publisher {
   /**
    * Publish message to broker on the provided channel.
    *
-   * @param json to publish.
+   * @param channel to publish to
+   * @param message to be published.
    */
-  void publish(JSONObject json);
-
-  /**
-   *
-   * @return channel to publish to.
-   */
-  String getChannel();
+  void publish(String channel, JSONObject message);
 }
