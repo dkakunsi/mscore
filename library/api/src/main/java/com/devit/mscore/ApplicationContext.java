@@ -23,7 +23,7 @@ import org.json.JSONObject;
  */
 public abstract class ApplicationContext {
 
-  private static ThreadLocal<ApplicationContext> context = new ThreadLocal<>();
+  private static ThreadLocal<ApplicationContext> context = new InheritableThreadLocal<>();
 
   private static final String UNKNOWN = "UNKNOWN";
 
