@@ -71,9 +71,4 @@ public class MemoryRegistry implements Registry {
     // no need to close a memory
     throw new UnsupportedOperationException();
   }
-
-  @Override
-  public Object clone() throws CloneNotSupportedException {
-    return super.clone();
-  }
 }

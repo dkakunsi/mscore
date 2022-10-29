@@ -71,9 +71,4 @@ public final class EnrichmentsExecutor implements Executor<Enrichment> {
       }
     });
   }
-
-  @Override
-  public Object clone() throws CloneNotSupportedException {
-    return super.clone();
-  }
 }

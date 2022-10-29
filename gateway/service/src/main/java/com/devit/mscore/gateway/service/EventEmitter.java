@@ -26,11 +26,6 @@ public class EventEmitter implements Service {
     return "event";
   }
 
-  @Override
-  public Object clone() throws CloneNotSupportedException {
-    return super.clone();
-  }
-
   public String create(JSONObject data) {
     return emitEvent(data, Event.Type.CREATE);
   }

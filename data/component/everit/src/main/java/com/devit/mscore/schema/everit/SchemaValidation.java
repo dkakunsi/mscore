@@ -30,11 +30,7 @@ public class SchemaValidation implements Validation {
   private Registry registry;
 
   public SchemaValidation(Registry registry) {
-    try {
-      this.registry = (Registry) registry.clone();
-    } catch (CloneNotSupportedException ex) {
-      throw new ApplicationRuntimeException(ex);
-    }
+    this.registry = registry;
   }
 
   @Override

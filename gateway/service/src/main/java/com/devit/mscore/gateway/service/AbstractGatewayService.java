@@ -28,9 +28,4 @@ public abstract class AbstractGatewayService implements Service {
       throw new ApplicationRuntimeException(ex);
     }
   }
-
-  @Override
-  public Object clone() throws CloneNotSupportedException {
-    return super.clone();
-  }
 }

@@ -58,17 +58,12 @@ public class DefaultServiceTest {
   @Before
   public void setup() throws CloneNotSupportedException {
     this.repository = mock(Repository.class);
-    doReturn(this.repository).when(this.repository).clone();
     this.index = mock(Index.class);
-    doReturn(this.index).when(this.index).clone();
     this.publisher = mock(Publisher.class);
     this.schema = mock(Schema.class);
     var validator = mock(ValidationsExecutor.class);
-    doReturn(validator).when(validator).clone();
     var filter = mock(FiltersExecutor.class);
-    doReturn(filter).when(filter).clone();
     var enricher = mock(EnrichmentsExecutor.class);
-    doReturn(enricher).when(enricher).clone();
     var indexingObserver = new IndexingObserver(this.index);
     var publishingObserver = new PublishingObserver(this.publisher, 0L);
     this.service = new DefaultService(this.schema, this.repository, this.index, validator, filter, enricher)

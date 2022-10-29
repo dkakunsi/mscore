@@ -63,7 +63,6 @@ public class ApplicationTest {
     this.instanceRepository = mock(WorkflowInstanceRepository.class);
     this.taskRepository = mock(WorkflowTaskRepository.class);
     this.registry = mock(Registry.class);
-    doReturn(this.registry).when(registry).clone();
 
     var service = new WorkflowServiceImpl(registry, this.publisher, definitionRepository, instanceRepository,
         taskRepository);

@@ -94,9 +94,4 @@ public final class SynchronizationsExecutor implements Executor<Synchronization>
       }
     });
   }
-
-  @Override
-  public Object clone() throws CloneNotSupportedException {
-    return super.clone();
-  }
 }

@@ -162,9 +162,4 @@ public class MongoRepository implements Repository {
     }
     return new JSONObject(document.toJson());
   }
-
-  @Override
-  public Object clone() throws CloneNotSupportedException {
-    return super.clone();
-  }
 }

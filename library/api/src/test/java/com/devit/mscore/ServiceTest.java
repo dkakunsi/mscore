@@ -20,11 +20,6 @@ public class ServiceTest {
       public String getDomain() {
         return "domain";
       }
-
-      @Override
-      public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-      }
     };
   }
 

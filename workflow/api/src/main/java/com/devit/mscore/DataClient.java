@@ -20,21 +20,12 @@ public class DataClient {
   public DataClient(Client client, ServiceRegistration serviceRegistration, String workflowDomain) {
     this.workflowDomain = workflowDomain;
     this.uriCache = new HashMap<>();
-
-    try {
-      this.client = (Client) client.clone();
-      this.serviceRegistration = (ServiceRegistration) serviceRegistration.clone();
-    } catch (CloneNotSupportedException ex) {
-      throw new ApplicationRuntimeException(ex);
-    }
+    this.client = client;
+    this.serviceRegistration = serviceRegistration;
   }
 
   public Client getClient() {
-    try {
-      return (Client) this.client.clone();
-    } catch (CloneNotSupportedException ex) {
-      throw new ApplicationRuntimeException(ex);
-    }
+    return this.client;
   }
 
   public String getWorkflowUri() {

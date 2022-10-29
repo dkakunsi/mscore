@@ -29,7 +29,6 @@ public class SchemaValidationTest {
   @Before
   public void setup() throws CloneNotSupportedException {
     this.registry = mock(Registry.class);
-    doReturn(this.registry).when(this.registry).clone();
   }
 
   @Test

@@ -20,7 +20,6 @@ import com.devit.mscore.data.filter.FiltersExecutor;
 import com.devit.mscore.data.observer.PostProcessObserver;
 import com.devit.mscore.data.validation.ValidationsExecutor;
 import com.devit.mscore.exception.ApplicationException;
-import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.DataException;
 import com.devit.mscore.exception.SynchronizationException;
 import com.devit.mscore.exception.ValidationException;
@@ -72,14 +71,10 @@ public class DefaultService implements Service, Synchronizer {
       FiltersExecutor filter, EnrichmentsExecutor enricher) {
     this(schema);
     this.index = index;
-    try {
-      this.repository = (Repository) repository.clone();
-      this.validator = (ValidationsExecutor) validator.clone();
-      this.enricher = (EnrichmentsExecutor) enricher.clone();
-      this.filter = (FiltersExecutor) filter.clone();
-    } catch (CloneNotSupportedException ex) {
-      throw new ApplicationRuntimeException(ex);
-    }
+    this.repository = repository;
+    this.validator = validator;
+    this.enricher = enricher;
+    this.filter = filter;
   }
 
   public DefaultService addObserver(PostProcessObserver observer) {
@@ -262,10 +257,5 @@ public class DefaultService implements Service, Synchronizer {
     } catch (DataException ex) {
       return false;
     }
-  }
-
-  @Override
-  public Object clone() throws CloneNotSupportedException {
-    return super.clone();
   }
 }

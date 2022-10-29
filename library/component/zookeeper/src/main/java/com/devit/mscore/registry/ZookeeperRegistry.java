@@ -137,11 +137,6 @@ public class ZookeeperRegistry implements Registry {
   }
 
   @Override
-  public Object clone() throws CloneNotSupportedException {
-    return super.clone();
-  }
-
-  @Override
   public List<String> values() throws RegistryException {
     return new ArrayList<>(this.cache.values());
   }
