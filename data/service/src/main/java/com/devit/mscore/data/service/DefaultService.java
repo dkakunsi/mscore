@@ -120,7 +120,7 @@ public class DefaultService implements Service, Synchronizer {
       try {
         o.notify(r);
       } catch (Exception ex) {
-        LOG.error("Error when running observer {}", o.getClass());
+        LOG.error("Error when running observer {}", ex, o.getClass());
       }
     };
   }
