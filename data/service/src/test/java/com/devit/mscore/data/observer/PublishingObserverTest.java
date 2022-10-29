@@ -32,7 +32,7 @@ public class PublishingObserverTest {
   @Test
   public void testNotify_ExceptionThrown() {
     var contextData = new HashMap<String, Object>();
-    contextData.put("action", "create");
+    contextData.put("eventType", "create");
     var context = DefaultApplicationContext.of("test", contextData);
     try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
       utilities.when(() -> ApplicationContext.getContext()).thenReturn(context);
