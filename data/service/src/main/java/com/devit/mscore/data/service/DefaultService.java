@@ -108,13 +108,21 @@ public class DefaultService implements Service, Synchronizer {
     try {
       this.enricher.execute(json);
       this.filter.execute(json);
-      this.observers.forEach(observer -> new Thread(() -> {
-        observer.notify(result);
-      }).start());
+      this.observers.forEach(o -> new Thread(executeObserver(o, result)).start());
       return getId(result);
     } catch (JSONException e) {
       throw new ApplicationException(e);
     }
+  }
+
+  private Runnable executeObserver(PostProcessObserver o, JSONObject r) {
+    return () -> {
+      try {
+        o.notify(r);
+      } catch (Exception ex) {
+        LOG.error("Error when running observer {}", o.getClass());
+      }
+    };
   }
 
   private void setAuditAttribute(JSONObject json) throws DataException {
