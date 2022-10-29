@@ -220,6 +220,9 @@
           <groupId>com.github.spotbugs</groupId>
           <artifactId>spotbugs-maven-plugin</artifactId>
           <version>${spotbugs-maven-plugin.version}</version>
+          <configuration>
+            <omitVisitors>FindReturnRef</omitVisitors>
+          </configuration>
           <executions>
             <execution>
               <id>check</id>
