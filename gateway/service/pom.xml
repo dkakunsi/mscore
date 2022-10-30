@@ -42,6 +42,12 @@
       <groupId>com.devit.mscore</groupId>
       <artifactId>jersey</artifactId>
       <version>${library.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.glassfish.jersey.core</groupId>
+          <artifactId>jersey-client</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.devit.mscore</groupId>
