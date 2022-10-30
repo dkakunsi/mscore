@@ -7,7 +7,6 @@ import com.devit.mscore.exception.DataException;
 import com.devit.mscore.exception.IndexingException;
 import com.devit.mscore.logging.ApplicationLogger;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,7 +29,7 @@ public class IndexEnrichment extends Enrichment {
 
   public IndexEnrichment(Map<String, Index> indeces, String domain, String attribute) {
     super(domain, attribute);
-    this.indeces = new HashMap<>(indeces);
+    this.indeces = indeces;
   }
 
   @Override

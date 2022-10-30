@@ -3,7 +3,6 @@ package com.devit.mscore.workflow.flowable;
 import com.devit.mscore.WorkflowTask;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +18,7 @@ public class FlowableTask extends WorkflowTask implements TaskInfo {
   public FlowableTask(TaskInfo task, Map<String, Object> variables) {
     this.task = task;
     this.status = ACTIVATED;
-    this.variables = new HashMap<>(variables);
+    this.variables = variables;
   }
 
   @Override

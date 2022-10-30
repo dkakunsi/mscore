@@ -5,7 +5,6 @@ import static com.devit.mscore.util.AttributeConstants.DOMAIN;
 import com.devit.mscore.WorkflowInstance;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.flowable.engine.runtime.ProcessInstance;
@@ -24,7 +23,7 @@ public class FlowableInstance extends WorkflowInstance implements ProcessInstanc
   public FlowableInstance(ProcessInstance processInstance, Map<String, Object> variables) {
     this.processInstance = processInstance;
     this.status = processInstance.isEnded() ? COMPLETED : ACTIVATED;
-    this.variables = new HashMap<>(variables);
+    this.variables = variables;
   }
 
   @Override
