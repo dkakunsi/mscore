@@ -133,7 +133,7 @@ public final class JavalinServer extends Server {
       if (isPreflightRequest(ctx.method())) {
         return;
       }
-      LOG.info("Validating security for endpoint {}", uri);
+      LOG.info("Validating security for endpoint {}", ctx.path());
 
       var applicationContext = JavalinApplicationContext.of(ctx);
       setContext(applicationContext);
