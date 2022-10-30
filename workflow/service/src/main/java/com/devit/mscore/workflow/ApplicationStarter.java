@@ -42,7 +42,7 @@ public class ApplicationStarter implements Starter {
 
   private static final String TIMEZONE = "platform.service.timezone";
 
-  private static final String EVENT_TOPIC = "services.%s.workflow.topics";
+  private static final String EVENT_TOPIC = "services.%s.listen.topics";
 
   private String serviceName;
 

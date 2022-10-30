@@ -25,8 +25,7 @@ public class ApplicationStarter implements Starter {
 
   private static final String TIMEZONE = "platform.service.timezone";
 
-  // TODO: use constant from api package
-  private static final java.lang.String WORKFLOW = "workflow";
+  private static final String TASK = "task";
 
   private Configuration configuration;
 
@@ -64,10 +63,10 @@ public class ApplicationStarter implements Starter {
     var resourceService = new ResourceService(this.serviceRegistration, webClient);
 
     var messagingFactory = KafkaMessagingFactory.of(this.configuration);
-    var domainTopics = messagingFactory.getTopics(DOMAIN).orElse(new String[] {""});
-    var workflowTopics = messagingFactory.getTopics(WORKFLOW).orElse(new String[] {""});
+    var domainTopics = messagingFactory.getTopic(DOMAIN).orElseThrow();
+    var workflowTopics = messagingFactory.getTopic(TASK).orElseThrow();
     var publisher = messagingFactory.publisher();
-    var eventEmitter = new EventEmitter(publisher, domainTopics[0], workflowTopics[0]);
+    var eventEmitter = new EventEmitter(publisher, domainTopics, workflowTopics);
 
     this.apiFactory.add(resourceService);
     this.apiFactory.add(eventEmitter);
