@@ -1,5 +1,6 @@
 package com.devit.mscore.data.observer;
 
+import static com.devit.mscore.util.AttributeConstants.getDomain;
 import static com.devit.mscore.util.AttributeConstants.getId;
 
 import com.devit.mscore.Index;
@@ -29,7 +30,7 @@ public class IndexingObserver implements PostProcessObserver {
     }
 
     try {
-      LOG.info("Indexing document: {}", getId(json));
+      LOG.info("Indexing document '{}' into index '{}", getId(json), getDomain(json));
       this.index.index(json);
     } catch (IndexingException ex) {
       LOG.error(INDEXING_ERROR, ex);

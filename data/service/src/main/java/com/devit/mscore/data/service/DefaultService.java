@@ -120,7 +120,9 @@ public class DefaultService implements Service, Synchronizer {
       try {
         o.notify(r);
       } catch (Exception ex) {
-        LOG.error("Error when running observer {}", ex, o.getClass());
+        var domain = com.devit.mscore.util.AttributeConstants.getDomain(r);
+        var code = getCode(r);
+        LOG.error("Error when running observer '{}' for domain '{}' and code '{}'", ex, o.getClass(), domain, code);
       }
     };
   }

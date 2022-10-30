@@ -1,5 +1,6 @@
 package com.devit.mscore.data;
 
+import static com.devit.mscore.util.AttributeConstants.getCode;
 import static com.devit.mscore.util.AttributeConstants.getId;
 
 import com.devit.mscore.Event;
@@ -33,7 +34,8 @@ public class EventListener extends Listener {
   @Override
   protected void consume(JSONObject message) {
     var event = Event.of(message);
-    logger.info("Processing {} event for domain {}", event.getAction(), event.getDomain());
+    var code = getCode(event.getData());
+    logger.info("Processing '{}'' for code '{}'", event.getAction(), code);
     var service = this.services.get(message.getString(Event.DOMAIN));
     try {
       if (Event.Type.CREATE.equals(event.getType()) || Event.Type.UPDATE.equals(event.getType())) {
@@ -41,10 +43,10 @@ public class EventListener extends Listener {
       } else if (Event.Type.REMOVE.equals(event.getType())) {
         service.delete(getId(event.getData()));
       } else {
-        logger.info("Cannot process event type: {}", event.getType());
+        logger.info("Cannot process '{}' for code '{}'", event.getType(), code);
       }
     } catch (ApplicationException ex) {
-      logger.error("Fail processing the event", ex);
+      logger.error("Fail processing event '{}' for '{}'", ex, event.getAction(), code);
     }
   }
 }

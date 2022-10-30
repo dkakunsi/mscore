@@ -1,5 +1,8 @@
 package com.devit.mscore.data.observer;
 
+import static com.devit.mscore.util.AttributeConstants.getCode;
+import static com.devit.mscore.util.AttributeConstants.getDomain;
+
 import com.devit.mscore.Logger;
 import com.devit.mscore.data.synchronization.SynchronizationsExecutor;
 import com.devit.mscore.logging.ApplicationLogger;
@@ -19,6 +22,9 @@ public class SynchronizationObserver implements PostProcessObserver {
   @Override
   public void notify(JSONObject message) {
     this.executor.execute(message);
-    LOG.info("Dependencies are synced");
+
+    var domain = getDomain(message);
+    var code = getCode(message);
+    LOG.info("Dependencies are synced for domain {} and code {}", domain, code);
   }
 }

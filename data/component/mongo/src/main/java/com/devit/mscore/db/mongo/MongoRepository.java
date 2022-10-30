@@ -54,7 +54,7 @@ public class MongoRepository implements Repository {
   @Override
   public JSONObject save(JSONObject json) throws DataException {
     try {
-      LOG.info("Saving entity to MongoDB: {}", getCode(json));
+      LOG.info("Saving entity to MongoDB for code '{}' and id '{}'", getCode(json), getId(json));
 
       var id = getOrCreateId(json);
       var target = find(id, false).orElse(new JSONObject());
