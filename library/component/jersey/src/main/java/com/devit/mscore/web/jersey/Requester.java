@@ -14,7 +14,10 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.sun.jersey.api.client.ClientResponse;
+
 import jakarta.ws.rs.core.Response;
+
 
 public class Requester {
 
@@ -34,6 +37,12 @@ public class Requester {
     context.getPrincipal().ifPresent(principal -> headers.put(PRINCIPAL, principal.toString()));
 
     return headers;
+  }
+
+  protected JSONObject buildResponse(String uri, ClientResponse response) {
+    var output = response.hasEntity() ? response.getEntity(String.class) : "";
+    var status = response.getStatus();
+    return buildResponse(uri, output, status);
   }
 
   protected JSONObject buildResponse(String uri, Response response) {
