@@ -6,6 +6,7 @@ import static com.devit.mscore.util.AttributeConstants.ID;
 import static com.devit.mscore.util.AttributeConstants.NAME;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -18,8 +19,8 @@ public abstract class WorkflowInstance extends WorkflowObject {
   private static final String ACTION = "action";
 
   public JSONObject toJson(List<WorkflowTask> tasks) {
-    var taskArray = new JSONArray();
-    tasks.forEach(task -> taskArray.put(task.toJson()));
+    var json = tasks.stream().map(t -> t.toJson()).collect(Collectors.toList());
+    var taskArray = new JSONArray(json);
     return toJson().put("task", taskArray);
   }
 

@@ -4,6 +4,7 @@ import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.util.AttributeConstants.getId;
 import static com.devit.mscore.util.AttributeConstants.getName;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
+import static com.devit.mscore.util.Utils.EVENT_TYPE;
 
 import com.devit.mscore.Event;
 import com.devit.mscore.Logger;
@@ -33,6 +34,8 @@ public class WorkflowServiceImpl implements WorkflowService {
   public static final String WORKFLOW = "workflow";
 
   private static final Logger LOGGER = ApplicationLogger.getLogger(WorkflowServiceImpl.class);
+
+  private static final String FAIL_REGISTER_MESSAGE_TEMPLATE = "Failed to register workflow '%s'. Definition ID is not found";
 
   private Registry registry;
 
@@ -74,13 +77,10 @@ public class WorkflowServiceImpl implements WorkflowService {
   }
 
   private void registerWorkflow(WorkflowDefinition definition) throws RegistryException {
-    var definitionId = this.definitionRepository.getDefinitionId(definition.getResourceName());
-    if (definitionId.isEmpty()) {
-      var message = String.format("Failed to register workflow '%s'. Definition ID is not found", definition.getName());
-      throw new RegistryException(message);
-    }
-    this.registry.add(definition.getName(), definitionId.get());
-    LOGGER.info("Workflow {} is added to registry", definition.getName());
+    var definitionId = this.definitionRepository.getDefinitionId(definition.getResourceName())
+        .orElseThrow(() -> new RegistryException(String.format(FAIL_REGISTER_MESSAGE_TEMPLATE, definition.getName())));
+    this.registry.add(definition.getName(), definitionId);
+    LOGGER.info("Workflow '{}' is added to registry", definition.getName());
   }
 
   @Override
@@ -102,15 +102,17 @@ public class WorkflowServiceImpl implements WorkflowService {
   }
 
   private void syncCreate(WorkflowInstance instance) {
-    sync(instance, Event.Type.CREATE);
-  }
-
-  private void syncUpdate(WorkflowInstance instance) {
-    sync(instance, Event.Type.UPDATE);
-  }
-
-  private void sync(WorkflowInstance instance, Event.Type eventType) {
     var tasks = this.taskRepository.getTasks(instance.getId());
+    sync(instance, Event.Type.CREATE, tasks);
+  }
+
+  private void syncUpdate(WorkflowInstance instance, WorkflowTask completedTask) {
+    var tasks = this.taskRepository.getTasks(instance.getId());
+    tasks.add(completedTask);
+    sync(instance, Event.Type.UPDATE, tasks);
+  }
+
+  private void sync(WorkflowInstance instance, Event.Type eventType, List<WorkflowTask> tasks) {
     var jsonData = instance.toJson(tasks);
     var event = Event.of(eventType, WORKFLOW, jsonData);
     var message = event.toJson();
@@ -140,28 +142,24 @@ public class WorkflowServiceImpl implements WorkflowService {
 
   @Override
   public void completeTask(String taskId, JSONObject taskResponse) throws ProcessException {
-    var taskOpt = this.taskRepository.getTask(taskId);
-    if (taskOpt.isEmpty()) {
-      throw new ProcessException(String.format("No task found for id: %s", taskId));
-    }
-    var task = taskOpt.get();
+    var task = this.taskRepository.getTask(taskId)
+        .orElseThrow(() -> new ProcessException(String.format("No task found for id: %s", taskId)));
 
     // load instance prior to task completion
     // for completed instance, get will return null.
     var instanceId = task.getInstanceId();
-    var instanceOpt = this.instanceRepository.get(instanceId);
-    if (instanceOpt.isEmpty()) {
-      throw new ProcessException(String.format("No instance found for id: %s", instanceId));
-    }
-    var instance = instanceOpt.get();
+    var instance = this.instanceRepository.get(instanceId)
+        .orElseThrow(() -> new ProcessException(String.format("No instance found for id: %s", instanceId)));
 
     taskResponse.put(BREADCRUMB_ID, getContext().getBreadcrumbId());
+    taskResponse.put(EVENT_TYPE, getContext().getEventType());
     this.taskRepository.complete(taskId, taskResponse.toMap());
+    task.complete();
 
     if (this.instanceRepository.isCompleted(instanceId)) {
       instance.complete();
     }
-    syncUpdate(instance);
+    syncUpdate(instance, task);
   }
 
   @Override
