@@ -52,7 +52,11 @@ public class FlowableApplicationContext extends ApplicationContext {
     return DelegateUtils.getDataClient();
   }
 
-  public Publisher getPublisher(String target) {
-    return DelegateUtils.getPublisher(target);
+  public Publisher getPublisher() {
+    return DelegateUtils.getPublisher();
+  }
+
+  public String getChannel(String target) {
+    return DelegateUtils.getChannel(target);
   }
 }

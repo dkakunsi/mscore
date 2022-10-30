@@ -81,8 +81,9 @@ public class SetAttribute implements JavaDelegate {
     var domain = getDomain(entity);
     var event = Event.of(Event.Type.UPDATE, domain, entity);
 
-    var publisher = context.getPublisher(DOMAIN);
-    publisher.publish(event.toJson());
+    var publisher = context.getPublisher();
+    var eventChannel = context.getChannel(DOMAIN);
+    publisher.publish(eventChannel, event.toJson());
   }
 
   protected static boolean isSuccess(int code) {

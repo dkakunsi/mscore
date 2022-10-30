@@ -44,6 +44,8 @@ public class WorkflowServiceTest {
 
   private Publisher publisher;
 
+  private String domainChannel = "DOMAIN";
+
   @Before
   public void setup() throws ApplicationException, CloneNotSupportedException {
     this.publisher = mock(Publisher.class);
@@ -52,7 +54,7 @@ public class WorkflowServiceTest {
     this.definitionRepository = mock(WorkflowDefinitionRepository.class);
     this.instanceRepository = mock(WorkflowInstanceRepository.class);
     this.taskRepository = mock(WorkflowTaskRepository.class);
-    this.service = new WorkflowServiceImpl(this.registry, this.publisher, this.definitionRepository,
+    this.service = new WorkflowServiceImpl(this.registry, this.publisher, domainChannel, this.definitionRepository,
         this.instanceRepository, this.taskRepository);
   }
 

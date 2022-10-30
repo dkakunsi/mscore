@@ -7,7 +7,6 @@ import static com.devit.mscore.workflow.flowable.delegate.DelegateUtils.NOTIFICA
 import com.devit.mscore.Configuration;
 import com.devit.mscore.DataClient;
 import com.devit.mscore.Logger;
-import com.devit.mscore.Publisher;
 import com.devit.mscore.Registry;
 import com.devit.mscore.ResourceManager;
 import com.devit.mscore.ServiceRegistration;
@@ -96,10 +95,11 @@ public class ApplicationStarter implements Starter {
     registerResource(this.workflowFactory);
 
     // Create publisher
-    var notificationPublisher = this.messagingFactory.publisher(NOTIFICATION);
-    var domainEventPublisher = this.messagingFactory.publisher(DOMAIN);
+    var publisher = this.messagingFactory.publisher();
 
-    Map<String, Publisher> publishers = Map.of(NOTIFICATION, notificationPublisher, DOMAIN, domainEventPublisher);
+    var notificationChannel = messagingFactory.getTemplatedTopics(NOTIFICATION).orElse(new String[] { "" });
+    var domainChannel = messagingFactory.getTemplatedTopics(DOMAIN).orElse(new String[] { "" });
+    Map<String, String> channels = Map.of(NOTIFICATION, notificationChannel[0], DOMAIN, domainChannel[0]);
 
     var workflowDomain = getWorkflowDomain(WORKFLOW_DOMAIN);
     var dataClient = new DataClient(this.webClient, this.serviceRegistration, workflowDomain);
@@ -107,7 +107,7 @@ public class ApplicationStarter implements Starter {
     var definitionRepository = this.workflowFactory.definitionRepository();
     var instanceRepository = this.workflowFactory.instanceRepository();
     var taskRepository = this.workflowFactory.taskRepository();
-    var workflowService = new WorkflowServiceImpl(this.workflowRegistry, domainEventPublisher, definitionRepository,
+    var workflowService = new WorkflowServiceImpl(this.workflowRegistry, publisher, domainChannel[0], definitionRepository,
         instanceRepository, taskRepository);
 
     for (var definition : this.workflowFactory.getDefinitions()) {
@@ -132,7 +132,8 @@ public class ApplicationStarter implements Starter {
 
     // This resources will be used by workflow delegates.
     DelegateUtils.setDataClient(dataClient);
-    DelegateUtils.setPublishers(publishers);
+    DelegateUtils.setPublisher(publisher);
+    DelegateUtils.setChannels(channels);
     DelegateUtils.setConfiguration(this.configuration);
   }
 

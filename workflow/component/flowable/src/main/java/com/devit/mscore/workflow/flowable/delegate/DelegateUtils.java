@@ -4,7 +4,6 @@ import com.devit.mscore.Configuration;
 import com.devit.mscore.DataClient;
 import com.devit.mscore.Publisher;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class DelegateUtils {
@@ -15,7 +14,9 @@ public class DelegateUtils {
 
   private static DataClient dataClient;
 
-  private static Map<String, Publisher> publisherMap;
+  private static Map<String, String> channels;
+
+  private static Publisher publisher;
 
   static Configuration getConfiguration() {
     return configuration;
@@ -28,19 +29,27 @@ public class DelegateUtils {
     configuration = newConfiguration;
   }
 
-  public static Publisher getPublisher(String target) {
-    return publisherMap.get(target);
+  public static Publisher getPublisher() {
+    return publisher;
   }
 
-  public static void setPublishers(Map<String, Publisher> publishers) {
-    publisherMap = new HashMap<>(publishers);
+  public static void setPublisher(Publisher p) {
+    publisher = p;
   }
 
   public static DataClient getDataClient() {
     return dataClient;
   }
 
-  public static void setDataClient(DataClient newDataClient) {
-    dataClient = newDataClient;
+  public static void setDataClient(DataClient dc) {
+    dataClient = dc;
+  }
+
+  public static String getChannel(String target) {
+    return channels.get(target);
+  }
+
+  public static void setChannels(Map<String, String> m) {
+    channels = m;
   }
 }

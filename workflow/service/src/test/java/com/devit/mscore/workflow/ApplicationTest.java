@@ -53,6 +53,8 @@ public class ApplicationTest {
 
   private Publisher publisher;
 
+  private String domainChannel = "DOMAIN";
+
   @Before
   public void setup() throws Exception {
     this.configuration = mock(Configuration.class);
@@ -64,7 +66,7 @@ public class ApplicationTest {
     this.taskRepository = mock(WorkflowTaskRepository.class);
     this.registry = mock(Registry.class);
 
-    var service = new WorkflowServiceImpl(registry, this.publisher, definitionRepository, instanceRepository,
+    var service = new WorkflowServiceImpl(registry, this.publisher, domainChannel, definitionRepository, instanceRepository,
         taskRepository);
 
     this.apiFactory = ApiFactory.of(this.configuration, null);
@@ -142,7 +144,7 @@ public class ApplicationTest {
     assertEquals(expectedResponseBody.toString(), serverResponseBody.toString());
 
     if (success) {
-      verify(this.publisher, times(1)).publish(any(JSONObject.class));
+      verify(this.publisher, times(1)).publish(anyString(), any(JSONObject.class));
     }
     
     return createdInstance;
@@ -159,6 +161,6 @@ public class ApplicationTest {
     var completeTaskPayload = "{\"domain\":\"project\",\"approved\":true}";
     var serverResponse = Unirest.put(completeTaskUrl).body(completeTaskPayload).asString();
     assertTrue(serverResponse.isSuccess());
-    verify(this.publisher, times(2)).publish(any(JSONObject.class));
+    verify(this.publisher, times(2)).publish(anyString(), any(JSONObject.class));
   }
 }

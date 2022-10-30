@@ -38,20 +38,23 @@ public class WorkflowServiceImpl implements WorkflowService {
 
   private Publisher publisher;
 
+  private String domainChannel;
+
   private WorkflowDefinitionRepository definitionRepository;
 
   private WorkflowInstanceRepository instanceRepository;
 
   private WorkflowTaskRepository taskRepository;
 
-  public WorkflowServiceImpl(Registry registry, Publisher publisher, WorkflowDefinitionRepository definitionRepository,
-      WorkflowInstanceRepository instanceRepository, WorkflowTaskRepository taskRepository)
-      throws ApplicationException {
+  public WorkflowServiceImpl(Registry registry, Publisher publisher, String domainChannel,
+      WorkflowDefinitionRepository definitionRepository, WorkflowInstanceRepository instanceRepository,
+      WorkflowTaskRepository taskRepository) throws ApplicationException {
     this.registry = registry;
     this.publisher = publisher;
     this.definitionRepository = definitionRepository;
     this.instanceRepository = instanceRepository;
     this.taskRepository = taskRepository;
+    this.domainChannel = domainChannel;
   }
 
   @Override
@@ -111,7 +114,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     var jsonData = instance.toJson(tasks);
     var event = Event.of(eventType, WORKFLOW, jsonData);
     var message = event.toJson();
-    publisher.publish(message);
+    publisher.publish(domainChannel, message);
   }
 
   @Override

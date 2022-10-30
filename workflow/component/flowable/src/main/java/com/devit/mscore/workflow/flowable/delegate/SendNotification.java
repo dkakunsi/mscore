@@ -1,7 +1,7 @@
 package com.devit.mscore.workflow.flowable.delegate;
 
 import static com.devit.mscore.ApplicationContext.setContext;
-import static com.devit.mscore.util.AttributeConstants.getId;
+import static com.devit.mscore.util.AttributeConstants.getCode;
 import static com.devit.mscore.workflow.flowable.delegate.DelegateUtils.NOTIFICATION;
 
 import com.devit.mscore.Logger;
@@ -19,11 +19,12 @@ public class SendNotification implements JavaDelegate {
   public void execute(DelegateExecution execution) {
     var context = (FlowableApplicationContext) FlowableApplicationContext.of(execution);
     setContext(context);
-    var publisher = context.getPublisher(NOTIFICATION);
+    var publisher = context.getPublisher();
+    var notificationChannel = context.getChannel(NOTIFICATION);
     var entity = execution.getVariable("entity", String.class);
     var json = new JSONObject(entity);
 
-    LOGGER.info("Sending notification for entity {}", getId(json));
-    publisher.publish(json);
+    LOGGER.info("Sending notification for entity {}", getCode(json));
+    publisher.publish(notificationChannel, json);
   }
 }
