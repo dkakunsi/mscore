@@ -1,5 +1,6 @@
 package com.devit.mscore.workflow;
 
+import static com.devit.mscore.util.Utils.EVENT_TYPE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -25,6 +26,7 @@ import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.WebClientException;
 import com.devit.mscore.workflow.service.WorkflowServiceImpl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,7 +71,9 @@ public class ApplicationTest {
         taskRepository);
 
     eventListener = EventListener.of(null, service);
-    context = DefaultApplicationContext.of("test");
+    var contextData = new HashMap<String, Object>();
+    contextData.put(EVENT_TYPE, Event.Type.TASK.toString());
+    context = DefaultApplicationContext.of("test", contextData);
   }
 
   @Test
