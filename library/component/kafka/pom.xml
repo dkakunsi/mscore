@@ -16,7 +16,7 @@
   <properties>
     <revision>1.0-SNAPSHOT</revision>
     <kafka.version>3.2.0</kafka.version>
-    <minimum.bundle.line.coverage>0.88</minimum.bundle.line.coverage>
+    <minimum.bundle.line.coverage>0.87</minimum.bundle.line.coverage>
   </properties>
 
   <dependencies>
