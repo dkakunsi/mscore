@@ -39,8 +39,7 @@ public class SetAttribute implements JavaDelegate {
     var targetAttribute = this.attribute.getValue(execution).toString();
     var targetValue = this.value.getValue(execution).toString();
 
-    LOGGER.info("Action: {}. Updating attribute {} of domain {} to {}", context.getAction(), targetAttribute, domain,
-        targetValue);
+    LOGGER.info("Updating attribute {} of domain {} to {}", targetAttribute, domain, targetValue);
 
     var entity = getEntity(domain, entityId, targetAttribute, targetValue);
     entity.put(targetAttribute, targetValue);

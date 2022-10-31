@@ -28,8 +28,7 @@ public class SetStatus extends SetAttribute {
     var entityId = execution.getVariable("businessKey", String.class);
     var targetValue = this.status.getValue(execution).toString();
 
-    LOGGER.info("Action: {}. Updating status of {} in domain {} to {}", context.getAction(), entityId, domain,
-        targetValue);
+    LOGGER.info("Updating status of {} in domain {} to {}", entityId, domain, targetValue);
 
     var entity = getEntity(domain, entityId, "status", targetValue);
     entity.put("status", targetValue);
