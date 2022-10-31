@@ -1,6 +1,5 @@
 package com.devit.mscore;
 
-import static com.devit.mscore.util.Utils.ACTION;
 import static com.devit.mscore.util.Utils.AUTHORIZATION;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
 import static com.devit.mscore.util.Utils.EVENT_TYPE;
@@ -126,27 +125,6 @@ public abstract class ApplicationContext {
    */
   public Optional<String> getEventType() {
     return Optional.ofNullable(getString(EVENT_TYPE));
-  }
-
-  /**
-   * Get action. This will be used for notification template name. The value
-   * resemblance the workflow id.
-   *
-   * @return action name.
-   */
-  @Deprecated(forRemoval = true)
-  public Optional<String> getAction() {
-    return Optional.ofNullable(getString(ACTION));
-  }
-
-  /**
-   * Check whether action is available.
-   *
-   * @return true if available, false otherwise.
-   */
-  @Deprecated(forRemoval = true)
-  public boolean hasAction() {
-    return has(ACTION);
   }
 
   /**

@@ -62,8 +62,8 @@ public class KafkaSubscriber implements Subscriber {
   private void handleMessage(ConsumerRecord<String, String> message) {
     new Thread(() -> {
       setContext(KafkaApplicationContext.of(message.headers()));
-      LOG.info(String.format("Receiving message from topic '%s', partition '%s', offset '%s': %s",
-          message.topic(), message.partition(), message.offset(), message.value()));
+      LOG.info(String.format("Receiving message from topic '%s', partition '%s', offset '%s': '%s', headers: '%s'",
+          message.topic(), message.partition(), message.offset(), message.value(), message.headers()));
       this.topicHandlers.get(message.topic()).accept(new JSONObject(message.value()));
     }).start();
   }

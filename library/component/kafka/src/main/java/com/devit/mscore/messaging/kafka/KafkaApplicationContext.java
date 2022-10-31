@@ -1,6 +1,5 @@
 package com.devit.mscore.messaging.kafka;
 
-import static com.devit.mscore.util.Utils.ACTION;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
 import static com.devit.mscore.util.Utils.EVENT_TYPE;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
@@ -30,7 +29,6 @@ public class KafkaApplicationContext extends ApplicationContext {
     try {
       context.setPrincipalIfExists(headers);
       context.setBreadcrumbIdIfExistsOrGenerate(headers);
-      context.setActionIfExists(headers);
       context.setEventTypeIfExists(headers);
     } catch (UnsupportedEncodingException ex) {
       throw new ApplicationRuntimeException(new ConfigException(ex));
@@ -52,14 +50,6 @@ public class KafkaApplicationContext extends ApplicationContext {
       setBreadcrumbId(new String(breadcrumbIdHeader.value(), StandardCharsets.UTF_8.name()));
     } else {
       generateBreadcrumbId();
-    }
-  }
-
-  @Deprecated(forRemoval = true)
-  private void setActionIfExists(Headers headers) throws UnsupportedEncodingException {
-    var actionHeader = headers.lastHeader(ACTION);
-    if (actionHeader != null) {
-      this.contextData.put(ACTION, new String(actionHeader.value(), StandardCharsets.UTF_8.name()));
     }
   }
 
