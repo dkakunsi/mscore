@@ -38,7 +38,7 @@ public class WorkflowEventController extends JavalinController {
     return ctx -> {
       var contextData = new HashMap<String, Object>();
       contextData.put(EVENT_TYPE, Event.Type.TASK);
-      var context = JavalinApplicationContext.of(ctx);
+      var context = JavalinApplicationContext.of(ctx, contextData);
       setContext(context);
       
       var taskId = ctx.pathParam(ID);
