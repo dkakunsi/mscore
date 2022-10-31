@@ -6,6 +6,7 @@ import static com.devit.mscore.util.Utils.EVENT_TYPE;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
 
 import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Event;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.ConfigException;
 
@@ -54,6 +55,7 @@ public class KafkaApplicationContext extends ApplicationContext {
     }
   }
 
+  @Deprecated(forRemoval = true)
   private void setActionIfExists(Headers headers) throws UnsupportedEncodingException {
     var actionHeader = headers.lastHeader(ACTION);
     if (actionHeader != null) {
@@ -64,7 +66,8 @@ public class KafkaApplicationContext extends ApplicationContext {
   private void setEventTypeIfExists(Headers headers) throws UnsupportedEncodingException {
     var eventTypeHeader = headers.lastHeader(EVENT_TYPE);
     if (eventTypeHeader != null) {
-      this.contextData.put(EVENT_TYPE, new String(eventTypeHeader.value(), StandardCharsets.UTF_8.name()));
+      var eventType = new String(eventTypeHeader.value(), StandardCharsets.UTF_8.name());
+      setEventType(Event.Type.valueOf(eventType));
     }
   }
 

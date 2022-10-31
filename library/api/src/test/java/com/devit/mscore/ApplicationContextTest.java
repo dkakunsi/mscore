@@ -25,19 +25,17 @@ public class ApplicationContextTest {
   @Test
   public void testDataAvailable() {
     // @formatter:off
-        var contextData = Map.of(
-                "breadcrumbId", "breadcrumbId",
-                "principal", new JSONObject("{\"requestedBy\":\"requestedBy\",\"role\":[\"user\"]}"),
-                "action", "domain.action",
-                "Authorization", "JWT Token");
-        // @formatter:on
+    var contextData = Map.of(
+        "breadcrumbId", "breadcrumbId",
+        "principal", new JSONObject("{\"requestedBy\":\"requestedBy\",\"role\":[\"user\"]}"),
+        "eventType", "create",
+        "Authorization", "JWT Token");
+    // @formatter:on
 
     var context = DefaultApplicationContext.of("test", new HashMap<>(contextData));
     assertThat(context.getBreadcrumbId(), is("breadcrumbId"));
     assertThat(context.getRequestedBy(), is("requestedBy"));
-    assertThat(context.getAction().get(), is("domain.action"));
     assertThat(context.getToken().get(), is("JWT Token"));
-    assertTrue(context.hasAction());
     assertTrue(context.getPrincipal().isPresent());
     assertTrue(context.hasRole("user"));
     assertFalse(context.hasRole("admin"));
@@ -50,9 +48,7 @@ public class ApplicationContextTest {
     var context = DefaultApplicationContext.of("test");
     assertNotNull(context.getBreadcrumbId());
     assertThat(context.getRequestedBy(), is("UNKNOWN"));
-    assertFalse(context.getAction().isPresent());
     assertFalse(context.getToken().isPresent());
-    assertFalse(context.hasAction());
     assertFalse(context.getPrincipal().isPresent());
     assertFalse(context.hasRole("user"));
     assertNotNull(context.toJson());

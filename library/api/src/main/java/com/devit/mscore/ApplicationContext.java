@@ -134,6 +134,7 @@ public abstract class ApplicationContext {
    *
    * @return action name.
    */
+  @Deprecated(forRemoval = true)
   public Optional<String> getAction() {
     return Optional.ofNullable(getString(ACTION));
   }
@@ -143,6 +144,7 @@ public abstract class ApplicationContext {
    *
    * @return true if available, false otherwise.
    */
+  @Deprecated(forRemoval = true)
   public boolean hasAction() {
     return has(ACTION);
   }
@@ -234,5 +236,9 @@ public abstract class ApplicationContext {
 
   protected void generateBreadcrumbId() {
     this.contextData.put(BREADCRUMB_ID, UUID.randomUUID().toString());
+  }
+
+  protected void setEventType(Event.Type eventType) {
+    this.contextData.put(EVENT_TYPE, eventType.toString());
   }
 }

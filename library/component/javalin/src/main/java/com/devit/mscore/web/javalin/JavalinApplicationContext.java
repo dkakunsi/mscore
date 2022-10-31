@@ -7,6 +7,7 @@ import static com.devit.mscore.util.Utils.EVENT_TYPE;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
 
 import com.devit.mscore.ApplicationContext;
+import com.devit.mscore.Event;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -61,6 +62,7 @@ public class JavalinApplicationContext extends ApplicationContext {
     return value != null ? value.toString() : null;
   }
 
+  @Deprecated(forRemoval = true)
   private void action(Context ctx) {
     var action = ctx.header(ACTION);
     if (StringUtils.isNotBlank(action)) {
@@ -71,7 +73,7 @@ public class JavalinApplicationContext extends ApplicationContext {
   private void eventType(Context ctx) {
     var eventType = ctx.header(EVENT_TYPE);
     if (StringUtils.isNotBlank(eventType)) {
-      this.contextData.put(EVENT_TYPE, eventType);
+      setEventType(Event.Type.valueOf(eventType));
     }
   }
 

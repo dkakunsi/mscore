@@ -32,8 +32,6 @@ public class JavalinApplicationContextTest {
     assertThat(applicationContext.getBreadcrumbId(), is(expected));
     expected = principal;
     assertThat(applicationContext.getPrincipal().get().toString(), is(expected));
-    expected = action;
-    assertThat(applicationContext.getAction().get().toString(), is(expected));
 
     assertTrue(applicationContext.hasRole("user"));
     assertFalse(applicationContext.hasRole("admin"));
@@ -44,12 +42,12 @@ public class JavalinApplicationContextTest {
     var ctx = mock(Context.class);
     doReturn(null).when(ctx).header("principal");
     doReturn(null).when(ctx).header("breadcrumbId");
-    doReturn(null).when(ctx).header("action");
+    doReturn(null).when(ctx).header("eventType");
 
     var applicationContext = JavalinApplicationContext.of(ctx);
 
     assertThat(applicationContext.getRequestedBy(), is("UNKNOWN"));
-    assertTrue(applicationContext.getAction().isEmpty());
+    assertTrue(applicationContext.getEventType().isEmpty());
     assertTrue(applicationContext.getPrincipal().isEmpty());
     assertNotNull(applicationContext.getBreadcrumbId());
     assertFalse(applicationContext.hasRole("user"));
