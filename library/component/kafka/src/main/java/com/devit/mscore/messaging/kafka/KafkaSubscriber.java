@@ -31,11 +31,11 @@ public class KafkaSubscriber implements Subscriber {
 
   private boolean consuming;
 
-  private long pollDuration;
+  private long pollInterval;
 
-  KafkaSubscriber(Consumer<String, String> consumer, long pollDuration) {
+  KafkaSubscriber(Consumer<String, String> consumer, long pollInterval) {
     this.consumer = consumer;
-    this.pollDuration = pollDuration;
+    this.pollInterval = pollInterval;
     this.topicHandlers = new HashMap<>();
   }
 
@@ -60,7 +60,7 @@ public class KafkaSubscriber implements Subscriber {
 
     new Thread(() -> {
       while (consuming) {
-        var records = this.consumer.poll(Duration.ofMillis(this.pollDuration));
+        var records = this.consumer.poll(Duration.ofMillis(this.pollInterval));
         records.forEach(this::handleMessage);
       }
     }).start();

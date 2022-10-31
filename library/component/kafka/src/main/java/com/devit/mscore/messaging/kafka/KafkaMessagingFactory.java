@@ -34,7 +34,7 @@ public class KafkaMessagingFactory {
 
   private static final String POLL_INTERVAL = "poll.interval";
 
-  private static final String DEFAULT_POLL_INTERVAL = "10000";
+  private static final String DEFAULT_POLL_INTERVAL = "1000";
 
   private static final List<String> PRODUCER_CONFIG_OPTIONS = Arrays.asList(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
       ProducerConfig.ACKS_CONFIG, ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
