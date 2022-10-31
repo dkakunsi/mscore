@@ -22,8 +22,7 @@ public class KafkaApplicationContext extends ApplicationContext {
     super(contextData);
   }
 
-  public static ApplicationContext of(Headers headers) {
-    var contextData = new HashMap<String, Object>();
+  public static ApplicationContext of(Headers headers, Map<String, Object> contextData) {
     var context = new KafkaApplicationContext(contextData);
 
     try {
@@ -35,6 +34,11 @@ public class KafkaApplicationContext extends ApplicationContext {
     }
 
     return context;
+  }
+
+  public static ApplicationContext of(Headers headers) {
+    var contextData = new HashMap<String, Object>();
+    return of(headers, contextData);
   }
 
   private void setPrincipalIfExists(Headers headers) throws UnsupportedEncodingException {
