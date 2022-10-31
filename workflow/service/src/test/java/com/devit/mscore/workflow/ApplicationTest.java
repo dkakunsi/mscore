@@ -1,9 +1,5 @@
 package com.devit.mscore.workflow;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -13,10 +9,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Configuration;
+import com.devit.mscore.DefaultApplicationContext;
+import com.devit.mscore.Event;
 import com.devit.mscore.Publisher;
 import com.devit.mscore.Registry;
-import com.devit.mscore.Service;
 import com.devit.mscore.WorkflowDefinitionRepository;
 import com.devit.mscore.WorkflowInstance;
 import com.devit.mscore.WorkflowInstanceRepository;
@@ -25,7 +23,6 @@ import com.devit.mscore.WorkflowTaskRepository;
 import com.devit.mscore.exception.ApplicationException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.exception.WebClientException;
-import com.devit.mscore.workflow.api.ApiFactory;
 import com.devit.mscore.workflow.service.WorkflowServiceImpl;
 
 import java.util.List;
@@ -34,12 +31,12 @@ import java.util.Optional;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
-
-import kong.unirest.Unirest;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class ApplicationTest {
 
-  private ApiFactory apiFactory;
+  private ApplicationContext context;
 
   private Configuration configuration;
 
@@ -52,6 +49,8 @@ public class ApplicationTest {
   private Registry registry;
 
   private Publisher publisher;
+
+  private EventListener eventListener;
 
   private String domainChannel = "DOMAIN";
 
@@ -69,60 +68,35 @@ public class ApplicationTest {
     var service = new WorkflowServiceImpl(registry, this.publisher, domainChannel, definitionRepository, instanceRepository,
         taskRepository);
 
-    this.apiFactory = ApiFactory.of(this.configuration, null);
-    this.apiFactory.addService(service);
+    eventListener = EventListener.of(null, service);
+    context = DefaultApplicationContext.of("test");
   }
 
   @Test
   public void testNormalFlow_CreateByAction() throws ApplicationException {
-    doReturn(Optional.of("12000")).when(this.configuration).getConfig("services.workflow.web.port");
+    try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+      utilities.when(() -> ApplicationContext.getContext()).thenReturn(context);
 
-    var server = this.apiFactory.server();
-    server.start();
-
-    doReturn("definitionId").when(this.registry).get("domain.action");
-    var baseUrl = "http://localhost:12000";
-    var createInstancePath = "/process/instance/domain.action";
-    var expectedResponseBody = new JSONObject("{\"instanceId\":\"workflowId\"}");
-    var createdInstance = testCreateInstance(baseUrl, createInstancePath, true, expectedResponseBody);
-    testCompleteTask(createdInstance, baseUrl);
-
-    server.stop();
+      doReturn("definitionId").when(this.registry).get("domain.action");
+      var baseUrl = "http://localhost:12000";
+      var createInstancePath = "/process/instance/domain.action";
+      var expectedResponseBody = new JSONObject("{\"instanceId\":\"workflowId\"}");
+      var createdInstance = testCreateInstance(baseUrl, createInstancePath, true, expectedResponseBody);
+      testCompleteTask(createdInstance, baseUrl);
+    }
   }
 
   @Test
   public void testNormalFlow_CreateByDefinitionId() throws ApplicationException {
-    doReturn(Optional.of("12001")).when(this.configuration).getConfig("services.workflow.web.port");
+    try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
+      utilities.when(() -> ApplicationContext.getContext()).thenReturn(context);
 
-    var server = this.apiFactory.server();
-    server.start();
-
-    var baseUrl = "http://localhost:12001";
-    var createInstancePath = "/process/definition/definitionId";
-    var expectedResponseBody = new JSONObject("{\"instanceId\":\"workflowId\"}");
-    var createdInstance = testCreateInstance(baseUrl, createInstancePath, true, expectedResponseBody);
-    testCompleteTask(createdInstance, baseUrl);
-
-    server.stop();
-  }
-
-  @Test
-  public void testCreateInstance_WithEmptyService_ShouldFail() throws ApplicationException {
-    doReturn(Optional.of("12003")).when(this.configuration).getConfig("services.workflow.web.port");
-    var mockedService = mock(Service.class);
-    doReturn("process").when(mockedService).getDomain();
-
-    var internalApiFactory = ApiFactory.of(this.configuration, null);
-    internalApiFactory.addService(mockedService);
-    var server = internalApiFactory.server();
-    server.start();
-
-    var baseUrl = "http://localhost:12003";
-    var createInstancePath = "/process/definition/definitionId";
-    var expectedResponseBody = new JSONObject("{\"message\":\"No workflow process is registered\",\"type\":\"SERVER ERROR\"}");
-    testCreateInstance(baseUrl, createInstancePath, false, expectedResponseBody);
-
-    server.stop();
+      var baseUrl = "http://localhost:12001";
+      var createInstancePath = "/process/definition/definitionId";
+      var expectedResponseBody = new JSONObject("{\"instanceId\":\"workflowId\"}");
+      var createdInstance = testCreateInstance(baseUrl, createInstancePath, true, expectedResponseBody);
+      testCompleteTask(createdInstance, baseUrl);
+    }
   }
 
   private WorkflowInstance testCreateInstance(String baseUrl, String createInstancePath, boolean success, JSONObject expectedResponseBody) throws RegistryException, WebClientException {
@@ -134,14 +108,11 @@ public class ApplicationTest {
     doReturn("workflowId").when(createdInstance).getId();
     doReturn(List.of(activeTask)).when(this.taskRepository).getTasks(anyString());
     doReturn(new JSONObject()).when(createdInstance).toJson(anyList());
-    doReturn("definitionId").when(this.registry).get("action");
+    doReturn("definitionId").when(this.registry).get("domain.create");
 
     var createInstacePayload = "{\"id\":\"entityid\",\"name\":\"name\",\"domain\":\"domain\"}";
-    var createInstanceUrl = baseUrl + createInstancePath;
-    var serverResponse = Unirest.post(createInstanceUrl).body(createInstacePayload).asString();
-    assertThat(serverResponse.isSuccess(), is(success));
-    var serverResponseBody = new JSONObject(serverResponse.getBody());
-    assertEquals(expectedResponseBody.toString(), serverResponseBody.toString());
+    var event = Event.of(Event.Type.CREATE, "domain", new JSONObject(createInstacePayload));
+    eventListener.consume(event.toJson());
 
     if (success) {
       verify(this.publisher, times(1)).publish(anyString(), any(JSONObject.class));
@@ -157,10 +128,10 @@ public class ApplicationTest {
     doReturn(Optional.of(activeTask)).when(this.taskRepository).getTask(anyString());
     doReturn(Optional.of(createdInstance)).when(this.instanceRepository).get(anyString());
 
-    var completeTaskUrl = baseUrl + "/process/task/taskId";
-    var completeTaskPayload = "{\"domain\":\"project\",\"approved\":true}";
-    var serverResponse = Unirest.put(completeTaskUrl).body(completeTaskPayload).asString();
-    assertTrue(serverResponse.isSuccess());
+    var completeTaskPayload = "{\"taskId\":\"taskId\",\"response\":{\"domain\":\"project\",\"approved\":true}}";
+    var event = Event.of(Event.Type.TASK, "domain", new JSONObject(completeTaskPayload));
+    eventListener.consume(event.toJson());
+
     verify(this.publisher, times(2)).publish(anyString(), any(JSONObject.class));
   }
 }

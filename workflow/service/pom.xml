@@ -28,11 +28,6 @@
     </dependency>
     <dependency>
       <groupId>com.devit.mscore</groupId>
-      <artifactId>javalin</artifactId>
-      <version>${library.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.devit.mscore</groupId>
       <artifactId>jersey</artifactId>
       <version>${library.version}</version>
       <exclusions>
@@ -67,13 +62,6 @@
       <groupId>com.devit.mscore</groupId>
       <artifactId>zookeeper</artifactId>
       <version>${library.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.konghq</groupId>
-      <artifactId>unirest-java</artifactId>
-      <version>${unirest.version}</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 

@@ -1,5 +1,7 @@
 package com.devit.mscore.workflow;
 
+import static com.devit.mscore.util.AttributeConstants.getId;
+
 import com.devit.mscore.Event;
 import com.devit.mscore.Listener;
 import com.devit.mscore.Subscriber;
@@ -46,7 +48,7 @@ public class EventListener extends Listener {
       logger.info("Instance is created with id {}", instance.getId());
     } else {
       var data = event.getData();
-      var taskId = data.getString("id");
+      var taskId = getId(data);
       this.service.completeTask(taskId, data.getJSONObject("response"));
       logger.info("Task '{}' is completed", taskId);
     }

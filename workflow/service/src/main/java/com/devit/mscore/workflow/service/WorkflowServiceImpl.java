@@ -23,6 +23,7 @@ import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.util.AttributeConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -107,7 +108,8 @@ public class WorkflowServiceImpl implements WorkflowService {
   }
 
   private void syncUpdate(WorkflowInstance instance, WorkflowTask completedTask) {
-    var tasks = this.taskRepository.getTasks(instance.getId());
+    var activeTasks = this.taskRepository.getTasks(instance.getId());
+    var tasks = new ArrayList<>(activeTasks);
     tasks.add(completedTask);
     sync(instance, Event.Type.UPDATE, tasks);
   }
