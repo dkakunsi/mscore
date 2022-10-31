@@ -67,7 +67,7 @@ public class KafkaApplicationContext extends ApplicationContext {
     var eventTypeHeader = headers.lastHeader(EVENT_TYPE);
     if (eventTypeHeader != null) {
       var eventType = new String(eventTypeHeader.value(), StandardCharsets.UTF_8.name());
-      setEventType(Event.Type.valueOf(eventType));
+      setEventType(Event.Type.valueOf(eventType.toUpperCase()));
     }
   }
 
