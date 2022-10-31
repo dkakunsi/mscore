@@ -12,10 +12,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -73,15 +70,17 @@ public class KafkaSubscriber implements Subscriber {
     new Thread(() -> {
       setContext(KafkaApplicationContext.of(message.headers()));
       var logFormat = "Receiving message from topic '%s', headers: '%s', message: '%s'";
-      LOG.info(String.format(logFormat, message.topic(), message.partition(), message.offset(), message.value(),
-          buildPrintableHeader(message.headers())));
+      LOG.info(String.format(logFormat, message.topic(), buildPrintableHeader(message.headers()), message.value()));
       this.topicHandlers.get(message.topic()).accept(new JSONObject(message.value()));
     }).start();
   }
 
   private List<Pair<String, String>> buildPrintableHeader(Headers headers) {
-    var spliterator = Spliterators.spliteratorUnknownSize(headers.iterator(), Spliterator.ORDERED);
-    return StreamSupport.stream(spliterator, false)
+    var arr = headers.toArray();
+    if (arr == null || arr.length <= 0) {
+      return List.of();
+    }
+    return List.of(arr).stream()
         .map(x -> headerToPair(x))
         .collect(Collectors.toList());
   }

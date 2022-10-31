@@ -147,6 +147,7 @@ public class KafkaMessagingTest {
     var headers = mock(Headers.class);
     doReturn(principalHeader).when(headers).lastHeader("principal");
     doReturn(breadcrumbIdHeader).when(headers).lastHeader("breadcrumbId");
+    doReturn(new Header[] { breadcrumbIdHeader, principalHeader }).when(headers).toArray();
 
     var record = mock(ConsumerRecord.class);
     doReturn("topic").when(record).topic();
