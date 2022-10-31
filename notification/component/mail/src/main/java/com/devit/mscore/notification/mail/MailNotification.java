@@ -2,9 +2,9 @@ package com.devit.mscore.notification.mail;
 
 import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.notification.mail.EmailExtractor.extract;
+import static com.devit.mscore.util.AttributeConstants.getDomain;
 import static com.devit.mscore.util.AttributeConstants.getName;
 import static com.devit.mscore.util.JsonUtils.flatten;
-import static com.devit.mscore.util.Utils.ACTION;
 
 import com.devit.mscore.Logger;
 import com.devit.mscore.Notification;
@@ -81,8 +81,7 @@ public class MailNotification implements Notification {
   }
 
   private String loadTemplate(JSONObject entity) throws NotificationException {
-    var context = getContext();
-    var templateName = context.getAction().orElse(entity.optString(ACTION));
+    var templateName = getTemplateName(entity);
     if (StringUtils.isBlank(templateName)) {
       LOGGER.warn("Message: {}", NO_TEMPLATE_MESSAGE);
       throw new NotificationException(NO_TEMPLATE_MESSAGE);
@@ -95,5 +94,11 @@ public class MailNotification implements Notification {
       LOGGER.error("Message: {}", CANNOT_LOAD_TEMPLATE_MESSAGE);
       throw new NotificationException(CANNOT_LOAD_TEMPLATE_MESSAGE, ex);
     }
+  }
+
+  private String getTemplateName(JSONObject json) {
+    var eventType = getContext().getEventType().get();
+    var domain = getDomain(json);
+    return String.format("%s.%s", domain, eventType);
   }
 }
