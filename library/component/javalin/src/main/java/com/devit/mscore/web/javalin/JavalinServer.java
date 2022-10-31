@@ -5,6 +5,7 @@ import static com.devit.mscore.util.JsonUtils.isNotJsonString;
 import static com.devit.mscore.util.Utils.EVENT_TYPE;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
 
+import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.AuthenticationProvider;
 import com.devit.mscore.Event;
 import com.devit.mscore.Logger;
@@ -29,7 +30,10 @@ import com.devit.mscore.web.Server;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -100,11 +104,15 @@ public final class JavalinServer extends Server {
   }
 
   @Override
+  public void stop() {
+    this.app.stop();
+  }
+
+  @Override
   public void start() {
     this.app = Javalin.create(getConfigurer()).start(this.port);
 
-    initAuthentication();
-    initBodyValidation();
+    initValidationAndSecurityCheck();
     initEndpoint();
     initTypeAdapter();
   }
@@ -114,93 +122,63 @@ public final class JavalinServer extends Server {
     } : this.configurer;
   }
 
-  @Override
-  public void stop() {
-    this.app.stop();
-  }
-
-  private void initAuthentication() {
-    if (this.authenticationProvider == null) {
-      return;
-    }
-
-    var secureUri = this.authenticationProvider.getUri();
-    if (secureUri.isEmpty()) {
-      return;
-    }
-
-    secureUri.forEach((uri, role) -> this.app.before(uri, ctx -> {
-      if (isPreflightRequest(ctx.method())) {
-        return;
-      }
-      LOG.info("Validating security for endpoint {}", ctx.path());
-
-      var applicationContext = JavalinApplicationContext.of(ctx);
-      setContext(applicationContext);
-      var sessionKey = ctx.header(AUTHORIZATION);
-      var principal = this.authenticationProvider.verify(sessionKey);
-      if (principal == null) {
-        throw new AuthenticationException("Not authenticated");
-      }
-
-      ctx.req.setAttribute(PRINCIPAL, principal.toString());
-      applicationContext = JavalinApplicationContext.of(ctx);
-      setContext(applicationContext);
-      var requiredRole = getRequiredRole(role, ctx.method());
-      if (StringUtils.isNotBlank(requiredRole) && !applicationContext.hasRole(requiredRole)) {
-        throw new AuthorizationException("Not authorized");
-      }
-    }));
-  }
-
-  private static boolean isPreflightRequest(String method) {
-    return StringUtils.equalsAnyIgnoreCase(method, "options");
-  }
-
-  @SuppressWarnings("rawtypes")
-  private static String getRequiredRole(Object object, String method) {
-    var requiredRole = "";
-    if (object instanceof String) {
-      requiredRole = (String) object;
-    } else if (object instanceof Map) {
-      var forMethod = ((Map) object).get(method);
-      requiredRole = forMethod != null ? forMethod.toString() : "";
-    }
-    return requiredRole;
-  }
-
-  private void initBodyValidation() {
+  private void initValidationAndSecurityCheck() {
     this.app.before(ctx -> {
-      var contextData = new HashMap<String, Object>();
-      contextData.put(EVENT_TYPE, getEventType(ctx));
-      var applicationContext = JavalinApplicationContext.of(ctx, contextData);
-      setContext(applicationContext);
+      var applicationContext = Util.initiateContext(ctx);
 
-      if (!isValidatable(ctx.method(), ctx.path())) {
+      if (Util.isValidatable(ctx.method(), ctx.path())) {
+        validateRequest(ctx);
+      }
+      if (Util.isPreflightRequest(ctx.method())) {
         return;
       }
-
-      var body = ctx.body();
-      if (isNotJsonString(body)) {
-        throw new ValidationException("Unexpected format");
-      }
-
-      if (!isValid(new JSONObject(body))) {
-        throw new ValidationException("Invalid data. Please check log for detail");
+      if (this.authenticationProvider != null) {
+        doSecurityCheck(applicationContext, ctx);
       }
     });
   }
 
-  private static boolean isValidatable(String method, String path) {
-    return isMutationRequest(method) && isCrudRequest(path);
+  private void validateRequest(Context ctx) throws ValidationException {
+    var body = ctx.body();
+    if (isNotJsonString(body)) {
+      throw new ValidationException("Unexpected format");
+    }
+    if (!isValid(new JSONObject(body))) {
+      throw new ValidationException("Invalid data. Please check log for detail");
+    }
   }
 
-  private static boolean isMutationRequest(String method) {
-    return StringUtils.equalsAnyIgnoreCase(method, MUTATION_REQUEST_METHOD);
+  private void doSecurityCheck(ApplicationContext applicationContext, Context ctx)
+      throws AuthenticationException, AuthorizationException {
+    var secureUris = this.authenticationProvider.getUri().entrySet()
+        .stream().filter(e -> Pattern.compile(e.getKey()).matcher(ctx.path()).matches())
+        .collect(Collectors.toList());
+    try {
+      var sessionKey = ctx.header(AUTHORIZATION);
+      var principal = authenticateRequest(sessionKey);
+      applicationContext = Util.initiateContext(ctx, principal);
+      authorizeRequest(applicationContext, ctx, secureUris.get(0));
+    } catch (AuthenticationException | AuthorizationException | IndexOutOfBoundsException ex) {
+      if (!secureUris.isEmpty()) {
+        throw ex;
+      }
+    }
   }
 
-  private static boolean isCrudRequest(String path) {
-    return !StringUtils.containsAny(path.toLowerCase(), NON_CRUD_REQUEST_PATH);
+  private JSONObject authenticateRequest(String sessionKey) throws AuthenticationException {
+    var principal = this.authenticationProvider.verify(sessionKey);
+    if (principal == null) {
+      throw new AuthenticationException("Not authenticated");
+    }
+    return principal;
+  }
+
+  private void authorizeRequest(ApplicationContext applicationContext, Context requestContext,
+      Entry<String, Object> secureUri) throws AuthorizationException {
+    var requiredRole = Util.getRequiredRole(secureUri.getValue(), requestContext.method());
+    if (StringUtils.isNotBlank(requiredRole) && !applicationContext.hasRole(requiredRole)) {
+      throw new AuthorizationException("Not authorized");
+    }
   }
 
   private void initEndpoint() {
@@ -220,16 +198,66 @@ public final class JavalinServer extends Server {
     }
   }
 
-  private String getEventType(Context ctx) {
-    switch (ctx.method().toLowerCase()) {
-      case "post":
-        return Event.Type.CREATE.toString();
-      case "put":
-        return Event.Type.UPDATE.toString();
-      case "delete":
-        return Event.Type.REMOVE.toString();
-      default:
-        return "retrieve";
+  private static class Util {
+
+    static ApplicationContext initiateContext(Context ctx) {
+      var contextData = new HashMap<String, Object>();
+      contextData.put(EVENT_TYPE, getEventType(ctx));
+      return initiateContext(ctx, contextData);
     }
+
+    static ApplicationContext initiateContext(Context ctx, JSONObject principal) {
+      var contextData = new HashMap<String, Object>();
+      contextData.put(EVENT_TYPE, getEventType(ctx));
+      contextData.put(PRINCIPAL, principal);
+      return initiateContext(ctx, contextData);
+    }
+
+    private static ApplicationContext initiateContext(Context ctx, Map<String, Object> contextData) {
+      var applicationContext = JavalinApplicationContext.of(ctx, contextData);
+      setContext(applicationContext);
+      return applicationContext;
+    }
+
+    private static String getEventType(Context ctx) {
+      switch (ctx.method().toLowerCase()) {
+        case "post":
+          return Event.Type.CREATE.toString();
+        case "put":
+          return Event.Type.UPDATE.toString();
+        case "delete":
+          return Event.Type.REMOVE.toString();
+        default:
+          return "retrieve";
+      }
+    }
+
+    static boolean isValidatable(String method, String path) {
+      return isMutationRequest(method) && isCrudRequest(path);
+    }
+
+    private static boolean isMutationRequest(String method) {
+      return StringUtils.equalsAnyIgnoreCase(method, MUTATION_REQUEST_METHOD);
+    }
+
+    private static boolean isCrudRequest(String path) {
+      return !StringUtils.containsAny(path.toLowerCase(), NON_CRUD_REQUEST_PATH);
+    }
+
+    private static boolean isPreflightRequest(String method) {
+      return StringUtils.equalsAnyIgnoreCase(method, "options");
+    }
+
+    @SuppressWarnings("rawtypes")
+    static String getRequiredRole(Object object, String method) {
+      var requiredRole = "";
+      if (object instanceof String) {
+        requiredRole = (String) object;
+      } else if (object instanceof Map) {
+        var forMethod = ((Map) object).get(method);
+        requiredRole = forMethod != null ? forMethod.toString() : "";
+      }
+      return requiredRole;
+    }  
   }
 }

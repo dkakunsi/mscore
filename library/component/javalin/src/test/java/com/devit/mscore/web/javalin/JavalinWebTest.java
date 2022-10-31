@@ -67,8 +67,7 @@ public class JavalinWebTest {
     principal.put("role", role);
 
     authentication = mock(AuthenticationProvider.class);
-    var roles = Map.of("/domain/*", "user", "/secure*", Map.of("POST", "admin"), "/secure/*", Map.of("PUT", "admin"),
-        "/secure/*/sync", "admin", "/secure/sync", "admin");
+    var roles = Map.of("\\/secure", "user", "\\/secure\\/.*", Map.of("PUT", "user", "GET", "user"));
     doReturn(roles).when(authentication).getUri();
     doReturn(principal).when(authentication).verify(anyString());
 
@@ -376,7 +375,7 @@ public class JavalinWebTest {
     var body = "{\"domain\":\"secure\",\"name\":\"name\"}";
     var response = Unirest.post(BASE_SECURE_URL).header("Authorization", "JWT Token").body(body).asString();
 
-    assertThat(response.getStatus(), is(403));
+    assertThat(response.getStatus(), is(200));
   }
 
   @Test
@@ -396,7 +395,7 @@ public class JavalinWebTest {
     var body = "{\"domain\":\"secure\",\"name\":\"name\"}";
     var response = Unirest.put(BASE_SECURE_URL + "/id").header("Authorization", "JWT Token").body(body).asString();
 
-    assertThat(response.getStatus(), is(403));
+    assertThat(response.getStatus(), is(200));
   }
 
   @Test
@@ -473,13 +472,13 @@ public class JavalinWebTest {
 
   @Test
   public void testSecure_SyncById() {
-    var response = Unirest.get(BASE_SECURE_URL + "/id/sync").header("Authorization", "JWT Token").asString();
-    assertThat(response.getStatus(), is(403));
+    var response = Unirest.post(BASE_SECURE_URL + "/id/sync").header("Authorization", "JWT Token").asString();
+    assertThat(response.getStatus(), is(200));
   }
 
   @Test
   public void testSecure_SyncAll() {
-    var response = Unirest.get(BASE_SECURE_URL + "/sync").header("Authorization", "JWT Token").asString();
-    assertThat(response.getStatus(), is(403));
+    var response = Unirest.post(BASE_SECURE_URL + "/sync").header("Authorization", "JWT Token").asString();
+    assertThat(response.getStatus(), is(200));
   }
 }
