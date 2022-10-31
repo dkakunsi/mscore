@@ -1,16 +1,16 @@
 package com.devit.mscore.workflow.flowable.delegate;
 
-import static com.devit.mscore.util.Utils.ACTION;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
+import static com.devit.mscore.util.Utils.EVENT_TYPE;
 
 import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.DataClient;
+import com.devit.mscore.Event;
 import com.devit.mscore.Publisher;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.delegate.DelegateExecution;
 
 public class FlowableApplicationContext extends ApplicationContext {
@@ -28,16 +28,15 @@ public class FlowableApplicationContext extends ApplicationContext {
     var contextData = new HashMap<String, Object>();
     var context = new FlowableApplicationContext(contextData);
     context.breadcrumbId(execution);
-    context.action(execution);
+    context.eventType(execution);
 
     return context;
   }
 
-  private void action(DelegateExecution execution) {
-    var processDefinitionId = execution.getProcessDefinitionId();
-    var action = processDefinitionId.split(":")[0];
-    if (!StringUtils.isBlank(action)) {
-      this.contextData.put(ACTION, action);
+  private void eventType(DelegateExecution execution) {
+    var variableObj = execution.getVariable(EVENT_TYPE);
+    if (variableObj != null) {
+      setEventType(Event.Type.valueOf(variableObj.toString().toUpperCase()));
     }
   }
 
