@@ -154,7 +154,7 @@ public class WorkflowServiceImpl implements WorkflowService {
         .orElseThrow(() -> new ProcessException(String.format("No instance found for id: %s", instanceId)));
 
     taskResponse.put(BREADCRUMB_ID, getContext().getBreadcrumbId());
-    taskResponse.put(EVENT_TYPE, getContext().getEventType());
+    taskResponse.put(EVENT_TYPE, getContext().getEventType().get());
     this.taskRepository.complete(taskId, taskResponse.toMap());
     task.complete();
 
