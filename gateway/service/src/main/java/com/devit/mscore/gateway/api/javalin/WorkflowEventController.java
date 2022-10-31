@@ -1,11 +1,17 @@
 package com.devit.mscore.gateway.api.javalin;
 
+import static com.devit.mscore.ApplicationContext.setContext;
 import static com.devit.mscore.util.AttributeConstants.ID;
+import static com.devit.mscore.util.Utils.EVENT_TYPE;
 
+import com.devit.mscore.Event;
 import com.devit.mscore.Logger;
 import com.devit.mscore.gateway.service.EventEmitter;
 import com.devit.mscore.logging.ApplicationLogger;
+import com.devit.mscore.web.javalin.JavalinApplicationContext;
 import com.devit.mscore.web.javalin.JavalinController;
+
+import java.util.HashMap;
 
 import org.json.JSONObject;
 
@@ -30,6 +36,11 @@ public class WorkflowEventController extends JavalinController {
   @Override
   public Handler put() {
     return ctx -> {
+      var contextData = new HashMap<String, Object>();
+      contextData.put(EVENT_TYPE, Event.Type.TASK);
+      var context = JavalinApplicationContext.of(ctx);
+      setContext(context);
+      
       var taskId = ctx.pathParam(ID);
       LOGGER.info("Receiving put request at {}", ctx.path());
       var taskResponse = new JSONObject(ctx.body());
