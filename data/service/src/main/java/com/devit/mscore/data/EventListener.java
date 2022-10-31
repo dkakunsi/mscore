@@ -35,7 +35,7 @@ public class EventListener extends Listener {
   protected void consume(JSONObject message) {
     var event = Event.of(message);
     var code = getCode(event.getData());
-    logger.info("Processing '{}'' for code '{}'", event.getAction(), code);
+    logger.info("Processing '{}' for code '{}'", event.getAction(), code);
     var service = this.services.get(message.getString(Event.DOMAIN));
     try {
       if (Event.Type.CREATE.equals(event.getType()) || Event.Type.UPDATE.equals(event.getType())) {

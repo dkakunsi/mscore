@@ -6,12 +6,22 @@ import com.devit.mscore.Logger;
 import com.devit.mscore.Subscriber;
 import com.devit.mscore.logging.ApplicationLogger;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.Headers;
 import org.json.JSONObject;
 
 public class KafkaSubscriber implements Subscriber {
@@ -62,10 +72,26 @@ public class KafkaSubscriber implements Subscriber {
   private void handleMessage(ConsumerRecord<String, String> message) {
     new Thread(() -> {
       setContext(KafkaApplicationContext.of(message.headers()));
-      LOG.info(String.format("Receiving message from topic '%s', partition '%s', offset '%s': '%s', headers: '%s'",
-          message.topic(), message.partition(), message.offset(), message.value(), message.headers()));
+      var logFormat = "Receiving message from topic '%s', headers: '%s', message: '%s'";
+      LOG.info(String.format(logFormat, message.topic(), message.partition(), message.offset(), message.value(),
+          buildPrintableHeader(message.headers())));
       this.topicHandlers.get(message.topic()).accept(new JSONObject(message.value()));
     }).start();
+  }
+
+  private List<Pair<String, String>> buildPrintableHeader(Headers headers) {
+    var spliterator = Spliterators.spliteratorUnknownSize(headers.iterator(), Spliterator.ORDERED);
+    return StreamSupport.stream(spliterator, false)
+        .map(x -> headerToPair(x))
+        .collect(Collectors.toList());
+  }
+
+  private Pair<String, String> headerToPair(Header header) {
+    try {
+      return Pair.of(header.key(), new String(header.value(), StandardCharsets.UTF_8.name()));
+    } catch (UnsupportedEncodingException ex) {
+      throw new RuntimeException(ex);
+    }
   }
 
   @Override
