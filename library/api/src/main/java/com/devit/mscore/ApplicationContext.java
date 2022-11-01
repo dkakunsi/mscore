@@ -194,8 +194,8 @@ public abstract class ApplicationContext {
     return new JSONObject(this.contextData);
   }
 
-  protected Map<String, Object> getContextData() {
-    return this.contextData;
+  public Map<String, Object> getContextData() {
+    return new HashMap<>(this.contextData);
   }
 
   @Override
