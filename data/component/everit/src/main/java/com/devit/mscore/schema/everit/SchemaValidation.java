@@ -36,22 +36,22 @@ public class SchemaValidation implements Validation {
   @Override
   public boolean validate(JSONObject json) {
     if (!hasDomain(json)) {
-      var cause = new ValidationException("Invalid data. No domain found");
+      var cause = new ValidationException("No domain found in object");
       throw new ApplicationRuntimeException(cause);
     }
 
     var domain = json.getString(DOMAIN);
-    LOG.debug("Validating {}", domain);
+    LOG.debug("Validating object of domain '{}'", domain);
 
     try {
       var registeredSchema = this.registry.get(domain);
       new JSONSchema(new JSONObject(registeredSchema)).validate(json);
       return true;
     } catch (ValidationException ex) {
-      LOG.error("Validation failed for object: {}", ex, getCode(json));
+      LOG.error("Validation failed for object '{}' of domain '{}'", ex, getCode(json), domain);
       return false;
     } catch (RegistryException ex) {
-      LOG.error("Cannot validate since the schema is not exist: {}", domain);
+      LOG.error("Cannot validate object since the schema '{}' is not exist", domain);
       throw new ApplicationRuntimeException(ex);
     }
   }

@@ -1,9 +1,5 @@
 package com.devit.mscore.data.enrichment;
 
-import static com.devit.mscore.util.AttributeConstants.getDomain;
-import static com.devit.mscore.util.AttributeConstants.getId;
-import static com.devit.mscore.util.Utils.ALL;
-
 import com.devit.mscore.Enrichment;
 import com.devit.mscore.Executor;
 import com.devit.mscore.Logger;
@@ -45,7 +41,7 @@ public final class EnrichmentsExecutor implements Executor<Enrichment> {
     var domain = getDomain(json);
     enrich(this.enrichments.get(ALL), json);
     if (StringUtils.isEmpty(domain)) {
-      LOG.warn("Fail to enrich domain-specific attributes of {}. Domain is not provided", json);
+      LOG.warn("Fail to enrich domain-specific attributes of '{}'. Domain is not provided", json);
       return;
     }
     enrich(this.enrichments.get(domain), json);
@@ -61,13 +57,13 @@ public final class EnrichmentsExecutor implements Executor<Enrichment> {
         var id = getId(json);
         var domain = getDomain(json);
         try {
-          LOG.info("Enriching attribute {} of {} for {} domain", key, id, domain);
+          LOG.info("Enriching attribute '{}' of object '{}' in domain '{}'", key, id, domain);
           enrichment.enrich(json);
         } catch (EnrichmentException ex) {
-          LOG.warn("Cannot enrich attribute {} of {} for {} domain", key, id, domain, ex);
+          LOG.warn("Cannot enrich attribute '{}' of object '{}' in domain '{}'", key, id, domain, ex);
         }
       } else {
-        LOG.warn("Cannot enrich non-existing attribute {}", key);
+        LOG.warn("Cannot enrich non-existing attribute '{}'", key);
       }
     });
   }

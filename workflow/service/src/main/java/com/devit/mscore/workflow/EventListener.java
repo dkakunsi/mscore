@@ -35,7 +35,7 @@ public class EventListener extends Listener {
       processEvent(event);
     } catch (ProcessException ex) {
       if (ex.getCause() instanceof RegistryException) {
-        logger.warn("Cannot process event. {}", ex.getMessage());
+        logger.warn("Cannot process event");
       } else {
         logger.error("Fail processing event", ex);
       }
@@ -45,7 +45,7 @@ public class EventListener extends Listener {
   private void processEvent(Event event) throws ProcessException {
     if (event.isDomainEvent()) {
       var instance = this.service.createInstanceByAction(event.getAction(), event.getData(), new HashMap<>());
-      logger.info("Instance is created with id {}", instance.getId());
+      logger.info("Instance is created with id '{}'", instance.getId());
     } else {
       var data = event.getData();
       var taskId = getId(data);

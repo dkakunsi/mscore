@@ -82,7 +82,7 @@ public class ElasticsearchIndexFactory extends ResourceManager {
   protected HttpHost[] getHost() throws ConfigException {
     var addresses = getConfigValue(this.configuration, HOST).orElseThrow(() -> new ConfigException("No ES host is configured")).split(",");
     var hosts = new ArrayList<HttpHost>();
-    LOG.info("Connecting to ES on {}", List.of(addresses));
+    LOG.info("Connecting to ES on '{}'", List.of(addresses));
     Stream.of(addresses).forEach(a -> hosts.add(HttpHost.create(a)));
     return hosts.toArray(new HttpHost[0]);
   }

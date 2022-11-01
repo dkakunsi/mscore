@@ -75,7 +75,7 @@ public final class SynchronizationsExecutor implements Executor<Synchronization>
     var referenceDomain = getDomain(json);
     var referenceId = getId(json);
     if (StringUtils.isEmpty(referenceDomain)) {
-      LOG.warn("Fail to synchronize object {}. Domain is not provided", referenceId);
+      LOG.warn("Fail to synchronize object '{}' synce the domain is not provided", referenceId);
       return;
     }
     synchronize(this.synchronizations.get(referenceDomain), referenceId);
@@ -90,7 +90,7 @@ public final class SynchronizationsExecutor implements Executor<Synchronization>
       try {
         s.synchronize(referenceId);
       } catch (SynchronizationException ex) {
-        LOG.error("Cannot synchronize object {}", referenceId, ex);
+        LOG.error("Cannot synchronize object '{}'", ex, referenceId);
       }
     });
   }

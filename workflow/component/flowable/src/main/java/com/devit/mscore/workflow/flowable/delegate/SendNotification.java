@@ -24,7 +24,7 @@ public class SendNotification implements JavaDelegate {
     var entity = execution.getVariable("entity", String.class);
     var json = new JSONObject(entity);
 
-    LOGGER.info("Sending notification for entity {}", getCode(json));
+    LOGGER.info("Sending notification for entity '{}'", getCode(json));
     publisher.publish(notificationChannel, json);
   }
 }

@@ -67,7 +67,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
       return null;
     }
 
-    LOG.debug("Verifying session: {}", key);
+    LOG.debug("Verifying session with token '{}'", key);
     var token = key.replace("Bearer ", "");
     var algorithm = Algorithm.RSA256(this.publicKey, null);
     var verifier = JWT.require(algorithm).build();
@@ -76,7 +76,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
       var payload = new JSONObject(decode(jwt.getPayload()));
       return getPrincipalData(payload);
     } catch (JWTVerificationException | JSONException | UnsupportedEncodingException ex) {
-      LOG.error("Token is not valid: {}", token);
+      LOG.error("Token is not valid: '{}'", token);
       throw new AuthenticationException("Token is not valid", ex);
     }
   }
@@ -91,7 +91,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
   }
 
   private static JSONObject getPrincipalData(JSONObject token) {
-    LOG.debug("Verified session: {}", token);
+    LOG.debug("Session is verified for token '{}'", token);
     return new JSONObject()
         .put(REQUESTED_BY, token.getString("name"))
         .put(ROLE, token.getJSONObject("realm_access").getJSONArray("roles"));

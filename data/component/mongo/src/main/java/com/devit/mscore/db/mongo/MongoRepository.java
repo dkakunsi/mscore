@@ -103,7 +103,7 @@ public class MongoRepository implements Repository {
 
   @Override
   public void delete(String id) {
-    LOG.debug("Deleting entity from MongoDB: {}", id);
+    LOG.debug("Deleting entity '{}' from collection '{}'", id, getCollectionName());
     this.collection.deleteOne(new Document(ID, id));
   }
 
@@ -113,7 +113,7 @@ public class MongoRepository implements Repository {
   }
 
   public Optional<JSONObject> find(String id, boolean removeMongoId) {
-    LOG.trace("Finding data {}", id);
+    LOG.trace("Retrieving object with id '{}' from collection '{}'", id, getCollectionName());
     var result = this.collection.find(new Document(ID, id));
     var document = result.first();
     if (document == null) {
@@ -161,5 +161,9 @@ public class MongoRepository implements Repository {
       document.put(MONGO_ID, mongoId);
     }
     return new JSONObject(document.toJson());
+  }
+
+  private String getCollectionName() {
+    return collection.getNamespace().getCollectionName();
   }
 }

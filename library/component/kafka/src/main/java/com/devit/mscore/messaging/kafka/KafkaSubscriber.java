@@ -47,7 +47,7 @@ public class KafkaSubscriber implements Subscriber {
   @Override
   public void subscribe(String topic, java.util.function.Consumer<JSONObject> handler) {
     this.topicHandlers.put(topic, handler);
-    LOG.info("Registering kafka consumer for topic {}", topic);
+    LOG.info("Registering kafka consumer for topic '{}'", topic);
   }
 
   @Override
@@ -56,7 +56,7 @@ public class KafkaSubscriber implements Subscriber {
     this.consumer.subscribe(topics);
     this.consuming = true;
 
-    LOG.info("Start subscribing to {}", topics);
+    LOG.info("Start subscribing to '{}'", topics);
 
     new Thread(() -> {
       while (consuming) {

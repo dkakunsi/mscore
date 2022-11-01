@@ -55,7 +55,7 @@ public class Requester {
       return buildMessage(status, "Cannot connect to " + uri);
     }
 
-    logger.debug("Response from {} service: {}", uri, output);
+    logger.debug("Response from '{}' service: '{}'", uri, output);
     Object json = extractResponseObject(output);
 
     if (isError(status)) {

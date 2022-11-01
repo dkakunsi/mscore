@@ -61,9 +61,9 @@ public class SchemaManager extends ResourceManager {
    * @throws RegistryException cannotconnect to registry.
    */
   public JSONSchema getSchema(String domain) throws JSONException, RegistryException {
-    LOG.info("Loading schema {}", domain);
+    LOG.info("Retrieving schema of domain '{}'", domain);
     var schema = this.registry.get(domain);
-    LOG.debug("Retrieved schema: {}", schema);
+    LOG.debug("Schema is retrieved: {}", schema);
     return new JSONSchema(new JSONObject(schema));
   }
 

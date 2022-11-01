@@ -31,21 +31,21 @@ public class SunJerseyClient extends Requester implements com.devit.mscore.web.C
 
   @Override
   public JSONObject delete(String uri) {
-    LOG.debug("Sending DELETE '{}'", uri);
+    LOG.debug("Sending 'DELETE {}'", uri);
     var response = request(uri, new HashMap<>(), new HashMap<>()).delete(ClientResponse.class);
     return buildResponse(uri, response);
   }
 
   @Override
   public JSONObject get(String uri, Map<String, String> params) {
-    LOG.debug("Sending GET '{}' with params: {}", uri, params);
+    LOG.debug("Sending 'GET {}' with paramseter '{}'", uri, params);
     var response = request(uri, params, new HashMap<>()).get(ClientResponse.class);
     return buildResponse(uri, response);
   }
 
   @Override
   public JSONObject post(String uri, Optional<JSONObject> payload) {
-    LOG.debug("Sending POST '{}': {}", uri, payload);
+    LOG.debug("Sending 'POST {}'", uri);
     ClientResponse response;
     if (payload.isPresent()) {
       response = request(uri, new HashMap<>(), new HashMap<>()).post(ClientResponse.class,
@@ -58,7 +58,7 @@ public class SunJerseyClient extends Requester implements com.devit.mscore.web.C
 
   @Override
   public JSONObject put(String uri, Optional<JSONObject> payload) {
-    LOG.debug("Sending PUT '{}': {}", uri, payload);
+    LOG.debug("Sending 'PUT {}'", uri);
     ClientResponse response;
     if (payload.isPresent()) {
       response = request(uri, new HashMap<>(), new HashMap<>()).put(ClientResponse.class,

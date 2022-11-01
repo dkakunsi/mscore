@@ -1,5 +1,6 @@
 package com.devit.mscore;
 
+import static com.devit.mscore.util.AttributeConstants.getCode;
 import static com.devit.mscore.util.AttributeConstants.getId;
 import static com.devit.mscore.util.AttributeConstants.hasDomain;
 import static com.devit.mscore.util.AttributeConstants.hasId;
@@ -81,10 +82,10 @@ public abstract class Enrichment {
    * @throws EnrichmentException error in enrichment
    */
   public void enrich(JSONObject json) throws EnrichmentException {
-    LOG.debug("Enriching {} of object {}", this.attribute, json);
+    LOG.debug("Enriching attribute '{}' of object '{}'", this.attribute, getId(json));
 
     if (!hasValue(this.attribute, json)) {
-      LOG.warn("Attribut {} cannot be enriched since it is not in json object", this.attribute);
+      LOG.warn("Attribut '{}' cannot be enriched since it is not in json object", this.attribute);
       return;
     }
 
@@ -96,14 +97,14 @@ public abstract class Enrichment {
     } else if (value instanceof JSONObject) {
       enrichReference((JSONObject) value);
     } else {
-      LOG.error("Trying enriching non JSON value is not allowed");
+      LOG.error("Trying to enrich non JSON value is not allowed");
       throw new EnrichmentException("Cannot enrich object. Only JSONObject or JSONArray is allowed");
     }
   }
 
   protected void enrichReference(JSONObject value) throws EnrichmentException {
     if (!isValid(value)) {
-      LOG.warn("Attribut {} cannot be enriched. No id and/or domain: {}", this.attribute, value);
+      LOG.warn("Attribut '{}' cannot be enriched. No id and/or domain for code '{}'", this.attribute, getCode(value));
       return;
     }
 
@@ -114,7 +115,7 @@ public abstract class Enrichment {
       if (loadedObject.isPresent()) {
         JsonUtils.copy(value, loadedObject.get());
       } else {
-        LOG.info("No entity found for reference {} in index {}", refId, refDomain);
+        LOG.info("No entity found for reference '{}' in index '{}'", refId, refDomain);
       }
     } catch (DataException | JSONException ex) {
       LOG.error("Cannot enrich object");
@@ -127,11 +128,11 @@ public abstract class Enrichment {
   private Optional<JSONObject> retriableLoad(String refDomain, String refId)
       throws DataException, InterruptedException {
     var loadedObject = loadFromDataStore(refDomain, refId);
-    var retried = 0;
-    while (loadedObject.isEmpty() && retried < 3) {
+    var retryNumber = 0;
+    while (loadedObject.isEmpty() && retryNumber < 3) {
       Thread.sleep(1000L);
-      retried++;
-      LOG.info("Retry: {}. Load entity {} from {}", retried, refId, refDomain);
+      retryNumber++;
+      LOG.info("Try: #{}. Load entity '{}' from domain '{}'", retryNumber, refId, refDomain);
       loadedObject = loadFromDataStore(refDomain, refId);
     }
     return loadedObject;

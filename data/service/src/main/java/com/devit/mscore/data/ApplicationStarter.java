@@ -4,12 +4,10 @@ import static com.devit.mscore.util.Utils.INDEX_MAP;
 import static com.devit.mscore.util.Utils.SCHEMA;
 
 import com.devit.mscore.Configuration;
-import com.devit.mscore.Index;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Publisher;
 import com.devit.mscore.Registry;
 import com.devit.mscore.ResourceManager;
-import com.devit.mscore.Schema;
 import com.devit.mscore.Service;
 import com.devit.mscore.ServiceRegistration;
 import com.devit.mscore.Starter;
@@ -185,7 +183,7 @@ public class ApplicationStarter implements Starter {
     var topicConfig = String.format(EVENT_TOPIC, configuration.getServiceName());
     var eventTopic = messagingFactory.getTopics(topicConfig);
     if (eventTopic.isPresent()) {
-      LOGGER.info("Listening to topics {}", eventTopic);
+      LOGGER.info("Listening to topics '{}'", eventTopic);
       var subscriber = messagingFactory.subscriber();
       var eventListener = EventListener.of(subscriber, services);
       eventListener.listen(eventTopic.get());
@@ -193,11 +191,11 @@ public class ApplicationStarter implements Starter {
   }
 
   private static void registerResource(ResourceManager resourceManager) {
-    LOGGER.info("Register resource: {}", resourceManager.getType());
+    LOGGER.info("Registering resource '{}'", resourceManager.getType());
     try {
       resourceManager.registerResources();
     } catch (ResourceException ex) {
-      LOGGER.warn("Cannot register resource {}", resourceManager.getType(), ex);
+      LOGGER.warn("Cannot register resource '{}'", resourceManager.getType(), ex);
     }
   }
 

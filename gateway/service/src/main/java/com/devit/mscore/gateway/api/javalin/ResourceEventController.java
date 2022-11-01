@@ -1,15 +1,13 @@
 package com.devit.mscore.gateway.api.javalin;
 
-import static com.devit.mscore.util.AttributeConstants.ID;
-
 import com.devit.mscore.Logger;
 import com.devit.mscore.gateway.service.EventEmitter;
 import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.web.javalin.JavalinController;
 
-import org.json.JSONObject;
+import java.util.logging.Handler;
 
-import io.javalin.http.Handler;
+import org.json.JSONObject;
 
 public class ResourceEventController extends JavalinController {
 
@@ -24,13 +22,12 @@ public class ResourceEventController extends JavalinController {
 
   @Override
   public String getDomain() {
-    return "api/resource/v2";
+    return "api/v2/resource";
   }
 
   @Override
   public Handler post() {
     return ctx -> {
-      LOGGER.info("Receiving post request at {}", ctx.path());
       var payload = ctx.body();
       var resourceId = this.eventEmitter.create(new JSONObject(payload));
       var result = new JSONObject();
@@ -43,8 +40,6 @@ public class ResourceEventController extends JavalinController {
   public Handler put() {
     return ctx -> {
       var id = ctx.pathParam(ID);
-      LOGGER.info("Receiving put request at {}", ctx.path());
-
       var payload = ctx.body();
       var data = new JSONObject(payload).put(ID, id);
 
@@ -58,8 +53,6 @@ public class ResourceEventController extends JavalinController {
   public Handler delete() {
     return ctx -> {
       var id = ctx.pathParam(ID);
-      LOGGER.info("Receiving delete request at {}", ctx.path());
-
       var payload = ctx.body();
       var data = new JSONObject(payload).put(ID, id);
 

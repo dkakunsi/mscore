@@ -22,21 +22,21 @@ public class JerseyClient extends Requester implements com.devit.mscore.web.Clie
 
   @Override
   public JSONObject delete(String uri) {
-    logger.info("Sending DELETE {}", uri);
+    logger.info("Sending 'DELETE {}'", uri);
     var response = request(uri, new HashMap<>(), new HashMap<>()).delete();
     return buildResponse(uri, response);
   }
 
   @Override
   public JSONObject get(String uri, Map<String, String> params) {
-    logger.info("Sending GET {}. Params: {}", uri, params);
+    logger.info("Sending 'GET {}' with parameter: '{}'", uri, params);
     var response = request(uri, params, new HashMap<>()).get();
     return buildResponse(uri, response);
   }
 
   @Override
   public JSONObject post(String uri, Optional<JSONObject> payload) {
-    logger.info("Sending POST {}", uri, payload);
+    logger.info("Sending 'POST {}'", uri);
     Response response;
     if (payload.isPresent()) {
       response = request(uri, new HashMap<>(), new HashMap<>()).post(Entity.json(payload.get().toString()));
@@ -48,7 +48,7 @@ public class JerseyClient extends Requester implements com.devit.mscore.web.Clie
 
   @Override
   public JSONObject put(String uri, Optional<JSONObject> payload) {
-    logger.info("Sending PUT {}", uri, payload);
+    logger.info("Sending 'PUT {}'", uri);
     Response response;
     if (payload.isPresent()) {
       response = request(uri, new HashMap<>(), new HashMap<>()).put(Entity.json(payload.get().toString()));

@@ -28,11 +28,11 @@ public class PublishingObserver implements PostProcessObserver {
   @Override
   public void notify(JSONObject json) {
     if (publisher == null || StringUtils.isBlank(publishingChannel)) {
-      LOG.warn("Cannot publish event for publisher {} and channel {}", publisher, publishingChannel);
+      LOG.warn("Cannot publish event. Channel and/or publisher is not provided");
       return;
     }
 
-    LOG.info("Publishing message to topic {} for key {}", publishingChannel, getId(json));
+    LOG.info("Publishing message of object '{}' to channel '{}'", getId(json), publishingChannel);
     var event = createEvent(json);
     publisher.publish(publishingChannel, event.toJson());
   }

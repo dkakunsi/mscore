@@ -9,10 +9,7 @@ import static com.devit.mscore.util.AttributeConstants.LAST_UPDATED_DATE;
 import static com.devit.mscore.util.AttributeConstants.getCode;
 import static com.devit.mscore.util.AttributeConstants.getId;
 
-import com.devit.mscore.Index;
 import com.devit.mscore.Logger;
-import com.devit.mscore.Repository;
-import com.devit.mscore.Schema;
 import com.devit.mscore.Service;
 import com.devit.mscore.Synchronizer;
 import com.devit.mscore.data.enrichment.EnrichmentsExecutor;
@@ -30,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.repositories.Repository;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -99,7 +97,7 @@ public class DefaultService implements Service, Synchronizer {
       throw new ValidationException("Cannot save empty data");
     }
 
-    LOG.debug("Saving data {} to database", getCode(json));
+    LOG.debug("Saving data '{}' to database", getCode(json));
     setAuditAttribute(json);
     this.validator.execute(json);
 
@@ -147,7 +145,7 @@ public class DefaultService implements Service, Synchronizer {
     if (StringUtils.isEmpty(id)) {
       throw new ValidationException("Id cannot be empty");
     }
-    LOG.debug("Deleting data: {}", id);
+    LOG.debug("Deleting data '{}' from database", id);
     this.repository.delete(id);
   }
 
@@ -164,7 +162,7 @@ public class DefaultService implements Service, Synchronizer {
     var json = optional.get();
     this.filter.execute(json);
 
-    LOG.debug("Found data for id {}: {}", id, json);
+    LOG.debug("Found data with id '{}': '{}'", id, json);
     return json;
   }
 
@@ -182,8 +180,8 @@ public class DefaultService implements Service, Synchronizer {
     try {
       var jsons = optional.get();
       this.filter.execute(jsons);
-      LOG.debug("Found data for ids {}: {}", ids, jsons);
 
+      LOG.debug("Found data with ids '{}': '{}'", ids, jsons);
       return jsons;
     } catch (JSONException e) {
       throw new DataException(e);
@@ -204,7 +202,7 @@ public class DefaultService implements Service, Synchronizer {
       var json = array.get().getJSONObject(0);
       this.filter.execute(json);
 
-      LOG.debug("Found data for code {}: {}", code, json);
+      LOG.debug("Found data with code '{}': '{}'", code, json);
       return json;
     } catch (JSONException e) {
       throw new DataException(e);
@@ -231,7 +229,7 @@ public class DefaultService implements Service, Synchronizer {
     try {
       var json = this.repository.find(id);
       if (json.isEmpty()) {
-        LOG.info("Cannot synchronize. No data to synchronize in domain {}", getDomain());
+        LOG.info("No data to synchronize in domain '{}'", getDomain());
         return;
       }
       synchronize(json.get());
@@ -246,7 +244,7 @@ public class DefaultService implements Service, Synchronizer {
     try {
       var jsons = this.repository.find(searchAttribute, value);
       if (jsons.isEmpty()) {
-        LOG.info("Cannot synchronize. No data to synchronize in domain {}", getDomain());
+        LOG.info("No data to synchronize in domain '{}'", getDomain());
         return;
       }
       for (Object object : jsons.get()) {

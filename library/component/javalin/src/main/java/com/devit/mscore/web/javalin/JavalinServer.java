@@ -92,7 +92,7 @@ public final class JavalinServer extends Server {
 
   public <T extends Exception> void addExceptionHandler(Class<T> type, int statusCode) {
     addExceptionHandler(type, (ex, ctx) -> {
-      LOG.error("Cannot process request: {}", ex, ex.getMessage());
+      LOG.error("Cannot process request. Reason: {}", ex, ex.getMessage());
       ctx.status(statusCode).contentType("application/json")
           .result(createResponseMessage(ex, statusCode).toString());
     });

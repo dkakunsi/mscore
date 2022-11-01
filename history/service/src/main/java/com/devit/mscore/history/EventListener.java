@@ -32,7 +32,7 @@ public class EventListener extends Listener {
 
   @Override
   public void consume(JSONObject message) {
-    logger.debug("Receive event message: {}", message);
+    logger.debug("Receive event message '{}'", message);
     try {
       var event = Event.of(message);
       this.history.create(event.getData());

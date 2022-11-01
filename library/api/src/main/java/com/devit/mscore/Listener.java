@@ -38,7 +38,7 @@ public abstract class Listener implements Starter {
     for (var topic : topics) {
       this.subscriber.subscribe(topic, this::consume);
     }
-    logger.info("Listening to topic: {}", List.of(topics));
+    logger.info("Listening to topics '{}'", List.of(topics));
     start();
   }
 

@@ -22,9 +22,6 @@ public class SynchronizationObserver implements PostProcessObserver {
   @Override
   public void notify(JSONObject message) {
     this.executor.execute(message);
-
-    var domain = getDomain(message);
-    var code = getCode(message);
-    LOG.info("Dependencies are synced for domain {} and code {}", domain, code);
+    LOG.info("Dependencies of object '{}' in domain '{}' are all synced", getCode(message), getDomain(message));
   }
 }

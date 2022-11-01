@@ -26,7 +26,7 @@ public class FlowableDefinitionRepository implements WorkflowDefinitionRepositor
     if (!isExists(definition)) {
       this.repositoryService.createDeployment().addString(definition.getResourceName(), definition.getContent())
           .deploy();
-      LOGGER.debug("Definition {} is deployed to Flowable", definition.getName());
+      LOGGER.debug("Definition '{}' is deployed to Flowable", definition.getName());
     }
   }
 

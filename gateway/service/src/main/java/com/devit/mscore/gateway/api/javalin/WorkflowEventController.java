@@ -1,5 +1,6 @@
 package com.devit.mscore.gateway.api.javalin;
 
+import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.ApplicationContext.setContext;
 import static com.devit.mscore.util.AttributeConstants.ID;
 import static com.devit.mscore.util.Utils.EVENT_TYPE;
@@ -11,11 +12,10 @@ import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.web.javalin.JavalinApplicationContext;
 import com.devit.mscore.web.javalin.JavalinController;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Handler;
 
 import org.json.JSONObject;
-
-import io.javalin.http.Handler;
 
 public class WorkflowEventController extends JavalinController {
 
@@ -30,23 +30,25 @@ public class WorkflowEventController extends JavalinController {
 
   @Override
   public String getDomain() {
-    return "api/workflow/v2";
+    return "api/v2/workflow";
   }
 
   @Override
   public Handler put() {
     return ctx -> {
-      var contextData = new HashMap<String, Object>();
-      contextData.put(EVENT_TYPE, Event.Type.TASK);
-      var context = JavalinApplicationContext.of(ctx, contextData);
-      setContext(context);
-      
+      updateContext();
+
       var taskId = ctx.pathParam(ID);
-      LOGGER.info("Receiving put request at {}", ctx.path());
       var taskResponse = new JSONObject(ctx.body());
       var resourceId = this.eventEmitter.updateTask(taskId, taskResponse);
       var result = new JSONObject().put(ID, resourceId);
       ctx.status(200).contentType(CONTENT_TYPE).result(result.toString());
     };
+  }
+
+  private void updateContext() {
+    var contextData = Map.of(EVENT_TYPE, Event.Type.TASK);
+    var context = JavalinApplicationContext.of(getContext(), contextData);
+    setContext(context);
   }
 }

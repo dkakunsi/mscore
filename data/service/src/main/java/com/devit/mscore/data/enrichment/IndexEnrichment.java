@@ -1,7 +1,6 @@
 package com.devit.mscore.data.enrichment;
 
 import com.devit.mscore.Enrichment;
-import com.devit.mscore.Index;
 import com.devit.mscore.Logger;
 import com.devit.mscore.exception.DataException;
 import com.devit.mscore.exception.IndexingException;
@@ -41,7 +40,7 @@ public class IndexEnrichment extends Enrichment {
       if (index != null) {
         return index.get(id);
       } else {
-        LOG.warn("Cannot enrich: {}. No index available for domain: {}", id, domain);
+        LOG.warn("Cannot enrich object '{}'. Index '{}' is not found", id, domain);
         return Optional.empty();
       }
     } catch (IndexingException ex) {

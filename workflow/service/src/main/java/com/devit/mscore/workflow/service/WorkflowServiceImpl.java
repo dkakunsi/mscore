@@ -1,11 +1,5 @@
 package com.devit.mscore.workflow.service;
 
-import static com.devit.mscore.ApplicationContext.getContext;
-import static com.devit.mscore.util.AttributeConstants.getId;
-import static com.devit.mscore.util.AttributeConstants.getName;
-import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
-import static com.devit.mscore.util.Utils.EVENT_TYPE;
-
 import com.devit.mscore.Event;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Publisher;
@@ -63,7 +57,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
   @Override
   public void deployDefinition(WorkflowDefinition definition) throws ProcessException {
-    LOGGER.info("Deploying definition: {}", definition);
+    LOGGER.info("Deploying definition: dilayanan{}", definition);
 
     try {
       if (!this.definitionRepository.isExists(definition)) {

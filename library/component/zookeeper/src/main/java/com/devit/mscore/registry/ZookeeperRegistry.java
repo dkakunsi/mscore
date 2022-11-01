@@ -102,7 +102,7 @@ public class ZookeeperRegistry implements Registry {
       try {
         var stat = this.client.checkExists().forPath(registryKey);
         if (stat == null) {
-          LOG.warn("No configuration value for key: {}", registryKey);
+          LOG.warn("No configuration value for key '{}'", registryKey);
           return null;
         }
         var value = this.client.getData().forPath(registryKey);

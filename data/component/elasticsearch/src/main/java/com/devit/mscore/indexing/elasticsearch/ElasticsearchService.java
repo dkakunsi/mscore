@@ -48,18 +48,18 @@ public class ElasticsearchService {
   }
 
   void buildIndex(String indexName, String mapping) {
-    LOG.info("Building index {}", indexName);
+    LOG.info("Building index '{}'", indexName);
 
     try {
       if (indexExists(indexName)) {
-        LOG.trace("Index {} is exist. Trying to update it", indexName);
+        LOG.trace("Updating index '{}'", indexName);
         updateIndex(indexName, mapping);
       } else {
-        LOG.trace("Index {} is not exist. Trying to create it", indexName);
+        LOG.trace("Creating index '{}'", indexName);
         createIndex(indexName, mapping);
       }
     } catch (IndexingException ex) {
-      LOG.error("Cannot build index: {}. Reason: {}", ex, indexName, ex.getMessage());
+      LOG.error("Cannot build index '{}'. Reason: {}", ex, indexName, ex.getMessage());
     }
   }
 
@@ -68,7 +68,7 @@ public class ElasticsearchService {
     try {
       return client.indices().exists(request, RequestOptions.DEFAULT);
     } catch (IOException ex) {
-      LOG.error("Fail checking index {}", ex, indexName);
+      LOG.error("Fail checking index '{}'", ex, indexName);
       throw new IndexingException("Cannot check index mapping: " + indexName, ex);
     }
   }
@@ -81,14 +81,14 @@ public class ElasticsearchService {
       var response = this.client.indices().create(request, RequestOptions.DEFAULT);
 
       if (response.isAcknowledged()) {
-        LOG.info("Index mapping {} is created", indexName);
+        LOG.info("Index '{}' is created", indexName);
       } else {
-        LOG.error("Fail creating index {}", indexName);
-        throw new IndexingException("Create index mapping is not acknowledge: " + indexName);
+        LOG.error("Fail creating index '{}'", indexName);
+        throw new IndexingException("Create index is not acknowledge for " + indexName);
       }
     } catch (IOException ex) {
-      LOG.error("Fail creating index {}", ex, indexName);
-      throw new IndexingException("Cannot create index mapping: " + indexName, ex);
+      LOG.error("Fail creating index '{}'", ex, indexName);
+      throw new IndexingException("Cannot create index " + indexName, ex);
     }
   }
 
@@ -100,29 +100,27 @@ public class ElasticsearchService {
       var putMappingResponse = client.indices().putMapping(request, RequestOptions.DEFAULT);
 
       if (putMappingResponse.isAcknowledged()) {
-        LOG.info("Index mapping {} is updated", indexName);
+        LOG.info("Index '{}' is updated", indexName);
       } else {
-        LOG.error("Fail updating index {}", indexName);
-        throw new IndexingException("Update index mapping is not acknowledge: " + indexName);
+        LOG.error("Fail to update index '{}'", indexName);
+        throw new IndexingException("Update is not acknowledge for index: " + indexName);
       }
     } catch (IOException ex) {
-      LOG.error("Fail updating index {}", ex, indexName);
-      throw new IndexingException("Cannot update index mapping: " + indexName, ex);
+      LOG.error("Fail updating index '{}'", ex, indexName);
+      throw new IndexingException("Cannot update index: " + indexName, ex);
     }
   }
 
   String index(String indexName, JSONObject json) throws IndexingException {
-    LOG.info("Indexing document to {} domain: {}", indexName, json);
-
     var id = getId(json);
-
+    LOG.info("Indexing document '{}' to index '{}'", id, indexName);
     try {
       if (exists(indexName, id)) {
         return update(indexName, json, id);
       }
       return insert(indexName, json, id);
     } finally {
-      LOG.debug("Document {} is indexed", id);
+      LOG.debug("Document '{}' is indexed", id);
     }
   }
 
@@ -131,7 +129,7 @@ public class ElasticsearchService {
   }
 
   private String update(String indexName, JSONObject object, String id) throws IndexingException {
-    LOG.debug("Updating document in {}: {}", indexName, object);
+    LOG.debug("Updating document '{}' in index '{}'", id, indexName);
 
     var request = new UpdateRequest(indexName, object.toString()).id(id);
     request.doc(object.toString(), XContentType.JSON);
@@ -140,13 +138,13 @@ public class ElasticsearchService {
       var response = this.client.update(request, RequestOptions.DEFAULT);
       return response.getId();
     } catch (IOException ex) {
-      LOG.error("Fail updating document in index {}", ex, indexName);
-      throw new IndexingException("Failed updating document in index: " + indexName, ex);
+      LOG.error("Fail to update document '{}' in index '{}'", ex, id, indexName);
+      throw new IndexingException("Failed to update document in index: " + indexName, ex);
     }
   }
 
   private String insert(String indexName, JSONObject object, String id) throws IndexingException {
-    LOG.debug("Indexing document into {}: {}", indexName, object);
+    LOG.debug("Indexing document '{}' into index '{}'", id, indexName);
 
     var request = new IndexRequest(indexName).id(id);
     request.source(object.toString(), XContentType.JSON);
@@ -155,13 +153,13 @@ public class ElasticsearchService {
       var response = this.client.index(request, RequestOptions.DEFAULT);
       return response.getId();
     } catch (IOException ex) {
-      LOG.error("Fail indexing document in index {}", ex, indexName);
-      throw new IndexingException("Failed indexing document in index: " + indexName, ex);
+      LOG.error("Fail to insert document '{}' in index '{}'", ex, id, indexName);
+      throw new IndexingException("Failed to insert document in index: " + indexName, ex);
     }
   }
 
   Optional<JSONObject> get(String indexName, String id) throws IndexingException {
-    LOG.debug("Loading indexed document in {} with id: {}", indexName, id);
+    LOG.debug("Retrieving document '{}' from index '{}'", id, indexName);
 
     var str = "{\"criteria\":[{\"attribute\":\"id\",\"operator\":\"equals\",\"value\":\"" + id
         + "\"}],\"page\":0,\"size\":1}";
@@ -180,7 +178,7 @@ public class ElasticsearchService {
 
   Optional<JSONArray> search(String indexName, JSONObject query) throws IndexingException {
     var queryBuilder = ElasticsearchQueryHelper.createQuery(query);
-    LOG.debug("Executing: {}", queryBuilder);
+    LOG.debug("Executing search query: {}", queryBuilder);
 
     var queryPage = query.getInt("page");
     var querySize = query.getInt("size");
@@ -194,12 +192,11 @@ public class ElasticsearchService {
     searchRequest.source(ssb);
 
     try {
-      LOG.debug("Searching index: {}", indexName);
       var response = this.client.search(searchRequest, RequestOptions.DEFAULT);
       return extractResponse(response);
     } catch (IOException ex) {
-      LOG.error("Fail searching document in index {}", ex, indexName);
-      throw new IndexingException("Fail to search index", ex);
+      LOG.error("Fail to search document in index '{}'", ex, indexName);
+      throw new IndexingException("Fail to search document in index", ex);
     }
   }
 

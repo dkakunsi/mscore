@@ -117,7 +117,7 @@ public class ApplicationLogger implements Logger {
   }
 
   private String getMessage(String message) {
-    var formatter = MessageFormatter.format("BreadcrumbId: {}. {}", getBreadcrumbId(), message);
+    var formatter = MessageFormatter.format("BreadcrumbId: '{}'. {}", getBreadcrumbId(), message);
     return formatter.getMessage();
   }
 

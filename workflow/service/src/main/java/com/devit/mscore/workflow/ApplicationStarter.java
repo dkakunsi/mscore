@@ -1,8 +1,6 @@
 package com.devit.mscore.workflow;
 
-import static com.devit.mscore.util.AttributeConstants.DOMAIN;
 import static com.devit.mscore.util.Utils.WORKFLOW;
-import static com.devit.mscore.workflow.flowable.delegate.DelegateUtils.NOTIFICATION;
 
 import com.devit.mscore.Configuration;
 import com.devit.mscore.DataClient;
@@ -110,7 +108,7 @@ public class ApplicationStarter implements Starter {
     var topicConfig = String.format(EVENT_TOPIC, this.serviceName);
     var eventTopic = messagingFactory.getTopics(topicConfig);
     if (eventTopic.isPresent()) {
-      LOGGER.info("Listening to topics {}", eventTopic);
+      LOGGER.info("Listening to topics '{}'", eventTopic);
       var subscriber = messagingFactory.subscriber();
       var eventListener = EventListener.of(subscriber, workflowService);
       eventListener.listen(eventTopic.get());
@@ -132,11 +130,11 @@ public class ApplicationStarter implements Starter {
   }
 
   private void registerResource(ResourceManager resourceManager) {
-    LOGGER.info("Register resource: {}", resourceManager.getType());
+    LOGGER.info("Register resource: '{}'", resourceManager.getType());
     try {
       resourceManager.registerResources();
     } catch (ResourceException ex) {
-      LOGGER.warn("Cannot register resource {}", resourceManager.getType(), ex);
+      LOGGER.warn("Cannot register resource '{}'", resourceManager.getType(), ex);
     }
   }
 

@@ -35,7 +35,7 @@ public class MemoryRegistry implements Registry {
   @Override
   public void add(String key, String value) throws RegistryException {
     this.register.put(key, value);
-    LOG.debug("Object is added to memory register: {}", value);
+    LOG.debug("Object '{}' is added to memory register", key);
   }
 
   @Override
@@ -56,7 +56,7 @@ public class MemoryRegistry implements Registry {
 
   @Override
   public String get(String key) throws RegistryException {
-    LOG.debug("Retrieving value from memory register with key: {}", key);
+    LOG.debug("Retrieving data with key '{}'", key);
     return this.register.get(key);
   }
 
