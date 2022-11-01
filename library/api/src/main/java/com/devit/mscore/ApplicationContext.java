@@ -194,6 +194,10 @@ public abstract class ApplicationContext {
     return new JSONObject(this.contextData);
   }
 
+  protected Map<String, Object> getContextData() {
+    return this.contextData;
+  }
+
   @Override
   public String toString() {
     return toJson().toString();

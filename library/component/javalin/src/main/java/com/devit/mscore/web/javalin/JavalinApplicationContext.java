@@ -1,10 +1,8 @@
 package com.devit.mscore.web.javalin;
 
-import static com.devit.mscore.util.Utils.ACTION;
 import static com.devit.mscore.util.Utils.AUTHORIZATION;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
 import static com.devit.mscore.util.Utils.EVENT_TYPE;
-import static com.devit.mscore.util.Utils.PRINCIPAL;
 
 import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Event;
@@ -22,13 +20,24 @@ public class JavalinApplicationContext extends ApplicationContext {
     super(contextData);
   }
 
+  public static ApplicationContext of(ApplicationContext appContext, Map<String, Object> contextData) {
+    var newContextData = new HashMap<String, Object>();
+    if (appContext != null) {
+      newContextData.putAll(appContext.getContextData());
+    }
+
+    if (contextData != null) {
+      newContextData.putAll(contextData);
+    }
+
+    return new JavalinApplicationContext(newContextData);
+  }
+  
   public static ApplicationContext of(Context ctx, Map<String, Object> contextData) {
     contextData.putAll(ctx.headerMap());
 
     var context = new JavalinApplicationContext(contextData);
-    context.principal(ctx);
     context.breadcrumbId(ctx);
-    context.action(ctx);
     context.authorization(ctx);
     context.eventType(ctx);
 
@@ -40,20 +49,6 @@ public class JavalinApplicationContext extends ApplicationContext {
     return of(ctx, contextData);
   }
 
-  private void breadcrumbId(Context ctx) {
-    var breadcrumbId = getValue(ctx, BREADCRUMB_ID);
-    if (StringUtils.isNotBlank(breadcrumbId)) {
-      setBreadcrumbId(breadcrumbId);
-    }
-  }
-
-  private void principal(Context ctx) {
-    var principal = getValue(ctx, PRINCIPAL);
-    if (principal != null && StringUtils.isNotBlank(principal)) {
-      setPrincipal(principal);
-    }
-  }
-
   private String getValue(Context ctx, String key) {
     var value = ctx.attribute(key);
     if (value == null || StringUtils.isBlank(value.toString())) {
@@ -62,11 +57,10 @@ public class JavalinApplicationContext extends ApplicationContext {
     return value != null ? value.toString() : null;
   }
 
-  @Deprecated(forRemoval = true)
-  private void action(Context ctx) {
-    var action = ctx.header(ACTION);
-    if (StringUtils.isNotBlank(action)) {
-      this.contextData.put(ACTION, action);
+  private void breadcrumbId(Context ctx) {
+    var breadcrumbId = getValue(ctx, BREADCRUMB_ID);
+    if (StringUtils.isNotBlank(breadcrumbId)) {
+      setBreadcrumbId(breadcrumbId);
     }
   }
 

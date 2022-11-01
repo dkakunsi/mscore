@@ -125,6 +125,7 @@ public final class JavalinServer extends Server {
   private void initValidationAndSecurityCheck() {
     this.app.before(ctx -> {
       var applicationContext = Util.initiateContext(ctx);
+      LOG.info("Receiving request '{}': '{}'", ctx.method(), ctx.path());
 
       if (Util.isValidatable(ctx.method(), ctx.path())) {
         validateRequest(ctx);
