@@ -16,6 +16,7 @@ import com.devit.mscore.exception.TemplateException;
 import com.devit.mscore.logging.ApplicationLogger;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -26,10 +27,6 @@ import jakarta.mail.MessagingException;
 public class MailNotification implements Notification {
 
   private static final Logger LOGGER = ApplicationLogger.getLogger(MailNotification.class);
-
-  private static final String NO_TEMPLATE_MESSAGE = "Cannot send notification. No email template found in request";
-
-  private static final String CANNOT_LOAD_TEMPLATE_MESSAGE = "Cannot load email template";
 
   private Registry registry;
 
@@ -82,17 +79,21 @@ public class MailNotification implements Notification {
 
   private String loadTemplate(JSONObject entity) throws NotificationException {
     var templateName = getTemplateName(entity);
-    if (StringUtils.isBlank(templateName)) {
-      LOGGER.warn("Message: {}", NO_TEMPLATE_MESSAGE);
-      throw new NotificationException(NO_TEMPLATE_MESSAGE);
+    if (!Pattern.matches("[a-zA-Z]+\\.[a-zA-Z]+", templateName)) {
+      LOGGER.warn("No email template found for '{}'", templateName);
+      throw new NotificationException("No email template found for this request");
     }
 
     try {
-      var templateRegister = this.registry.get(templateName);
-      return new JSONObject(templateRegister).getString("content");
+      var template = this.registry.get(templateName);
+      if (StringUtils.isBlank(template)) {
+        LOGGER.error("Template is empty: '{}'", templateName);
+        throw new NotificationException("Template is empty. " + templateName);
+      }
+      return new JSONObject(template).getString("content");
     } catch (JSONException | RegistryException ex) {
-      LOGGER.error("Message: {}", CANNOT_LOAD_TEMPLATE_MESSAGE);
-      throw new NotificationException(CANNOT_LOAD_TEMPLATE_MESSAGE, ex);
+      LOGGER.error("Cannot load email template '{}'", ex);
+      throw new NotificationException("Cannot load email template", ex);
     }
   }
 

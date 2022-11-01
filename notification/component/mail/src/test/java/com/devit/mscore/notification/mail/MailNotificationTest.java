@@ -1,5 +1,6 @@
 package com.devit.mscore.notification.mail;
 
+import static com.devit.mscore.util.AttributeConstants.DOMAIN;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
@@ -19,6 +20,8 @@ import com.devit.mscore.Template;
 import com.devit.mscore.exception.NotificationException;
 import com.devit.mscore.exception.RegistryException;
 
+import java.util.Optional;
+
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +31,8 @@ import org.mockito.Mockito;
 import jakarta.mail.MessagingException;
 
 public class MailNotificationTest {
+
+  private static final String TEMPLATE_NAME = "domain.create";
 
   private Registry registry;
 
@@ -46,6 +51,7 @@ public class MailNotificationTest {
     this.registry = mock(Registry.class);
     this.context = mock(ApplicationContext.class);
     doReturn("breadcrumbId").when(this.context).getBreadcrumbId();
+    doReturn(Optional.of("create")).when(this.context).getEventType();
     this.sender = mock(MailSender.class);
     this.template = new StringTemplate();
 
@@ -64,10 +70,10 @@ public class MailNotificationTest {
   @Test
   public void testSend() throws RegistryException, NotificationException, MessagingException {
     var template = new JSONObject("{\"content\":\"Template name: %s\"}");
-    doReturn(template.toString()).when(this.registry).get("action");
+    doReturn(template.toString()).when(this.registry).get(TEMPLATE_NAME);
 
     var json = new JSONObject();
-    json.put("action", "action");
+    json.put(DOMAIN, DOMAIN);
     json.put("email", "recipient@email.com");
     json.put("id", "123454321");
     json.put("name", "Name");
@@ -100,16 +106,16 @@ public class MailNotificationTest {
       utilities.when(() -> ApplicationContext.getContext()).thenReturn(this.context);
 
       var ex = assertThrows(NotificationException.class, () -> this.notification.send(json));
-      assertThat(ex.getMessage(), is("Cannot send notification. No email template found in request"));
+      assertThat(ex.getMessage(), is("No email template found for this request"));
     }
   }
 
   @Test
   public void testSend_RegistryException() throws NotificationException, RegistryException {
-    doThrow(new RegistryException("")).when(this.registry).get("action");
+    doThrow(new RegistryException("")).when(this.registry).get(TEMPLATE_NAME);
 
     var json = new JSONObject();
-    json.put("action", "action");
+    json.put(DOMAIN, DOMAIN);
     json.put("email", "recipient@email.com");
 
     try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
@@ -127,10 +133,10 @@ public class MailNotificationTest {
         eq("Template name: 123454321"));
 
     var template = new JSONObject("{\"content\":\"Template name: %s\"}");
-    doReturn(template.toString()).when(this.registry).get("action");
+    doReturn(template.toString()).when(this.registry).get(TEMPLATE_NAME);
 
     var json = new JSONObject();
-    json.put("action", "action");
+    json.put(DOMAIN, DOMAIN);
     json.put("email", "recipient@email.com");
     json.put("id", "123454321");
     json.put("name", "Name");
