@@ -30,7 +30,7 @@ public class IndexingObserver implements PostProcessObserver {
     }
 
     try {
-      LOG.info("Indexing document '{}' into index '{}", getId(json), getDomain(json));
+      LOG.info("Indexing document '{}' into index '{}'", getId(json), getDomain(json));
       this.index.index(json);
     } catch (IndexingException ex) {
       LOG.error(INDEXING_ERROR, ex);

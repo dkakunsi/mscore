@@ -1,7 +1,7 @@
 package com.devit.mscore.data.observer;
 
-import static com.devit.mscore.util.AttributeConstants.getCode;
 import static com.devit.mscore.util.AttributeConstants.getDomain;
+import static com.devit.mscore.util.AttributeConstants.getId;
 
 import com.devit.mscore.Logger;
 import com.devit.mscore.data.synchronization.SynchronizationsExecutor;
@@ -21,7 +21,8 @@ public class SynchronizationObserver implements PostProcessObserver {
 
   @Override
   public void notify(JSONObject message) {
+    LOG.info("Synchronizing all object that depends to '{}' of domain '{}'", getId(message), getDomain(message));
     this.executor.execute(message);
-    LOG.info("Dependencies of object '{}' in domain '{}' are all synced", getCode(message), getDomain(message));
+    LOG.info("Dependencies of object '{}' of domain '{}' are all synced", getId(message), getDomain(message));
   }
 }
