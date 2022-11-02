@@ -156,7 +156,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     taskResponse.put(BREADCRUMB_ID, getContext().getBreadcrumbId());
     taskResponse.put(EVENT_TYPE, getContext().getEventType().get());
-    taskResponse.put(PRINCIPAL, getContext().getPrincipal().get());
+    taskResponse.put(PRINCIPAL, getContext().getPrincipal().get().toString());
     this.taskRepository.complete(taskId, taskResponse.toMap());
     task.complete();
 

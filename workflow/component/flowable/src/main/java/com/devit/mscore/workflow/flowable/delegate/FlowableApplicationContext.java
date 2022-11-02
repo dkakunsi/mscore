@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.flowable.engine.delegate.DelegateExecution;
-import org.json.JSONObject;
 
 public class FlowableApplicationContext extends ApplicationContext {
 
@@ -39,7 +38,7 @@ public class FlowableApplicationContext extends ApplicationContext {
   private void principal(DelegateExecution execution) {
     var variableObj = execution.getVariable(PRINCIPAL);
     if (variableObj != null) {
-      setPrincipal(((JSONObject) variableObj).toString());
+      setPrincipal(variableObj.toString());
     }
   }
 
