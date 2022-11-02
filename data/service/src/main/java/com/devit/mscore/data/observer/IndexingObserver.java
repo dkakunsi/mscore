@@ -5,6 +5,7 @@ import static com.devit.mscore.util.AttributeConstants.getId;
 
 import com.devit.mscore.Index;
 import com.devit.mscore.Logger;
+import com.devit.mscore.data.enrichment.EnrichmentsExecutor;
 import com.devit.mscore.exception.IndexingException;
 import com.devit.mscore.logging.ApplicationLogger;
 
@@ -18,8 +19,12 @@ public class IndexingObserver implements PostProcessObserver {
 
   protected Index index;
 
-  public IndexingObserver(Index index) {
+  protected EnrichmentsExecutor enricher;
+
+  public IndexingObserver(Index index, EnrichmentsExecutor enricher) {
     this.index = index;
+    this.enricher = enricher;
+
   }
 
   @Override
@@ -30,6 +35,8 @@ public class IndexingObserver implements PostProcessObserver {
     }
 
     try {
+      this.enricher.execute(json);
+
       LOG.info("Indexing document '{}' into index '{}'", getId(json), getDomain(json));
       this.index.index(json);
     } catch (IndexingException ex) {

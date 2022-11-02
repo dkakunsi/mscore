@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.devit.mscore.Index;
+import com.devit.mscore.data.enrichment.EnrichmentsExecutor;
 import com.devit.mscore.exception.IndexingException;
 
 import org.json.JSONObject;
@@ -16,7 +17,8 @@ public class IndexingObserverTest {
   @Test
   public void testNotify_NullIndex() throws IndexingException {
     var index = mock(Index.class);
-    var indexingObserver = new IndexingObserver(index);
+    var enricher = mock(EnrichmentsExecutor.class);
+    var indexingObserver = new IndexingObserver(index, enricher);
     indexingObserver.notify(new JSONObject());
 
     verify(index).index(any(JSONObject.class));
@@ -25,9 +27,10 @@ public class IndexingObserverTest {
   @Test
   public void testNotify_ExceptionThrown() throws Exception {
     var index = mock(Index.class);
+    var enricher = mock(EnrichmentsExecutor.class);
     doThrow(IndexingException.class).when(index).index(any(JSONObject.class));
 
-    var indexingObserver = new IndexingObserver(index);
+    var indexingObserver = new IndexingObserver(index, enricher);
     indexingObserver.notify(new JSONObject());
 
     verify(index).index(any(JSONObject.class));

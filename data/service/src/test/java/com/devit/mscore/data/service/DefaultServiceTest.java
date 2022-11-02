@@ -66,9 +66,9 @@ public class DefaultServiceTest {
     var validator = mock(ValidationsExecutor.class);
     var filter = mock(FiltersExecutor.class);
     var enricher = mock(EnrichmentsExecutor.class);
-    var indexingObserver = new IndexingObserver(this.index);
+    var indexingObserver = new IndexingObserver(this.index, enricher);
     var publishingObserver = new PublishingObserver(this.publisher,PUBLISHING_CHANNEL);
-    this.service = new DefaultService(this.schema, this.repository, this.index, validator, filter, enricher)
+    this.service = new DefaultService(this.schema, this.repository, this.index, validator, filter)
         .addObserver(indexingObserver).addObserver(publishingObserver);
 
     doReturn("domain").when(schema).getDomain();

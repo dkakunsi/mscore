@@ -15,7 +15,6 @@ import com.devit.mscore.Repository;
 import com.devit.mscore.Schema;
 import com.devit.mscore.Service;
 import com.devit.mscore.Synchronizer;
-import com.devit.mscore.data.enrichment.EnrichmentsExecutor;
 import com.devit.mscore.data.filter.FiltersExecutor;
 import com.devit.mscore.data.observer.PostProcessObserver;
 import com.devit.mscore.data.validation.ValidationsExecutor;
@@ -58,8 +57,6 @@ public class DefaultService implements Service, Synchronizer {
 
   protected FiltersExecutor filter;
 
-  protected EnrichmentsExecutor enricher;
-
   protected List<PostProcessObserver> observers;
 
   public DefaultService(Schema schema) {
@@ -68,12 +65,11 @@ public class DefaultService implements Service, Synchronizer {
   }
 
   public DefaultService(Schema schema, Repository repository, Index index, ValidationsExecutor validator,
-      FiltersExecutor filter, EnrichmentsExecutor enricher) {
+      FiltersExecutor filter) {
     this(schema);
     this.index = index;
     this.repository = repository;
     this.validator = validator;
-    this.enricher = enricher;
     this.filter = filter;
   }
 
@@ -106,7 +102,6 @@ public class DefaultService implements Service, Synchronizer {
     var result = this.repository.save(json);
 
     try {
-      this.enricher.execute(json);
       this.filter.execute(json);
       this.observers.forEach(o -> new Thread(executeObserver(o, result)).start());
       return getId(result);
@@ -258,7 +253,6 @@ public class DefaultService implements Service, Synchronizer {
   }
 
   private boolean synchronize(JSONObject json) {
-    this.enricher.execute(json);
     try {
       var result = this.repository.save(json);
       this.filter.execute(result);

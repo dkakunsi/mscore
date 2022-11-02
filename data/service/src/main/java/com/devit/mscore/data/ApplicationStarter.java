@@ -169,8 +169,8 @@ public class ApplicationStarter implements Starter {
     schema.getReferenceNames()
         .forEach(attr -> enrichmentsExecutor.add(new IndexEnrichment(indices, schema.getDomain(), attr)));
 
-    var service = new DefaultService(schema, repository, index, validationsExecutor, filters, enrichmentsExecutor)
-        .addObserver(new IndexingObserver(index))
+    var service = new DefaultService(schema, repository, index, validationsExecutor, filters)
+        .addObserver(new IndexingObserver(index, enrichmentsExecutor))
         .addObserver(so);
 
     var completedEvent = String.format("%s.completed", schema.getDomain());
