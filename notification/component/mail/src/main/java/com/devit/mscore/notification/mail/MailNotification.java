@@ -56,20 +56,27 @@ public class MailNotification implements Notification {
   }
 
   @Override
-  public void send(JSONObject entity) throws NotificationException {
-    var optional = extract(entity, this.possibleAttributes);
+  public void send(String code, JSONObject data) throws NotificationException {
+    var optional = extract(data, this.possibleAttributes);
     if (optional.isEmpty()) {
       LOGGER.warn("No email available in entity");
       return;
     }
 
     var emails = optional.get();
-    var emailTemplate = loadTemplate(entity);
-    var emailSubject = String.format("%s | %s", this.sendInfo.getSubject(), getName(entity));
+
+    var templateName = StringUtils.isNotBlank(code) ? code : getTemplateName(data);
+    if (!Pattern.matches("[a-zA-Z]+\\.[a-zA-Z]+", templateName)) {
+      LOGGER.warn("No email template found for '{}'", templateName);
+      throw new NotificationException("No email template found for this request");
+    }
+
+    var emailTemplate = loadTemplate(templateName);
+    var emailSubject = String.format("%s | %s", this.sendInfo.getSubject(), getName(data));
 
     try {
       for (String to : emails) {
-        var text = this.template.build(emailTemplate, flatten(entity));
+        var text = this.template.build(emailTemplate, flatten(data));
         this.sender.send(this.sendInfo, to, emailSubject, text);
       }
     } catch (MessagingException | TemplateException ex) {
@@ -77,13 +84,7 @@ public class MailNotification implements Notification {
     }
   }
 
-  private String loadTemplate(JSONObject entity) throws NotificationException {
-    var templateName = getTemplateName(entity);
-    if (!Pattern.matches("[a-zA-Z]+\\.[a-zA-Z]+", templateName)) {
-      LOGGER.warn("No email template found for '{}'", templateName);
-      throw new NotificationException("No email template found for this request");
-    }
-
+  private String loadTemplate(String templateName) throws NotificationException {
     try {
       var template = this.registry.get(templateName);
       if (StringUtils.isBlank(template)) {

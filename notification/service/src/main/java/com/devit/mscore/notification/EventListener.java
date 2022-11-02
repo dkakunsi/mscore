@@ -39,7 +39,7 @@ public class EventListener extends Listener {
     this.notifications.forEach(notification -> {
       try {
         logger.info("Sending '{}' notification", notification.getType());
-        notification.send(message);
+        notification.send(message.getString("code"), message.getJSONObject("data"));
       } catch (NotificationException ex) {
         logger.error("Notification failed", ex);
       }
