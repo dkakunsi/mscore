@@ -41,7 +41,7 @@ public class SetStatus extends SetAttribute {
     updateEntity(entity);
 
     execution.setVariable("entity", entity.toString());
-    LOGGER.info("BreadcrumbId: {}. Entity process variable is updated", context.getBreadcrumbId());
+    LOGGER.info("Entity process variable is updated");
   }
 
   private String getCloseReason(DelegateExecution execution) {
