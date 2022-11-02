@@ -23,7 +23,7 @@
     <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
     <docker-maven-plugin.version>0.40.2</docker-maven-plugin.version>
 
-    <library.version>[1.4.70-SNAPSHOT,)</library.version>
+    <library.version>[1.4.74-SNAPSHOT,)</library.version>
 
     <sonar.java.checkstyle.reportPaths>${maven.multiModuleProjectDirectory}/service/target/checkstyle-result.xml</sonar.java.checkstyle.reportPaths>
     <sonar.java.pmd.reportPaths>${maven.multiModuleProjectDirectory}/service/target/pmd.xml</sonar.java.pmd.reportPaths>

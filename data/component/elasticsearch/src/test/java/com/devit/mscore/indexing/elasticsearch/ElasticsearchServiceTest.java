@@ -186,7 +186,7 @@ public class ElasticsearchServiceTest {
 
     var ex = assertThrows(IndexingException.class,
         () -> this.index.index("indexName", new JSONObject("{\"id\":\"id\"}")));
-    assertThat(ex.getMessage(), is("Failed indexing document in index: indexName"));
+    assertThat(ex.getMessage(), is("Failed to insert document in index: indexName"));
     assertThat(ex.getCause(), instanceOf(IOException.class));
   }
 
@@ -224,7 +224,7 @@ public class ElasticsearchServiceTest {
 
     var ex = assertThrows(IndexingException.class,
         () -> this.index.index("indexName", new JSONObject("{\"id\":\"id\"}")));
-    assertThat(ex.getMessage(), is("Failed updating document in index: indexName"));
+    assertThat(ex.getMessage(), is("Failed to update document in index: indexName"));
     assertThat(ex.getCause(), instanceOf(IOException.class));
   }
 
@@ -234,7 +234,7 @@ public class ElasticsearchServiceTest {
 
     var ex = assertThrows(IndexingException.class,
         () -> this.index.index("indexName", new JSONObject("{\"id\":\"id\"}")));
-    assertThat(ex.getMessage(), is("Fail to search index"));
+    assertThat(ex.getMessage(), is("Fail to search document in index"));
     assertThat(ex.getCause(), instanceOf(IOException.class));
   }
 }

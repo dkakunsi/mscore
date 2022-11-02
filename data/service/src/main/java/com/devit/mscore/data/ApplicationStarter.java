@@ -4,10 +4,12 @@ import static com.devit.mscore.util.Utils.INDEX_MAP;
 import static com.devit.mscore.util.Utils.SCHEMA;
 
 import com.devit.mscore.Configuration;
+import com.devit.mscore.Index;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Publisher;
 import com.devit.mscore.Registry;
 import com.devit.mscore.ResourceManager;
+import com.devit.mscore.Schema;
 import com.devit.mscore.Service;
 import com.devit.mscore.ServiceRegistration;
 import com.devit.mscore.Starter;

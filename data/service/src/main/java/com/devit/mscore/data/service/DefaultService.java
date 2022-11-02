@@ -9,7 +9,10 @@ import static com.devit.mscore.util.AttributeConstants.LAST_UPDATED_DATE;
 import static com.devit.mscore.util.AttributeConstants.getCode;
 import static com.devit.mscore.util.AttributeConstants.getId;
 
+import com.devit.mscore.Index;
 import com.devit.mscore.Logger;
+import com.devit.mscore.Repository;
+import com.devit.mscore.Schema;
 import com.devit.mscore.Service;
 import com.devit.mscore.Synchronizer;
 import com.devit.mscore.data.enrichment.EnrichmentsExecutor;
@@ -27,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.repositories.Repository;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,6 +1,7 @@
 package com.devit.mscore.data.enrichment;
 
 import com.devit.mscore.Enrichment;
+import com.devit.mscore.Index;
 import com.devit.mscore.Logger;
 import com.devit.mscore.exception.DataException;
 import com.devit.mscore.exception.IndexingException;

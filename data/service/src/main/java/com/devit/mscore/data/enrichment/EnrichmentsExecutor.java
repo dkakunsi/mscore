@@ -1,5 +1,9 @@
 package com.devit.mscore.data.enrichment;
 
+import static com.devit.mscore.util.AttributeConstants.getDomain;
+import static com.devit.mscore.util.AttributeConstants.getId;
+import static com.devit.mscore.util.Utils.ALL;
+
 import com.devit.mscore.Enrichment;
 import com.devit.mscore.Executor;
 import com.devit.mscore.Logger;
