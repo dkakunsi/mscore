@@ -5,6 +5,7 @@ import static com.devit.mscore.util.AttributeConstants.getId;
 import static com.devit.mscore.util.AttributeConstants.getName;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
 import static com.devit.mscore.util.Utils.EVENT_TYPE;
+import static com.devit.mscore.util.Utils.PRINCIPAL;
 
 import com.devit.mscore.Event;
 import com.devit.mscore.Logger;
@@ -155,6 +156,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
     taskResponse.put(BREADCRUMB_ID, getContext().getBreadcrumbId());
     taskResponse.put(EVENT_TYPE, getContext().getEventType().get());
+    taskResponse.put(PRINCIPAL, getContext().getPrincipal().get());
     this.taskRepository.complete(taskId, taskResponse.toMap());
     task.complete();
 
