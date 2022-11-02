@@ -1,6 +1,7 @@
 package com.devit.mscore.workflow;
 
 import static com.devit.mscore.util.Utils.EVENT_TYPE;
+import static com.devit.mscore.util.Utils.PRINCIPAL;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -73,6 +74,7 @@ public class ApplicationTest {
     eventListener = EventListener.of(null, service);
     var contextData = new HashMap<String, Object>();
     contextData.put(EVENT_TYPE, Event.Type.TASK.toString());
+    contextData.put(PRINCIPAL, new JSONObject("{\"requestedBy\":\"requestedBy\",\"role\":[\"user\"]}"));
     context = DefaultApplicationContext.of("test", contextData);
   }
 
