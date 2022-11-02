@@ -1,17 +1,15 @@
 package com.devit.mscore.gateway.api.javalin;
 
-import com.devit.mscore.Logger;
-import com.devit.mscore.gateway.service.EventEmitter;
-import com.devit.mscore.logging.ApplicationLogger;
-import com.devit.mscore.web.javalin.JavalinController;
+import static com.devit.mscore.util.AttributeConstants.ID;
 
-import java.util.logging.Handler;
+import com.devit.mscore.gateway.service.EventEmitter;
+import com.devit.mscore.web.javalin.JavalinController;
 
 import org.json.JSONObject;
 
-public class ResourceEventController extends JavalinController {
+import io.javalin.http.Handler;
 
-  private static final Logger LOGGER = ApplicationLogger.getLogger(ResourceEventController.class);
+public class ResourceEventController extends JavalinController {
 
   private EventEmitter eventEmitter;
 

@@ -6,20 +6,17 @@ import static com.devit.mscore.util.AttributeConstants.ID;
 import static com.devit.mscore.util.Utils.EVENT_TYPE;
 
 import com.devit.mscore.Event;
-import com.devit.mscore.Logger;
 import com.devit.mscore.gateway.service.EventEmitter;
-import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.web.javalin.JavalinApplicationContext;
 import com.devit.mscore.web.javalin.JavalinController;
 
 import java.util.Map;
-import java.util.logging.Handler;
 
 import org.json.JSONObject;
 
-public class WorkflowEventController extends JavalinController {
+import io.javalin.http.Handler;
 
-  private static final Logger LOGGER = ApplicationLogger.getLogger(WorkflowEventController.class);
+public class WorkflowEventController extends JavalinController {
 
   private EventEmitter eventEmitter;
 
@@ -47,7 +44,7 @@ public class WorkflowEventController extends JavalinController {
   }
 
   private void updateContext() {
-    var contextData = Map.of(EVENT_TYPE, Event.Type.TASK);
+    var contextData = Map.of(EVENT_TYPE, (Object) Event.Type.TASK);
     var context = JavalinApplicationContext.of(getContext(), contextData);
     setContext(context);
   }
