@@ -34,11 +34,11 @@ public class IndexingObserver implements PostProcessObserver {
       return;
     }
 
+    LOG.info("Indexing document '{}' into index '{}'", getId(json), getDomain(json));
     try {
-      this.enricher.execute(json);
-
-      LOG.info("Indexing document '{}' into index '{}'", getId(json), getDomain(json));
-      this.index.index(json);
+      var dataToIndex = new JSONObject(json.toString());
+      this.enricher.execute(dataToIndex);
+      this.index.index(dataToIndex);
     } catch (IndexingException ex) {
       LOG.error(INDEXING_ERROR, ex);
     }
