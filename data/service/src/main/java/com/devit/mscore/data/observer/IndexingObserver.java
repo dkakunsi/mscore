@@ -5,6 +5,7 @@ import static com.devit.mscore.util.AttributeConstants.getId;
 
 import com.devit.mscore.Index;
 import com.devit.mscore.Logger;
+import com.devit.mscore.PostProcessObserver;
 import com.devit.mscore.data.enrichment.EnrichmentsExecutor;
 import com.devit.mscore.exception.IndexingException;
 import com.devit.mscore.logging.ApplicationLogger;

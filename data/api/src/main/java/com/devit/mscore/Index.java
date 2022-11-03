@@ -22,6 +22,10 @@ public abstract class Index {
     this.indexName = indexName;
   }
 
+  public String getName() {
+    return indexName;
+  }
+
   /**
    * Add a json object to the index, so it is available for searching.
    *

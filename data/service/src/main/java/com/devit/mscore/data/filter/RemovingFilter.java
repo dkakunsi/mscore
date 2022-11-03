@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 public class RemovingFilter extends Filter {
 
-  RemovingFilter(List<String> attributes) {
+  public RemovingFilter(List<String> attributes) {
     super(attributes);
   }
 

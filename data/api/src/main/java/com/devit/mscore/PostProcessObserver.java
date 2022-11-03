@@ -1,4 +1,4 @@
-package com.devit.mscore.data.observer;
+package com.devit.mscore;
 
 import org.json.JSONObject;
 

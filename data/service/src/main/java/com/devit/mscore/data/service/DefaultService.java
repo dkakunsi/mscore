@@ -9,18 +9,16 @@ import static com.devit.mscore.util.AttributeConstants.LAST_UPDATED_DATE;
 import static com.devit.mscore.util.AttributeConstants.getCode;
 import static com.devit.mscore.util.AttributeConstants.getId;
 
+import com.devit.mscore.FiltersExecutor;
 import com.devit.mscore.Index;
 import com.devit.mscore.Logger;
+import com.devit.mscore.PostProcessObserver;
 import com.devit.mscore.Repository;
 import com.devit.mscore.Schema;
 import com.devit.mscore.Service;
-import com.devit.mscore.Synchronizer;
-import com.devit.mscore.data.filter.FiltersExecutor;
-import com.devit.mscore.data.observer.PostProcessObserver;
 import com.devit.mscore.data.validation.ValidationsExecutor;
 import com.devit.mscore.exception.ApplicationException;
 import com.devit.mscore.exception.DataException;
-import com.devit.mscore.exception.SynchronizationException;
 import com.devit.mscore.exception.ValidationException;
 import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.util.DateUtils;
@@ -41,11 +39,9 @@ import org.json.JSONObject;
  *
  * @author dkakunsi
  */
-public class DefaultService implements Service, Synchronizer {
+public class DefaultService implements Service {
 
   private static final Logger LOG = ApplicationLogger.getLogger(DefaultService.class);
-
-  private static final String SYNCHRONIZATION_ERROR = "Synchronization failed";
 
   protected Schema schema;
 
@@ -81,11 +77,6 @@ public class DefaultService implements Service, Synchronizer {
   @Override
   public String getDomain() {
     return this.schema.getDomain();
-  }
-
-  @Override
-  public Schema getSchema() {
-    return this.schema;
   }
 
   @Override
@@ -209,57 +200,5 @@ public class DefaultService implements Service, Synchronizer {
   @Override
   public JSONArray search(JSONObject query) throws ApplicationException {
     return this.index.search(query).orElse(new JSONArray());
-  }
-
-  // Synchronizer implementation
-
-  @Override
-  public void synchronize() throws SynchronizationException {
-    // Just sync the parent, then system will propagate to all children.
-    // Parent object is object without parent attribute,
-    // which means it is children of no-one.
-    synchronize("parent", null);
-  }
-
-  @Override
-  public void synchronize(String id) throws SynchronizationException {
-    try {
-      var json = this.repository.find(id);
-      if (json.isEmpty()) {
-        LOG.info("No data to synchronize in domain '{}'", getDomain());
-        return;
-      }
-      synchronize(json.get());
-    } catch (DataException ex) {
-      throw new SynchronizationException(SYNCHRONIZATION_ERROR, ex);
-    }
-  }
-
-  @Override
-  public void synchronize(String searchAttribute, String value)
-      throws SynchronizationException {
-    try {
-      var jsons = this.repository.find(searchAttribute, value);
-      if (jsons.isEmpty()) {
-        LOG.info("No data to synchronize in domain '{}'", getDomain());
-        return;
-      }
-      for (Object object : jsons.get()) {
-        synchronize((JSONObject) object);
-      }
-    } catch (DataException ex) {
-      throw new SynchronizationException(SYNCHRONIZATION_ERROR, ex);
-    }
-  }
-
-  private boolean synchronize(JSONObject json) {
-    try {
-      var result = this.repository.save(json);
-      this.filter.execute(result);
-      this.observers.forEach(observer -> observer.notify(result));
-      return true;
-    } catch (DataException ex) {
-      return false;
-    }
   }
 }

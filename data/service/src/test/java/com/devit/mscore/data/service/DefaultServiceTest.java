@@ -2,36 +2,29 @@ package com.devit.mscore.data.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.DefaultApplicationContext;
+import com.devit.mscore.FiltersExecutor;
 import com.devit.mscore.Index;
 import com.devit.mscore.Publisher;
 import com.devit.mscore.Repository;
 import com.devit.mscore.Schema;
 import com.devit.mscore.data.enrichment.EnrichmentsExecutor;
-import com.devit.mscore.data.filter.FiltersExecutor;
 import com.devit.mscore.data.observer.IndexingObserver;
 import com.devit.mscore.data.observer.PublishingObserver;
 import com.devit.mscore.data.validation.ValidationsExecutor;
 import com.devit.mscore.exception.ApplicationException;
-import com.devit.mscore.exception.DataException;
-import com.devit.mscore.exception.SynchronizationException;
 import com.devit.mscore.exception.ValidationException;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -198,65 +191,6 @@ public class DefaultServiceTest {
   public void testFindList_WithEmptyList() throws ApplicationException {
     var ex = assertThrows(ValidationException.class, () -> this.service.find(List.of()));
     assertThat(ex.getMessage(), is("Keys cannot be empty"));
-  }
-
-  @Test
-  public void testSynchronize() throws SynchronizationException, DataException {
-    var contextData = new HashMap<String, Object>();
-    contextData.put("eventType", "create");
-    var context = DefaultApplicationContext.of("test", contextData);
-    try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
-      utilities.when(() -> ApplicationContext.getContext()).thenReturn(context);
-
-      var object = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"code\":\"code\"}");
-      var result = new JSONArray().put(object);
-      doReturn(Optional.of(result)).when(this.repository).find(eq("parent"), any());
-      doReturn(object).when(this.repository).save(any(JSONObject.class));
-      this.service.synchronize();
-  
-      verify(this.repository).save(any(JSONObject.class));
-      }
-  }
-
-  @Test
-  public void testSynchronizeId() throws SynchronizationException, DataException {
-    var contextData = new HashMap<String, Object>();
-    contextData.put("eventType", "create");
-    var context = DefaultApplicationContext.of("test", contextData);
-    try (MockedStatic<ApplicationContext> utilities = Mockito.mockStatic(ApplicationContext.class)) {
-      utilities.when(() -> ApplicationContext.getContext()).thenReturn(context);
-
-      var result = new JSONObject("{\"domain\":\"domain\",\"id\":\"id\",\"code\":\"code\"}");
-      doReturn(Optional.of(result)).when(this.repository).find("id");
-      doReturn(result).when(this.repository).save(any(JSONObject.class));
-      this.service.synchronize("id");
-  
-      verify(this.repository).save(any(JSONObject.class));
-      }
-  }
-
-  @Test
-  public void testSynchronizeId_EmptyResult() throws SynchronizationException, DataException {
-    doReturn(Optional.empty()).when(this.repository).find("id");
-    this.service.synchronize("id");
-
-    verify(this.repository, never()).save(any(JSONObject.class));
-  }
-
-  @Test
-  public void testSynchronizeId_ThrowsDataException() throws SynchronizationException, DataException {
-    doThrow(new DataException("")).when(this.repository).find("id");
-    var ex = assertThrows(SynchronizationException.class, () -> this.service.synchronize("id"));
-    assertThat(ex.getMessage(), is("Synchronization failed"));
-    assertThat(ex.getCause(), instanceOf(DataException.class));
-  }
-
-  @Test
-  public void testSynchronizeAttributeValue_ThrowsDataException() throws SynchronizationException, DataException {
-    doThrow(new DataException("")).when(this.repository).find("attribute", "id");
-    var ex = assertThrows(SynchronizationException.class, () -> this.service.synchronize("attribute", "id"));
-    assertThat(ex.getMessage(), is("Synchronization failed"));
-    assertThat(ex.getCause(), instanceOf(DataException.class));
   }
 
   @Test

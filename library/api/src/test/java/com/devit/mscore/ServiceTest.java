@@ -20,6 +20,11 @@ public class ServiceTest {
       public String getDomain() {
         return "domain";
       }
+
+      @Override
+      public Resource getSchema() {
+        return null;
+      }
     };
   }
 

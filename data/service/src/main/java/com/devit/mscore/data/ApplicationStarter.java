@@ -4,6 +4,7 @@ import static com.devit.mscore.util.Utils.INDEX_MAP;
 import static com.devit.mscore.util.Utils.SCHEMA;
 
 import com.devit.mscore.Configuration;
+import com.devit.mscore.FiltersExecutor;
 import com.devit.mscore.Index;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Publisher;
@@ -13,7 +14,6 @@ import com.devit.mscore.Schema;
 import com.devit.mscore.Service;
 import com.devit.mscore.ServiceRegistration;
 import com.devit.mscore.Starter;
-import com.devit.mscore.Synchronizer;
 import com.devit.mscore.Validation;
 import com.devit.mscore.authentication.JWTAuthenticationProvider;
 import com.devit.mscore.configuration.FileConfiguration;
@@ -21,13 +21,12 @@ import com.devit.mscore.configuration.FileConfigurationUtils;
 import com.devit.mscore.configuration.ZookeeperConfiguration;
 import com.devit.mscore.data.enrichment.EnrichmentsExecutor;
 import com.devit.mscore.data.enrichment.IndexEnrichment;
-import com.devit.mscore.data.filter.FilterFactory;
-import com.devit.mscore.data.filter.FiltersExecutor;
+import com.devit.mscore.data.filter.RemovingFilter;
 import com.devit.mscore.data.observer.IndexingObserver;
 import com.devit.mscore.data.observer.PublishingObserver;
 import com.devit.mscore.data.observer.SynchronizationObserver;
 import com.devit.mscore.data.service.DefaultService;
-import com.devit.mscore.data.synchronization.SynchronizationsExecutor;
+import com.devit.mscore.data.synchronization.IndexSynchronization;
 import com.devit.mscore.data.validation.ValidationsExecutor;
 import com.devit.mscore.db.mongo.MongoDatabaseFactory;
 import com.devit.mscore.exception.ApplicationException;
@@ -59,6 +58,8 @@ public class ApplicationStarter implements Starter {
 
   private static final String DEFAULT_ZONE_ID = "Asia/Makassar";
 
+  private static final String REMOVING = "services.%s.filter.remove";
+
   private Configuration configuration;
 
   private Registry schemaRegistry;
@@ -75,13 +76,9 @@ public class ApplicationStarter implements Starter {
 
   private EnrichmentsExecutor enrichmentsExecutor;
 
-  private SynchronizationsExecutor synchronizationsExecutor;
-
   private MongoDatabaseFactory repositoryFactory;
 
   private KafkaMessagingFactory messagingFactory;
-
-  private FilterFactory filterFactory;
 
   private SchemaManager schemaManager;
 
@@ -114,14 +111,12 @@ public class ApplicationStarter implements Starter {
     // Create executor
     this.validationsExecutor = new ValidationsExecutor();
     this.enrichmentsExecutor = new EnrichmentsExecutor();
-    this.synchronizationsExecutor = new SynchronizationsExecutor();
 
     this.webValidations = new ArrayList<>();
     this.indices = new HashMap<>();
 
     repositoryFactory = MongoDatabaseFactory.of(this.configuration);
     messagingFactory = KafkaMessagingFactory.of(this.configuration);
-    filterFactory = FilterFactory.of();
     schemaManager = SchemaManager.of(this.configuration, this.schemaRegistry);
     indexFactory = ElasticsearchIndexFactory.of(this.configuration, this.indexMapRegistry);
     authentication = JWTAuthenticationProvider.of(this.configuration);
@@ -138,22 +133,22 @@ public class ApplicationStarter implements Starter {
     registerResource(schemaManager);
     registerResource(indexFactory);
 
-    this.webValidations.add(new SchemaValidation(this.schemaRegistry));
-    var filterExecutor = filterFactory.filters(this.configuration);
+    webValidations.add(new SchemaValidation(this.schemaRegistry));
+
+    var filterExecutor = new FiltersExecutor();
+    createFilter(configuration, filterExecutor);
 
     var registration = new ServiceRegistration(this.serviceRegistry, this.configuration);
     var syncObserver = new SynchronizationObserver();
-    syncObserver.setExecutor(this.synchronizationsExecutor);
     var publisher = messagingFactory.publisher();
     var services = new HashMap<String, Service>();
 
     // Generate service and it's dependencies from schema.
     for (var s : schemaManager.getSchemas()) {
-      var service = createService(s, filterExecutor, syncObserver, publisher);
+      var service = processSchema(s, filterExecutor, syncObserver, publisher);
       apiFactory.add(service);
       registration.register(service);
       services.put(service.getDomain(), service);
-      synchronizationsExecutor.add((Synchronizer) service);
     }
 
     createListener(messagingFactory, services);
@@ -161,16 +156,21 @@ public class ApplicationStarter implements Starter {
     this.serviceRegistry.close();
   }
 
-  private Service createService(Schema schema, FiltersExecutor filters, SynchronizationObserver so, Publisher publisher)
+  private Service processSchema(Schema schema, FiltersExecutor filters, SynchronizationObserver so, Publisher publisher)
       throws RegistryException, ConfigException {
-    var repository = repositoryFactory.repository(schema);
-    var index = indexFactory.index(schema.getDomain());
-    this.indices.put(schema.getDomain(), index.build());
-    schema.getReferenceNames()
-        .forEach(attr -> enrichmentsExecutor.add(new IndexEnrichment(indices, schema.getDomain(), attr)));
 
+    var index = indexFactory.index(schema.getDomain());
+    var indexingObserver = new IndexingObserver(index, enrichmentsExecutor);
+    indices.put(schema.getDomain(), index.build());
+
+    schema.getReferences().forEach((attr, refDomains) -> {
+      enrichmentsExecutor.add(new IndexEnrichment(indices, schema.getDomain(), attr));
+      refDomains.forEach(rd -> so.add(new IndexSynchronization(index, rd, attr).with(filters).with(so).with(indexingObserver)));
+    });
+
+    var repository = repositoryFactory.repository(schema);
     var service = new DefaultService(schema, repository, index, validationsExecutor, filters)
-        .addObserver(new IndexingObserver(index, enrichmentsExecutor))
+        .addObserver(indexingObserver)
         .addObserver(so);
 
     var completedEvent = String.format("%s.completed", schema.getDomain());
@@ -198,6 +198,20 @@ public class ApplicationStarter implements Starter {
       resourceManager.registerResources();
     } catch (ResourceException ex) {
       LOGGER.warn("Cannot register resource '{}'", resourceManager.getType(), ex);
+    }
+  }
+
+
+  private void createFilter(Configuration configuration, FiltersExecutor executors) {
+    var configName = String.format(REMOVING, configuration.getServiceName());
+    try {
+      var removingAttributes = configuration.getConfig(configName);
+      removingAttributes.ifPresent(removingAttribute -> {
+        var attributes = List.of(removingAttribute.split(","));
+        executors.add(new RemovingFilter(attributes));
+      });
+    } catch (ConfigException ex) {
+      LOGGER.warn("Cannot add removing filter", ex);
     }
   }
 

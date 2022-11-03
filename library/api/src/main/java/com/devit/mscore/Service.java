@@ -96,4 +96,11 @@ public interface Service {
   default JSONArray search(JSONObject query) throws ApplicationException {
     throw new ImplementationException();
   }
+
+  /**
+   * Get the schema of the domain.
+   *
+   * @return schema of domain.
+   */
+  Resource getSchema();
 }

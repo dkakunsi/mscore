@@ -1,10 +1,7 @@
-package com.devit.mscore.data.filter;
+package com.devit.mscore;
 
 import static com.devit.mscore.util.AttributeConstants.getDomain;
 import static com.devit.mscore.util.Utils.ALL;
-
-import com.devit.mscore.Executor;
-import com.devit.mscore.Filter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
