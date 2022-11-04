@@ -14,11 +14,11 @@ import org.json.JSONObject;
 
 public class IndexingObserver implements PostProcessObserver {
 
-  private static final Logger LOG = ApplicationLogger.getLogger(IndexingObserver.class);
+  private static final Logger LOGGER = ApplicationLogger.getLogger(IndexingObserver.class);
 
   private static final String INDEXING_ERROR = "Indexing document failed";
 
-  protected final Long syncDelay;
+  protected final long syncDelay;
 
   protected Index index;
 
@@ -26,7 +26,7 @@ public class IndexingObserver implements PostProcessObserver {
 
   protected SynchronizationObserver syncObserver;
 
-  public IndexingObserver(Index index, EnrichmentsExecutor enricher, SynchronizationObserver syncObserver, Long syncDelay) {
+  public IndexingObserver(Index index, EnrichmentsExecutor enricher, SynchronizationObserver syncObserver, long syncDelay) {
     this.index = index;
     this.enricher = enricher;
     this.syncObserver = syncObserver;
@@ -36,19 +36,20 @@ public class IndexingObserver implements PostProcessObserver {
   @Override
   public void notify(JSONObject json) {
     if (index == null) {
-      LOG.warn("Index is not provided. By pass indexing");
+      LOGGER.warn("Index is not provided. By pass indexing");
       return;
     }
 
-    LOG.info("Indexing document '{}' into index '{}'", getId(json), getDomain(json));
+    LOGGER.info("Indexing document '{}' into index '{}'", getId(json), getDomain(json));
     try {
       var dataToIndex = new JSONObject(json.toString());
       enricher.execute(dataToIndex);
       index.index(dataToIndex);
+      LOGGER.info("Delaying sync for '{} ms'", syncDelay);
       Thread.sleep(syncDelay);
       syncObserver.notify(json);
     } catch (IndexingException | InterruptedException ex) {
-      LOG.error(INDEXING_ERROR, ex);
+      LOGGER.error(INDEXING_ERROR, ex);
     }
   }
 }
