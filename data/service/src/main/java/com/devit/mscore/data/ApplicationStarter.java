@@ -60,6 +60,8 @@ public class ApplicationStarter implements Starter {
 
   private static final String REMOVING = "services.%s.filter.remove";
 
+  private static final String SYNC_DELAY = "services.%s.synchronization.delay";
+
   private Configuration configuration;
 
   private Registry schemaRegistry;
@@ -97,30 +99,30 @@ public class ApplicationStarter implements Starter {
       var registryFactory = ZookeeperRegistryFactory.of(fileConfiguration);
       var zookeeperRegistry = registryFactory.registry("platformConfig");
       zookeeperRegistry.open();
-      this.configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
-      this.serviceRegistry = zookeeperRegistry;
+      configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
+      serviceRegistry = zookeeperRegistry;
     } catch (RegistryException ex) {
       throw new ConfigException(ex);
     }
-    DateUtils.setZoneId(this.configuration.getConfig(TIMEZONE).orElse(DEFAULT_ZONE_ID));
+    DateUtils.setZoneId(configuration.getConfig(TIMEZONE).orElse(DEFAULT_ZONE_ID));
 
     // Create registry
-    this.schemaRegistry = new MemoryRegistry(SCHEMA);
-    this.indexMapRegistry = new MemoryRegistry(INDEX_MAP);
+    schemaRegistry = new MemoryRegistry(SCHEMA);
+    indexMapRegistry = new MemoryRegistry(INDEX_MAP);
 
     // Create executor
-    this.validationsExecutor = new ValidationsExecutor();
-    this.enrichmentsExecutor = new EnrichmentsExecutor();
+    validationsExecutor = new ValidationsExecutor();
+    enrichmentsExecutor = new EnrichmentsExecutor();
 
-    this.webValidations = new ArrayList<>();
-    this.indices = new HashMap<>();
+    webValidations = new ArrayList<>();
+    indices = new HashMap<>();
 
-    repositoryFactory = MongoDatabaseFactory.of(this.configuration);
-    messagingFactory = KafkaMessagingFactory.of(this.configuration);
-    schemaManager = SchemaManager.of(this.configuration, this.schemaRegistry);
-    indexFactory = ElasticsearchIndexFactory.of(this.configuration, this.indexMapRegistry);
-    authentication = JWTAuthenticationProvider.of(this.configuration);
-    apiFactory = JavalinApiFactory.of(this.configuration, authentication, this.webValidations);
+    repositoryFactory = MongoDatabaseFactory.of(configuration);
+    messagingFactory = KafkaMessagingFactory.of(configuration);
+    schemaManager = SchemaManager.of(configuration, schemaRegistry);
+    indexFactory = ElasticsearchIndexFactory.of(configuration, indexMapRegistry);
+    authentication = JWTAuthenticationProvider.of(configuration);
+    apiFactory = JavalinApiFactory.of(configuration, authentication, webValidations);
   }
 
   public static ApplicationStarter of(String... args) throws ConfigException {
@@ -133,12 +135,12 @@ public class ApplicationStarter implements Starter {
     registerResource(schemaManager);
     registerResource(indexFactory);
 
-    webValidations.add(new SchemaValidation(this.schemaRegistry));
+    webValidations.add(new SchemaValidation(schemaRegistry));
 
     var filterExecutor = new FiltersExecutor();
     createFilter(configuration, filterExecutor);
 
-    var registration = new ServiceRegistration(this.serviceRegistry, this.configuration);
+    var registration = new ServiceRegistration(serviceRegistry, configuration);
     var syncObserver = new SynchronizationObserver();
     var publisher = messagingFactory.publisher();
     var services = new HashMap<String, Service>();
@@ -154,14 +156,15 @@ public class ApplicationStarter implements Starter {
 
     createListener(messagingFactory, services);
     apiFactory.server().start();
-    this.serviceRegistry.close();
+    serviceRegistry.close();
   }
 
   private Service processSchema(Schema schema, FiltersExecutor filters, SynchronizationObserver so, Publisher publisher)
       throws RegistryException, ConfigException {
 
+    var syncDelay = getSyncDelay();
     var index = indexFactory.index(schema.getDomain());
-    var indexingObserver = new IndexingObserver(index, enrichmentsExecutor, so);
+    var indexingObserver = new IndexingObserver(index, enrichmentsExecutor, so, syncDelay);
     indices.put(schema.getDomain(), index.build());
 
     schema.getReferences().forEach((attr, refDomains) -> {
@@ -198,6 +201,20 @@ public class ApplicationStarter implements Starter {
       resourceManager.registerResources();
     } catch (ResourceException ex) {
       LOGGER.warn("Cannot register resource '{}'", resourceManager.getType(), ex);
+    }
+  }
+
+  private Long getSyncDelay() throws ConfigException {
+    var configName = String.format(SYNC_DELAY, configuration.getServiceName());
+    var syncDelay = configuration.getConfig(configName);
+    try {
+      if (syncDelay.isPresent()) {
+        return Long.valueOf(syncDelay.get());
+      }
+      return 0L;  
+    } catch (NumberFormatException ex) {
+      LOGGER.warn("Cannot read sync delay. Using default = 0");
+      return 0L;
     }
   }
 

@@ -18,16 +18,19 @@ public class IndexingObserver implements PostProcessObserver {
 
   private static final String INDEXING_ERROR = "Indexing document failed";
 
+  protected final Long syncDelay;
+
   protected Index index;
 
   protected EnrichmentsExecutor enricher;
 
   protected SynchronizationObserver syncObserver;
 
-  public IndexingObserver(Index index, EnrichmentsExecutor enricher, SynchronizationObserver syncObserver) {
+  public IndexingObserver(Index index, EnrichmentsExecutor enricher, SynchronizationObserver syncObserver, Long syncDelay) {
     this.index = index;
     this.enricher = enricher;
     this.syncObserver = syncObserver;
+    this.syncDelay = syncDelay;
   }
 
   @Override
@@ -42,8 +45,9 @@ public class IndexingObserver implements PostProcessObserver {
       var dataToIndex = new JSONObject(json.toString());
       enricher.execute(dataToIndex);
       index.index(dataToIndex);
+      Thread.sleep(syncDelay);
       syncObserver.notify(json);
-    } catch (IndexingException ex) {
+    } catch (IndexingException | InterruptedException ex) {
       LOG.error(INDEXING_ERROR, ex);
     }
   }

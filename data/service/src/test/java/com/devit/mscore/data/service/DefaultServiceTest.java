@@ -61,7 +61,7 @@ public class DefaultServiceTest {
     var filter = mock(FiltersExecutor.class);
     var enricher = mock(EnrichmentsExecutor.class);
     var syncObserver = new SynchronizationObserver();
-    var indexingObserver = new IndexingObserver(this.index, enricher, syncObserver);
+    var indexingObserver = new IndexingObserver(this.index, enricher, syncObserver, 0L);
     var publishingObserver = new PublishingObserver(this.publisher,PUBLISHING_CHANNEL);
     this.service = new DefaultService(this.schema, this.repository, this.index, validator, filter)
         .addObserver(indexingObserver).addObserver(publishingObserver);

@@ -19,7 +19,7 @@ public class IndexingObserverTest {
     var index = mock(Index.class);
     var enricher = mock(EnrichmentsExecutor.class);
     var syncObserver = mock(SynchronizationObserver.class);
-    var indexingObserver = new IndexingObserver(index, enricher, syncObserver);
+    var indexingObserver = new IndexingObserver(index, enricher, syncObserver, 0L);
     indexingObserver.notify(new JSONObject());
 
     verify(index).index(any(JSONObject.class));
@@ -32,7 +32,7 @@ public class IndexingObserverTest {
     var enricher = mock(EnrichmentsExecutor.class);
     doThrow(IndexingException.class).when(index).index(any(JSONObject.class));
 
-    var indexingObserver = new IndexingObserver(index, enricher, syncObserver);
+    var indexingObserver = new IndexingObserver(index, enricher, syncObserver, 0L);
     indexingObserver.notify(new JSONObject());
 
     verify(index).index(any(JSONObject.class));
