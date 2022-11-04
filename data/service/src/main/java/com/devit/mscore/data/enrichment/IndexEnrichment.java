@@ -23,7 +23,7 @@ import org.json.JSONObject;
  */
 public class IndexEnrichment extends Enrichment {
 
-  private static final Logger LOG = ApplicationLogger.getLogger(IndexEnrichment.class);
+  private static final Logger LOGGER = ApplicationLogger.getLogger(IndexEnrichment.class);
 
   private final Map<String, Index> indeces;
 
@@ -37,15 +37,16 @@ public class IndexEnrichment extends Enrichment {
       throws DataException {
 
     try {
-      var index = this.indeces.get(domain);
+      LOGGER.info("Retrieve document '{}' from index '{}'", id, domain);
+      var index = indeces.get(domain);
       if (index != null) {
         return index.get(id);
       } else {
-        LOG.warn("Cannot enrich object '{}'. Index '{}' is not found", id, domain);
+        LOGGER.warn("Cannot enrich object '{}'. Index '{}' is not found", id, domain);
         return Optional.empty();
       }
     } catch (IndexingException ex) {
-      LOG.error("Cannot load '{}' from '{}' domain", id, domain);
+      LOGGER.error("Cannot load '{}' from '{}' domain", id, domain);
       throw new DataException("Cannot load data from index", ex);
     }
   }
