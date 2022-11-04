@@ -54,9 +54,9 @@ public class MongoRepository implements Repository {
   @Override
   public JSONObject save(JSONObject json) throws DataException {
     try {
-      LOG.info("Saving entity to MongoDB for code '{}' and id '{}'", getCode(json), getId(json));
-
       var id = getOrCreateId(json);
+      LOG.info("Saving entity to MongoDB for code '{}' and id '{}'", getCode(json), id);
+
       var target = find(id, false).orElse(new JSONObject());
       copy(target, json);
 
@@ -71,6 +71,7 @@ public class MongoRepository implements Repository {
       var filter = new Document(ID, id);
       this.collection.replaceOne(filter, document, options);
 
+      LOG.info("Entity '{}' is saved into MongoDB", id);
       return target;
     } catch (DuplicateKeyException ex) {
       throw new DataDuplicationException("Key is duplicated", ex);

@@ -146,6 +146,7 @@ public class ApplicationStarter implements Starter {
     // Generate service and it's dependencies from schema.
     for (var s : schemaManager.getSchemas()) {
       var service = processSchema(s, filterExecutor, syncObserver, publisher);
+      // set synchronizer to cotroller.
       apiFactory.add(service);
       registration.register(service);
       services.put(service.getDomain(), service);

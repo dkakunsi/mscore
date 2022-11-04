@@ -115,10 +115,14 @@ public class ElasticsearchService {
     var id = getId(json);
     LOG.info("Indexing document '{}' to index '{}'", id, indexName);
     try {
+      String result;
       if (exists(indexName, id)) {
-        return update(indexName, json, id);
+        result = update(indexName, json, id);
+      } else {
+        result = insert(indexName, json, id);
       }
-      return insert(indexName, json, id);
+      LOG.info("Document '{}' is index to '{}'", id, indexName);
+      return result;
     } finally {
       LOG.debug("Document '{}' is indexed", id);
     }
