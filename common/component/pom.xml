@@ -15,7 +15,6 @@
   <properties>
     <minimum.class.line.coverage>0.75</minimum.class.line.coverage>
     <minimum.bundle.line.coverage>0.90</minimum.bundle.line.coverage>
-    <library.version>[1.4.74-SNAPSHOT,)</library.version>
   </properties>
 
   <build>
