@@ -215,7 +215,7 @@ public class ApplicationStarter implements Starter {
     }
     LOGGER.info("Adding sync delay of '{} ms'", delay);
     return delay;
-}
+  }
 
 
   private void createFilter(Configuration configuration, FiltersExecutor executors) {
