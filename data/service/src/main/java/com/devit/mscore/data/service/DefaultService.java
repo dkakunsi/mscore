@@ -14,6 +14,7 @@ import com.devit.mscore.Index;
 import com.devit.mscore.Logger;
 import com.devit.mscore.PostProcessObserver;
 import com.devit.mscore.Repository;
+import com.devit.mscore.Resource;
 import com.devit.mscore.Schema;
 import com.devit.mscore.Service;
 import com.devit.mscore.data.validation.ValidationsExecutor;
@@ -77,6 +78,11 @@ public class DefaultService implements Service {
   @Override
   public String getDomain() {
     return this.schema.getDomain();
+  }
+
+  @Override
+  public Resource getSchema() {
+    return schema;
   }
 
   @Override
