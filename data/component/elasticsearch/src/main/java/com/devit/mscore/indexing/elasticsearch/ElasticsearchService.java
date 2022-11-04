@@ -184,8 +184,8 @@ public class ElasticsearchService {
     var queryBuilder = ElasticsearchQueryHelper.createQuery(query);
     LOG.debug("Executing search query: {}", queryBuilder);
 
-    var queryPage = query.getInt("page");
-    var querySize = query.getInt("size");
+    var queryPage = query.has("page") ? query.optInt("page") : 0;
+    var querySize = query.has("size") ? query.getInt("size") : 10000;
     SearchSourceBuilder ssb = new SearchSourceBuilder();
     ssb.postFilter(queryBuilder);
     ssb.from(queryPage * querySize);
