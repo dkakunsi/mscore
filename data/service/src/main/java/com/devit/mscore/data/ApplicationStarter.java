@@ -144,10 +144,11 @@ public class ApplicationStarter implements Starter {
     var syncObserver = new SynchronizationObserver();
     var publisher = messagingFactory.publisher();
     var services = new HashMap<String, Service>();
+    var syncDelay = getSyncDelay();
 
     // Generate service and it's dependencies from schema.
     for (var s : schemaManager.getSchemas()) {
-      var service = processSchema(s, filterExecutor, syncObserver, publisher);
+      var service = processSchema(s, filterExecutor, syncObserver, publisher, syncDelay);
       // set synchronizer to cotroller.
       apiFactory.add(service);
       registration.register(service);
@@ -159,10 +160,9 @@ public class ApplicationStarter implements Starter {
     serviceRegistry.close();
   }
 
-  private Service processSchema(Schema schema, FiltersExecutor filters, SynchronizationObserver so, Publisher publisher)
+  private Service processSchema(Schema schema, FiltersExecutor filters, SynchronizationObserver so, Publisher publisher, long syncDelay)
       throws RegistryException, ConfigException {
 
-    var syncDelay = getSyncDelay();
     var index = indexFactory.index(schema.getDomain());
     var indexingObserver = new IndexingObserver(index, enrichmentsExecutor, so, syncDelay);
     indices.put(schema.getDomain(), index.build());
