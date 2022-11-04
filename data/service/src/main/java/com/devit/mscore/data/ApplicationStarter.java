@@ -207,16 +207,15 @@ public class ApplicationStarter implements Starter {
   private Long getSyncDelay() throws ConfigException {
     var configName = String.format(SYNC_DELAY, configuration.getServiceName());
     var syncDelay = configuration.getConfig(configName);
+    Long delay = 0L;
     try {
-      if (syncDelay.isPresent()) {
-        return Long.valueOf(syncDelay.get());
-      }
-      return 0L;  
+      delay = syncDelay.isPresent() ? Long.valueOf(syncDelay.get()) : 0L;  
     } catch (NumberFormatException ex) {
-      LOGGER.warn("Cannot read sync delay. Using default = 0");
-      return 0L;
+      LOGGER.warn("Cannot read sync delay", ex);
     }
-  }
+    LOGGER.info("Adding sync delay of '{} ms'", delay);
+    return delay;
+}
 
 
   private void createFilter(Configuration configuration, FiltersExecutor executors) {
