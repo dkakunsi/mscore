@@ -204,12 +204,12 @@ public class ApplicationStarter implements Starter {
     }
   }
 
-  private Long getSyncDelay() throws ConfigException {
+  private long getSyncDelay() throws ConfigException {
     var configName = String.format(SYNC_DELAY, configuration.getServiceName());
     var syncDelay = configuration.getConfig(configName);
-    Long delay = 0L;
+    long delay = 0L;
     try {
-      delay = syncDelay.isPresent() ? Long.valueOf(syncDelay.get()) : 0L;  
+      delay = syncDelay.isPresent() ? Long.parseLong(syncDelay.get()) : 0L;  
     } catch (NumberFormatException ex) {
       LOGGER.warn("Cannot read sync delay", ex);
     }
