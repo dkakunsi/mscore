@@ -22,15 +22,17 @@ public class IndexingObserver implements PostProcessObserver {
 
   protected EnrichmentsExecutor enricher;
 
-  public IndexingObserver(Index index, EnrichmentsExecutor enricher) {
+  protected SynchronizationObserver syncObserver;
+
+  public IndexingObserver(Index index, EnrichmentsExecutor enricher, SynchronizationObserver syncObserver) {
     this.index = index;
     this.enricher = enricher;
-
+    this.syncObserver = syncObserver;
   }
 
   @Override
   public void notify(JSONObject json) {
-    if (this.index == null) {
+    if (index == null) {
       LOG.warn("Index is not provided. By pass indexing");
       return;
     }
@@ -38,8 +40,9 @@ public class IndexingObserver implements PostProcessObserver {
     LOG.info("Indexing document '{}' into index '{}'", getId(json), getDomain(json));
     try {
       var dataToIndex = new JSONObject(json.toString());
-      this.enricher.execute(dataToIndex);
-      this.index.index(dataToIndex);
+      enricher.execute(dataToIndex);
+      index.index(dataToIndex);
+      syncObserver.notify(json);
     } catch (IndexingException ex) {
       LOG.error(INDEXING_ERROR, ex);
     }

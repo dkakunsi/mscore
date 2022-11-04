@@ -21,6 +21,7 @@ import com.devit.mscore.Schema;
 import com.devit.mscore.data.enrichment.EnrichmentsExecutor;
 import com.devit.mscore.data.observer.IndexingObserver;
 import com.devit.mscore.data.observer.PublishingObserver;
+import com.devit.mscore.data.observer.SynchronizationObserver;
 import com.devit.mscore.data.validation.ValidationsExecutor;
 import com.devit.mscore.exception.ApplicationException;
 import com.devit.mscore.exception.ValidationException;
@@ -59,7 +60,8 @@ public class DefaultServiceTest {
     var validator = mock(ValidationsExecutor.class);
     var filter = mock(FiltersExecutor.class);
     var enricher = mock(EnrichmentsExecutor.class);
-    var indexingObserver = new IndexingObserver(this.index, enricher);
+    var syncObserver = new SynchronizationObserver();
+    var indexingObserver = new IndexingObserver(this.index, enricher, syncObserver);
     var publishingObserver = new PublishingObserver(this.publisher,PUBLISHING_CHANNEL);
     this.service = new DefaultService(this.schema, this.repository, this.index, validator, filter)
         .addObserver(indexingObserver).addObserver(publishingObserver);

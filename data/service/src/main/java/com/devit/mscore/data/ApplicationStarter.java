@@ -161,18 +161,17 @@ public class ApplicationStarter implements Starter {
       throws RegistryException, ConfigException {
 
     var index = indexFactory.index(schema.getDomain());
-    var indexingObserver = new IndexingObserver(index, enrichmentsExecutor);
+    var indexingObserver = new IndexingObserver(index, enrichmentsExecutor, so);
     indices.put(schema.getDomain(), index.build());
 
     schema.getReferences().forEach((attr, refDomains) -> {
       enrichmentsExecutor.add(new IndexEnrichment(indices, schema.getDomain(), attr));
-      refDomains.forEach(rd -> so.add(new IndexSynchronization(index, rd, attr).with(filters).with(so).with(indexingObserver)));
+      refDomains.forEach(rd -> so.add(new IndexSynchronization(index, rd, attr).with(filters).with(indexingObserver)));
     });
 
     var repository = repositoryFactory.repository(schema);
     var service = new DefaultService(schema, repository, index, validationsExecutor, filters)
-        .addObserver(indexingObserver)
-        .addObserver(so);
+        .addObserver(indexingObserver);
 
     var completedEvent = String.format("%s.completed", schema.getDomain());
     var eventChannel = messagingFactory.getTopic(completedEvent);
