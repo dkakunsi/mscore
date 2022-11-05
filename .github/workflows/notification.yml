@@ -1,4 +1,4 @@
-name: Notification Service
+name: Notification Service 2.0
 
 on:
   push:

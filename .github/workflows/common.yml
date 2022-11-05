@@ -1,4 +1,4 @@
-name: Common
+name: Common 2.0
 
 on:
   workflow_dispatch: # enable manual trigger

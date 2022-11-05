@@ -1,4 +1,4 @@
-name: Workflow Service
+name: Workflow Service 2.0
 
 on:
   push:
