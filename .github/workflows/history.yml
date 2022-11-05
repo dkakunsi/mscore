@@ -1,4 +1,4 @@
-name: History Service 2.0
+name: History Service
 
 on:
   push:
@@ -35,11 +35,19 @@ jobs:
       with:
         VERSION_NUMBER: ${{ steps.latestTag.outputs.tag }}
 
+    - name: Get Time
+      if: ${{ !inputs.release }}
+      id: time
+      uses: nanzm/get-time-action@v1.1
+      with:
+        timeZone: 8
+        format: 'YYYYMMDDHHmmss'
+
     - name: Set Development Version
       if: ${{ !inputs.release }}
       uses: allenevans/set-env@v2.0.0
       with:
-        VERSION_NUMBER: ${{ steps.latestTag.outputs.tag }}.${{ github.RUN_NUMBER }}-SNAPSHOT
+        VERSION_NUMBER: ${{ steps.latestTag.outputs.tag }}.${{ steps.time.outputs.time }}-SNAPSHOT
 
     - name: Print Version Number
       run: echo "Version number is $VERSION_NUMBER"

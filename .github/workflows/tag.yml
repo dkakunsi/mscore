@@ -1,4 +1,4 @@
-name: Tag Release 2.0
+name: Tag Release
 
 on:
   push:
