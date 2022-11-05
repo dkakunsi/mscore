@@ -11,6 +11,7 @@ import com.devit.mscore.Event;
 import com.devit.mscore.Logger;
 import com.devit.mscore.Publisher;
 import com.devit.mscore.Registry;
+import com.devit.mscore.Resource;
 import com.devit.mscore.WorkflowDefinition;
 import com.devit.mscore.WorkflowDefinitionRepository;
 import com.devit.mscore.WorkflowInstance;
@@ -28,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.naming.OperationNotSupportedException;
 
 import org.json.JSONObject;
 
@@ -169,5 +172,10 @@ public class WorkflowServiceImpl implements WorkflowService {
   @Override
   public String getDomain() {
     return WorkflowDefinition.PROCESS;
+  }
+
+  @Override
+  public Resource getSchema() {
+    throw new RuntimeException(new OperationNotSupportedException());
   }
 }

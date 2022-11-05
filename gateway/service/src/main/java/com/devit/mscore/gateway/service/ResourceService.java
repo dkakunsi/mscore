@@ -1,5 +1,6 @@
 package com.devit.mscore.gateway.service;
 
+import com.devit.mscore.Resource;
 import com.devit.mscore.ServiceRegistration;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.WebClientException;
@@ -7,6 +8,8 @@ import com.devit.mscore.web.Client;
 
 import java.util.Map;
 import java.util.Optional;
+
+import javax.naming.OperationNotSupportedException;
 
 import org.json.JSONObject;
 
@@ -73,5 +76,10 @@ public class ResourceService extends AbstractGatewayService {
     } catch (ApplicationRuntimeException ex) {
       throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
     }
+  }
+
+  @Override
+  public Resource getSchema() {
+    throw new RuntimeException(new OperationNotSupportedException());
   }
 }

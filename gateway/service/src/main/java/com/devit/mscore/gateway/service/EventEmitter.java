@@ -6,10 +6,13 @@ import static com.devit.mscore.util.AttributeConstants.hasId;
 
 import com.devit.mscore.Event;
 import com.devit.mscore.Publisher;
+import com.devit.mscore.Resource;
 import com.devit.mscore.Service;
 import com.devit.mscore.util.AttributeConstants;
 
 import java.util.UUID;
+
+import javax.naming.OperationNotSupportedException;
 
 import org.json.JSONObject;
 
@@ -65,5 +68,10 @@ public class EventEmitter implements Service {
       json.put(ID, id);
     }
     return getId(json);
+  }
+
+  @Override
+  public Resource getSchema() {
+    throw new RuntimeException(new OperationNotSupportedException());
   }
 }
