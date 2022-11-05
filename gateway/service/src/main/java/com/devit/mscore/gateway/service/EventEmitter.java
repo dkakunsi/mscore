@@ -12,8 +12,6 @@ import com.devit.mscore.util.AttributeConstants;
 
 import java.util.UUID;
 
-import javax.naming.OperationNotSupportedException;
-
 import org.json.JSONObject;
 
 public class EventEmitter implements Service {
@@ -72,6 +70,6 @@ public class EventEmitter implements Service {
 
   @Override
   public Resource getSchema() {
-    throw new RuntimeException(new OperationNotSupportedException());
+    throw new UnsupportedOperationException();
   }
 }

@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.naming.OperationNotSupportedException;
-
 import org.json.JSONObject;
 
 public class WorkflowServiceImpl implements WorkflowService {
@@ -176,6 +174,6 @@ public class WorkflowServiceImpl implements WorkflowService {
 
   @Override
   public Resource getSchema() {
-    throw new RuntimeException(new OperationNotSupportedException());
+    throw new UnsupportedOperationException();
   }
 }

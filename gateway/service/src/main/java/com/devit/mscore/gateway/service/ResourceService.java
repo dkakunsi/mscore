@@ -9,8 +9,6 @@ import com.devit.mscore.web.Client;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.naming.OperationNotSupportedException;
-
 import org.json.JSONObject;
 
 public class ResourceService extends AbstractGatewayService {
@@ -80,6 +78,6 @@ public class ResourceService extends AbstractGatewayService {
 
   @Override
   public Resource getSchema() {
-    throw new RuntimeException(new OperationNotSupportedException());
+    throw new UnsupportedOperationException();
   }
 }
