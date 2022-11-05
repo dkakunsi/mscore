@@ -44,7 +44,7 @@
     <awaitality.version>4.2.0</awaitality.version>
 
     <!-- will be used by all components -->
-    <library.version>[1.4.76-SNAPSHOT,)</library.version>
+    <library.version>[2.0,)</library.version>
 
     <!-- Sonarcloud.io -->
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
