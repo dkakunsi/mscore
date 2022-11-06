@@ -7,9 +7,6 @@ services:
     container_name: ${SOLUTION}-data
     ports:
       - 2001:2000
-    command: java -jar
-    stdin_open: true
-    tty: true
     volumes:
       - ./logs/data-service:/opt/mscore/logs
 
