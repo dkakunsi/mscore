@@ -24,18 +24,6 @@ public interface WorkflowService extends Service {
   void deployDefinition(WorkflowDefinition workflowDefinition) throws ProcessException;
 
   /**
-   * Create instance of process definition.
-   *
-   * @param processDefinitionId id
-   * @param entity              object to process
-   * @param variables           process variables
-   * @return proxy of process instance
-   * @throws ProcessException error in process update
-   */
-  WorkflowInstance createInstance(String processDefinitionId, JSONObject entity,
-      Map<String, Object> variables) throws ProcessException;
-
-  /**
    * Create instance for the specified {@code action}.
    *
    * @param action    to applied
@@ -44,7 +32,7 @@ public interface WorkflowService extends Service {
    * @return proxy of process instance
    * @throws ProcessException error in process update
    */
-  WorkflowInstance createInstanceByAction(String action, JSONObject entity,
+  WorkflowInstance executeWorkflow(String action, JSONObject entity,
       Map<String, Object> variables) throws ProcessException;
 
   /**
@@ -67,9 +55,9 @@ public interface WorkflowService extends Service {
    * Complete the given task and continue the instance.
    *
    * @param taskId       task id
-   * @param taskResponse process variables
+   * @param variables    process variables
    * @throws ProcessException error in process update, mostly known issue is in
    *                          indexing the Workflow Task.
    */
-  void completeTask(String taskId, JSONObject taskResponse) throws ProcessException;
+  void completeTask(String taskId, Map<String, Object> variables) throws ProcessException;
 }

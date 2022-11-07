@@ -44,12 +44,12 @@ public class EventListener extends Listener {
 
   private void processEvent(Event event) throws ProcessException {
     if (event.isDomainEvent()) {
-      var instance = this.service.createInstanceByAction(event.getAction(), event.getData(), new HashMap<>());
+      var instance = this.service.executeWorkflow(event.getAction(), event.getData(), new HashMap<>());
       logger.info("Instance is created with id '{}'", instance.getId());
     } else {
       var data = event.getData();
       var taskId = getId(data);
-      this.service.completeTask(taskId, data.getJSONObject("response"));
+      this.service.completeTask(taskId, data.getJSONObject("response").toMap());
       logger.info("Task '{}' is completed", taskId);
     }
   }

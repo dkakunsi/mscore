@@ -26,6 +26,7 @@ import com.devit.mscore.logging.ApplicationLogger;
 import com.devit.mscore.util.AttributeConstants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -87,14 +88,23 @@ public class WorkflowServiceImpl implements WorkflowService {
   }
 
   @Override
-  public WorkflowInstance createInstance(String definitionId, JSONObject entity, Map<String, Object> variables)
+  public WorkflowInstance executeWorkflow(String action, JSONObject entity, Map<String, Object> variables)
       throws ProcessException {
-    var instance = this.instanceRepository.create(definitionId, populateVariables(entity, variables));
-    syncCreate(instance);
-    return instance;
+    try {
+      var definitionId = this.registry.get(action);
+      var instance = this.instanceRepository.create(definitionId, populateVariables(entity, variables));
+      syncCreate(instance);
+      return instance;
+    } catch (RegistryException ex) {
+      throw new ProcessException(String.format("Process definition is not found for action '%s'", action), ex);
+    }
   }
 
   private Map<String, Object> populateVariables(JSONObject entity, Map<String, Object> variables) {
+    if (variables == null) {
+      variables = new HashMap<>();
+    }
+
     var context = getContext();
     variables.put("entity", entity.toString());
     variables.put("domain", AttributeConstants.getDomain(entity));
@@ -124,17 +134,6 @@ public class WorkflowServiceImpl implements WorkflowService {
   }
 
   @Override
-  public WorkflowInstance createInstanceByAction(String action, JSONObject entity, Map<String, Object> variables)
-      throws ProcessException {
-    try {
-      var definitionId = this.registry.get(action);
-      return createInstance(definitionId, entity, variables);
-    } catch (RegistryException ex) {
-      throw new ProcessException(String.format("Process definition is not found for action '%s'", action), ex);
-    }
-  }
-
-  @Override
   public Optional<WorkflowInstance> getInstance(String instanceId) {
     return this.instanceRepository.get(instanceId);
   }
@@ -145,7 +144,7 @@ public class WorkflowServiceImpl implements WorkflowService {
   }
 
   @Override
-  public void completeTask(String taskId, JSONObject taskResponse) throws ProcessException {
+  public void completeTask(String taskId, Map<String, Object> variables) throws ProcessException {
     var task = this.taskRepository.getTask(taskId)
         .orElseThrow(() -> new ProcessException(String.format("No task found for id: %s", taskId)));
 
@@ -155,10 +154,10 @@ public class WorkflowServiceImpl implements WorkflowService {
     var instance = this.instanceRepository.get(instanceId)
         .orElseThrow(() -> new ProcessException(String.format("No instance found for id: %s", instanceId)));
 
-    taskResponse.put(BREADCRUMB_ID, getContext().getBreadcrumbId());
-    taskResponse.put(EVENT_TYPE, getContext().getEventType().get());
-    taskResponse.put(PRINCIPAL, getContext().getPrincipal().get().toString());
-    this.taskRepository.complete(taskId, taskResponse.toMap());
+    variables.put(BREADCRUMB_ID, getContext().getBreadcrumbId());
+    variables.put(EVENT_TYPE, getContext().getEventType().get());
+    variables.put(PRINCIPAL, getContext().getPrincipal().get().toString());
+    this.taskRepository.complete(taskId, variables);
     task.complete();
 
     if (this.instanceRepository.isCompleted(instanceId)) {

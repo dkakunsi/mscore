@@ -11,6 +11,7 @@ import com.devit.mscore.Registry;
 import com.devit.mscore.ResourceManager;
 import com.devit.mscore.ServiceRegistration;
 import com.devit.mscore.Starter;
+import com.devit.mscore.authentication.JWTAuthenticationProvider;
 import com.devit.mscore.configuration.FileConfiguration;
 import com.devit.mscore.configuration.FileConfigurationUtils;
 import com.devit.mscore.configuration.ZookeeperConfiguration;
@@ -25,6 +26,7 @@ import com.devit.mscore.registry.ZookeeperRegistryFactory;
 import com.devit.mscore.util.DateUtils;
 import com.devit.mscore.web.Client;
 import com.devit.mscore.web.jersey.JerseyClientFactory;
+import com.devit.mscore.workflow.api.ApiFactory;
 import com.devit.mscore.workflow.flowable.FlowableWorkflowFactory;
 import com.devit.mscore.workflow.flowable.datasource.PgDataSource;
 import com.devit.mscore.workflow.flowable.delegate.DelegateUtils;
@@ -54,7 +56,11 @@ public class ApplicationStarter implements Starter {
 
   private FlowableWorkflowFactory workflowFactory;
 
+  private JWTAuthenticationProvider authenticationProvider;
+
   private Client webClient;
+
+  private ApiFactory apiFactory;
 
   private ServiceRegistration serviceRegistration;
 
@@ -73,7 +79,9 @@ public class ApplicationStarter implements Starter {
       DateUtils.setZoneId(this.configuration.getConfig(TIMEZONE).orElse("Asia/Makassar"));
 
       this.messagingFactory = KafkaMessagingFactory.of(this.configuration);
+      this.authenticationProvider = JWTAuthenticationProvider.of(this.configuration);
       this.webClient = JerseyClientFactory.of().client();
+      this.apiFactory = ApiFactory.of(this.configuration, this.authenticationProvider);
       var workflowDataSource = new PgDataSource(this.configuration);
       this.workflowFactory = FlowableWorkflowFactory.of(this.configuration, this.workflowRegistry, workflowDataSource);
       this.serviceRegistration = new ServiceRegistration(this.zookeeperRegistry, this.configuration);
@@ -115,6 +123,10 @@ public class ApplicationStarter implements Starter {
       var eventListener = EventListener.of(subscriber, workflowService);
       eventListener.listen(eventTopic.get());
     }
+
+    // Start service
+    var server = this.apiFactory.addService(workflowService).server();
+    server.start();
 
     this.serviceRegistration.register(workflowService);
 

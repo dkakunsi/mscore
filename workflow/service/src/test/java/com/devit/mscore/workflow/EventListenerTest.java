@@ -18,6 +18,8 @@ import com.devit.mscore.WorkflowService;
 import com.devit.mscore.exception.ProcessException;
 import com.devit.mscore.exception.RegistryException;
 
+import java.util.Map;
+
 import org.json.JSONObject;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -30,7 +32,7 @@ public class EventListenerTest {
     var service = mock(WorkflowService.class);
     var instance = mock(WorkflowInstance.class);
     doReturn("instanceId").when(instance).getId();
-    doReturn(instance).when(service).createInstanceByAction(anyString(), any(JSONObject.class), anyMap());
+    doReturn(instance).when(service).executeWorkflow(anyString(), any(JSONObject.class), anyMap());
     var listener = EventListener.of(subscriber, service);
 
     var message = new JSONObject();
@@ -43,7 +45,7 @@ public class EventListenerTest {
 
     var actionCaptor = ArgumentCaptor.forClass(String.class);
     var jsonCaptor = ArgumentCaptor.forClass(JSONObject.class);
-    verify(service).createInstanceByAction(actionCaptor.capture(), jsonCaptor.capture(), anyMap());
+    verify(service).executeWorkflow(actionCaptor.capture(), jsonCaptor.capture(), anyMap());
     assertThat(actionCaptor.getValue(), is("domain.create"));
     assertTrue(jsonCaptor.getValue().similar(jsonData));
   }
@@ -53,7 +55,7 @@ public class EventListenerTest {
     var subscriber = mock(Subscriber.class);
     var service = mock(WorkflowService.class);
     doThrow(new ProcessException(new RegistryException(""))).when(service)
-      .createInstanceByAction(anyString(), any(JSONObject.class), anyMap());
+      .executeWorkflow(anyString(), any(JSONObject.class), anyMap());
     var listener = EventListener.of(subscriber, service);
 
     var message = new JSONObject();
@@ -66,7 +68,7 @@ public class EventListenerTest {
 
     var actionCaptor = ArgumentCaptor.forClass(String.class);
     var jsonCaptor = ArgumentCaptor.forClass(JSONObject.class);
-    verify(service).createInstanceByAction(actionCaptor.capture(), jsonCaptor.capture(), anyMap());
+    verify(service).executeWorkflow(actionCaptor.capture(), jsonCaptor.capture(), anyMap());
     assertThat(actionCaptor.getValue(), is("domain.create"));
     assertTrue(jsonCaptor.getValue().similar(jsonData));
   }
@@ -76,7 +78,7 @@ public class EventListenerTest {
     var subscriber = mock(Subscriber.class);
     var service = mock(WorkflowService.class);
     doThrow(ProcessException.class).when(service)
-      .createInstanceByAction(anyString(), any(JSONObject.class), anyMap());
+      .executeWorkflow(anyString(), any(JSONObject.class), anyMap());
     var listener = EventListener.of(subscriber, service);
 
     var message = new JSONObject();
@@ -89,11 +91,12 @@ public class EventListenerTest {
 
     var actionCaptor = ArgumentCaptor.forClass(String.class);
     var jsonCaptor = ArgumentCaptor.forClass(JSONObject.class);
-    verify(service).createInstanceByAction(actionCaptor.capture(), jsonCaptor.capture(), anyMap());
+    verify(service).executeWorkflow(actionCaptor.capture(), jsonCaptor.capture(), anyMap());
     assertThat(actionCaptor.getValue(), is("domain.create"));
     assertTrue(jsonCaptor.getValue().similar(jsonData));
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   public void testConsume_TaskEvent() throws ProcessException {
     var subscriber = mock(Subscriber.class);
@@ -112,9 +115,9 @@ public class EventListenerTest {
     listener.consume(message);
 
     var idCaptor = ArgumentCaptor.forClass(String.class);
-    var jsonCaptor = ArgumentCaptor.forClass(JSONObject.class);
+    var jsonCaptor = ArgumentCaptor.forClass(Map.class);
     verify(service).completeTask(idCaptor.capture(), jsonCaptor.capture());
     assertThat(idCaptor.getValue(), is("id"));
-    assertTrue(jsonCaptor.getValue().similar(response));
+    assertTrue(new JSONObject(jsonCaptor.getValue()).similar(response));
   }
 }
