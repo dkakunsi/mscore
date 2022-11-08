@@ -19,6 +19,7 @@ public class EventTest {
     var json = new JSONObject();
     json.put(Event.EVENT, "create");
     json.put(Event.DOMAIN, "domain");
+    json.put(Event.ACTION, "domain.create");
     var jsonData = new JSONObject("{\"id\":\"id\"}");
     json.put(Event.DATA, jsonData);
     var event = Event.of(json);
