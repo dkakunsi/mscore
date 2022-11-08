@@ -42,7 +42,7 @@ public class Event {
 
   private JSONObject data;
 
-  private Event(Type type, String domain, String action, JSONObject data) {
+  protected Event(Type type, String domain, String action, JSONObject data) {
     this.type = type;
     this.domain = domain;
     this.data = data;
