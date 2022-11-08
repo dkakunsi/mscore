@@ -1,5 +1,6 @@
 package com.devit.mscore.web.javalin;
 
+import static com.devit.mscore.util.Utils.ACTION;
 import static com.devit.mscore.util.Utils.AUTHORIZATION;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
 import static com.devit.mscore.util.Utils.EVENT_TYPE;
@@ -40,6 +41,7 @@ public class JavalinApplicationContext extends ApplicationContext {
     context.breadcrumbId(ctx);
     context.authorization(ctx);
     context.eventType(ctx);
+    context.action(ctx);
 
     return context;
   }
@@ -74,7 +76,14 @@ public class JavalinApplicationContext extends ApplicationContext {
   private void authorization(Context ctx) {
     var authorization = ctx.header(AUTHORIZATION);
     if (StringUtils.isNotBlank(authorization)) {
-      this.contextData.put(AUTHORIZATION, authorization);
+      contextData.put(AUTHORIZATION, authorization);
+    }
+  }
+
+  private void action(Context ctx) {
+    var action = ctx.header(ACTION);
+    if (StringUtils.isNotBlank(action)) {
+      setAction(action);
     }
   }
 

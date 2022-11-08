@@ -1,6 +1,7 @@
 package com.devit.mscore.web.jersey;
 
 import static com.devit.mscore.ApplicationContext.getContext;
+import static com.devit.mscore.util.Utils.ACTION;
 import static com.devit.mscore.util.Utils.AUTHORIZATION;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
 import static com.devit.mscore.util.Utils.EVENT_TYPE;
@@ -32,6 +33,7 @@ public class Requester {
     headers.put(BREADCRUMB_ID, context.getBreadcrumbId());
     context.getToken().ifPresent(token -> headers.put(AUTHORIZATION, token));
     context.getEventType().ifPresent(et -> headers.put(EVENT_TYPE, et));
+    context.getAction().ifPresent(a -> headers.put(ACTION, a));
 
     // principal can be empty when the request is login request.
     context.getPrincipal().ifPresent(principal -> headers.put(PRINCIPAL, principal.toString()));

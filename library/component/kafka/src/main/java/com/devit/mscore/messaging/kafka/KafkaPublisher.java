@@ -2,6 +2,7 @@ package com.devit.mscore.messaging.kafka;
 
 import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.util.AttributeConstants.getId;
+import static com.devit.mscore.util.Utils.ACTION;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
 import static com.devit.mscore.util.Utils.EVENT_TYPE;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
@@ -64,6 +65,7 @@ public class KafkaPublisher implements Publisher {
     Optional.of(context.getBreadcrumbId()).ifPresent(b -> headerPairs.add(Pair.of(BREADCRUMB_ID, b)));
     context.getPrincipal().ifPresent(p -> headerPairs.add(Pair.of(PRINCIPAL, p.toString())));
     context.getEventType().ifPresent(et -> headerPairs.add(Pair.of(EVENT_TYPE, et)));
+    context.getAction().ifPresent(a -> headerPairs.add(Pair.of(ACTION, a)));
     return headerPairs;
   }
 

@@ -1,5 +1,6 @@
 package com.devit.mscore;
 
+import static com.devit.mscore.util.Utils.ACTION;
 import static com.devit.mscore.util.Utils.AUTHORIZATION;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
 import static com.devit.mscore.util.Utils.EVENT_TYPE;
@@ -61,6 +62,10 @@ public abstract class ApplicationContext {
    */
   public String getBreadcrumbId() {
     return has(BREADCRUMB_ID) ? get(BREADCRUMB_ID).toString() : EMPTY;
+  }
+
+  public Optional<String> getAction() {
+    return Optional.ofNullable(getString(ACTION));
   }
 
   /**
@@ -182,11 +187,11 @@ public abstract class ApplicationContext {
   }
 
   private Object get(String key) {
-    return this.contextData.get(key);
+    return contextData.get(key);
   }
 
   private boolean has(String key) {
-    return this.contextData.containsKey(key);
+    return contextData.containsKey(key);
   }
 
   /**
@@ -195,11 +200,11 @@ public abstract class ApplicationContext {
    * @return json representation of the context.
    */
   public JSONObject toJson() {
-    return new JSONObject(this.contextData);
+    return new JSONObject(contextData);
   }
 
   public Map<String, Object> getContextData() {
-    return new HashMap<>(this.contextData);
+    return new HashMap<>(contextData);
   }
 
   @Override
@@ -213,18 +218,22 @@ public abstract class ApplicationContext {
     }
 
     var json = new JSONObject(principal);
-    this.contextData.put(PRINCIPAL, json);
+    contextData.put(PRINCIPAL, json);
   }
 
   protected void setBreadcrumbId(String breadcrumbId) {
-    this.contextData.put(BREADCRUMB_ID, breadcrumbId);
+    contextData.put(BREADCRUMB_ID, breadcrumbId);
   }
 
   protected void generateBreadcrumbId() {
-    this.contextData.put(BREADCRUMB_ID, UUID.randomUUID().toString());
+    contextData.put(BREADCRUMB_ID, UUID.randomUUID().toString());
   }
 
   protected void setEventType(Event.Type eventType) {
-    this.contextData.put(EVENT_TYPE, eventType.toString());
+    contextData.put(EVENT_TYPE, eventType.toString());
+  }
+
+  protected void setAction(String action) {
+    contextData.put(ACTION, action);
   }
 }
