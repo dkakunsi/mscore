@@ -174,7 +174,11 @@ public abstract class ApplicationContext {
   }
 
   private JSONObject getJsonObject(String key) {
-    return has(key) ? (JSONObject) get(key) : null;
+    if (!has(key)) {
+      return null;
+    }
+    var value = get(key);
+    return value instanceof JSONObject ? (JSONObject) value : new JSONObject(value.toString());
   }
 
   private Object get(String key) {

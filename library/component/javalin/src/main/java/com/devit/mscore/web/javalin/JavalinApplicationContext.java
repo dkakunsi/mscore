@@ -67,7 +67,7 @@ public class JavalinApplicationContext extends ApplicationContext {
   private void eventType(Context ctx) {
     var eventType = ctx.header(EVENT_TYPE);
     if (StringUtils.isNotBlank(eventType)) {
-      setEventType(Event.Type.valueOf(eventType));
+      setEventType(Event.Type.valueOf(eventType.toUpperCase()));
     }
   }
 
