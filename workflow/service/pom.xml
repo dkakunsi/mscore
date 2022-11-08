@@ -17,7 +17,7 @@
     <revision>1.0-SNAPSHOT</revision>
     <unirest.version>3.4.00</unirest.version>
     <minimum.bundle.line.coverage>0.89</minimum.bundle.line.coverage>
-    <minimum.class.line.coverage>0.88</minimum.class.line.coverage>
+    <minimum.class.line.coverage>0.82</minimum.class.line.coverage>
   </properties>
 
   <dependencies>
