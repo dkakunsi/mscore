@@ -1,8 +1,10 @@
 package com.devit.mscore.workflow.service;
 
 import static com.devit.mscore.ApplicationContext.getContext;
+import static com.devit.mscore.util.AttributeConstants.DOMAIN;
 import static com.devit.mscore.util.AttributeConstants.getId;
 import static com.devit.mscore.util.AttributeConstants.getName;
+import static com.devit.mscore.util.Utils.ACTION;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
 import static com.devit.mscore.util.Utils.EVENT_TYPE;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
@@ -101,17 +103,26 @@ public class WorkflowServiceImpl implements WorkflowService {
   }
 
   private Map<String, Object> populateVariables(JSONObject entity, Map<String, Object> variables) {
+    final Map<String, Object> vars;
     if (variables == null) {
-      variables = new HashMap<>();
+      vars = new HashMap<>();
+    } else {
+      vars = variables;
     }
 
     var context = getContext();
-    variables.put("entity", entity.toString());
-    variables.put("domain", AttributeConstants.getDomain(entity));
-    variables.put("businessKey", getId(entity));
-    variables.put("name", getName(entity));
-    variables.put("createdBy", context.getRequestedBy());
-    return variables;
+    vars.put("entity", entity.toString());
+    vars.put(DOMAIN, AttributeConstants.getDomain(entity));
+    vars.put("businessKey", getId(entity));
+    vars.put("name", getName(entity));
+    vars.put("createdBy", context.getRequestedBy());
+
+    vars.put(BREADCRUMB_ID, context.getBreadcrumbId());
+    context.getEventType().ifPresent(et -> vars.put(EVENT_TYPE, et));
+    context.getPrincipal().ifPresent(p -> vars.put(PRINCIPAL, p.toString()));
+    context.getAction().ifPresent(a -> vars.put(ACTION, a));
+
+    return vars;
   }
 
   private void syncCreate(WorkflowInstance instance) {
@@ -127,10 +138,10 @@ public class WorkflowServiceImpl implements WorkflowService {
   }
 
   private void sync(WorkflowInstance instance, Event.Type eventType, List<WorkflowTask> tasks) {
+    var context = getContext();
     var jsonData = instance.toJson(tasks);
-    var event = Event.of(eventType, WORKFLOW, jsonData);
-    var message = event.toJson();
-    publisher.publish(domainChannel, message);
+    var event = Event.of(eventType, WORKFLOW, context.getAction().orElse(null), jsonData);
+    publisher.publish(domainChannel, event.toJson());
   }
 
   @Override
@@ -154,9 +165,18 @@ public class WorkflowServiceImpl implements WorkflowService {
     var instance = this.instanceRepository.get(instanceId)
         .orElseThrow(() -> new ProcessException(String.format("No instance found for id: %s", instanceId)));
 
-    variables.put(BREADCRUMB_ID, getContext().getBreadcrumbId());
-    variables.put(EVENT_TYPE, getContext().getEventType().get());
-    variables.put(PRINCIPAL, getContext().getPrincipal().get().toString());
+    final Map<String, Object> vars;
+    if (variables == null) {
+      vars = new HashMap<>();
+    } else {
+      vars = variables;
+    }
+    var context = getContext();
+    vars.put(BREADCRUMB_ID, context.getBreadcrumbId());
+    context.getEventType().ifPresent(et -> vars.put(EVENT_TYPE, et));
+    context.getPrincipal().ifPresent(p -> vars.put(PRINCIPAL, p.toString()));
+    context.getAction().ifPresent(a -> vars.put(ACTION, a));
+
     this.taskRepository.complete(taskId, variables);
     task.complete();
 

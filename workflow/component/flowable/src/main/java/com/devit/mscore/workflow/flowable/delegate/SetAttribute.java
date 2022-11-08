@@ -78,7 +78,7 @@ public class SetAttribute implements JavaDelegate {
   protected void updateEntity(JSONObject entity) {
     var context = (FlowableApplicationContext) getContext();
     var domain = getDomain(entity);
-    var event = Event.of(Event.Type.UPDATE, domain, entity);
+    var event = Event.of(Event.Type.UPDATE, domain, context.getAction().orElse(null), entity);
 
     var publisher = context.getPublisher();
     var eventChannel = context.getChannel(DOMAIN);

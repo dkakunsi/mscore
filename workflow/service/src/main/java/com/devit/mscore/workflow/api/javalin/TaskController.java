@@ -10,11 +10,11 @@ import org.json.JSONObject;
 
 import io.javalin.http.Handler;
 
-public class WorkflowTaskController extends JavalinController{
+public class TaskController extends JavalinController{
 
   private WorkflowService workflowProcess;
 
-  public WorkflowTaskController(WorkflowService workflowProcess) {
+  public TaskController(WorkflowService workflowProcess) {
     super(workflowProcess);
     this.workflowProcess = workflowProcess;
   }

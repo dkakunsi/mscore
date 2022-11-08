@@ -42,8 +42,6 @@ public class ApplicationStarter implements Starter {
 
   private static final String TIMEZONE = "platform.service.timezone";
 
-  private static final String EVENT_TOPIC = "services.%s.listen.topics";
-
   private String serviceName;
 
   private Registry zookeeperRegistry;
@@ -114,21 +112,12 @@ public class ApplicationStarter implements Starter {
       workflowService.deployDefinition(definition);
     }
 
-    // Create listener
-    var topicConfig = String.format(EVENT_TOPIC, this.serviceName);
-    var eventTopic = messagingFactory.getTopics(topicConfig);
-    if (eventTopic.isPresent()) {
-      LOGGER.info("Listening to topics '{}'", eventTopic);
-      var subscriber = messagingFactory.subscriber();
-      var eventListener = EventListener.of(subscriber, workflowService);
-      eventListener.listen(eventTopic.get());
-    }
-
     // Start service
     var server = this.apiFactory.addService(workflowService).server();
     server.start();
 
-    this.serviceRegistration.register(workflowService);
+    this.serviceRegistration.register("process");
+    this.serviceRegistration.register("task");
 
     // This resources will be used by workflow delegates.
     DelegateUtils.setDataClient(dataClient);

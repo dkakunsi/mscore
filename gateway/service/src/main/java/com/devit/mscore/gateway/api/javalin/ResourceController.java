@@ -16,11 +16,42 @@ import io.javalin.http.Handler;
 
 public class ResourceController extends JavalinController {
 
-  private ResourceService resourceService;
-
   public ResourceController(ResourceService resourceService) {
     super(resourceService);
-    this.resourceService = resourceService;
+  }
+
+  @Override
+  public String getBasePath() {
+    return "api/v2/resource";
+  }
+
+  @Override
+  public Handler post() {
+    return ctx -> {
+      var domain = ctx.queryParam(DOMAIN);
+      var payload = new JSONObject(ctx.body());
+      var response = ((ResourceService) service).create(domain, payload);
+
+      var responseMessage = new JSONObject();
+      responseMessage.put(ID, response);
+
+      ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(responseMessage.toString());
+    };
+  }
+
+  @Override
+  public Handler put() {
+    return ctx -> {
+      var domain = ctx.queryParam(DOMAIN);
+      var id = ctx.pathParam(ID);
+      var payload = new JSONObject(ctx.body());
+      var response = ((ResourceService) service).update(domain, id, payload);
+
+      var responseMessage = new JSONObject();
+      responseMessage.put(ID, response);
+
+      ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(responseMessage.toString());
+    };
   }
 
   @Override
@@ -28,7 +59,7 @@ public class ResourceController extends JavalinController {
     return ctx -> {
       var domain = ctx.queryParam(DOMAIN);
       var id = ctx.pathParam(ID);
-      var response = this.resourceService.getById(domain, id);
+      var response = ((ResourceService) service).getById(domain, id);
 
       ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
     };
@@ -39,7 +70,7 @@ public class ResourceController extends JavalinController {
     return ctx -> {
       var domain = ctx.queryParam(DOMAIN);
       var code = ctx.pathParam(CODE);
-      var response = this.resourceService.getByCode(domain, code);
+      var response = ((ResourceService) service).getByCode(domain, code);
 
       ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
     };
@@ -50,7 +81,7 @@ public class ResourceController extends JavalinController {
     return ctx -> {
       var domain = ctx.queryParam(DOMAIN);
       var ids = ctx.queryParam("ids");
-      var response = this.resourceService.getMany(domain, ids);
+      var response = ((ResourceService) service).getMany(domain, ids);
 
       ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
     };
@@ -61,7 +92,7 @@ public class ResourceController extends JavalinController {
     return ctx -> {
       var domain = ctx.queryParam(DOMAIN);
       var id = ctx.pathParam(ID);
-      var response = this.resourceService.syncById(domain, id);
+      var response = ((ResourceService) service).syncById(domain, id);
 
       ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
     };
@@ -71,7 +102,7 @@ public class ResourceController extends JavalinController {
   public Handler syncAll() {
     return ctx -> {
       var domain = ctx.queryParam(DOMAIN);
-      var response = this.resourceService.sync(domain);
+      var response = ((ResourceService) service).sync(domain);
 
       ctx.status(response.getInt(CODE)).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
     };
@@ -87,7 +118,7 @@ public class ResourceController extends JavalinController {
 
       var json = new JSONObject(criteria);
       var domain = ctx.queryParam(DOMAIN);
-      var response = ((ResourceService) this.service).search(domain, json);
+      var response = ((ResourceService) service).search(domain, json);
 
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(response.get(PAYLOAD).toString());
     };

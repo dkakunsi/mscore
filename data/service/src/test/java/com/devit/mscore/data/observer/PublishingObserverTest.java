@@ -49,9 +49,9 @@ public class PublishingObserverTest {
       var ex = assertThrows(RuntimeException.class, () -> {
         publishingObserver.notify(json);
       });
-  
-      verify(publisher).publish(eq(PUBLISHING_CHANNEL), any(JSONObject.class));
       assertThat("Test", is(ex.getMessage()));
+
+      verify(publisher).publish(eq(PUBLISHING_CHANNEL), any(JSONObject.class));
     }
   }
 }

@@ -14,7 +14,6 @@ import com.devit.mscore.exception.ApplicationException;
 import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.gateway.api.ApiFactory;
-import com.devit.mscore.gateway.service.EventEmitter;
 import com.devit.mscore.gateway.service.ResourceService;
 import com.devit.mscore.messaging.kafka.KafkaMessagingFactory;
 import com.devit.mscore.registry.ZookeeperRegistryFactory;
@@ -24,8 +23,6 @@ import com.devit.mscore.web.jersey.JerseyClientFactory;
 public class ApplicationStarter implements Starter {
 
   private static final String TIMEZONE = "platform.service.timezone";
-
-  private static final String TASK = "task";
 
   private Configuration configuration;
 
@@ -45,38 +42,35 @@ public class ApplicationStarter implements Starter {
     try {
       var zookeeperRegistry = ZookeeperRegistryFactory.of(fileConfiguration).registry("platformConfig");
       zookeeperRegistry.open();
-      this.configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
-      this.serviceRegistration = new ServiceRegistration(zookeeperRegistry, configuration);
+      configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
+      serviceRegistration = new ServiceRegistration(zookeeperRegistry, configuration);
     } catch (RegistryException ex) {
       throw new ConfigException(ex);
     }
 
-    DateUtils.setZoneId(this.configuration.getConfig(TIMEZONE).orElse("Asia/Makassar"));
-    this.authenticationProvider = JWTAuthenticationProvider.of(configuration);
-    this.apiFactory = ApiFactory.of(this.configuration, this.authenticationProvider);
-    this.clientFactory = JerseyClientFactory.of();
+    DateUtils.setZoneId(configuration.getConfig(TIMEZONE).orElse("Asia/Makassar"));
+    authenticationProvider = JWTAuthenticationProvider.of(configuration);
+    apiFactory = ApiFactory.of(configuration, authenticationProvider);
+    clientFactory = JerseyClientFactory.of();
   }
 
   @Override
   public void start() throws ApplicationException {
-    var webClient = this.clientFactory.client();
-    var resourceService = new ResourceService(this.serviceRegistration, webClient);
+    var webClient = clientFactory.client();
 
-    var messagingFactory = KafkaMessagingFactory.of(this.configuration);
+    var messagingFactory = KafkaMessagingFactory.of(configuration);
     var domainTopics = messagingFactory.getTopic(DOMAIN).orElseThrow();
-    var workflowTopics = messagingFactory.getTopic(TASK).orElseThrow();
     var publisher = messagingFactory.publisher();
-    var eventEmitter = new EventEmitter(publisher, domainTopics, workflowTopics);
+    var resourceService = new ResourceService(serviceRegistration, webClient, publisher, domainTopics);
 
-    this.apiFactory.add(resourceService);
-    this.apiFactory.add(eventEmitter);
+    apiFactory.add(resourceService);
 
-    var server = this.apiFactory.server();
+    var server = apiFactory.server();
     server.start();
 
-    this.serviceRegistration.open();
-    this.serviceRegistration.register(resourceService);
-    this.serviceRegistration.register(eventEmitter);
+    serviceRegistration.open();
+    serviceRegistration.register(resourceService);
+    serviceRegistration.close();
   }
 
   @Override

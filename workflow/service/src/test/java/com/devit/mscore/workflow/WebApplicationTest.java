@@ -1,5 +1,8 @@
 package com.devit.mscore.workflow;
 
+import static com.devit.mscore.util.Utils.ACTION;
+import static com.devit.mscore.util.Utils.EVENT_TYPE;
+import static com.devit.mscore.util.Utils.PRINCIPAL;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
@@ -102,15 +105,15 @@ public class WebApplicationTest {
     doReturn("workflowId").when(createdInstance).getId();
     doReturn(List.of(activeTask)).when(this.taskRepository).getTasks(anyString());
     doReturn(new JSONObject()).when(createdInstance).toJson(anyList());
-    doReturn("definitionId").when(this.registry).get("action");
+    doReturn("definitionId").when(this.registry).get(REQUEST_ACTION);
 
-    var createInstacePayload = "{\"id\":\"entityid\",\"name\":\"name\",\"domain\":\"domain\"}";
+    var createInstancePayload = "{\"id\":\"entityid\",\"name\":\"name\",\"domain\":\"domain\"}";
     var data = new JSONObject();
-    data.put("entity", new JSONObject(createInstacePayload));
+    data.put("entity", new JSONObject(createInstancePayload));
     data.put("variable", new JSONObject("{\"var1\":\"val1\"}"));
-    var event = Event.of(Event.Type.CREATE, "domain", data);
+    var event = Event.of(Event.Type.CREATE, "domain", REQUEST_ACTION, data);
     var serverResponse = Unirest.post(baseUrl + createInstancePath)
-        .header("action", REQUEST_ACTION)
+        .header(ACTION, REQUEST_ACTION)
         .body(event.toJson().toString())
         .asString();
     assertThat(serverResponse.isSuccess(), is(success));
@@ -133,10 +136,10 @@ public class WebApplicationTest {
 
     var completeTaskUrl = baseUrl + "/task/taskId";
     var completeTaskPayload = "{\"domain\":\"project\",\"approved\":true}";
-    var event = Event.of(Event.Type.UPDATE, "domain", new JSONObject(completeTaskPayload));
+    var event = Event.of(Event.Type.UPDATE, "domain", REQUEST_ACTION, new JSONObject(completeTaskPayload));
     var serverResponse = Unirest.put(completeTaskUrl)
-        .header("eventType", "UPDATE")
-        .header("principal", "{}")
+        .header(EVENT_TYPE, Event.Type.UPDATE.toString())
+        .header(PRINCIPAL, "{}")
         .body(event.toJson().toString())
         .asString();
     assertThat(serverResponse.isSuccess(), is(true));

@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 import io.javalin.http.Handler;
 
-public class WorkflowController extends JavalinController {
+public class ProcessController extends JavalinController {
 
   // TODO: move to core library constant
   private static final String ACTION = "action";
@@ -19,7 +19,7 @@ public class WorkflowController extends JavalinController {
 
   private WorkflowService workflowProcess;
 
-  public WorkflowController(WorkflowService workflowProcess) {
+  public ProcessController(WorkflowService workflowProcess) {
     super(workflowProcess);
     this.workflowProcess = workflowProcess;
   }
@@ -36,7 +36,6 @@ public class WorkflowController extends JavalinController {
       var event = Event.of(payload);
       var entity = event.getData().getJSONObject(ENTITY);
       var variables = event.getData().optJSONObject(VARIABLE);
-      // TODO: load from event
       var action = ctx.header(ACTION);
       var processInstance = this.workflowProcess.executeWorkflow(action, entity, variables.toMap());
 

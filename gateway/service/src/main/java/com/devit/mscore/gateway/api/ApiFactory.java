@@ -3,10 +3,9 @@ package com.devit.mscore.gateway.api;
 import com.devit.mscore.AuthenticationProvider;
 import com.devit.mscore.Configuration;
 import com.devit.mscore.gateway.api.javalin.ResourceController;
-import com.devit.mscore.gateway.api.javalin.ResourceEventController;
-import com.devit.mscore.gateway.api.javalin.WorkflowEventController;
-import com.devit.mscore.gateway.service.EventEmitter;
+import com.devit.mscore.gateway.api.javalin.TaskController;
 import com.devit.mscore.gateway.service.ResourceService;
+import com.devit.mscore.gateway.service.TaskService;
 import com.devit.mscore.web.javalin.JavalinApiFactory;
 
 public class ApiFactory extends JavalinApiFactory {
@@ -26,9 +25,8 @@ public class ApiFactory extends JavalinApiFactory {
     return this;
   }
 
-  public ApiFactory add(EventEmitter eventEmitter) {
-    add(new ResourceEventController(eventEmitter));
-    add(new WorkflowEventController(eventEmitter));
+  public ApiFactory add(TaskService taskService) {
+    add(new TaskController(taskService));
     return this;
   }
 }

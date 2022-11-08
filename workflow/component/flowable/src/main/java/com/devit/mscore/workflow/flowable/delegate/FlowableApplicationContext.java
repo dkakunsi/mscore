@@ -1,5 +1,6 @@
 package com.devit.mscore.workflow.flowable.delegate;
 
+import static com.devit.mscore.util.Utils.ACTION;
 import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
 import static com.devit.mscore.util.Utils.EVENT_TYPE;
 import static com.devit.mscore.util.Utils.PRINCIPAL;
@@ -31,6 +32,7 @@ public class FlowableApplicationContext extends ApplicationContext {
     context.breadcrumbId(execution);
     context.eventType(execution);
     context.principal(execution);
+    context.action(execution);
 
     return context;
   }
@@ -40,6 +42,13 @@ public class FlowableApplicationContext extends ApplicationContext {
     if (variableObj != null) {
       setPrincipal(variableObj.toString());
     }
+  }
+
+  private void action(DelegateExecution execution) {
+    var variableObj = execution.getVariable(ACTION);
+    if (variableObj != null) {
+      setAction(variableObj.toString());
+    }    
   }
 
   private void eventType(DelegateExecution execution) {

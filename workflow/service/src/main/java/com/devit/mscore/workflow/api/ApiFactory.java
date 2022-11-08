@@ -5,8 +5,8 @@ import com.devit.mscore.Configuration;
 import com.devit.mscore.WorkflowService;
 import com.devit.mscore.web.javalin.JavalinApiFactory;
 import com.devit.mscore.web.javalin.JavalinEndpoint;
-import com.devit.mscore.workflow.api.javalin.WorkflowController;
-import com.devit.mscore.workflow.api.javalin.WorkflowTaskController;
+import com.devit.mscore.workflow.api.javalin.ProcessController;
+import com.devit.mscore.workflow.api.javalin.TaskController;
 
 public class ApiFactory extends JavalinApiFactory {
 
@@ -20,8 +20,8 @@ public class ApiFactory extends JavalinApiFactory {
   }
 
   public ApiFactory addService(WorkflowService workflowService) {
-    add(new JavalinEndpoint(new WorkflowController(workflowService)));
-    add(new JavalinEndpoint(new WorkflowTaskController(workflowService)));
+    add(new JavalinEndpoint(new ProcessController(workflowService)));
+    add(new JavalinEndpoint(new TaskController(workflowService)));
     return this;
   }
 }

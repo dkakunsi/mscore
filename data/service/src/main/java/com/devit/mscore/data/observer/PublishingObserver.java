@@ -41,6 +41,6 @@ public class PublishingObserver implements PostProcessObserver {
   private Event createEvent(JSONObject json) {
     var context = ApplicationContext.getContext();
     var eventType = Event.Type.valueOf(context.getEventType().get().toUpperCase());
-    return Event.of(eventType, getDomain(json), json);
+    return Event.of(eventType, getDomain(json), context.getAction().orElse(null), json);
   }
 }
