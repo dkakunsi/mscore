@@ -1,5 +1,9 @@
 package com.devit.mscore;
 
+import static com.devit.mscore.util.Constants.ACTION;
+import static com.devit.mscore.util.Constants.DATA;
+import static com.devit.mscore.util.Constants.DOMAIN;
+import static com.devit.mscore.util.Constants.EVENT;
 import static com.devit.mscore.util.Constants.VARIABLE;
 
 import com.devit.mscore.exception.ApplicationRuntimeException;
@@ -8,14 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 public class Event {
-
-  public static final String EVENT = "event";
-
-  public static final String DOMAIN = "domain";
-
-  public static final String DATA = "data";
-
-  public static final String ACTION = "action";
 
   private Type type;
 

@@ -12,11 +12,15 @@ public interface Constants {
 
   String CODE = "code";
 
+  String DATA = "data";
+
   String DOMAIN = "domain";
 
   String EMPTY = "";
 
   String ENTITY = "entity";
+
+  String EVENT = "event";
 
   String EVENT_TYPE = "eventType";
 
