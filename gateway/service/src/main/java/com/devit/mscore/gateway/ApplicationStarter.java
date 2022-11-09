@@ -1,6 +1,6 @@
 package com.devit.mscore.gateway;
 
-import static com.devit.mscore.util.AttributeConstants.DOMAIN;
+import static com.devit.mscore.util.Constants.DOMAIN;
 
 import com.devit.mscore.AuthenticationProvider;
 import com.devit.mscore.Configuration;
@@ -68,9 +68,7 @@ public class ApplicationStarter implements Starter {
     var server = apiFactory.server();
     server.start();
 
-    serviceRegistration.open();
     serviceRegistration.register(resourceService);
-    serviceRegistration.close();
   }
 
   @Override
