@@ -44,11 +44,14 @@
     <awaitality.version>4.2.0</awaitality.version>
 
     <!-- will be used by all components -->
-    <library.version>[2.0.20221109210936-SNAPSHOT,)</library.version>
+    <library.version>[2.0.20221109221317-SNAPSHOT,)</library.version>
 
     <!-- Sonarcloud.io -->
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.organization>dev-it</sonar.organization>
+
+    <!-- Github package for maven repository -->
+    <github.package.url>https://maven.pkg.github.com/dkakunsi/mscore</github.package.url>
 
     <!-- Jacoco -->
     <minimum.class.line.coverage>0.90</minimum.class.line.coverage>
@@ -463,16 +466,13 @@
   <repositories>
     <repository>
       <id>github</id>
-      <url>https://maven.pkg.github.com/dkakunsi/mscore</url>
+      <url>${github.package.url}</url>
       <releases>
         <enabled>true</enabled>
       </releases>
-    </repository>
-    <repository>
-      <id>customRepo</id>
-      <url>${customRepo.read.url}</url>
       <snapshots>
         <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
       </snapshots>
     </repository>
   </repositories>
@@ -480,14 +480,14 @@
   <distributionManagement>
     <repository>
       <id>github</id>
-      <url>https://maven.pkg.github.com/dkakunsi/mscore</url>
+      <url>${github.package.url}</url>
       <releases>
         <enabled>true</enabled>
       </releases>
     </repository>
     <snapshotRepository>
-      <id>customRepo</id>
-      <url>${customRepo.write.url}</url>
+      <id>github</id>
+      <url>${github.package.url}</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
