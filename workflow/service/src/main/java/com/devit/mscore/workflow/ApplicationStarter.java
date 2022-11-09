@@ -1,7 +1,7 @@
 package com.devit.mscore.workflow;
 
-import static com.devit.mscore.util.AttributeConstants.DOMAIN;
-import static com.devit.mscore.util.Utils.WORKFLOW;
+import static com.devit.mscore.util.Constants.DOMAIN;
+import static com.devit.mscore.util.Constants.WORKFLOW;
 import static com.devit.mscore.workflow.flowable.delegate.DelegateUtils.NOTIFICATION;
 
 import com.devit.mscore.Configuration;

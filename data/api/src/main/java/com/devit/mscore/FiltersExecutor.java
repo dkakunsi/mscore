@@ -1,7 +1,7 @@
 package com.devit.mscore;
 
 import static com.devit.mscore.util.AttributeConstants.getDomain;
-import static com.devit.mscore.util.Utils.ALL;
+import static com.devit.mscore.util.Constants.ALL;
 
 import java.util.ArrayList;
 import java.util.HashMap;

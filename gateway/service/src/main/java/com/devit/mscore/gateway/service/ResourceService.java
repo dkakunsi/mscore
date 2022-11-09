@@ -1,9 +1,11 @@
 package com.devit.mscore.gateway.service;
 
 import static com.devit.mscore.ApplicationContext.getContext;
-import static com.devit.mscore.util.AttributeConstants.ID;
 import static com.devit.mscore.util.AttributeConstants.getId;
 import static com.devit.mscore.util.AttributeConstants.hasId;
+import static com.devit.mscore.util.Constants.ENTITY;
+import static com.devit.mscore.util.Constants.ID;
+import static com.devit.mscore.util.Constants.PROCESS;
 
 import com.devit.mscore.Event;
 import com.devit.mscore.Publisher;
@@ -19,10 +21,6 @@ import java.util.UUID;
 import org.json.JSONObject;
 
 public class ResourceService extends AbstractGatewayService {
-
-  private static final String ENTITY = "entity";
-
-  private static final String PROCESS = "process";
 
   private Publisher publisher;
 
@@ -71,7 +69,7 @@ public class ResourceService extends AbstractGatewayService {
   }
 
   private void createByEvent(String domain, JSONObject payload) {
-    var event = Event.of(Event.Type.CREATE, domain, null, payload);
+    var event = Event.of(Event.Type.CREATE, domain, payload);
     this.publisher.publish(domainEventChannel, event.toJson());
   }
 
@@ -97,7 +95,7 @@ public class ResourceService extends AbstractGatewayService {
   }
 
   private void updateByEvent(String domain, String id, JSONObject payload) {
-    var event = Event.of(Event.Type.UPDATE, domain, null, payload);
+    var event = Event.of(Event.Type.UPDATE, domain, payload);
     this.publisher.publish(domainEventChannel, event.toJson());
   }
 

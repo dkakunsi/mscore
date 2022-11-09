@@ -2,6 +2,7 @@ package com.devit.mscore.data;
 
 import static com.devit.mscore.util.AttributeConstants.getCode;
 import static com.devit.mscore.util.AttributeConstants.getId;
+import static com.devit.mscore.util.Constants.DOMAIN;
 
 import com.devit.mscore.Event;
 import com.devit.mscore.Listener;
@@ -36,7 +37,7 @@ public class EventListener extends Listener {
     var event = Event.of(message);
     var code = getCode(event.getData());
     logger.info("Processing '{}' for code '{}'", event.getAction(), code);
-    var service = this.services.get(message.getString(Event.DOMAIN));
+    var service = this.services.get(message.getString(DOMAIN));
     try {
       if (Event.Type.CREATE.equals(event.getType()) || Event.Type.UPDATE.equals(event.getType())) {
         service.save(event.getData());

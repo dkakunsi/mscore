@@ -1,5 +1,8 @@
 package com.devit.mscore.data;
 
+import static com.devit.mscore.util.Constants.DATA;
+import static com.devit.mscore.util.Constants.DOMAIN;
+import static com.devit.mscore.util.Constants.EVENT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThrows;
@@ -11,7 +14,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import com.devit.mscore.Event;
 import com.devit.mscore.Service;
 import com.devit.mscore.Subscriber;
 import com.devit.mscore.exception.ApplicationException;
@@ -33,10 +35,10 @@ public class EventListenerTest {
     var eventListener = EventListener.of(subscriber, services);
 
     var message = new JSONObject();
-    message.put(Event.EVENT, "create");
-    message.put(Event.DOMAIN, "domain");
+    message.put(EVENT, "create");
+    message.put(DOMAIN, "domain");
     var jsonData = new JSONObject("{\"id\":\"id\"}");
-    message.put(Event.DATA, jsonData);
+    message.put(DATA, jsonData);
 
     eventListener.consume(message);
 
@@ -54,10 +56,10 @@ public class EventListenerTest {
     var eventListener = EventListener.of(subscriber, services);
 
     var message = new JSONObject();
-    message.put(Event.EVENT, "remove");
-    message.put(Event.DOMAIN, "domain");
+    message.put(EVENT, "remove");
+    message.put(DOMAIN, "domain");
     var jsonData = new JSONObject("{\"id\":\"id\"}");
-    message.put(Event.DATA, jsonData);
+    message.put(DATA, jsonData);
 
     eventListener.consume(message);
 
@@ -68,17 +70,17 @@ public class EventListenerTest {
   }
 
   @Test
-  public void testListeningToTaskCompleteEvent() throws ApplicationException {
+  public void testListeningToTaskEvent() throws ApplicationException {
     var subscriber = mock(Subscriber.class);
     var domainService = mock(Service.class);
     var services = Map.of("domain", domainService);
     var eventListener = EventListener.of(subscriber, services);
 
     var message = new JSONObject();
-    message.put(Event.EVENT, "complete");
-    message.put(Event.DOMAIN, "domain");
+    message.put(EVENT, "task");
+    message.put(DOMAIN, "domain");
     var jsonData = new JSONObject("{\"id\":\"id\"}");
-    message.put(Event.DATA, jsonData);
+    message.put(DATA, jsonData);
 
     eventListener.consume(message);
 
@@ -95,10 +97,10 @@ public class EventListenerTest {
     var eventListener = EventListener.of(subscriber, services);
 
     var message = new JSONObject();
-    message.put(Event.EVENT, "remove");
-    message.put(Event.DOMAIN, "domain");
+    message.put(EVENT, "remove");
+    message.put(DOMAIN, "domain");
     var jsonData = new JSONObject("{\"id\":\"id\"}");
-    message.put(Event.DATA, jsonData);
+    message.put(DATA, jsonData);
 
     eventListener.consume(message);
     verify(domainService).delete(anyString());

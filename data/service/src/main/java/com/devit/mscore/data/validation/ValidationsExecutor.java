@@ -1,7 +1,7 @@
 package com.devit.mscore.data.validation;
 
 import static com.devit.mscore.util.AttributeConstants.getDomain;
-import static com.devit.mscore.util.Utils.ALL;
+import static com.devit.mscore.util.Constants.ALL;
 
 import com.devit.mscore.Executor;
 import com.devit.mscore.Validation;

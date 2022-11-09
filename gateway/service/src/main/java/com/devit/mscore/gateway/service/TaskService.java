@@ -1,7 +1,7 @@
 package com.devit.mscore.gateway.service;
 
-import static com.devit.mscore.util.AttributeConstants.ID;
-import static com.devit.mscore.util.Utils.WORKFLOW;
+import static com.devit.mscore.util.Constants.ID;
+import static com.devit.mscore.util.Constants.WORKFLOW;
 
 import com.devit.mscore.Event;
 import com.devit.mscore.ServiceRegistration;
@@ -31,7 +31,7 @@ public class TaskService extends AbstractGatewayService {
     data.put("response", taskResponse);
 
     var uri = getUri(PROCESS);
-    var event = Event.of(Event.Type.CREATE, WORKFLOW, null, data);
+    var event = Event.of(Event.Type.CREATE, WORKFLOW, data);
     this.client.post(uri, Optional.of(event.toJson()));
 
     return taskId;

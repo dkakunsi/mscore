@@ -4,8 +4,8 @@ import static com.devit.mscore.util.AttributeConstants.getCode;
 import static com.devit.mscore.util.AttributeConstants.getId;
 import static com.devit.mscore.util.AttributeConstants.hasDomain;
 import static com.devit.mscore.util.AttributeConstants.hasId;
+import static com.devit.mscore.util.Constants.ALL;
 import static com.devit.mscore.util.JsonUtils.hasValue;
-import static com.devit.mscore.util.Utils.ALL;
 
 import com.devit.mscore.exception.DataException;
 import com.devit.mscore.exception.EnrichmentException;

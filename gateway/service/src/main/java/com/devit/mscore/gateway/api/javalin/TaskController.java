@@ -2,8 +2,8 @@ package com.devit.mscore.gateway.api.javalin;
 
 import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.ApplicationContext.setContext;
-import static com.devit.mscore.util.AttributeConstants.ID;
-import static com.devit.mscore.util.Utils.EVENT_TYPE;
+import static com.devit.mscore.util.Constants.EVENT_TYPE;
+import static com.devit.mscore.util.Constants.ID;
 
 import com.devit.mscore.Event;
 import com.devit.mscore.gateway.service.TaskService;

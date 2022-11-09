@@ -1,7 +1,7 @@
 package com.devit.mscore.data;
 
-import static com.devit.mscore.util.Utils.INDEX_MAP;
-import static com.devit.mscore.util.Utils.SCHEMA;
+import static com.devit.mscore.util.Constants.INDEX_MAP;
+import static com.devit.mscore.util.Constants.SCHEMA;
 
 import com.devit.mscore.Configuration;
 import com.devit.mscore.FiltersExecutor;

@@ -1,6 +1,8 @@
 package com.devit.mscore.workflow.api.javalin;
 
-import static com.devit.mscore.util.Utils.VARIABLE;
+import static com.devit.mscore.util.Constants.ACTION;
+import static com.devit.mscore.util.Constants.ENTITY;
+import static com.devit.mscore.util.Constants.VARIABLE;
 
 import com.devit.mscore.Event;
 import com.devit.mscore.WorkflowService;
@@ -11,11 +13,6 @@ import org.json.JSONObject;
 import io.javalin.http.Handler;
 
 public class ProcessController extends JavalinController {
-
-  // TODO: move to core library constant
-  private static final String ACTION = "action";
-
-  private static final String ENTITY = "entity";
 
   private WorkflowService workflowProcess;
 
