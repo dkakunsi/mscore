@@ -99,6 +99,7 @@ public class WorkflowServiceImpl implements WorkflowService {
       throws ProcessException {
     String definitionId;
     try {
+      LOGGER.info("Retrieving definition for action '{}'", action);
       definitionId = registry.get(action);
     } catch (RegistryException ex) {
       LOGGER.error("Error when retrieving definition for action '{}': {}", ex, action, ex.getMessage());

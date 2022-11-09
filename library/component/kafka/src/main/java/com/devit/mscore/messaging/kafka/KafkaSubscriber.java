@@ -22,6 +22,8 @@ import org.apache.kafka.common.header.Headers;
 import org.json.JSONObject;
 
 public class KafkaSubscriber implements Subscriber {
+  
+  private static final String LOG_INFO_FORMAT = "Receiving message from topic '%s', headers: '%s', message: '%s'";
 
   private static final Logger LOG = ApplicationLogger.getLogger(KafkaSubscriber.class);
 
@@ -69,8 +71,7 @@ public class KafkaSubscriber implements Subscriber {
   private void handleMessage(ConsumerRecord<String, String> message) {
     new Thread(() -> {
       setContext(KafkaApplicationContext.of(message.headers()));
-      var logFormat = "Receiving message from topic '%s', headers: '%s', message: '%s'";
-      LOG.info(String.format(logFormat, message.topic(), buildPrintableHeader(message.headers()), message.value()));
+      LOG.info(String.format(LOG_INFO_FORMAT, message.topic(), buildPrintableHeader(message.headers()), message.value()));
       topicHandlers.get(message.topic()).accept(new JSONObject(message.value()));
     }).start();
   }

@@ -2,12 +2,11 @@ package com.devit.mscore.web.jersey;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import com.devit.mscore.Logger;
-import com.devit.mscore.logging.ApplicationLogger;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.ws.rs.HttpMethod;
 
 import org.json.JSONObject;
 
@@ -16,8 +15,6 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource.Builder;
 
 public class SunJerseyClient extends Requester implements com.devit.mscore.web.Client {
-
-  private static final Logger LOG = ApplicationLogger.getLogger(SunJerseyClient.class);
 
   private Client client;
 
@@ -31,45 +28,41 @@ public class SunJerseyClient extends Requester implements com.devit.mscore.web.C
 
   @Override
   public JSONObject delete(String uri) {
-    LOG.debug("Sending 'DELETE {}'", uri);
-    var response = request(uri, new HashMap<>(), new HashMap<>()).delete(ClientResponse.class);
+    var response = request(HttpMethod.DELETE, uri, new HashMap<>(), new HashMap<>()).delete(ClientResponse.class);
     return buildResponse(uri, response);
   }
 
   @Override
   public JSONObject get(String uri, Map<String, String> params) {
-    LOG.debug("Sending 'GET {}' with paramseter '{}'", uri, params);
-    var response = request(uri, params, new HashMap<>()).get(ClientResponse.class);
+    var response = request(HttpMethod.GET, uri, params, new HashMap<>()).get(ClientResponse.class);
     return buildResponse(uri, response);
   }
 
   @Override
   public JSONObject post(String uri, Optional<JSONObject> payload) {
-    LOG.debug("Sending 'POST {}'", uri);
     ClientResponse response;
     if (payload.isPresent()) {
-      response = request(uri, new HashMap<>(), new HashMap<>()).post(ClientResponse.class,
+      response = request(HttpMethod.POST, uri, new HashMap<>(), new HashMap<>()).post(ClientResponse.class,
           payload.get().toString());
     } else {
-      response = request(uri, new HashMap<>(), new HashMap<>()).post(ClientResponse.class);
+      response = request(HttpMethod.POST, uri, new HashMap<>(), new HashMap<>()).post(ClientResponse.class);
     }
     return buildResponse(uri, response);
   }
 
   @Override
   public JSONObject put(String uri, Optional<JSONObject> payload) {
-    LOG.debug("Sending 'PUT {}'", uri);
     ClientResponse response;
     if (payload.isPresent()) {
-      response = request(uri, new HashMap<>(), new HashMap<>()).put(ClientResponse.class,
+      response = request(HttpMethod.PUT, uri, new HashMap<>(), new HashMap<>()).put(ClientResponse.class,
           payload.get().toString());
     } else {
-      response = request(uri, new HashMap<>(), new HashMap<>()).put(ClientResponse.class);
+      response = request(HttpMethod.PUT, uri, new HashMap<>(), new HashMap<>()).put(ClientResponse.class);
     }
     return buildResponse(uri, response);
   }
 
-  private Builder request(String uri, Map<String, String> params,
+  private Builder request(String method, String uri, Map<String, String> params,
       Map<String, String> headers) {
 
     var api = client.resource(uri);
@@ -82,6 +75,7 @@ public class SunJerseyClient extends Requester implements com.devit.mscore.web.C
     if (builtHeaders != null) {
       builtHeaders.forEach(builder::header);
     }
+    logger.info(LOG_INFO_FORMAT, method, uri, builtHeaders);
     return builder;
   }
 }

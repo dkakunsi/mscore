@@ -21,7 +21,9 @@ import jakarta.ws.rs.core.Response;
 
 public class Requester {
 
-  protected Logger logger = ApplicationLogger.getLogger(getClass());
+  protected static final String LOG_INFO_FORMAT = "Sending request to '{} {}' with context: '{}'";
+
+  protected final Logger logger = ApplicationLogger.getLogger(getClass());
 
   protected Map<String, String> buildRequestHeader(Map<String, String> headers) {
     var context = getContext();

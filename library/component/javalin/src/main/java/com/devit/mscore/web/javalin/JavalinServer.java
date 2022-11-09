@@ -124,7 +124,7 @@ public final class JavalinServer extends Server {
   private void initValidationAndSecurityCheck() {
     app.before(ctx -> {
       var applicationContext = Util.initiateContext(ctx);
-      LOG.info("Receiving request '{}': '{}'", ctx.method(), ctx.path());
+      LOG.info("Receiving request '{}': '{}' with context '{}'", ctx.method(), ctx.path(), applicationContext.getContextData());
 
       if (Util.isValidatable(ctx.method(), ctx.path())) {
         validateRequest(ctx);
@@ -227,8 +227,10 @@ public final class JavalinServer extends Server {
           return Event.Type.UPDATE.toString();
         case "delete":
           return Event.Type.REMOVE.toString();
+        case "task":
+          return Event.Type.TASK.toString();
         default:
-          return "retrieve";
+          return Event.Type.RETRIEVE.toString();
       }
     }
 
