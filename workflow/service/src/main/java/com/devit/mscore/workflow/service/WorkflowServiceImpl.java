@@ -118,7 +118,7 @@ public class WorkflowServiceImpl implements WorkflowService {
   }
 
   private Optional<WorkflowInstance> createDomainWithoutWorkflow(JSONObject entity, String action) {
-    LOGGER.info("Create domain object without executing workflow for action '%s'", action);
+    LOGGER.info("Create domain object without executing workflow for action '{}'", action);
     var domain = AttributeConstants.getDomain(entity);
     var eventType = getContext().getEventType().get();
     publishDomainEvent(entity, domain, Event.Type.valueOf(eventType.toUpperCase()));
