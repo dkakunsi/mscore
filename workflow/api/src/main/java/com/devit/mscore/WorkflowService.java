@@ -32,7 +32,7 @@ public interface WorkflowService extends Service {
    * @return proxy of process instance
    * @throws ProcessException error in process update
    */
-  WorkflowInstance executeWorkflow(String action, JSONObject entity,
+  Optional<WorkflowInstance> executeWorkflow(String action, JSONObject entity,
       Map<String, Object> variables) throws ProcessException;
 
   /**
@@ -54,8 +54,8 @@ public interface WorkflowService extends Service {
   /**
    * Complete the given task and continue the instance.
    *
-   * @param taskId       task id
-   * @param variables    process variables
+   * @param taskId    task id
+   * @param variables process variables
    * @throws ProcessException error in process update, mostly known issue is in
    *                          indexing the Workflow Task.
    */

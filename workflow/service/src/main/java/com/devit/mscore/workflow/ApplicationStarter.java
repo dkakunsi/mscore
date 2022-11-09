@@ -1,6 +1,7 @@
 package com.devit.mscore.workflow;
 
 import static com.devit.mscore.util.Constants.DOMAIN;
+import static com.devit.mscore.util.Constants.PROCESS;
 import static com.devit.mscore.util.Constants.WORKFLOW;
 import static com.devit.mscore.workflow.flowable.delegate.DelegateUtils.NOTIFICATION;
 
@@ -41,6 +42,9 @@ public class ApplicationStarter implements Starter {
   private static final String WORKFLOW_DOMAIN = "services.%s.domain.workflow";
 
   private static final String TIMEZONE = "platform.service.timezone";
+
+  // TODO: use core constants
+  private static final String TASK = "task";
 
   private String serviceName;
 
@@ -116,8 +120,8 @@ public class ApplicationStarter implements Starter {
     var server = this.apiFactory.addService(workflowService).server();
     server.start();
 
-    this.serviceRegistration.register("process");
-    this.serviceRegistration.register("task");
+    this.serviceRegistration.register(PROCESS);
+    this.serviceRegistration.register(TASK);
 
     // This resources will be used by workflow delegates.
     DelegateUtils.setDataClient(dataClient);

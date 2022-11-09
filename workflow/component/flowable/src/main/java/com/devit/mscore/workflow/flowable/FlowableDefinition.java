@@ -1,6 +1,7 @@
 package com.devit.mscore.workflow.flowable;
 
 import static com.devit.mscore.util.AttributeConstants.NAME;
+import static com.devit.mscore.util.Constants.WORKFLOW;
 
 import com.devit.mscore.WorkflowDefinition;
 import com.devit.mscore.exception.ResourceException;

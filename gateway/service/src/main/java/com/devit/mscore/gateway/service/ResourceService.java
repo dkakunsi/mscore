@@ -6,6 +6,7 @@ import static com.devit.mscore.util.AttributeConstants.hasId;
 import static com.devit.mscore.util.Constants.ENTITY;
 import static com.devit.mscore.util.Constants.ID;
 import static com.devit.mscore.util.Constants.PROCESS;
+import static com.devit.mscore.util.Constants.VARIABLE;
 
 import com.devit.mscore.Event;
 import com.devit.mscore.Publisher;
@@ -39,14 +40,16 @@ public class ResourceService extends AbstractGatewayService {
 
   public String create(String domain, JSONObject payload) throws WebClientException {
     var context = getContext();
-    var data = payload.getJSONObject(ENTITY);
-    var id = getOrCreateId(data);
+    var entity = payload.getJSONObject(ENTITY);
+    var variables = payload.optJSONObject(VARIABLE);
+    var id = getOrCreateId(entity);
     try {
       var action = context.getAction();
       if (action.isPresent()) {
-        createByWorkflow(domain, action.get(), payload);
+        createByWorkflow(domain, action.get(), entity, variables);
       } else {
-        createByEvent(domain, payload);
+        // TODO; add validation to only ADMIN can do this
+        createByEvent(domain, entity);
       }
       return id;
     } catch (ApplicationRuntimeException ex) {
@@ -62,25 +65,29 @@ public class ResourceService extends AbstractGatewayService {
     return getId(json);
   }
 
-  private JSONObject createByWorkflow(String domain, String action, JSONObject payload) throws WebClientException {
+  private JSONObject createByWorkflow(String domain, String action, JSONObject entity, JSONObject variable) throws WebClientException {
     var uri = getUri(PROCESS);
-    var event = Event.of(Event.Type.CREATE, domain, action, payload);
+    var event = Event.of(Event.Type.CREATE, domain, action, entity, variable);
     return this.client.post(uri, Optional.of(event.toJson()));
   }
 
-  private void createByEvent(String domain, JSONObject payload) {
-    var event = Event.of(Event.Type.CREATE, domain, payload);
+  private void createByEvent(String domain, JSONObject entity) {
+    var event = Event.of(Event.Type.CREATE, domain, entity);
     this.publisher.publish(domainEventChannel, event.toJson());
   }
 
   public String update(String domain, String id, JSONObject payload) throws WebClientException {
     var context = getContext();
+    var entity = payload.getJSONObject(ENTITY);
+    entity.put(ID, id);
+    var variables = payload.optJSONObject(VARIABLE);
     try {
       var action = context.getAction();
       if (action.isPresent()) {
-        updateByWorkflow(domain, action.get(), id, payload);
+        updateByWorkflow(domain, action.get(), id, entity, variables);
       } else {
-        updateByEvent(domain, id, payload);
+        // TODO; add validation to only ADMIN can do this
+        updateByEvent(domain, id, entity);
       }
       return id;
     } catch (ApplicationRuntimeException ex) {
@@ -88,14 +95,14 @@ public class ResourceService extends AbstractGatewayService {
     }
   }
 
-  private JSONObject updateByWorkflow(String domain, String action, String id, JSONObject payload) throws WebClientException {
+  private JSONObject updateByWorkflow(String domain, String action, String id, JSONObject entity, JSONObject variables) throws WebClientException {
     var uri = String.format("%s/%s", getUri(domain), id);
-    var event = Event.of(Event.Type.UPDATE, domain, action, payload);
+    var event = Event.of(Event.Type.UPDATE, domain, action, entity, variables);
     return this.client.put(uri, Optional.of(event.toJson()));
   }
 
-  private void updateByEvent(String domain, String id, JSONObject payload) {
-    var event = Event.of(Event.Type.UPDATE, domain, payload);
+  private void updateByEvent(String domain, String id, JSONObject entity) {
+    var event = Event.of(Event.Type.UPDATE, domain, entity);
     this.publisher.publish(domainEventChannel, event.toJson());
   }
 

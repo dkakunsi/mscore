@@ -1,8 +1,11 @@
 package com.devit.mscore.workflow;
 
 import static com.devit.mscore.util.Constants.ACTION;
+import static com.devit.mscore.util.Constants.ENTITY;
 import static com.devit.mscore.util.Constants.EVENT_TYPE;
 import static com.devit.mscore.util.Constants.PRINCIPAL;
+import static com.devit.mscore.util.Constants.TASK;
+import static com.devit.mscore.util.Constants.VARIABLE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
@@ -11,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -79,23 +83,56 @@ public class WebApplicationTest {
   }
 
   @Test
-  public void givenValidRequest_WhenExecuteWorkflowIsCalled_ShouldSuccess() throws ApplicationException {
-    doReturn(Optional.of("12000")).when(this.configuration).getConfig("services.workflow.web.port");
-
+  public void givenValidRequest_WhenExecuteWorkflowIsCalledAndNoDefinitionForAction_ShouldSuccess() throws ApplicationException {
+    doReturn(Optional.of("12001")).when(this.configuration).getConfig("services.workflow.web.port");
+    doThrow(RegistryException.class).when(this.registry).get(REQUEST_ACTION);
+    
+    var uri = "http://localhost:12001/process";
     var server = this.apiFactory.server();
+
     server.start();
-
-    doReturn("definitionId").when(this.registry).get(REQUEST_ACTION);
-    var baseUrl = "http://localhost:12000";
-    var createInstancePath = "/process";
-    var expectedResponseBody = new JSONObject("{\"instanceId\":\"workflowId\"}");
-    var createdInstance = testCreateInstance(baseUrl, createInstancePath, true, expectedResponseBody);
-    testCompleteTask(createdInstance, baseUrl);
-
+    testWithoutCreatingInstance(uri);
     server.stop();
   }
 
-  private WorkflowInstance testCreateInstance(String baseUrl, String createInstancePath, boolean success,
+  private void testWithoutCreatingInstance(String uri) throws RegistryException, WebClientException {
+    var entity = "{\"id\":\"entityid\",\"name\":\"name\",\"domain\":\"domain\"}";
+    var variables = "{\"var1\":\"val1\"}";
+    var requestPayload = new JSONObject();
+    requestPayload.put(ENTITY, new JSONObject(entity));
+    requestPayload.put(VARIABLE, new JSONObject(variables));
+    var event = Event.of(Event.Type.CREATE, "domain", REQUEST_ACTION, requestPayload);
+
+    var serverResponse = Unirest.post(uri)
+        .header(ACTION, REQUEST_ACTION)
+        .body(event.toJson().toString())
+        .asString();
+
+    assertThat(serverResponse.isSuccess(), is(true));
+    var serverResponseBody = new JSONObject(serverResponse.getBody());
+    var expectedResponseBody = "{\"instanceId\":\"UNKNOWN\"}";
+    assertEquals(expectedResponseBody, serverResponseBody.toString());
+
+    verify(this.publisher).publish(anyString(), any(JSONObject.class));
+  }
+
+  @Test
+  public void givenValidRequest_WhenExecuteWorkflowIsCalled_ShouldSuccess() throws ApplicationException {
+    doReturn(Optional.of("12000")).when(this.configuration).getConfig("services.workflow.web.port");
+    doReturn("definitionId").when(this.registry).get(REQUEST_ACTION);
+
+    var processUri = "http://localhost:12000/process";
+    var taskUri = "http://localhost:12000/task";
+    var expectedResponseBody = new JSONObject("{\"instanceId\":\"workflowId\"}");
+    var server = this.apiFactory.server();
+
+    server.start();
+    var createdInstance = testCreateInstance(processUri, true, expectedResponseBody);
+    testCompleteTask(createdInstance, taskUri);
+    server.stop();
+  }
+
+  private WorkflowInstance testCreateInstance(String uri, boolean success,
       JSONObject expectedResponseBody) throws RegistryException, WebClientException {
     var createdInstance = mock(WorkflowInstance.class);
     var activeTask = mock(WorkflowTask.class);
@@ -107,15 +144,17 @@ public class WebApplicationTest {
     doReturn(new JSONObject()).when(createdInstance).toJson(anyList());
     doReturn("definitionId").when(this.registry).get(REQUEST_ACTION);
 
-    var createInstancePayload = "{\"id\":\"entityid\",\"name\":\"name\",\"domain\":\"domain\"}";
-    var data = new JSONObject();
-    data.put("entity", new JSONObject(createInstancePayload));
-    data.put("variable", new JSONObject("{\"var1\":\"val1\"}"));
-    var event = Event.of(Event.Type.CREATE, "domain", REQUEST_ACTION, data);
-    var serverResponse = Unirest.post(baseUrl + createInstancePath)
+    var entity = "{\"id\":\"entityid\",\"name\":\"name\",\"domain\":\"domain\"}";
+    var requestPayload = new JSONObject();
+    requestPayload.put(ENTITY, new JSONObject(entity));
+    requestPayload.put(VARIABLE, new JSONObject("{\"var1\":\"val1\"}"));
+    var event = Event.of(Event.Type.CREATE, "domain", REQUEST_ACTION, requestPayload);
+
+    var serverResponse = Unirest.post(uri)
         .header(ACTION, REQUEST_ACTION)
         .body(event.toJson().toString())
         .asString();
+
     assertThat(serverResponse.isSuccess(), is(success));
     var serverResponseBody = new JSONObject(serverResponse.getBody());
     assertEquals(expectedResponseBody.toString(), serverResponseBody.toString());
@@ -127,21 +166,24 @@ public class WebApplicationTest {
     return createdInstance;
   }
 
-  private void testCompleteTask(WorkflowInstance createdInstance, String baseUrl) throws WebClientException {
+  private void testCompleteTask(WorkflowInstance createdInstance, String uri) throws WebClientException {
     var activeTask = mock(WorkflowTask.class);
 
     doReturn("instanceId").when(activeTask).getInstanceId();
     doReturn(Optional.of(activeTask)).when(this.taskRepository).getTask(anyString());
     doReturn(Optional.of(createdInstance)).when(this.instanceRepository).get(anyString());
 
-    var completeTaskUrl = baseUrl + "/task/taskId";
-    var completeTaskPayload = "{\"domain\":\"project\",\"approved\":true}";
-    var event = Event.of(Event.Type.UPDATE, "domain", REQUEST_ACTION, new JSONObject(completeTaskPayload));
-    var serverResponse = Unirest.put(completeTaskUrl)
+    var completeTaskVariable = new JSONObject("{\"domain\":\"project\",\"approved\":true}");
+    var completeTaskEntity = new JSONObject("{\"id\":\"taskId\"}");
+    var event = Event.of(Event.Type.UPDATE, TASK, REQUEST_ACTION, completeTaskEntity, completeTaskVariable);
+
+    var serverResponse = Unirest.post(uri)
         .header(EVENT_TYPE, Event.Type.UPDATE.toString())
+        .header(ACTION, REQUEST_ACTION)
         .header(PRINCIPAL, "{}")
         .body(event.toJson().toString())
         .asString();
+
     assertThat(serverResponse.isSuccess(), is(true));
     verify(this.publisher, times(2)).publish(anyString(), any(JSONObject.class));
   }

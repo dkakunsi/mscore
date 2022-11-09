@@ -1,9 +1,11 @@
 package com.devit.mscore;
 
 import static com.devit.mscore.util.AttributeConstants.CREATED_BY;
-import static com.devit.mscore.util.AttributeConstants.DOMAIN;
-import static com.devit.mscore.util.AttributeConstants.ID;
 import static com.devit.mscore.util.AttributeConstants.NAME;
+import static com.devit.mscore.util.Constants.ACTION;
+import static com.devit.mscore.util.Constants.DOMAIN;
+import static com.devit.mscore.util.Constants.ENTITY;
+import static com.devit.mscore.util.Constants.ID;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,10 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public abstract class WorkflowInstance extends WorkflowObject {
-
-  private static final String ENTITY = "entity";
-
-  private static final String ACTION = "action";
 
   public JSONObject toJson(List<WorkflowTask> tasks) {
     var json = tasks.stream().map(t -> t.toJson()).collect(Collectors.toList());

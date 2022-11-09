@@ -1,13 +1,17 @@
 package com.devit.mscore.workflow.service;
 
 import static com.devit.mscore.ApplicationContext.getContext;
+import static com.devit.mscore.util.AttributeConstants.CREATED_BY;
+import static com.devit.mscore.util.AttributeConstants.NAME;
 import static com.devit.mscore.util.AttributeConstants.getId;
 import static com.devit.mscore.util.AttributeConstants.getName;
 import static com.devit.mscore.util.Constants.ACTION;
 import static com.devit.mscore.util.Constants.BREADCRUMB_ID;
 import static com.devit.mscore.util.Constants.DOMAIN;
+import static com.devit.mscore.util.Constants.ENTITY;
 import static com.devit.mscore.util.Constants.EVENT_TYPE;
 import static com.devit.mscore.util.Constants.PRINCIPAL;
+import static com.devit.mscore.util.Constants.PROCESS;
 
 import com.devit.mscore.Event;
 import com.devit.mscore.Logger;
@@ -71,8 +75,8 @@ public class WorkflowServiceImpl implements WorkflowService {
     LOGGER.info("Deploying definition: dilayanan{}", definition);
 
     try {
-      if (!this.definitionRepository.isExists(definition)) {
-        this.definitionRepository.deploy(definition);
+      if (!definitionRepository.isExists(definition)) {
+        definitionRepository.deploy(definition);
       }
       registerWorkflow(definition);
     } catch (RegistryException ex) {
@@ -83,41 +87,40 @@ public class WorkflowServiceImpl implements WorkflowService {
   }
 
   private void registerWorkflow(WorkflowDefinition definition) throws RegistryException {
-    var definitionId = this.definitionRepository.getDefinitionId(definition.getResourceName())
+    var definitionId = definitionRepository.getDefinitionId(definition.getResourceName())
         .orElseThrow(() -> new RegistryException(String.format(FAIL_REGISTER_MESSAGE_TEMPLATE, definition.getName())));
-    this.registry.add(definition.getName(), definitionId);
+    registry.add(definition.getName(), definitionId);
     LOGGER.info("Workflow '{}' is added to registry", definition.getName());
   }
 
   @Override
-  public WorkflowInstance executeWorkflow(String action, JSONObject entity, Map<String, Object> variables)
+  public Optional<WorkflowInstance> executeWorkflow(String action, JSONObject entity, Map<String, Object> variables)
       throws ProcessException {
     try {
-      var definitionId = this.registry.get(action);
-      var instance = this.instanceRepository.create(definitionId, populateVariables(entity, variables));
+      var definitionId = registry.get(action);
+      var processVariables = populateVariables(entity, variables);
+      var instance = instanceRepository.create(definitionId, processVariables);
       syncCreate(instance);
-      return instance;
+      return Optional.of(instance);
     } catch (RegistryException ex) {
-      throw new ProcessException(String.format("Process definition is not found for action '%s'", action), ex);
+      LOGGER.info(String.format("Process definition is not found for action '%s'", action));
+      var domain = AttributeConstants.getDomain(entity);
+      var eventType = getContext().getEventType().get();
+      publishDomainEvent(entity, domain, Event.Type.valueOf(eventType.toUpperCase()));
+      return Optional.empty();
     }
   }
 
   private Map<String, Object> populateVariables(JSONObject entity, Map<String, Object> variables) {
-    final Map<String, Object> vars;
-    if (variables == null) {
-      vars = new HashMap<>();
-    } else {
-      vars = variables;
-    }
-
+    final Map<String, Object> vars = variables != null ? variables : new HashMap<>();
     var context = getContext();
-    vars.put("entity", entity.toString());
+    vars.put(ENTITY, entity.toString());
     vars.put(DOMAIN, AttributeConstants.getDomain(entity));
     vars.put("businessKey", getId(entity));
-    vars.put("name", getName(entity));
-    vars.put("createdBy", context.getRequestedBy());
+    vars.put(NAME, getName(entity));
 
     vars.put(BREADCRUMB_ID, context.getBreadcrumbId());
+    vars.put(CREATED_BY, context.getRequestedBy());
     context.getEventType().ifPresent(et -> vars.put(EVENT_TYPE, et));
     context.getPrincipal().ifPresent(p -> vars.put(PRINCIPAL, p.toString()));
     context.getAction().ifPresent(a -> vars.put(ACTION, a));
@@ -126,61 +129,59 @@ public class WorkflowServiceImpl implements WorkflowService {
   }
 
   private void syncCreate(WorkflowInstance instance) {
-    var tasks = this.taskRepository.getTasks(instance.getId());
-    sync(instance, Event.Type.CREATE, tasks);
+    var tasks = taskRepository.getTasks(instance.getId());
+
+    var jsonData = instance.toJson(tasks);
+    publishDomainEvent(jsonData, WORKFLOW, Event.Type.CREATE);
   }
 
   private void syncUpdate(WorkflowInstance instance, WorkflowTask completedTask) {
-    var activeTasks = this.taskRepository.getTasks(instance.getId());
+    var activeTasks = taskRepository.getTasks(instance.getId());
     var tasks = new ArrayList<>(activeTasks);
     tasks.add(completedTask);
-    sync(instance, Event.Type.UPDATE, tasks);
+
+    var jsonData = instance.toJson(tasks);
+    publishDomainEvent(jsonData, WORKFLOW, Event.Type.UPDATE);
   }
 
-  private void sync(WorkflowInstance instance, Event.Type eventType, List<WorkflowTask> tasks) {
-    var context = getContext();
-    var jsonData = instance.toJson(tasks);
-    var event = Event.of(eventType, WORKFLOW, context.getAction().orElse(null), jsonData);
+  private void publishDomainEvent(JSONObject entity, String domain, Event.Type eventType) {
+    var action = getContext().getAction().get();
+    var event = Event.of(eventType, domain, action, entity);
     publisher.publish(domainChannel, event.toJson());
   }
 
   @Override
   public Optional<WorkflowInstance> getInstance(String instanceId) {
-    return this.instanceRepository.get(instanceId);
+    return instanceRepository.get(instanceId);
   }
 
   @Override
   public List<WorkflowTask> getTasks(String instanceId) {
-    return this.taskRepository.getTasks(instanceId);
+    return taskRepository.getTasks(instanceId);
   }
 
   @Override
   public void completeTask(String taskId, Map<String, Object> variables) throws ProcessException {
-    var task = this.taskRepository.getTask(taskId)
+    var task = taskRepository.getTask(taskId)
         .orElseThrow(() -> new ProcessException(String.format("No task found for id: %s", taskId)));
 
     // load instance prior to task completion
     // for completed instance, get will return null.
     var instanceId = task.getInstanceId();
-    var instance = this.instanceRepository.get(instanceId)
+    var instance = instanceRepository.get(instanceId)
         .orElseThrow(() -> new ProcessException(String.format("No instance found for id: %s", instanceId)));
 
-    final Map<String, Object> vars;
-    if (variables == null) {
-      vars = new HashMap<>();
-    } else {
-      vars = variables;
-    }
+    final Map<String, Object> vars = variables != null ? variables : new HashMap<>();
     var context = getContext();
     vars.put(BREADCRUMB_ID, context.getBreadcrumbId());
     context.getEventType().ifPresent(et -> vars.put(EVENT_TYPE, et));
     context.getPrincipal().ifPresent(p -> vars.put(PRINCIPAL, p.toString()));
     context.getAction().ifPresent(a -> vars.put(ACTION, a));
 
-    this.taskRepository.complete(taskId, variables);
+    taskRepository.complete(taskId, variables);
     task.complete();
 
-    if (this.instanceRepository.isCompleted(instanceId)) {
+    if (instanceRepository.isCompleted(instanceId)) {
       instance.complete();
     }
     syncUpdate(instance, task);
@@ -188,7 +189,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
   @Override
   public String getDomain() {
-    return WorkflowDefinition.PROCESS;
+    return PROCESS;
   }
 
   @Override

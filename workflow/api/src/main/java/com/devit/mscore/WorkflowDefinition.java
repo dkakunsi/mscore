@@ -13,10 +13,6 @@ import org.json.JSONObject;
  */
 public abstract class WorkflowDefinition extends Resource {
 
-  public static final String PROCESS = "process";
-
-  protected static final String WORKFLOW = "workflow";
-
   protected static final String CONTENT_CONSTANT = "content";
 
   protected static final String RESOURCE_NAME = "resourceName";
