@@ -22,7 +22,7 @@ public abstract class WorkflowObject {
   protected String status;
 
   public void complete() {
-    this.status = COMPLETED;
+    status = COMPLETED;
   }
 
   public abstract JSONObject toJson();

@@ -27,7 +27,8 @@ public class ResourceService extends AbstractGatewayService {
 
   private String domainEventChannel;
 
-  public ResourceService(ServiceRegistration serviceRegistration, Client client, Publisher publisher, String domainEventChannel) {
+  public ResourceService(ServiceRegistration serviceRegistration, Client client, Publisher publisher,
+      String domainEventChannel) {
     super(serviceRegistration, client);
     this.publisher = publisher;
     this.domainEventChannel = domainEventChannel;
@@ -65,15 +66,16 @@ public class ResourceService extends AbstractGatewayService {
     return getId(json);
   }
 
-  private JSONObject createByWorkflow(String domain, String action, JSONObject entity, JSONObject variable) throws WebClientException {
+  private JSONObject createByWorkflow(String domain, String action, JSONObject entity, JSONObject variable)
+      throws WebClientException {
     var uri = getUri(PROCESS);
     var event = Event.of(Event.Type.CREATE, domain, action, entity, variable);
-    return this.client.post(uri, Optional.of(event.toJson()));
+    return client.post(uri, Optional.of(event.toJson()));
   }
 
   private void createByEvent(String domain, JSONObject entity) {
     var event = Event.of(Event.Type.CREATE, domain, entity);
-    this.publisher.publish(domainEventChannel, event.toJson());
+    publisher.publish(domainEventChannel, event.toJson());
   }
 
   public String update(String domain, String id, JSONObject payload) throws WebClientException {
@@ -95,21 +97,22 @@ public class ResourceService extends AbstractGatewayService {
     }
   }
 
-  private JSONObject updateByWorkflow(String domain, String action, String id, JSONObject entity, JSONObject variables) throws WebClientException {
+  private JSONObject updateByWorkflow(String domain, String action, String id, JSONObject entity, JSONObject variables)
+      throws WebClientException {
     var uri = String.format("%s/%s", getUri(domain), id);
     var event = Event.of(Event.Type.UPDATE, domain, action, entity, variables);
-    return this.client.put(uri, Optional.of(event.toJson()));
+    return client.put(uri, Optional.of(event.toJson()));
   }
 
   private void updateByEvent(String domain, String id, JSONObject entity) {
     var event = Event.of(Event.Type.UPDATE, domain, entity);
-    this.publisher.publish(domainEventChannel, event.toJson());
+    publisher.publish(domainEventChannel, event.toJson());
   }
 
   public JSONObject getById(String domain, String id) throws WebClientException {
     try {
       var uri = String.format("%s/%s", getUri(domain), id);
-      return this.client.get(uri, Map.of());
+      return client.get(uri, Map.of());
     } catch (ApplicationRuntimeException ex) {
       throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
     }
@@ -118,7 +121,7 @@ public class ResourceService extends AbstractGatewayService {
   public JSONObject getByCode(String domain, String code) throws WebClientException {
     try {
       var uri = String.format("%s/code/%s", getUri(domain), code);
-      return this.client.get(uri, null);
+      return client.get(uri, null);
     } catch (ApplicationRuntimeException ex) {
       throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
     }
@@ -127,7 +130,7 @@ public class ResourceService extends AbstractGatewayService {
   public JSONObject getMany(String domain, String ids) throws WebClientException {
     try {
       var uri = String.format("%s/keys", getUri(domain));
-      return this.client.get(uri, Map.of("ids", ids));
+      return client.get(uri, Map.of("ids", ids));
     } catch (ApplicationRuntimeException ex) {
       throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
     }
@@ -136,7 +139,7 @@ public class ResourceService extends AbstractGatewayService {
   public JSONObject sync(String domain) throws WebClientException {
     try {
       var uri = String.format("%s/sync", getUri(domain));
-      return this.client.post(uri, Optional.empty());
+      return client.post(uri, Optional.empty());
     } catch (ApplicationRuntimeException ex) {
       throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
     }
@@ -145,7 +148,7 @@ public class ResourceService extends AbstractGatewayService {
   public JSONObject syncById(String domain, String id) throws WebClientException {
     try {
       var uri = String.format("%s/%s/sync", getUri(domain), id);
-      return this.client.post(uri, Optional.empty());
+      return client.post(uri, Optional.empty());
     } catch (ApplicationRuntimeException ex) {
       throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
     }
@@ -154,7 +157,7 @@ public class ResourceService extends AbstractGatewayService {
   public JSONObject search(String domain, JSONObject criteria) throws WebClientException {
     try {
       var uri = String.format("%s/search", getUri(domain));
-      return this.client.post(uri, Optional.of(criteria));
+      return client.post(uri, Optional.of(criteria));
     } catch (ApplicationRuntimeException ex) {
       throw new WebClientException(WEBCLIENT_EXCEPTION_MESSAGE, ex);
     }

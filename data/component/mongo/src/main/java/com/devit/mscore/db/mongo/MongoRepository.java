@@ -1,9 +1,9 @@
 package com.devit.mscore.db.mongo;
 
-import static com.devit.mscore.util.AttributeConstants.ID;
 import static com.devit.mscore.util.AttributeConstants.getCode;
 import static com.devit.mscore.util.AttributeConstants.getId;
 import static com.devit.mscore.util.AttributeConstants.hasId;
+import static com.devit.mscore.util.Constants.ID;
 import static com.devit.mscore.util.JsonUtils.copy;
 
 import com.devit.mscore.Logger;
@@ -69,7 +69,7 @@ public class MongoRepository implements Repository {
        */
       var options = new ReplaceOptions().upsert(true);
       var filter = new Document(ID, id);
-      this.collection.replaceOne(filter, document, options);
+      collection.replaceOne(filter, document, options);
 
       LOG.info("Entity '{}' is saved into MongoDB", id);
       return target;
@@ -105,7 +105,7 @@ public class MongoRepository implements Repository {
   @Override
   public void delete(String id) {
     LOG.debug("Deleting entity '{}' from collection '{}'", id, getCollectionName());
-    this.collection.deleteOne(new Document(ID, id));
+    collection.deleteOne(new Document(ID, id));
   }
 
   @Override
@@ -115,7 +115,7 @@ public class MongoRepository implements Repository {
 
   public Optional<JSONObject> find(String id, boolean removeMongoId) {
     LOG.trace("Retrieving object with id '{}' from collection '{}'", id, getCollectionName());
-    var result = this.collection.find(new Document(ID, id));
+    var result = collection.find(new Document(ID, id));
     var document = result.first();
     if (document == null) {
       return Optional.empty();
@@ -126,20 +126,20 @@ public class MongoRepository implements Repository {
   @Override
   public Optional<JSONArray> find(String field, Object value) {
     var filter = Filters.eq(field, value);
-    var result = this.collection.find(filter);
+    var result = collection.find(filter);
     return loadResult(result);
   }
 
   @Override
   public Optional<JSONArray> find(List<String> keys) {
     var filter = Filters.in(ID, keys);
-    var result = this.collection.find(filter);
+    var result = collection.find(filter);
     return loadResult(result);
   }
 
   @Override
   public Optional<JSONArray> all() {
-    var result = this.collection.find();
+    var result = collection.find();
     return loadResult(result);
   }
 

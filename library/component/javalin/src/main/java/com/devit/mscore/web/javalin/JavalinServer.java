@@ -67,7 +67,7 @@ public final class JavalinServer extends Server {
       AuthenticationProvider authenticationProvider, Consumer<JavalinConfig> configurer) {
     super(port, endpoints, validations, authenticationProvider);
     this.configurer = configurer;
-    this.exceptionHandler = new HashMap<>();
+    exceptionHandler = new HashMap<>();
     setExceptionHandlers();
   }
 
@@ -99,17 +99,17 @@ public final class JavalinServer extends Server {
 
   @SuppressWarnings("unchecked")
   public <T extends Exception> void addExceptionHandler(Class<T> type, ExceptionHandler<T> handler) {
-    this.exceptionHandler.put((Class<Exception>) type, (ExceptionHandler<Exception>) handler);
+    exceptionHandler.put((Class<Exception>) type, (ExceptionHandler<Exception>) handler);
   }
 
   @Override
   public void stop() {
-    this.app.stop();
+    app.stop();
   }
 
   @Override
   public void start() {
-    this.app = Javalin.create(getConfigurer()).start(this.port);
+    app = Javalin.create(getConfigurer()).start(port);
 
     initValidationAndSecurityCheck();
     initEndpoint();
@@ -117,12 +117,12 @@ public final class JavalinServer extends Server {
   }
 
   private Consumer<JavalinConfig> getConfigurer() {
-    return (this.configurer == null) ? config -> {
-    } : this.configurer;
+    return (configurer == null) ? config -> {
+    } : configurer;
   }
 
   private void initValidationAndSecurityCheck() {
-    this.app.before(ctx -> {
+    app.before(ctx -> {
       var applicationContext = Util.initiateContext(ctx);
       LOG.info("Receiving request '{}': '{}'", ctx.method(), ctx.path());
 
@@ -132,7 +132,7 @@ public final class JavalinServer extends Server {
       if (Util.isPreflightRequest(ctx.method())) {
         return;
       }
-      if (this.authenticationProvider != null) {
+      if (authenticationProvider != null) {
         doSecurityCheck(applicationContext, ctx);
       }
     });
@@ -150,7 +150,7 @@ public final class JavalinServer extends Server {
 
   private void doSecurityCheck(ApplicationContext applicationContext, Context ctx)
       throws AuthenticationException, AuthorizationException {
-    var secureUris = this.authenticationProvider.getUri().entrySet()
+    var secureUris = authenticationProvider.getUri().entrySet()
         .stream().filter(e -> Pattern.compile(e.getKey()).matcher(ctx.path()).matches())
         .collect(Collectors.toList());
     try {
@@ -166,7 +166,7 @@ public final class JavalinServer extends Server {
   }
 
   private JSONObject authenticateRequest(String sessionKey) throws AuthenticationException {
-    var principal = this.authenticationProvider.verify(sessionKey);
+    var principal = authenticationProvider.verify(sessionKey);
     if (principal == null) {
       throw new AuthenticationException("Not authenticated");
     }
@@ -182,19 +182,19 @@ public final class JavalinServer extends Server {
   }
 
   private void initEndpoint() {
-    if (this.endpoints.isEmpty()) {
+    if (endpoints.isEmpty()) {
       throw new ApplicationRuntimeException("No endpoint provided");
     }
-    this.app.routes(() -> {
-      for (var endpoint : this.endpoints) {
+    app.routes(() -> {
+      for (var endpoint : endpoints) {
         endpoint.register();
       }
     });
   }
 
   private void initTypeAdapter() {
-    for (var entry : this.exceptionHandler.entrySet()) {
-      this.app.exception(entry.getKey(), entry.getValue());
+    for (var entry : exceptionHandler.entrySet()) {
+      app.exception(entry.getKey(), entry.getValue());
     }
   }
 
@@ -258,6 +258,6 @@ public final class JavalinServer extends Server {
         requiredRole = forMethod != null ? forMethod.toString() : "";
       }
       return requiredRole;
-    }  
+    }
   }
 }

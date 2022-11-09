@@ -27,9 +27,9 @@ public class PebbleTemplateFactory extends ResourceManager {
 
   @Override
   protected String getResourceLocation() {
-    var configName = String.format(LOCATION, this.configuration.getServiceName());
+    var configName = String.format(LOCATION, configuration.getServiceName());
     try {
-      return this.configuration.getConfig(configName).orElse(null);
+      return configuration.getConfig(configName).orElse(null);
     } catch (ConfigException ex) {
       return null;
     }

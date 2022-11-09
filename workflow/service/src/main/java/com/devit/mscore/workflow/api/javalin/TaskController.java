@@ -12,7 +12,7 @@ import org.json.JSONObject;
 
 import io.javalin.http.Handler;
 
-public class TaskController extends JavalinController{
+public class TaskController extends JavalinController {
 
   public TaskController(WorkflowService workflowService) {
     super(workflowService);

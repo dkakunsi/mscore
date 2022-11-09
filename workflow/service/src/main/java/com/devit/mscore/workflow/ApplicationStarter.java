@@ -71,22 +71,22 @@ public class ApplicationStarter implements Starter {
   }
 
   public ApplicationStarter(FileConfiguration fileConfiguration) throws ConfigException {
-    this.serviceName = fileConfiguration.getServiceName();
+    serviceName = fileConfiguration.getServiceName();
     try {
-      this.workflowRegistry = new MemoryRegistry(WORKFLOW);
-      this.zookeeperRegistry = ZookeeperRegistryFactory.of(fileConfiguration).registry("platformCOnfig");
+      workflowRegistry = new MemoryRegistry(WORKFLOW);
+      zookeeperRegistry = ZookeeperRegistryFactory.of(fileConfiguration).registry("platformCOnfig");
       zookeeperRegistry.open();
-      this.configuration = new ZookeeperConfiguration(zookeeperRegistry, serviceName);
+      configuration = new ZookeeperConfiguration(zookeeperRegistry, serviceName);
 
-      DateUtils.setZoneId(this.configuration.getConfig(TIMEZONE).orElse("Asia/Makassar"));
+      DateUtils.setZoneId(configuration.getConfig(TIMEZONE).orElse("Asia/Makassar"));
 
-      this.messagingFactory = KafkaMessagingFactory.of(this.configuration);
-      this.authenticationProvider = JWTAuthenticationProvider.of(this.configuration);
-      this.webClient = JerseyClientFactory.of().client();
-      this.apiFactory = ApiFactory.of(this.configuration, this.authenticationProvider);
-      var workflowDataSource = new PgDataSource(this.configuration);
-      this.workflowFactory = FlowableWorkflowFactory.of(this.configuration, this.workflowRegistry, workflowDataSource);
-      this.serviceRegistration = new ServiceRegistration(this.zookeeperRegistry, this.configuration);
+      messagingFactory = KafkaMessagingFactory.of(configuration);
+      authenticationProvider = JWTAuthenticationProvider.of(configuration);
+      webClient = JerseyClientFactory.of().client();
+      apiFactory = ApiFactory.of(configuration, authenticationProvider);
+      var workflowDataSource = new PgDataSource(configuration);
+      workflowFactory = FlowableWorkflowFactory.of(configuration, workflowRegistry, workflowDataSource);
+      serviceRegistration = new ServiceRegistration(zookeeperRegistry, configuration);
     } catch (RegistryException ex) {
       throw new ConfigException(ex);
     }
@@ -94,45 +94,45 @@ public class ApplicationStarter implements Starter {
 
   @Override
   public void start() throws ApplicationException {
-    registerResource(this.workflowFactory);
+    registerResource(workflowFactory);
 
     // Create publisher
-    var publisher = this.messagingFactory.publisher();
+    var publisher = messagingFactory.publisher();
 
     var notificationChannel = messagingFactory.getTemplatedTopics(NOTIFICATION).orElse(new String[] { "" });
     var domainChannel = messagingFactory.getTemplatedTopics(DOMAIN).orElse(new String[] { "" });
     Map<String, String> channels = Map.of(NOTIFICATION, notificationChannel[0], DOMAIN, domainChannel[0]);
 
     var workflowDomain = getWorkflowDomain(WORKFLOW_DOMAIN);
-    var dataClient = new DataClient(this.webClient, this.serviceRegistration, workflowDomain);
+    var dataClient = new DataClient(webClient, serviceRegistration, workflowDomain);
 
-    var definitionRepository = this.workflowFactory.definitionRepository();
-    var instanceRepository = this.workflowFactory.instanceRepository();
-    var taskRepository = this.workflowFactory.taskRepository();
-    var workflowService = new WorkflowServiceImpl(this.workflowRegistry, publisher, domainChannel[0], definitionRepository,
+    var definitionRepository = workflowFactory.definitionRepository();
+    var instanceRepository = workflowFactory.instanceRepository();
+    var taskRepository = workflowFactory.taskRepository();
+    var workflowService = new WorkflowServiceImpl(workflowRegistry, publisher, domainChannel[0], definitionRepository,
         instanceRepository, taskRepository);
 
-    for (var definition : this.workflowFactory.getDefinitions()) {
+    for (var definition : workflowFactory.getDefinitions()) {
       workflowService.deployDefinition(definition);
     }
 
     // Start service
-    var server = this.apiFactory.addService(workflowService).server();
+    var server = apiFactory.addService(workflowService).server();
     server.start();
 
-    this.serviceRegistration.register(PROCESS);
-    this.serviceRegistration.register(TASK);
+    serviceRegistration.register(PROCESS);
+    serviceRegistration.register(TASK);
 
     // This resources will be used by workflow delegates.
     DelegateUtils.setDataClient(dataClient);
     DelegateUtils.setPublisher(publisher);
     DelegateUtils.setChannels(channels);
-    DelegateUtils.setConfiguration(this.configuration);
+    DelegateUtils.setConfiguration(configuration);
   }
 
   private String getWorkflowDomain(String configTemplate) throws ConfigException {
-    var configName = String.format(configTemplate, this.serviceName);
-    return this.configuration.getConfig(configName)
+    var configName = String.format(configTemplate, serviceName);
+    return configuration.getConfig(configName)
         .orElseThrow(() -> new ConfigException(configName + " is not configured"));
   }
 

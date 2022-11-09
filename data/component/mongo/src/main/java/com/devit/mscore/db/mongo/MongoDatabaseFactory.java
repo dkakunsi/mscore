@@ -53,7 +53,7 @@ public class MongoDatabaseFactory {
 
   private MongoDatabaseFactory(Configuration configuration) {
     this.configuration = configuration;
-    this.repositories = new HashMap<>();
+    repositories = new HashMap<>();
   }
 
   public static MongoDatabaseFactory of(Configuration configuration) {
@@ -62,14 +62,14 @@ public class MongoDatabaseFactory {
 
   public MongoRepository repository(Schema schema) {
     var domain = schema.getDomain();
-    this.repositories.computeIfAbsent(domain,
+    repositories.computeIfAbsent(domain,
         key -> {
           var collection = collection(domain);
           var uniqueAttributes = schema.getUniqueAttributes();
           createIndex(collection, uniqueAttributes);
           return new MongoRepository(collection);
         });
-    return this.repositories.get(domain);
+    return repositories.get(domain);
   }
 
   private static void createIndex(MongoCollection<Document> collection, List<String> uniqueAttributes) {
@@ -102,11 +102,11 @@ public class MongoDatabaseFactory {
   }
 
   public MongoDatabase database() throws ConfigException {
-    if (this.mongoDatabase == null) {
+    if (mongoDatabase == null) {
       var databaseName = getDatabaseName();
-      this.mongoDatabase = mongoClient().getDatabase(databaseName);
+      mongoDatabase = mongoClient().getDatabase(databaseName);
     }
-    return this.mongoDatabase;
+    return mongoDatabase;
   }
 
   private String getDatabaseName() throws ConfigException {
@@ -114,8 +114,8 @@ public class MongoDatabaseFactory {
   }
 
   public MongoClient mongoClient() throws ConfigException {
-    if (this.client != null) {
-      return this.client;
+    if (client != null) {
+      return client;
     }
 
     var databaseName = getDatabaseName();
@@ -127,7 +127,7 @@ public class MongoDatabaseFactory {
       settingsBuilder.credential(getCredential(databaseName));
     }
 
-    return this.client = MongoClients.create(settingsBuilder.build());
+    return client = MongoClients.create(settingsBuilder.build());
   }
 
   protected ConnectionString createConnectionString() throws ConfigException {
@@ -165,6 +165,6 @@ public class MongoDatabaseFactory {
 
   private Optional<String> getConfig(String key) throws ConfigException {
     var configName = String.format(CONFIG_TEMPLATE, key);
-    return this.configuration.getConfig(configName);
+    return configuration.getConfig(configName);
   }
 }

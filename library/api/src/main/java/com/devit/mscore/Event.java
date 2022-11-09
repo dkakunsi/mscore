@@ -85,8 +85,8 @@ public class Event {
 
   public boolean isDomainEvent() {
     return Type.CREATE.equals(type)
-    || Type.UPDATE.equals(type)
-    || Type.REMOVE.equals(type);
+        || Type.UPDATE.equals(type)
+        || Type.REMOVE.equals(type);
   }
 
   public boolean isWorkflowEvent() {
@@ -117,7 +117,7 @@ public class Event {
 
     @Override
     public String toString() {
-      return this.name;
+      return name;
     }
   }
 }

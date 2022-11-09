@@ -37,7 +37,7 @@ public class EventListener extends Listener {
     var event = Event.of(message);
     var code = getCode(event.getData());
     logger.info("Processing '{}' for code '{}'", event.getAction(), code);
-    var service = this.services.get(message.getString(DOMAIN));
+    var service = services.get(message.getString(DOMAIN));
     try {
       if (Event.Type.CREATE.equals(event.getType()) || Event.Type.UPDATE.equals(event.getType())) {
         service.save(event.getData());

@@ -1,8 +1,8 @@
 package com.devit.mscore.schema.everit;
 
-import static com.devit.mscore.util.AttributeConstants.DOMAIN;
 import static com.devit.mscore.util.AttributeConstants.getCode;
 import static com.devit.mscore.util.AttributeConstants.hasDomain;
+import static com.devit.mscore.util.Constants.DOMAIN;
 
 import com.devit.mscore.Logger;
 import com.devit.mscore.Registry;
@@ -44,7 +44,7 @@ public class SchemaValidation implements Validation {
     LOG.debug("Validating object of domain '{}'", domain);
 
     try {
-      var registeredSchema = this.registry.get(domain);
+      var registeredSchema = registry.get(domain);
       new JSONSchema(new JSONObject(registeredSchema)).validate(json);
       return true;
     } catch (ValidationException ex) {

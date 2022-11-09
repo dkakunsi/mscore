@@ -46,7 +46,7 @@ public class ProcessController extends JavalinController {
       var processInstanceId = processInstance.map(pi -> pi.getId()).orElse(UNKNOWN);
 
       var result = new JSONObject().put(INSTANCE_ID, processInstanceId);
-      ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(result.toString());  
+      ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(result.toString());
     };
   }
 }

@@ -53,11 +53,11 @@ public class Resource {
   }
 
   public String getName() {
-    return this.name;
+    return name;
   }
 
   public String getContent() {
-    return this.content;
+    return content;
   }
 
   /**

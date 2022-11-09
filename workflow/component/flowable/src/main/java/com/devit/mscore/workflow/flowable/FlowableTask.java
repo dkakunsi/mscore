@@ -17,143 +17,143 @@ public class FlowableTask extends WorkflowTask implements TaskInfo {
 
   public FlowableTask(TaskInfo task, Map<String, Object> variables) {
     this.task = task;
-    this.status = ACTIVATED;
     this.variables = variables;
+    status = ACTIVATED;
   }
 
   @Override
   public String getName() {
-    return this.task.getName();
+    return task.getName();
   }
 
   @Override
   public String getDescription() {
-    return this.task.getDescription();
+    return task.getDescription();
   }
 
   @Override
   public int getPriority() {
-    return this.task.getPriority();
+    return task.getPriority();
   }
 
   @Override
   public String getOwner() {
-    return this.task.getOwner();
+    return task.getOwner();
   }
 
   @Override
   public String getAssignee() {
-    return this.task.getAssignee();
+    return task.getAssignee();
   }
 
   @Override
   public String getProcessInstanceId() {
-    return this.task.getProcessInstanceId();
+    return task.getProcessInstanceId();
   }
 
   @Override
   public String getExecutionId() {
-    return this.task.getExecutionId();
+    return task.getExecutionId();
   }
 
   @Override
   public String getTaskDefinitionId() {
-    return this.task.getTaskDefinitionId();
+    return task.getTaskDefinitionId();
   }
 
   @Override
   public String getProcessDefinitionId() {
-    return this.task.getProcessDefinitionId();
+    return task.getProcessDefinitionId();
   }
 
   @Override
   public String getScopeId() {
-    return this.task.getScopeId();
+    return task.getScopeId();
   }
 
   @Override
   public String getSubScopeId() {
-    return this.task.getSubScopeId();
+    return task.getSubScopeId();
   }
 
   @Override
   public String getScopeType() {
-    return this.task.getScopeType();
+    return task.getScopeType();
   }
 
   @Override
   public String getScopeDefinitionId() {
-    return this.task.getScopeDefinitionId();
+    return task.getScopeDefinitionId();
   }
 
   @Override
   public String getPropagatedStageInstanceId() {
-    return this.task.getPropagatedStageInstanceId();
+    return task.getPropagatedStageInstanceId();
   }
 
   @Override
   public Date getCreateTime() {
-    return this.task.getCreateTime();
+    return task.getCreateTime();
   }
 
   @Override
   public String getTaskDefinitionKey() {
-    return this.task.getTaskDefinitionKey();
+    return task.getTaskDefinitionKey();
   }
 
   @Override
   public Date getDueDate() {
-    return this.task.getDueDate();
+    return task.getDueDate();
   }
 
   @Override
   public String getCategory() {
-    return this.task.getCategory();
+    return task.getCategory();
   }
 
   @Override
   public String getParentTaskId() {
-    return this.task.getParentTaskId();
+    return task.getParentTaskId();
   }
 
   @Override
   public String getTenantId() {
-    return this.task.getTenantId();
+    return task.getTenantId();
   }
 
   @Override
   public String getFormKey() {
-    return this.task.getFormKey();
+    return task.getFormKey();
   }
 
   @Override
   public Map<String, Object> getTaskLocalVariables() {
-    return this.task.getTaskLocalVariables();
+    return task.getTaskLocalVariables();
   }
 
   @Override
   public Map<String, Object> getProcessVariables() {
-    return this.task.getProcessVariables();
+    return task.getProcessVariables();
   }
 
   @Override
   public List<? extends IdentityLinkInfo> getIdentityLinks() {
-    return this.task.getIdentityLinks();
+    return task.getIdentityLinks();
   }
 
   @Override
   public Date getClaimTime() {
-    return this.task.getClaimTime();
+    return task.getClaimTime();
   }
 
   @Override
   public String getId() {
-    return this.task.getId();
+    return task.getId();
   }
 
   @Override
   protected String getOrganisation() {
-    var organisation = this.variables.get(ORGANISATION);
+    var organisation = variables.get(ORGANISATION);
     return organisation != null ? organisation.toString() : null;
   }
 

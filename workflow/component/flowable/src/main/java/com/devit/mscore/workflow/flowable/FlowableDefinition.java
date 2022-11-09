@@ -20,13 +20,13 @@ public class FlowableDefinition extends WorkflowDefinition {
   public FlowableDefinition(File definition) throws ResourceException {
     super(definition);
     var elements = definition.getName().split("\\.");
-    this.name = String.format(NAME_TEMPLATE, elements[0], elements[1]);
-    this.resourceName = String.format(RESOURCE_TEMPLATE, elements[0], elements[1], elements[2]);
+    name = String.format(NAME_TEMPLATE, elements[0], elements[1]);
+    resourceName = String.format(RESOURCE_TEMPLATE, elements[0], elements[1], elements[2]);
   }
 
   public FlowableDefinition(JSONObject json) {
     super(json.getString(NAME), json.getString(CONTENT_CONSTANT));
-    this.resourceName = json.getString(RESOURCE_NAME);
+    resourceName = json.getString(RESOURCE_NAME);
   }
 
   public FlowableDefinition(String content) {
@@ -40,11 +40,11 @@ public class FlowableDefinition extends WorkflowDefinition {
 
   @Override
   public JSONObject getMessage() {
-    return new JSONObject().put(RESOURCE_NAME, this.resourceName).put(NAME, this.name).put(CONTENT_CONSTANT, this.content);
+    return new JSONObject().put(RESOURCE_NAME, resourceName).put(NAME, name).put(CONTENT_CONSTANT, content);
   }
 
   @Override
   public String getResourceName() {
-    return this.resourceName;
+    return resourceName;
   }
 }

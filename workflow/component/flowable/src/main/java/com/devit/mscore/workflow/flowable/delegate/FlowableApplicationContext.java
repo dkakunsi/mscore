@@ -48,7 +48,7 @@ public class FlowableApplicationContext extends ApplicationContext {
     var variableObj = execution.getVariable(ACTION);
     if (variableObj != null) {
       setAction(variableObj.toString());
-    }    
+    }
   }
 
   private void eventType(DelegateExecution execution) {

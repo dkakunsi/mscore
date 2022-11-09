@@ -27,9 +27,9 @@ public class ZookeeperConfiguration implements Configuration {
 
   private void init() throws ConfigException {
     try {
-      this.configs = this.registry.all();
+      configs = registry.all();
     } catch (RegistryException ex) {
-      this.configs = new HashMap<>();
+      configs = new HashMap<>();
       throw new ConfigException(ex);
     }
   }
@@ -41,12 +41,12 @@ public class ZookeeperConfiguration implements Configuration {
 
   @Override
   public Map<String, String> getConfigs() {
-    return new HashMap<>(this.configs);
+    return new HashMap<>(configs);
   }
 
   @Override
   public String getServiceName() {
-    return this.serviceName;
+    return serviceName;
   }
 
   @Override
@@ -74,7 +74,7 @@ public class ZookeeperConfiguration implements Configuration {
 
   private Optional<String> executeGetConfig(String registryKey) throws ConfigException {
     try {
-      var registryValue = this.registry.get(registryKey);
+      var registryValue = registry.get(registryKey);
       return registryValue != null ? Optional.of(registryValue) : Optional.empty();
     } catch (RegistryException ex) {
       throw new ConfigException(ex);

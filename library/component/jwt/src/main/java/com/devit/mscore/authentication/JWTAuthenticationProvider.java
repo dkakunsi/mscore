@@ -45,8 +45,8 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
 
   protected JWTAuthenticationProvider(String publicKey, Map<String, Object> uri)
       throws ConfigException, UnsupportedEncodingException {
-    this.publicKey = publicKey(publicKey.getBytes(StandardCharsets.UTF_8.name()));
     this.uri = uri;
+    this.publicKey = publicKey(publicKey.getBytes(StandardCharsets.UTF_8.name()));
   }
 
   private static RSAPublicKey publicKey(byte[] byteKey) throws ConfigException {
@@ -69,7 +69,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
 
     LOG.debug("Verifying session with token '{}'", key);
     var token = key.replace("Bearer ", "");
-    var algorithm = Algorithm.RSA256(this.publicKey, null);
+    var algorithm = Algorithm.RSA256(publicKey, null);
     var verifier = JWT.require(algorithm).build();
     try {
       var jwt = verifier.verify(token);
@@ -104,7 +104,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
 
   @Override
   public Map<String, Object> getUri() {
-    return new HashMap<>(this.uri);
+    return new HashMap<>(uri);
   }
 
   public static JWTAuthenticationProvider of(Configuration configuration) throws ConfigException {

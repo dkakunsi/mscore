@@ -42,9 +42,9 @@ public class PublishingObserverTest {
 
       var publisher = mock(Publisher.class);
       doThrow(new RuntimeException("Test")).when(publisher).publish(eq(PUBLISHING_CHANNEL), any(JSONObject.class));
-  
+
       var publishingObserver = new PublishingObserver(publisher, PUBLISHING_CHANNEL);
-  
+
       var json = new JSONObject();
       var ex = assertThrows(RuntimeException.class, () -> {
         publishingObserver.notify(json);

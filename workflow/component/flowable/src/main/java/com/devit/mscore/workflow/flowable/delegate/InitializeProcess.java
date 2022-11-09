@@ -16,7 +16,7 @@ public class InitializeProcess implements JavaDelegate {
   @Override
   public void execute(DelegateExecution execution) {
     try {
-      var organisationValue = this.organisation.getValue(execution).toString();
+      var organisationValue = organisation.getValue(execution).toString();
       execution.setVariable("organisation", organisationValue);
     } catch (NullPointerException ex) {
       LOG.warn("No organisation is provided");

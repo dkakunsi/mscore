@@ -14,7 +14,8 @@ public class RepositoryTest {
 
   @Before
   public void setup() {
-    this.repository = new Repository() {};
+    this.repository = new Repository() {
+    };
   }
 
   @Test(expected = DataException.class)

@@ -66,7 +66,8 @@ public class SynchronizationTest {
   }
 
   @Test
-  public void givenDataIsAvailable_WhenSyncByIdIsRequested_ShouldRetrieveAndPersistData() throws SynchronizationException {
+  public void givenDataIsAvailable_WhenSyncByIdIsRequested_ShouldRetrieveAndPersistData()
+      throws SynchronizationException {
     var map = spy(new HashMap<String, JSONObject>());
     doReturn(json).when(map).get(anyString());
 
@@ -79,7 +80,8 @@ public class SynchronizationTest {
   }
 
   @Test
-  public void givenDataIsNotAvailable_WhenSyncByIdIsRequested_ShouldRetrieveAndNotPersistData() throws SynchronizationException {
+  public void givenDataIsNotAvailable_WhenSyncByIdIsRequested_ShouldRetrieveAndNotPersistData()
+      throws SynchronizationException {
     var map = spy(new HashMap<String, JSONObject>());
     doReturn(null).when(map).get(anyString());
 
@@ -95,7 +97,6 @@ public class SynchronizationTest {
   public void givenExceptionIsThrown_WhenSyncIsRequested_ShouldNotError() throws SynchronizationException {
     var map = spy(new HashMap<String, JSONObject>());
     doThrow(RuntimeException.class).when(map).put(anyString(), any(JSONObject.class));
-
 
     var synchronization = new SynchronizationTestImpl(REFERENCE_DOMAIN, REFERENCE_ATTRIBUTE, map)
         .with(filtersExecutor)

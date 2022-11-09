@@ -17,7 +17,7 @@ public class EventListener extends Listener {
 
   private EventListener(Subscriber subscriber) {
     super(subscriber, ApplicationLogger.getLogger(EventListener.class));
-    this.notifications = new ArrayList<>();
+    notifications = new ArrayList<>();
   }
 
   public static EventListener of(Subscriber subscriber) {
@@ -29,17 +29,17 @@ public class EventListener extends Listener {
   }
 
   public EventListener with(Notification notification) {
-    this.notifications.add(notification);
+    notifications.add(notification);
     return this;
   }
 
   @Override
   public void consume(JSONObject message) {
     logger.debug("Receive event message: {}", message);
-    this.notifications.forEach(notification -> {
+    notifications.forEach(n -> {
       try {
-        logger.info("Sending '{}' notification", notification.getType());
-        notification.send(message.getString("code"), message.getJSONObject("data"));
+        logger.info("Sending '{}' notification", n.getType());
+        n.send(message.getString("code"), message.getJSONObject("data"));
       } catch (NotificationException ex) {
         logger.error("Notification failed", ex);
       }

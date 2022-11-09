@@ -35,7 +35,7 @@ public class EventListener extends Listener {
     logger.debug("Receive event message '{}'", message);
     try {
       var event = Event.of(message);
-      this.history.create(event.getData());
+      history.create(event.getData());
     } catch (HistoryException ex) {
       logger.error("Failed to create history", ex);
     }

@@ -36,7 +36,7 @@ public abstract class Listener implements Starter {
    */
   public void listen(String... topics) throws ApplicationException {
     for (var topic : topics) {
-      this.subscriber.subscribe(topic, this::consume);
+      subscriber.subscribe(topic, this::consume);
     }
     logger.info("Listening to topics '{}'", List.of(topics));
     start();
@@ -44,11 +44,11 @@ public abstract class Listener implements Starter {
 
   @Override
   public void start() throws ApplicationException {
-    this.subscriber.start();
+    subscriber.start();
   }
 
   @Override
   public void stop() {
-    this.subscriber.stop();
+    subscriber.stop();
   }
 }

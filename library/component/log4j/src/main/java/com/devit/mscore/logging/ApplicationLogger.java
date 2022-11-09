@@ -13,7 +13,7 @@ public class ApplicationLogger implements Logger {
   private final org.slf4j.Logger logger;
 
   private ApplicationLogger(Class<?> clazz) {
-    this.logger = LoggerFactory.getLogger(clazz);
+    logger = LoggerFactory.getLogger(clazz);
   }
 
   public static Logger getLogger(Class<?> clazz) {
@@ -23,91 +23,91 @@ public class ApplicationLogger implements Logger {
   @Override
   public void debug(String message) {
     if (logger.isDebugEnabled()) {
-      this.logger.debug(getMessage(message));
+      logger.debug(getMessage(message));
     }
   }
 
   @Override
   public void debug(String format, Object... args) {
     if (logger.isDebugEnabled()) {
-      this.logger.debug(getMessage(format, args));
+      logger.debug(getMessage(format, args));
     }
   }
 
   @Override
   public void error(String message) {
     if (logger.isErrorEnabled()) {
-      this.logger.error(getMessage(message));
+      logger.error(getMessage(message));
     }
   }
 
   @Override
   public void error(String message, Throwable ex) {
     if (logger.isErrorEnabled()) {
-      this.logger.error(getMessage(message), ex);
+      logger.error(getMessage(message), ex);
     }
   }
 
   @Override
   public void error(String format, Throwable ex, Object... args) {
     if (logger.isErrorEnabled()) {
-      this.logger.error(getMessage(format, args), ex);
+      logger.error(getMessage(format, args), ex);
     }
   }
 
   @Override
   public void error(String format, String arg) {
     if (logger.isErrorEnabled()) {
-      this.logger.error(getMessage(format, arg));
+      logger.error(getMessage(format, arg));
     }
   }
 
   @Override
   public void error(String format, Object... args) {
     if (logger.isErrorEnabled()) {
-      this.logger.error(getMessage(format, args));
+      logger.error(getMessage(format, args));
     }
   }
 
   @Override
   public void info(String message) {
     if (logger.isInfoEnabled()) {
-      this.logger.info(getMessage(message));
+      logger.info(getMessage(message));
     }
   }
 
   @Override
   public void info(String format, Object... args) {
     if (logger.isInfoEnabled()) {
-      this.logger.info(getMessage(format, args));
+      logger.info(getMessage(format, args));
     }
   }
 
   @Override
   public void trace(String message) {
     if (logger.isTraceEnabled()) {
-      this.logger.trace(getMessage(message));
+      logger.trace(getMessage(message));
     }
   }
 
   @Override
   public void trace(String format, Object... args) {
     if (logger.isTraceEnabled()) {
-      this.logger.trace(getMessage(format, args));
+      logger.trace(getMessage(format, args));
     }
   }
 
   @Override
   public void warn(String message) {
     if (logger.isWarnEnabled()) {
-      this.logger.warn(getMessage(message));
+      logger.warn(getMessage(message));
     }
   }
 
   @Override
   public void warn(String format, Object... args) {
     if (logger.isWarnEnabled()) {
-      this.logger.warn(getMessage(format, args));
+      logger.warn(getMessage(format, args));
     }
   }
 

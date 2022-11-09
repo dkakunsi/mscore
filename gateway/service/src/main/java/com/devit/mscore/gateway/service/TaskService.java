@@ -31,7 +31,7 @@ public class TaskService extends AbstractGatewayService {
 
     var uri = getUri(TASK);
     var event = Event.of(Event.Type.UPDATE, TASK, TASK_ACTION, entity, taskResponse);
-    this.client.post(uri, Optional.of(event.toJson()));
+    client.post(uri, Optional.of(event.toJson()));
 
     return taskId;
   }

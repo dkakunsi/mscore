@@ -31,8 +31,8 @@ public class ZookeeperRegistry implements Registry {
 
   public ZookeeperRegistry(String name, String zkHost, RetryPolicy retryPolicy) throws RegistryException {
     this.name = name;
-    this.client = CuratorFrameworkFactory.newClient(zkHost, retryPolicy);
-    this.cache = new HashMap<>();
+    client = CuratorFrameworkFactory.newClient(zkHost, retryPolicy);
+    cache = new HashMap<>();
     init();
   }
 
@@ -49,7 +49,7 @@ public class ZookeeperRegistry implements Registry {
 
   private void loadChildren(String parentPath) throws RegistryException {
     try {
-      var children = this.client.getChildren().forPath(parentPath);
+      var children = client.getChildren().forPath(parentPath);
       for (var child : children) {
         var format = ROOT_PATH.equals(parentPath) ? "%s%s" : "%s/%s";
         var key = String.format(format, parentPath, child);
@@ -62,17 +62,17 @@ public class ZookeeperRegistry implements Registry {
 
   @Override
   public String getName() {
-    return this.name;
+    return name;
   }
 
   @Override
   public void add(String key, String value) throws RegistryException {
     try {
-      var stat = this.client.checkExists().forPath(key);
+      var stat = client.checkExists().forPath(key);
       if (stat == null) {
-        this.client.create().creatingParentsIfNeeded().forPath(key, value.getBytes(StandardCharsets.UTF_8.name()));
+        client.create().creatingParentsIfNeeded().forPath(key, value.getBytes(StandardCharsets.UTF_8.name()));
       } else {
-        this.client.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8.name()));
+        client.setData().forPath(key, value.getBytes(StandardCharsets.UTF_8.name()));
       }
 
       clearCache(getCacheKey(key));
@@ -82,7 +82,7 @@ public class ZookeeperRegistry implements Registry {
   }
 
   private void clearCache(String cacheKey) {
-    this.cache.remove(cacheKey);
+    cache.remove(cacheKey);
   }
 
   static String getCacheKey(String key) {
@@ -98,51 +98,51 @@ public class ZookeeperRegistry implements Registry {
   public String get(String registryKey) throws RegistryException {
     var cacheKey = getCacheKey(registryKey);
 
-    this.cache.computeIfAbsent(cacheKey, key -> {
+    cache.computeIfAbsent(cacheKey, key -> {
       try {
-        var stat = this.client.checkExists().forPath(registryKey);
+        var stat = client.checkExists().forPath(registryKey);
         if (stat == null) {
           LOG.warn("No configuration value for key '{}'", registryKey);
           return null;
         }
-        var value = this.client.getData().forPath(registryKey);
+        var value = client.getData().forPath(registryKey);
         return value != null ? new String(value, StandardCharsets.UTF_8.name()) : null;
       } catch (Exception ex) {
         throw new ApplicationRuntimeException(new RegistryException("Cannot get register", ex));
       }
     });
 
-    return this.cache.get(cacheKey);
+    return cache.get(cacheKey);
   }
 
   @Override
   public Map<String, String> all() {
-    return new HashMap<>(this.cache);
+    return new HashMap<>(cache);
   }
 
   @Override
   public void open() {
     if (!isClientOpened()) {
-      this.client.start();
+      client.start();
     }
   }
 
   private boolean isClientOpened() {
-    return this.client.getState().equals(CuratorFrameworkState.STARTED);
+    return client.getState().equals(CuratorFrameworkState.STARTED);
   }
 
   @Override
   public void close() {
-    this.client.close();
+    client.close();
   }
 
   @Override
   public List<String> values() throws RegistryException {
-    return new ArrayList<>(this.cache.values());
+    return new ArrayList<>(cache.values());
   }
 
   @Override
   public List<String> keys() throws RegistryException {
-    return new ArrayList<>(this.cache.keySet());
+    return new ArrayList<>(cache.keySet());
   }
 }

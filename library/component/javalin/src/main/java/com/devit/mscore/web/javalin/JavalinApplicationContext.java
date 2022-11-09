@@ -33,7 +33,7 @@ public class JavalinApplicationContext extends ApplicationContext {
 
     return new JavalinApplicationContext(newContextData);
   }
-  
+
   public static ApplicationContext of(Context ctx, Map<String, Object> contextData) {
     contextData.putAll(ctx.headerMap());
 
@@ -45,7 +45,7 @@ public class JavalinApplicationContext extends ApplicationContext {
 
     return context;
   }
-  
+
   public static ApplicationContext of(Context ctx) {
     var contextData = new HashMap<String, Object>();
     return of(ctx, contextData);

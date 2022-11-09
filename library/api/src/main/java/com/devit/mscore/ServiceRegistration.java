@@ -61,31 +61,31 @@ public class ServiceRegistration {
   }
 
   private void executeRegister(String domain) throws ConfigException, RegistryException {
-    var useStaticAddressOptional = this.configuration.getConfig(REGISTRY_STATIC).orElse("false");
+    var useStaticAddressOptional = configuration.getConfig(REGISTRY_STATIC).orElse("false");
     var useStaticAddress = Boolean.parseBoolean(useStaticAddressOptional);
     var address = getAddress(useStaticAddress, domain);
     var key = getKey(domain);
-    this.registry.add(key, address);
+    registry.add(key, address);
   }
 
   private String getAddress(boolean useStaticAddress, String domain)
       throws ConfigException, RegistryException {
     if (useStaticAddress) {
-      var configKey = String.format(REGISTRY_ADDRESS, this.configuration.getServiceName());
+      var configKey = String.format(REGISTRY_ADDRESS, configuration.getServiceName());
       Supplier<ConfigException> throwingElse = () -> new ConfigException("No config for registry address");
-      var baseAddress = this.configuration.getConfig(configKey).orElseThrow(throwingElse);
+      var baseAddress = configuration.getConfig(configKey).orElseThrow(throwingElse);
       return String.format("%s/%s", baseAddress, domain);
     } else {
       Supplier<ConfigException> throwingElse = () -> new ConfigException("No config for web port");
-      var protocol = getProtocol(this.configuration);
+      var protocol = getProtocol(configuration);
       var localAddress = getLocalAddress();
-      var port = this.configuration.getConfig(WEB_PORT).orElseThrow(throwingElse);
+      var port = configuration.getConfig(WEB_PORT).orElseThrow(throwingElse);
       return String.format("%s://%s:%s/%s", protocol, localAddress, port, domain);
     }
   }
 
   public String get(String domain) throws RegistryException {
-    return this.registry.get(getKey(domain));
+    return registry.get(getKey(domain));
   }
 
   private static String getKey(String domain) {
@@ -105,10 +105,10 @@ public class ServiceRegistration {
   }
 
   public void open() {
-    this.registry.open();
+    registry.open();
   }
 
   public void close() {
-    this.registry.close();
+    registry.close();
   }
 }

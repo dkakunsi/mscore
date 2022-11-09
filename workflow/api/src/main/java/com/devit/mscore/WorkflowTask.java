@@ -1,7 +1,7 @@
 package com.devit.mscore;
 
-import static com.devit.mscore.util.AttributeConstants.ID;
 import static com.devit.mscore.util.AttributeConstants.NAME;
+import static com.devit.mscore.util.Constants.ID;
 import static com.devit.mscore.util.DateUtils.toZonedDateTime;
 
 import java.util.Date;
@@ -26,7 +26,7 @@ public abstract class WorkflowTask extends WorkflowObject {
     json.put(ORGANISATION, getOrganisation());
     json.put(EXECUTION_ID, getExecutionId());
     json.put(OWNER, getOwner());
-    json.put(STATUS_CONSTANT, this.status);
+    json.put(STATUS_CONSTANT, status);
     return json;
   }
 

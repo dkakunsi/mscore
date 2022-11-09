@@ -30,21 +30,24 @@ public class FlowableWorkflowFactory extends ResourceManager {
 
   private static final String LOCATION = "services.%s.definition.location";
 
+  private static final String WORKFLOW_DEFINITION = "workflow_definition";
+
   private ProcessEngine processEngine;
 
   private WorkflowDataSource<?> dataSource;
 
   protected FlowableWorkflowFactory(Configuration configuration, Registry registry, WorkflowDataSource<?> dataSource) {
-    super("workflow_definition", configuration, registry);
+    super(WORKFLOW_DEFINITION, configuration, registry);
     this.dataSource = dataSource;
   }
 
-  public static FlowableWorkflowFactory of(Configuration configuration, Registry registry, WorkflowDataSource<?> dataSource) {
+  public static FlowableWorkflowFactory of(Configuration configuration, Registry registry,
+      WorkflowDataSource<?> dataSource) {
     return new FlowableWorkflowFactory(configuration, registry, dataSource);
   }
 
   public List<WorkflowDefinition> getDefinitions() throws RegistryException {
-    var registeredDefinitions = this.registry.values();
+    var registeredDefinitions = registry.values();
     var definitions = new ArrayList<WorkflowDefinition>();
     registeredDefinitions.forEach(definition -> definitions.add(new FlowableDefinition(definition)));
     return definitions;
@@ -52,9 +55,9 @@ public class FlowableWorkflowFactory extends ResourceManager {
 
   @Override
   protected String getResourceLocation() {
-    var configName = String.format(LOCATION, this.configuration.getServiceName());
+    var configName = String.format(LOCATION, configuration.getServiceName());
     try {
-      return this.configuration.getConfig(configName).orElse(null);
+      return configuration.getConfig(configName).orElse(null);
     } catch (ConfigException ex) {
       return null;
     }
@@ -66,8 +69,8 @@ public class FlowableWorkflowFactory extends ResourceManager {
   }
 
   private ProcessEngine getProcessEngine(WorkflowDataSource<?> dataSource) throws ConfigException, ProcessException {
-    if (this.processEngine != null) {
-      return this.processEngine;
+    if (processEngine != null) {
+      return processEngine;
     }
 
     ProcessEngineConfiguration processEngineConfiguration;
@@ -79,18 +82,18 @@ public class FlowableWorkflowFactory extends ResourceManager {
       throw new ProcessException("Data source is not supported");
     }
 
-    return this.processEngine = processEngineConfiguration.buildProcessEngine();
+    return processEngine = processEngineConfiguration.buildProcessEngine();
   }
 
   public WorkflowDefinitionRepository definitionRepository() throws ConfigException, ProcessException {
-    return new FlowableDefinitionRepository(getProcessEngine(this.dataSource));
+    return new FlowableDefinitionRepository(getProcessEngine(dataSource));
   }
 
   public WorkflowInstanceRepository instanceRepository() throws ConfigException, ProcessException {
-    return new FlowableInstanceRepository(getProcessEngine(this.dataSource));
+    return new FlowableInstanceRepository(getProcessEngine(dataSource));
   }
 
   public WorkflowTaskRepository taskRepository() throws ConfigException, ProcessException {
-    return new FlowableTaskRepository(getProcessEngine(this.dataSource));
+    return new FlowableTaskRepository(getProcessEngine(dataSource));
   }
 }

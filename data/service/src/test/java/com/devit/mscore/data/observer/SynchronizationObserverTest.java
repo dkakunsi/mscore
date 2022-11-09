@@ -18,7 +18,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 public class SynchronizationObserverTest {
-  
+
   @Test
   public void testNotify() throws IndexingException {
     var index = mock(Index.class);

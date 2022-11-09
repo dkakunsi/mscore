@@ -46,8 +46,8 @@ public class JavalinApiFactory {
 
   protected JavalinApiFactory(Configuration configuration) {
     this.configuration = configuration;
-    this.javalinConfigurer = createJavalinConfig();
-    this.endpoints = new ArrayList<>();
+    javalinConfigurer = createJavalinConfig();
+    endpoints = new ArrayList<>();
   }
 
   public static JavalinApiFactory of(Configuration configuration) {
@@ -92,13 +92,13 @@ public class JavalinApiFactory {
   }
 
   public JavalinApiFactory add(Endpoint endpoint) {
-    this.endpoints.add(endpoint);
+    endpoints.add(endpoint);
     return this;
   }
 
   public Server server() throws ConfigException {
-    return new JavalinServer(Integer.parseInt(getPort()), this.endpoints, this.validations,
-        this.authenticationProvider, this.javalinConfigurer);
+    return new JavalinServer(Integer.parseInt(getPort()), endpoints, validations,
+        authenticationProvider, javalinConfigurer);
   }
 
   private String getPort() throws ConfigException {
@@ -118,7 +118,7 @@ public class JavalinApiFactory {
   }
 
   private Optional<String> getFormattedConfig(String template) throws ConfigException {
-    var configName = String.format(template, this.configuration.getServiceName());
-    return this.configuration.getConfig(configName);
+    var configName = String.format(template, configuration.getServiceName());
+    return configuration.getConfig(configName);
   }
 }

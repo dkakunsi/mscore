@@ -26,7 +26,7 @@ public class SetStatus extends SetAttribute {
 
     var domain = getEntityDomain(execution);
     var entityId = execution.getVariable("businessKey", String.class);
-    var targetValue = this.status.getValue(execution).toString();
+    var targetValue = status.getValue(execution).toString();
 
     LOGGER.info("Updating status of '{}' in domain '{}' to '{}'", entityId, domain, targetValue);
 
@@ -46,7 +46,7 @@ public class SetStatus extends SetAttribute {
 
   private String getCloseReason(DelegateExecution execution) {
     try {
-      return this.closeReason.getValue(execution).toString();
+      return closeReason.getValue(execution).toString();
     } catch (NullPointerException npe) {
       // get closeReason from variable.
       return execution.getVariable("closeReason", String.class);

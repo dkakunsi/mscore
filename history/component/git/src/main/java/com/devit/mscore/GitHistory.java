@@ -45,24 +45,24 @@ public class GitHistory implements History {
     LOGGER.info("Creating history of '{}'", getId(message));
     try {
       LOGGER.debug("Checkout master branch");
-      this.repository.checkout().setName("master").call();
+      repository.checkout().setName("master").call();
 
       LOGGER.debug("Pulling from remote repository");
-      this.repository.pull().setTransportConfigCallback(transportConfigCallback).call();
+      repository.pull().setTransportConfigCallback(transportConfigCallback).call();
 
       LOGGER.debug("Writing file to local repository");
       writeFile(message);
 
       LOGGER.debug("Add file to Git index");
-      this.repository.add().addFilepattern(getFilename(message)).call();
+      repository.add().addFilepattern(getFilename(message)).call();
 
       LOGGER.debug("Committing changes");
       var committer = getCommitter();
       var commitMessage = String.format("Changes to '%s' by '%s'", getFilename(message), committer);
-      this.repository.commit().setMessage(commitMessage).setAuthor(committer, committer).call();
+      repository.commit().setMessage(commitMessage).setAuthor(committer, committer).call();
 
       LOGGER.debug("Pushing to remote repository");
-      this.repository.push().setTransportConfigCallback(transportConfigCallback).call();
+      repository.push().setTransportConfigCallback(transportConfigCallback).call();
 
       LOGGER.info("Finish creating history of '{}'", getId(message));
     } catch (GitAPIException ex) {
@@ -97,12 +97,12 @@ public class GitHistory implements History {
   }
 
   private Path getFilePath(JSONObject message) {
-    return Paths.get(this.rootLocalRepo, getFilename(message));
+    return Paths.get(rootLocalRepo, getFilename(message));
   }
 
   @Override
   public void close() {
-    this.repository.close();
+    repository.close();
   }
 
   private static String getFilename(JSONObject message) {
@@ -131,7 +131,7 @@ public class GitHistory implements History {
 
     private Builder(Configuration configuration) throws ConfigException {
       this.configuration = configuration;
-      this.localDirectoryPath = getLocalDirectoryPath(configuration);
+      localDirectoryPath = getLocalDirectoryPath(configuration);
     }
 
     public static Builder of(Configuration configuration) throws ConfigException {
@@ -139,13 +139,13 @@ public class GitHistory implements History {
     }
 
     public GitHistory historyManager() throws ConfigException {
-      var localDirectoryPath = getLocalDirectoryPath(this.configuration);
       var localDirectory = getLocalDirectory(localDirectoryPath);
-      var repository = initRepository(this.configuration, localDirectory);
-      return historyManager(this.localDirectoryPath, repository, createTransportConfigCallback(this.configuration));
+      var repository = initRepository(configuration, localDirectory);
+      return historyManager(localDirectoryPath, repository, createTransportConfigCallback(configuration));
     }
 
-    public GitHistory historyManager(String directoryPath, Git repository, TransportConfigCallback transportConfigCallback) throws ConfigException {
+    public GitHistory historyManager(String directoryPath, Git repository,
+        TransportConfigCallback transportConfigCallback) throws ConfigException {
       return new GitHistory(directoryPath, repository, transportConfigCallback);
     }
 

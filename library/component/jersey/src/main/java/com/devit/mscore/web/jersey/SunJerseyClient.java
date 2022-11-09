@@ -72,7 +72,7 @@ public class SunJerseyClient extends Requester implements com.devit.mscore.web.C
   private Builder request(String uri, Map<String, String> params,
       Map<String, String> headers) {
 
-    var api = this.client.resource(uri);
+    var api = client.resource(uri);
     if (params != null) {
       params.forEach(api::queryParam);
     }

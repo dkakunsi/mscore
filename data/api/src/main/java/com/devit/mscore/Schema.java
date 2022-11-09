@@ -19,7 +19,7 @@ public abstract class Schema extends Resource {
 
   protected Schema(File resourceFile) throws ResourceException {
     super(resourceFile);
-    this.name = resourceFile.getName().split("\\.")[0];
+    name = resourceFile.getName().split("\\.")[0];
   }
 
   protected Schema(String name, String content) {
@@ -27,7 +27,7 @@ public abstract class Schema extends Resource {
   }
 
   public String getDomain() {
-    return this.name;
+    return name;
   }
 
   public abstract void validate(JSONObject json) throws ValidationException;

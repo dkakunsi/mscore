@@ -23,22 +23,22 @@ public class ElasticsearchIndex extends Index {
 
   @Override
   public String index(JSONObject json) throws IndexingException {
-    return this.service.index(this.indexName, json);
+    return service.index(indexName, json);
   }
 
   @Override
   public Optional<JSONArray> search(JSONObject criteria) throws IndexingException {
-    return this.service.search(this.indexName, criteria);
+    return service.search(indexName, criteria);
   }
 
   @Override
   public Optional<JSONObject> get(String id) throws IndexingException {
-    return this.service.get(this.indexName, id);
+    return service.get(indexName, id);
   }
 
   public Index build() throws JSONException {
-    var content = this.mapping.getString("content");
-    this.service.buildIndex(this.indexName, content);
+    var content = mapping.getString("content");
+    service.buildIndex(indexName, content);
     return this;
   }
 }

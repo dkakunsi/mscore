@@ -33,7 +33,7 @@ public abstract class Filter {
    * @param json to filter.
    */
   public void filter(JSONObject json) {
-    this.attributes.forEach(attribute -> apply(json, attribute));
+    attributes.forEach(attribute -> apply(json, attribute));
   }
 
   protected abstract void apply(JSONObject json, String key);

@@ -39,10 +39,10 @@ public class ApplicationStarter implements Starter {
 
   public ApplicationStarter(FileConfiguration fileConfiguration) throws ConfigException {
     try {
-      this.zookeeperRegistry = ZookeeperRegistryFactory.of(fileConfiguration).registry("platformConfig");
+      zookeeperRegistry = ZookeeperRegistryFactory.of(fileConfiguration).registry("platformConfig");
       zookeeperRegistry.open();
-      this.configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
-      this.messagingFactory = KafkaMessagingFactory.of(this.configuration);
+      configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
+      messagingFactory = KafkaMessagingFactory.of(configuration);
     } catch (RegistryException ex) {
       throw new ConfigException(ex);
     }
@@ -58,9 +58,9 @@ public class ApplicationStarter implements Starter {
     var emailNotificationFactory = MailNotificationFactory.of(configuration, templateRegistry, template);
     var mailNotification = emailNotificationFactory.mailNotification();
 
-    var subscriber = this.messagingFactory.subscriber();
+    var subscriber = messagingFactory.subscriber();
 
-    var topics = this.messagingFactory.getTemplatedTopics(NOTIFICATION);
+    var topics = messagingFactory.getTemplatedTopics(NOTIFICATION);
     if (topics.isPresent()) {
       var listener = EventListener.of(subscriber).with(mailNotification);
       listener.listen(topics.get());

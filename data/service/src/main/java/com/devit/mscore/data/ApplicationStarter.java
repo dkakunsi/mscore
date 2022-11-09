@@ -160,7 +160,8 @@ public class ApplicationStarter implements Starter {
     serviceRegistry.close();
   }
 
-  private Service processSchema(Schema schema, FiltersExecutor filters, SynchronizationObserver so, Publisher publisher, long syncDelay)
+  private Service processSchema(Schema schema, FiltersExecutor filters, SynchronizationObserver so, Publisher publisher,
+      long syncDelay)
       throws RegistryException, ConfigException {
 
     var index = indexFactory.index(schema.getDomain());
@@ -209,14 +210,13 @@ public class ApplicationStarter implements Starter {
     var syncDelay = configuration.getConfig(configName);
     long delay = 0L;
     try {
-      delay = syncDelay.isPresent() ? Long.parseLong(syncDelay.get()) : 0L;  
+      delay = syncDelay.isPresent() ? Long.parseLong(syncDelay.get()) : 0L;
     } catch (NumberFormatException ex) {
       LOGGER.warn("Cannot read sync delay", ex);
     }
     LOGGER.info("Adding sync delay of '{} ms'", delay);
     return delay;
   }
-
 
   private void createFilter(Configuration configuration, FiltersExecutor executors) {
     var configName = String.format(REMOVING, configuration.getServiceName());

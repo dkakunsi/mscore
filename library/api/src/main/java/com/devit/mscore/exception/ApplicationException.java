@@ -15,7 +15,7 @@ public class ApplicationException extends Exception {
 
   public ApplicationException(String message) {
     super(message);
-    this.type = null;
+    type = null;
   }
 
   public ApplicationException(String message, String type) {
@@ -25,7 +25,7 @@ public class ApplicationException extends Exception {
 
   public ApplicationException(Throwable cause) {
     super(cause);
-    this.type = null;
+    type = null;
   }
 
   public ApplicationException(Throwable cause, String type) {
@@ -35,7 +35,7 @@ public class ApplicationException extends Exception {
 
   public ApplicationException(String message, Throwable cause) {
     super(message, cause);
-    this.type = null;
+    type = null;
   }
 
   public ApplicationException(String message, Throwable cause, String type) {
@@ -44,7 +44,7 @@ public class ApplicationException extends Exception {
   }
 
   public String getType() {
-    return this.type;
+    return type;
   }
 
   @Override

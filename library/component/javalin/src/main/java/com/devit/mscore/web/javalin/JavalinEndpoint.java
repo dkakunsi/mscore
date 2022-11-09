@@ -1,7 +1,7 @@
 package com.devit.mscore.web.javalin;
 
-import static com.devit.mscore.util.AttributeConstants.CODE;
-import static com.devit.mscore.util.AttributeConstants.ID;
+import static com.devit.mscore.util.Constants.CODE;
+import static com.devit.mscore.util.Constants.ID;
 import static io.javalin.apibuilder.ApiBuilder.delete;
 import static io.javalin.apibuilder.ApiBuilder.get;
 import static io.javalin.apibuilder.ApiBuilder.path;
@@ -35,18 +35,18 @@ public class JavalinEndpoint implements Endpoint {
 
   public List<EndpointGroup> getEndpoints() {
     var endpoints = new ArrayList<EndpointGroup>();
-    endpoints.add(() -> path(this.controller.getBasePath(), () -> {
-      post(this.controller.post());
-      post("search", this.controller.search());
-      post("sync", this.controller.syncAll());
-      get(this.controller.all());
-      get("code/:" + CODE, this.controller.getOneByCode());
-      get("keys", this.controller.getMany());
+    endpoints.add(() -> path(controller.getBasePath(), () -> {
+      post(controller.post());
+      post("search", controller.search());
+      post("sync", controller.syncAll());
+      get(controller.all());
+      get("code/:" + CODE, controller.getOneByCode());
+      get("keys", controller.getMany());
       path(":" + ID, () -> {
-        get(this.controller.getOne());
-        put(this.controller.put());
-        delete(this.controller.delete());
-        post("sync", this.controller.syncById());
+        get(controller.getOne());
+        put(controller.put());
+        delete(controller.delete());
+        post("sync", controller.syncById());
       });
     }));
 

@@ -57,11 +57,11 @@ public abstract class ResourceManager extends Manager {
   private void registerResource(File resourceFile) throws ResourceException, RegistryException {
     var resource = createResource(resourceFile);
     var message = resource.getMessage();
-    this.registry.add(getName(message), message.toString());
+    registry.add(getName(message), message.toString());
   }
 
   public String getType() {
-    return this.resourceType;
+    return resourceType;
   }
 
   protected abstract String getResourceLocation() throws ConfigException;

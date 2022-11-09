@@ -22,8 +22,8 @@ public class LogDelegate implements JavaDelegate {
 
   @Override
   public void execute(DelegateExecution execution) {
-    var messageValue = this.message.getValue(execution).toString();
-    var levelValue = this.level == null ? "" : this.level.getValue(execution).toString();
+    var messageValue = message.getValue(execution).toString();
+    var levelValue = level != null ? level.getValue(execution).toString() : "";
 
     switch (levelValue.toLowerCase()) {
       case "info":

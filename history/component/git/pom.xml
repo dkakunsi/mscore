@@ -17,7 +17,7 @@
     <jgit.version>6.0.0.202111291000-r</jgit.version>
     <jsch.version>0.1.72</jsch.version>
     <commons-io.version>2.11.0</commons-io.version>
-    <minimum.bundle.line.coverage>0.88</minimum.bundle.line.coverage>
+    <minimum.bundle.line.coverage>0.87</minimum.bundle.line.coverage>
   </properties>
 
   <dependencies>

@@ -27,7 +27,7 @@ public class FileConfiguration implements Configuration {
   }
 
   public FileConfiguration(String configLocation) throws ConfigException {
-    this.configs = readConfig(configLocation);
+    configs = readConfig(configLocation);
   }
 
   private static Map<String, String> readConfig(String configLocation) throws ConfigException {
@@ -57,17 +57,17 @@ public class FileConfiguration implements Configuration {
 
   @Override
   public String getServiceName() {
-    return this.configs.get(SERVICE_NAME);
+    return configs.get(SERVICE_NAME);
   }
 
   @Override
   public Map<String, String> getConfigs() {
-    return new HashMap<>(this.configs);
+    return new HashMap<>(configs);
   }
 
   @Override
   public Optional<String> getConfig(String key) throws ConfigException {
-    var value = this.configs.get(key);
+    var value = configs.get(key);
     return StringUtils.isNotBlank(value) ? Optional.of(value) : Optional.empty();
   }
 

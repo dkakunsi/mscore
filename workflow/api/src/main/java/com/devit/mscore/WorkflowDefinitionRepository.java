@@ -6,7 +6,7 @@ import java.util.Optional;
  * Manage definition in database.
  */
 public interface WorkflowDefinitionRepository {
-  
+
   /**
    * Deploy the definition to the underlaying workflow engine.
    * 

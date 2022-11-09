@@ -39,17 +39,17 @@ public class ApplicationStarter implements Starter {
       var registryFactory = ZookeeperRegistryFactory.of(fileConfiguration);
       var zookeeperRegistry = registryFactory.registry("platformConfig");
       zookeeperRegistry.open();
-      this.configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
+      configuration = new ZookeeperConfiguration(zookeeperRegistry, fileConfiguration.getServiceName());
 
-      this.messagingFactory = KafkaMessagingFactory.of(this.configuration);
-      this.historyBuilder = GitHistory.Builder.of(this.configuration);
+      messagingFactory = KafkaMessagingFactory.of(configuration);
+      historyBuilder = GitHistory.Builder.of(configuration);
     } catch (RegistryException ex) {
       throw new ConfigException(ex);
     }
   }
 
   private List<String> getTopicsToListen() throws ConfigException {
-    var topicConfigName = String.format(TOPICS_KEY, this.configuration.getServiceName());
+    var topicConfigName = String.format(TOPICS_KEY, configuration.getServiceName());
     var topics = configuration.getConfig(topicConfigName)
         .orElseThrow(() -> new ConfigException("No topic provided"));
     return Stream.of(topics.split(",")).collect(Collectors.toList());

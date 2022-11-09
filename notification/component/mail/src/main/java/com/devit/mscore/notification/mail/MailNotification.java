@@ -45,8 +45,8 @@ public class MailNotification implements Notification {
     this.sendInfo = sendInfo;
   }
 
-  public MailNotification withPossibleAttributes(String possibleAttributes) {
-    this.possibleAttributes = List.of(possibleAttributes.split(","));
+  public MailNotification withPossibleAttributes(String possibleAttributesString) {
+    possibleAttributes = List.of(possibleAttributesString.split(","));
     return this;
   }
 
@@ -57,7 +57,7 @@ public class MailNotification implements Notification {
 
   @Override
   public void send(String code, JSONObject data) throws NotificationException {
-    var optional = extract(data, this.possibleAttributes);
+    var optional = extract(data, possibleAttributes);
     if (optional.isEmpty()) {
       LOGGER.warn("No email available in entity");
       return;
@@ -72,12 +72,12 @@ public class MailNotification implements Notification {
     }
 
     var emailTemplate = loadTemplate(templateName);
-    var emailSubject = String.format("%s | %s", this.sendInfo.getSubject(), getName(data));
+    var emailSubject = String.format("%s | %s", sendInfo.getSubject(), getName(data));
 
     try {
       for (String to : emails) {
-        var text = this.template.build(emailTemplate, flatten(data));
-        this.sender.send(this.sendInfo, to, emailSubject, text);
+        var text = template.build(emailTemplate, flatten(data));
+        sender.send(sendInfo, to, emailSubject, text);
       }
     } catch (MessagingException | TemplateException ex) {
       throw new NotificationException("Cannot send email", ex);
@@ -86,7 +86,7 @@ public class MailNotification implements Notification {
 
   private String loadTemplate(String templateName) throws NotificationException {
     try {
-      var template = this.registry.get(templateName);
+      var template = registry.get(templateName);
       if (StringUtils.isBlank(template)) {
         LOGGER.error("Template is empty: '{}'", templateName);
         throw new NotificationException("Template is empty. " + templateName);

@@ -61,7 +61,7 @@ public class JerseyClient extends Requester implements com.devit.mscore.web.Clie
   private Builder request(String uri, Map<String, String> params,
       Map<String, String> headers) {
 
-    var target = this.client.target(uri);
+    var target = client.target(uri);
     if (params != null) {
       params.forEach(target::queryParam);
     }

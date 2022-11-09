@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface WorkflowTaskRepository {
-  
+
   List<WorkflowTask> getTasks(String instanceId);
 
   Optional<WorkflowTask> getTask(String taskId);

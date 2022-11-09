@@ -2,8 +2,8 @@ package com.devit.mscore.workflow.flowable.delegate;
 
 import static com.devit.mscore.ApplicationContext.getContext;
 import static com.devit.mscore.ApplicationContext.setContext;
-import static com.devit.mscore.util.AttributeConstants.DOMAIN;
 import static com.devit.mscore.util.AttributeConstants.getDomain;
+import static com.devit.mscore.util.Constants.DOMAIN;
 import static com.devit.mscore.web.WebUtils.SUCCESS;
 import static com.devit.mscore.web.WebUtils.getMessageType;
 
@@ -36,8 +36,8 @@ public class SetAttribute implements JavaDelegate {
     var domain = execution.getVariable("domain", String.class);
     var entityId = execution.getVariable("businessKey", String.class);
 
-    var targetAttribute = this.attribute.getValue(execution).toString();
-    var targetValue = this.value.getValue(execution).toString();
+    var targetAttribute = attribute.getValue(execution).toString();
+    var targetValue = value.getValue(execution).toString();
 
     LOGGER.info("Updating attribute '{}' of domain '{}' to '{}'", targetAttribute, domain, targetValue);
 

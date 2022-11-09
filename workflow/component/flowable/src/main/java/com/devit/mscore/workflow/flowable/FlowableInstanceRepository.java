@@ -20,19 +20,19 @@ public class FlowableInstanceRepository implements WorkflowInstanceRepository {
   private final IdentityService identityService;
 
   public FlowableInstanceRepository(ProcessEngine processEngine) {
-    this.runtimeService = processEngine.getRuntimeService();
-    this.historyService = processEngine.getHistoryService();
-    this.identityService = processEngine.getIdentityService();
+    runtimeService = processEngine.getRuntimeService();
+    historyService = processEngine.getHistoryService();
+    identityService = processEngine.getIdentityService();
   }
 
   @Override
   public WorkflowInstance create(String definitionId, Map<String, Object> variables) {
     var createdBy = variables.get("createdBy").toString();
-    this.identityService.setAuthenticatedUserId(createdBy);
+    identityService.setAuthenticatedUserId(createdBy);
 
     var businessKey = variables.get("businessKey").toString();
     var name = variables.get("name").toString();
-    var processInstance = this.runtimeService.createProcessInstanceBuilder()
+    var processInstance = runtimeService.createProcessInstanceBuilder()
         .processDefinitionId(definitionId)
         .businessKey(businessKey)
         .name(name)
@@ -44,12 +44,12 @@ public class FlowableInstanceRepository implements WorkflowInstanceRepository {
 
   @Override
   public Map<String, Object> getVariables(String instanceId) {
-    return this.runtimeService.getVariables(instanceId);
+    return runtimeService.getVariables(instanceId);
   }
 
   @Override
   public Optional<WorkflowInstance> get(String instanceId) {
-    var processInstance = this.runtimeService.createProcessInstanceQuery().processInstanceId(instanceId)
+    var processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(instanceId)
         .singleResult();
     if (processInstance == null) {
       return Optional.empty();
@@ -60,7 +60,7 @@ public class FlowableInstanceRepository implements WorkflowInstanceRepository {
 
   @Override
   public boolean isCompleted(String instanceId) {
-    var historicProcessInstance = this.historyService.createHistoricProcessInstanceQuery()
+    var historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
         .processInstanceId(instanceId).finished().singleResult();
 
     return historicProcessInstance != null;

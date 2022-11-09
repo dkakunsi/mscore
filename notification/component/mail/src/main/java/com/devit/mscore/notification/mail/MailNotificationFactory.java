@@ -21,7 +21,7 @@ public class MailNotificationFactory {
     this.configuration = configuration;
     this.registry = registry;
     this.template = template;
-    this.sender = new MailSender();
+    sender = new MailSender();
   }
 
   public static MailNotificationFactory of(Configuration configuration, Registry registry, Template template) {
@@ -29,10 +29,10 @@ public class MailNotificationFactory {
   }
 
   public MailNotification mailNotification() throws ConfigException {
-    var sendInfo = new SendInfo(this.configuration);
-    var possibleAttributes = this.configuration.getConfig(POSSIBLE_ATTRIBUTES)
+    var sendInfo = new SendInfo(configuration);
+    var possibleAttributes = configuration.getConfig(POSSIBLE_ATTRIBUTES)
         .orElseThrow(() -> new ConfigException("No possible attribute is configured"));
-    return new MailNotification(this.registry, this.sender, this.template, sendInfo)
+    return new MailNotification(registry, sender, template, sendInfo)
         .withPossibleAttributes(possibleAttributes);
   }
 }

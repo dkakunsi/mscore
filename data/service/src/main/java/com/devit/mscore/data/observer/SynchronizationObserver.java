@@ -29,8 +29,8 @@ public class SynchronizationObserver implements PostProcessObserver {
 
   public void add(Synchronization synchronization) {
     var domain = synchronization.getReferenceDomain();
-    this.synchronizations.computeIfAbsent(domain, key -> new ArrayList<>());
-    this.synchronizations.get(domain).add(synchronization);
+    synchronizations.computeIfAbsent(domain, key -> new ArrayList<>());
+    synchronizations.get(domain).add(synchronization);
   }
 
   @Override
@@ -43,7 +43,7 @@ public class SynchronizationObserver implements PostProcessObserver {
       LOG.warn("Fail to synchronize object '{}' synce the domain is not provided", referenceId);
       return;
     }
-    synchronize(this.synchronizations.get(referenceDomain), referenceId);
+    synchronize(synchronizations.get(referenceDomain), referenceId);
 
     LOG.info("Dependencies of object '{}' of domain '{}' are all synced", getId(message), getDomain(message));
   }

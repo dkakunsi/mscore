@@ -29,19 +29,19 @@ public class ValidationsExecutor implements Executor<Validation> {
   private Map<String, List<Validation>> validations;
 
   public ValidationsExecutor() {
-    this.validations = new HashMap<>();
+    validations = new HashMap<>();
   }
 
   @Override
   public void add(Validation validation) {
     var domain = validation.getDomain();
-    this.validations.computeIfAbsent(domain, key -> new ArrayList<>());
-    this.validations.get(domain).add(validation);
+    validations.computeIfAbsent(domain, key -> new ArrayList<>());
+    validations.get(domain).add(validation);
   }
 
   @Override
   public void execute(JSONObject json) {
-    if (!valid(this.validations.get(ALL), json) || !valid(this.validations.get(getDomain(json)), json)) {
+    if (!valid(validations.get(ALL), json) || !valid(validations.get(getDomain(json)), json)) {
       throw new ApplicationRuntimeException(new ValidationException(INVALID_DATA));
     }
   }

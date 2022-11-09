@@ -42,7 +42,7 @@ public abstract class WorkflowInstance extends WorkflowObject {
     jsonObj.put(ID, getProcessInstanceId());
     jsonObj.put(ACTION, getAction());
     jsonObj.put(NAME, getName());
-    jsonObj.put(STATUS_CONSTANT, this.status);
+    jsonObj.put(STATUS_CONSTANT, status);
 
     return jsonObj;
   }
@@ -51,7 +51,7 @@ public abstract class WorkflowInstance extends WorkflowObject {
 
   protected abstract String getBusinessKey();
 
-	protected abstract String getOwner();
+  protected abstract String getOwner();
 
   protected abstract String getOrganisation();
 

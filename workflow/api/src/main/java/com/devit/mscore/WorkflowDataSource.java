@@ -3,7 +3,7 @@ package com.devit.mscore;
 import com.devit.mscore.exception.ConfigException;
 
 public interface WorkflowDataSource<T> {
-  
+
   enum Type {
     SQL
   }

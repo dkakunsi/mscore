@@ -58,7 +58,7 @@ public class DefaultService implements Service {
 
   public DefaultService(Schema schema) {
     this.schema = schema;
-    this.observers = new ArrayList<>();
+    observers = new ArrayList<>();
   }
 
   public DefaultService(Schema schema, Repository repository, Index index, ValidationsExecutor validator,
@@ -71,13 +71,13 @@ public class DefaultService implements Service {
   }
 
   public DefaultService addObserver(PostProcessObserver observer) {
-    this.observers.add(observer);
+    observers.add(observer);
     return this;
   }
 
   @Override
   public String getDomain() {
-    return this.schema.getDomain();
+    return schema.getDomain();
   }
 
   @Override
@@ -94,13 +94,13 @@ public class DefaultService implements Service {
 
     LOG.debug("Saving data '{}' to database", getCode(json));
     setAuditAttribute(json);
-    this.validator.execute(json);
+    validator.execute(json);
 
-    var result = this.repository.save(json);
+    var result = repository.save(json);
 
     try {
-      this.filter.execute(json);
-      this.observers.forEach(o -> new Thread(executeObserver(o, result)).start());
+      filter.execute(json);
+      observers.forEach(o -> new Thread(executeObserver(o, result)).start());
       return getId(result);
     } catch (JSONException e) {
       throw new ApplicationException(e);
@@ -123,7 +123,7 @@ public class DefaultService implements Service {
     var context = getContext();
     try {
       var id = getId(json);
-      if (StringUtils.isBlank(id) || !this.repository.find(id).isPresent()) {
+      if (StringUtils.isBlank(id) || !repository.find(id).isPresent()) {
         json.put(CREATED_DATE, DateUtils.nowString());
         json.put(CREATED_BY, context.getRequestedBy());
       }
@@ -140,7 +140,7 @@ public class DefaultService implements Service {
       throw new ValidationException("Id cannot be empty");
     }
     LOG.debug("Deleting data '{}' from database", id);
-    this.repository.delete(id);
+    repository.delete(id);
   }
 
   @Override
@@ -149,12 +149,12 @@ public class DefaultService implements Service {
       throw new ValidationException("Id cannot be empty");
     }
 
-    var optional = this.repository.find(id);
+    var optional = repository.find(id);
     if (optional.isEmpty()) {
       return new JSONObject();
     }
     var json = optional.get();
-    this.filter.execute(json);
+    filter.execute(json);
 
     LOG.debug("Found data with id '{}': '{}'", id, json);
     return json;
@@ -166,14 +166,14 @@ public class DefaultService implements Service {
       throw new ValidationException("Keys cannot be empty");
     }
 
-    var optional = this.repository.find(ids);
+    var optional = repository.find(ids);
     if (optional.isEmpty()) {
       return new JSONArray();
     }
 
     try {
       var jsons = optional.get();
-      this.filter.execute(jsons);
+      filter.execute(jsons);
 
       LOG.debug("Found data with ids '{}': '{}'", ids, jsons);
       return jsons;
@@ -189,12 +189,12 @@ public class DefaultService implements Service {
     }
 
     try {
-      var array = this.repository.find(CODE, code);
+      var array = repository.find(CODE, code);
       if (array.isEmpty()) {
         return new JSONObject();
       }
       var json = array.get().getJSONObject(0);
-      this.filter.execute(json);
+      filter.execute(json);
 
       LOG.debug("Found data with code '{}': '{}'", code, json);
       return json;
@@ -205,6 +205,6 @@ public class DefaultService implements Service {
 
   @Override
   public JSONArray search(JSONObject query) throws ApplicationException {
-    return this.index.search(query).orElse(new JSONArray());
+    return index.search(query).orElse(new JSONArray());
   }
 }

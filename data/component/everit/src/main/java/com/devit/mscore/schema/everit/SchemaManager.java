@@ -28,18 +28,18 @@ public class SchemaManager extends ResourceManager {
 
   private SchemaManager(Configuration configuration, Registry registry) {
     super("schema", configuration, registry);
-    this.schemas = new ArrayList<>();
+    schemas = new ArrayList<>();
   }
 
   public List<Schema> getSchemas() {
-    return new ArrayList<>(this.schemas);
+    return new ArrayList<>(schemas);
   }
 
   @Override
   protected String getResourceLocation() {
-    var configName = String.format(LOCATION, this.configuration.getServiceName());
+    var configName = String.format(LOCATION, configuration.getServiceName());
     try {
-      return this.configuration.getConfig(configName).orElse(null);
+      return configuration.getConfig(configName).orElse(null);
     } catch (ConfigException ex) {
       return null;
     }
@@ -48,7 +48,7 @@ public class SchemaManager extends ResourceManager {
   @Override
   protected Resource createResource(File file) throws ResourceException {
     var schema = new JSONSchema(file);
-    this.schemas.add(schema);
+    schemas.add(schema);
     return schema;
   }
 
@@ -62,7 +62,7 @@ public class SchemaManager extends ResourceManager {
    */
   public JSONSchema getSchema(String domain) throws JSONException, RegistryException {
     LOG.info("Retrieving schema of domain '{}'", domain);
-    var schema = this.registry.get(domain);
+    var schema = registry.get(domain);
     LOG.debug("Schema is retrieved: {}", schema);
     return new JSONSchema(new JSONObject(schema));
   }

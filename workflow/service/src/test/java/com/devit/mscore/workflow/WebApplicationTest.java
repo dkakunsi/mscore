@@ -83,10 +83,11 @@ public class WebApplicationTest {
   }
 
   @Test
-  public void givenValidRequest_WhenExecuteWorkflowIsCalledAndNoDefinitionForAction_ShouldSuccess() throws ApplicationException {
+  public void givenValidRequest_WhenExecuteWorkflowIsCalledAndNoDefinitionForAction_ShouldSuccess()
+      throws ApplicationException {
     doReturn(Optional.of("12001")).when(this.configuration).getConfig("services.workflow.web.port");
     doThrow(RegistryException.class).when(this.registry).get(REQUEST_ACTION);
-    
+
     var uri = "http://localhost:12001/process";
     var server = this.apiFactory.server();
 

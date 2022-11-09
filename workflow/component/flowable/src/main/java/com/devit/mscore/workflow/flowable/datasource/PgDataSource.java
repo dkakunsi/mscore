@@ -34,17 +34,17 @@ public class PgDataSource implements WorkflowDataSource<DataSource> {
 
   @Override
   public DataSource get() throws ConfigException {
-    var serviceName = this.configuration.getServiceName();
-    var serverNames = this.configuration.getConfig(DB_HOST)
+    var serviceName = configuration.getServiceName();
+    var serverNames = configuration.getConfig(DB_HOST)
         .orElseThrow(() -> new ConfigException("No psql host provided")).split(",");
     var portNumbers = getPorts();
-    var user = this.configuration.getConfig(DB_USERNAME)
+    var user = configuration.getConfig(DB_USERNAME)
         .orElseThrow(() -> new ConfigException("No psql user provided"));
-    var password = this.configuration.getConfig(DB_PASSWORD)
+    var password = configuration.getConfig(DB_PASSWORD)
         .orElseThrow(() -> new ConfigException("No psql password provided"));
-    var schemaName = this.configuration.getConfig(String.format(DB_SCHEMA, serviceName))
+    var schemaName = configuration.getConfig(String.format(DB_SCHEMA, serviceName))
         .orElseThrow(() -> new ConfigException("No psql schema configured"));
-    var databaseName = this.configuration.getConfig(String.format(DB_NAME, serviceName))
+    var databaseName = configuration.getConfig(String.format(DB_NAME, serviceName))
         .orElseThrow(() -> new ConfigException("No psql database configured"));
 
     return getDataSource(serverNames, portNumbers, user, password, schemaName, databaseName);
@@ -63,7 +63,7 @@ public class PgDataSource implements WorkflowDataSource<DataSource> {
   }
 
   private int[] getPorts() throws ConfigException {
-    var ports = this.configuration.getConfig(DB_PORT).orElse(DEFAULT_PORT).split(",");
+    var ports = configuration.getConfig(DB_PORT).orElse(DEFAULT_PORT).split(",");
     return Arrays.stream(ports).mapToInt(Integer::parseInt).toArray();
   }
 

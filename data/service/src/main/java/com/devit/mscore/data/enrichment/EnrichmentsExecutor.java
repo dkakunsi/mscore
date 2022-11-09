@@ -30,25 +30,25 @@ public final class EnrichmentsExecutor implements Executor<Enrichment> {
   private Map<String, Map<String, Enrichment>> enrichments;
 
   public EnrichmentsExecutor() {
-    this.enrichments = new HashMap<>();
+    enrichments = new HashMap<>();
   }
 
   @Override
   public void add(Enrichment enrichment) {
     var domain = enrichment.getDomain();
-    this.enrichments.computeIfAbsent(domain, key -> new HashMap<>());
-    this.enrichments.get(domain).put(enrichment.getAttribute(), enrichment);
+    enrichments.computeIfAbsent(domain, key -> new HashMap<>());
+    enrichments.get(domain).put(enrichment.getAttribute(), enrichment);
   }
 
   @Override
   public void execute(JSONObject json) {
     var domain = getDomain(json);
-    enrich(this.enrichments.get(ALL), json);
+    enrich(enrichments.get(ALL), json);
     if (StringUtils.isEmpty(domain)) {
       LOG.warn("Fail to enrich domain-specific attributes of '{}'. Domain is not provided", json);
       return;
     }
-    enrich(this.enrichments.get(domain), json);
+    enrich(enrichments.get(domain), json);
   }
 
   private static void enrich(Map<String, Enrichment> enrichments, JSONObject json) {

@@ -1,6 +1,6 @@
 package com.devit.mscore.workflow.flowable;
 
-import static com.devit.mscore.util.AttributeConstants.DOMAIN;
+import static com.devit.mscore.util.Constants.DOMAIN;
 
 import com.devit.mscore.WorkflowInstance;
 
@@ -22,175 +22,175 @@ public class FlowableInstance extends WorkflowInstance implements ProcessInstanc
 
   public FlowableInstance(ProcessInstance processInstance, Map<String, Object> variables) {
     this.processInstance = processInstance;
-    this.status = processInstance.isEnded() ? COMPLETED : ACTIVATED;
     this.variables = variables;
+    status = processInstance.isEnded() ? COMPLETED : ACTIVATED;
   }
 
   @Override
   public String getId() {
-    return this.processInstance.getId();
+    return processInstance.getId();
   }
 
   @Override
   public boolean isEnded() {
-    return this.processInstance.isEnded();
+    return processInstance.isEnded();
   }
 
   @Override
   public String getActivityId() {
-    return this.processInstance.getActivityId();
+    return processInstance.getActivityId();
   }
 
   @Override
   public String getProcessInstanceId() {
-    return this.processInstance.getProcessInstanceId();
+    return processInstance.getProcessInstanceId();
   }
 
   @Override
   public String getParentId() {
-    return this.processInstance.getParentId();
+    return processInstance.getParentId();
   }
 
   @Override
   public String getSuperExecutionId() {
-    return this.processInstance.getSuperExecutionId();
+    return processInstance.getSuperExecutionId();
   }
 
   @Override
   public String getRootProcessInstanceId() {
-    return this.processInstance.getRootProcessInstanceId();
+    return processInstance.getRootProcessInstanceId();
   }
 
   @Override
   public String getReferenceId() {
-    return this.processInstance.getReferenceId();
+    return processInstance.getReferenceId();
   }
 
   @Override
   public String getReferenceType() {
-    return this.processInstance.getReferenceType();
+    return processInstance.getReferenceType();
   }
 
   @Override
   public String getPropagatedStageInstanceId() {
-    return this.processInstance.getPropagatedStageInstanceId();
+    return processInstance.getPropagatedStageInstanceId();
   }
 
   @Override
   public String getProcessDefinitionId() {
-    return this.processInstance.getProcessDefinitionId();
+    return processInstance.getProcessDefinitionId();
   }
 
   @Override
   public String getProcessDefinitionName() {
-    return this.processInstance.getProcessDefinitionName();
+    return processInstance.getProcessDefinitionName();
   }
 
   @Override
   public String getProcessDefinitionKey() {
-    return this.processInstance.getProcessDefinitionKey();
+    return processInstance.getProcessDefinitionKey();
   }
 
   @Override
   public Integer getProcessDefinitionVersion() {
-    return this.processInstance.getProcessDefinitionVersion();
+    return processInstance.getProcessDefinitionVersion();
   }
 
   @Override
   public String getDeploymentId() {
-    return this.processInstance.getDeploymentId();
+    return processInstance.getDeploymentId();
   }
 
   @Override
   public String getBusinessKey() {
-    return this.processInstance.getBusinessKey();
+    return processInstance.getBusinessKey();
   }
 
   @Override
   public boolean isSuspended() {
-    return this.processInstance.isSuspended();
+    return processInstance.isSuspended();
   }
 
   @Override
   public Map<String, Object> getProcessVariables() {
-    return this.processInstance.getProcessVariables();
+    return processInstance.getProcessVariables();
   }
 
   @Override
   public String getTenantId() {
-    return this.processInstance.getTenantId();
+    return processInstance.getTenantId();
   }
 
   @Override
   public String getName() {
-    return this.processInstance.getName();
+    return processInstance.getName();
   }
 
   @Override
   public String getDescription() {
-    return this.processInstance.getDescription();
+    return processInstance.getDescription();
   }
 
   @Override
   public String getLocalizedName() {
-    return this.processInstance.getLocalizedName();
+    return processInstance.getLocalizedName();
   }
 
   @Override
   public String getLocalizedDescription() {
-    return this.processInstance.getLocalizedDescription();
+    return processInstance.getLocalizedDescription();
   }
 
   @Override
   public Date getStartTime() {
-    return this.processInstance.getStartTime();
+    return processInstance.getStartTime();
   }
 
   @Override
   public String getStartUserId() {
-    return this.processInstance.getStartUserId();
+    return processInstance.getStartUserId();
   }
 
   @Override
   public String getCallbackId() {
-    return this.processInstance.getCallbackId();
+    return processInstance.getCallbackId();
   }
 
   @Override
   public String getCallbackType() {
-    return this.processInstance.getCallbackType();
+    return processInstance.getCallbackType();
   }
 
   @Override
   public void complete() {
-    this.status = COMPLETED;
+    status = COMPLETED;
   }
 
   public boolean isComplete() {
-    return COMPLETED.equals(this.status);
+    return COMPLETED.equals(status);
   }
 
   @Override
   protected String getOwner() {
-    var owner = this.variables.get(OWNER);
+    var owner = variables.get(OWNER);
     return owner != null ? owner.toString() : null;
   }
 
   @Override
   protected String getOrganisation() {
-    var organisation = this.variables.get(ORGANISATION);
+    var organisation = variables.get(ORGANISATION);
     return organisation != null ? organisation.toString() : null;
   }
 
   @Override
   protected String getDomain() {
-    var domain = this.variables.get(DOMAIN);
+    var domain = variables.get(DOMAIN);
     return domain != null ? domain.toString() : null;
   }
 
   @Override
   protected String getAction() {
-    return this.getProcessDefinitionId().split(":")[0];
+    return getProcessDefinitionId().split(":")[0];
   }
 
   @Override

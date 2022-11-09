@@ -26,7 +26,8 @@ public class IndexingObserver implements PostProcessObserver {
 
   protected SynchronizationObserver syncObserver;
 
-  public IndexingObserver(Index index, EnrichmentsExecutor enricher, SynchronizationObserver syncObserver, long syncDelay) {
+  public IndexingObserver(Index index, EnrichmentsExecutor enricher, SynchronizationObserver syncObserver,
+      long syncDelay) {
     this.index = index;
     this.enricher = enricher;
     this.syncObserver = syncObserver;

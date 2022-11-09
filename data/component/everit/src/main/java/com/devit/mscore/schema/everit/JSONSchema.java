@@ -1,6 +1,6 @@
 package com.devit.mscore.schema.everit;
 
-import static com.devit.mscore.util.AttributeConstants.DOMAIN;
+import static com.devit.mscore.util.Constants.DOMAIN;
 
 import com.devit.mscore.Schema;
 import com.devit.mscore.exception.ResourceException;
@@ -30,7 +30,7 @@ public class JSONSchema extends Schema {
 
   JSONSchema(File resourceFile) throws ResourceException {
     super(resourceFile);
-    this.references = new HashMap<>();
+    references = new HashMap<>();
 
     init();
   }
@@ -41,7 +41,7 @@ public class JSONSchema extends Schema {
 
   private JSONSchema(String name, String content) {
     super(name, content);
-    this.references = new HashMap<>();
+    references = new HashMap<>();
 
     init();
   }
@@ -55,12 +55,12 @@ public class JSONSchema extends Schema {
   }
 
   private void init() {
-    var json = new JSONObject(this.content).getJSONObject(PROPERTIES);
+    var json = new JSONObject(content).getJSONObject(PROPERTIES);
 
     for (var key : json.keySet()) {
       var domains = getReferenceDomain(json.get(key));
       if (domains.isPresent()) {
-        this.references.put(key, domains.get());
+        references.put(key, domains.get());
       }
     }
   }
@@ -144,17 +144,17 @@ public class JSONSchema extends Schema {
 
   @Override
   public Map<String, List<String>> getReferences() {
-    return new HashMap<>(this.references);
+    return new HashMap<>(references);
   }
 
   @Override
   public Set<String> getReferenceNames() {
-    return this.references.keySet();
+    return references.keySet();
   }
 
   @Override
   public List<List<String>> getReferenceDomains() {
-    var values = this.references.values();
+    var values = references.values();
     return new ArrayList<>(values);
   }
 
@@ -173,6 +173,6 @@ public class JSONSchema extends Schema {
   }
 
   private JSONObject getJsonSchema() {
-    return new JSONObject(this.content);
+    return new JSONObject(content);
   }
 }

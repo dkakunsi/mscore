@@ -36,31 +36,31 @@ public class KafkaSubscriber implements Subscriber {
   KafkaSubscriber(Consumer<String, String> consumer, long pollInterval) {
     this.consumer = consumer;
     this.pollInterval = pollInterval;
-    this.topicHandlers = new HashMap<>();
+    topicHandlers = new HashMap<>();
   }
 
   @Override
   public String getChannel() {
-    return String.join(",", this.topicHandlers.keySet());
+    return String.join(",", topicHandlers.keySet());
   }
 
   @Override
   public void subscribe(String topic, java.util.function.Consumer<JSONObject> handler) {
-    this.topicHandlers.put(topic, handler);
+    topicHandlers.put(topic, handler);
     LOG.info("Registering kafka consumer for topic '{}'", topic);
   }
 
   @Override
   public void start() {
-    var topics = this.topicHandlers.keySet();
-    this.consumer.subscribe(topics);
-    this.consuming = true;
+    var topics = topicHandlers.keySet();
+    consumer.subscribe(topics);
+    consuming = true;
 
     LOG.info("Start subscribing to '{}'", topics);
 
     new Thread(() -> {
       while (consuming) {
-        var records = this.consumer.poll(Duration.ofMillis(this.pollInterval));
+        var records = consumer.poll(Duration.ofMillis(pollInterval));
         records.forEach(this::handleMessage);
       }
     }).start();
@@ -71,7 +71,7 @@ public class KafkaSubscriber implements Subscriber {
       setContext(KafkaApplicationContext.of(message.headers()));
       var logFormat = "Receiving message from topic '%s', headers: '%s', message: '%s'";
       LOG.info(String.format(logFormat, message.topic(), buildPrintableHeader(message.headers()), message.value()));
-      this.topicHandlers.get(message.topic()).accept(new JSONObject(message.value()));
+      topicHandlers.get(message.topic()).accept(new JSONObject(message.value()));
     }).start();
   }
 
@@ -95,6 +95,6 @@ public class KafkaSubscriber implements Subscriber {
 
   @Override
   public void stop() {
-    this.consuming = false;
+    consuming = false;
   }
 }

@@ -40,7 +40,7 @@ public class ElasticsearchService {
   private RestHighLevelClient client;
 
   ElasticsearchService(Supplier<RestHighLevelClient> clientSupplier) {
-    this.client = clientSupplier.get();
+    client = clientSupplier.get();
   }
 
   void createIndex(Map<String, String> map) {

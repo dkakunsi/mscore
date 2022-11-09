@@ -54,7 +54,7 @@ public class KafkaPublisher implements Publisher {
     var headers = headerPairs.stream().map(p -> createHeader(p.getKey(), p.getValue())).collect(Collectors.toList());
     LOG.info("Publishing message to topic '{}'. Headers: '{}'. Message: '{}'", channel, headerPairs, message);
     var producerRecord = new ProducerRecord<String, String>(channel, null, getId(message), message.toString(), headers);
-    this.producer.send(producerRecord);
+    producer.send(producerRecord);
     LOG.info("Message is published");
     // @formatter:on
   }

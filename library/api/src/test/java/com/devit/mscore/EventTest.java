@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 public class EventTest {
-  
+
   @Test
   public void testCreate_WithJsonParameter_LowerCase() {
     var json = new JSONObject();

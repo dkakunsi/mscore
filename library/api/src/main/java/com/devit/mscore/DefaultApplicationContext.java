@@ -22,7 +22,7 @@ public class DefaultApplicationContext extends ApplicationContext {
 
   @Override
   public String getSource() {
-    return this.source;
+    return source;
   }
 
   public static ApplicationContext of(String source) {

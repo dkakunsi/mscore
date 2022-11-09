@@ -61,14 +61,14 @@ public class KafkaMessagingFactory {
 
   private void initKafkaIds() throws ConfigException {
     var groupId = getGroupId();
-    this.kafkaGroupId = Pair.of(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+    kafkaGroupId = Pair.of(ConsumerConfig.GROUP_ID_CONFIG, groupId);
 
     var clientId = getClientId(groupId);
-    this.kafkaClientId = Pair.of(ProducerConfig.CLIENT_ID_CONFIG, clientId);
+    kafkaClientId = Pair.of(ProducerConfig.CLIENT_ID_CONFIG, clientId);
   }
 
   private String getGroupId() throws ConfigException {
-    var groupIdConfigKey = String.format(SERVICE_CONFIG_TEMPLATE, this.configuration.getServiceName(),
+    var groupIdConfigKey = String.format(SERVICE_CONFIG_TEMPLATE, configuration.getServiceName(),
         ConsumerConfig.GROUP_ID_CONFIG);
     return getConfig(groupIdConfigKey).orElseThrow(() -> new ConfigException("No kafka group id is provided"));
   }
@@ -82,29 +82,30 @@ public class KafkaMessagingFactory {
   }
 
   public Producer<String, String> producer() {
-    if (this.producer == null) {
+    if (producer == null) {
       var properties = getProperties(PRODUCER_CONFIG_OPTIONS);
-      this.producer = new KafkaProducer<>(properties);
+      producer = new KafkaProducer<>(properties);
     }
-    return this.producer;
+    return producer;
   }
 
   public Consumer<String, String> consumer() {
-    if (this.consumer == null) {
+    if (consumer == null) {
       var properties = getProperties(CONSUMER_CONFIG_OPTIONS);
-      properties.setProperty(this.kafkaGroupId.getKey(), this.kafkaGroupId.getValue());
-      properties.setProperty(this.kafkaClientId.getKey(), this.kafkaClientId.getValue());
-      this.consumer = new KafkaConsumer<>(properties);
+      properties.setProperty(kafkaGroupId.getKey(), kafkaGroupId.getValue());
+      properties.setProperty(kafkaClientId.getKey(), kafkaClientId.getValue());
+      consumer = new KafkaConsumer<>(properties);
     }
-    return this.consumer;
+    return consumer;
   }
 
   protected Properties getProperties(List<String> configOptions) {
     var properties = new Properties();
-    properties.setProperty(this.kafkaClientId.getKey(), this.kafkaClientId.getValue());
+    properties.setProperty(kafkaClientId.getKey(), kafkaClientId.getValue());
     configOptions.forEach(option -> {
       try {
-        properties.put(option, getTemplatedConfig(option).orElseThrow(() -> new ConfigException("No config for " + option)));
+        properties.put(option,
+            getTemplatedConfig(option).orElseThrow(() -> new ConfigException("No config for " + option)));
       } catch (ConfigException ex) {
         throw new ApplicationRuntimeException(ex);
       }
@@ -121,7 +122,7 @@ public class KafkaMessagingFactory {
   }
 
   protected Optional<String> getConfig(String key) throws ConfigException {
-    return this.configuration.getConfig(key);
+    return configuration.getConfig(key);
   }
 
   /**

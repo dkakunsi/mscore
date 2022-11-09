@@ -22,7 +22,8 @@ public abstract class Synchronization implements Synchronizer {
 
   /**
    * Domain that triggers this synchronization.
-   * If object of this domain change, then we need to reindex all dependent domain.
+   * If object of this domain change, then we need to reindex all dependent
+   * domain.
    * 
    */
   protected String referenceDomain;
@@ -52,15 +53,15 @@ public abstract class Synchronization implements Synchronizer {
   }
 
   public String getReferenceDomain() {
-    return this.referenceDomain;
+    return referenceDomain;
   }
 
   public String getReferenceAttribute() {
-    return this.referenceAttribute;
+    return referenceAttribute;
   }
 
   protected String getSearchAttribute() {
-    return String.format("%s.id", this.referenceAttribute);
+    return String.format("%s.id", referenceAttribute);
   }
 
   @Override
@@ -77,7 +78,7 @@ public abstract class Synchronization implements Synchronizer {
 
   private void synchronize(JSONObject json) {
     filter.ifPresent(f -> f.execute(json));
-    this.observers.forEach(observer -> observer.notify(json));
+    observers.forEach(observer -> observer.notify(json));
   }
 
   @Override

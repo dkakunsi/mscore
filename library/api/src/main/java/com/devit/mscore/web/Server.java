@@ -26,7 +26,8 @@ public abstract class Server implements Starter {
 
   protected List<Validation> validations;
 
-  protected Server(int port, List<Endpoint> endpoints, List<Validation> validations, AuthenticationProvider authenticationProvider) {
+  protected Server(int port, List<Endpoint> endpoints, List<Validation> validations,
+      AuthenticationProvider authenticationProvider) {
     this.port = port;
     this.authenticationProvider = authenticationProvider;
     this.validations = validations;
@@ -38,19 +39,19 @@ public abstract class Server implements Starter {
   }
 
   protected int getPort() {
-    return this.port;
+    return port;
   }
 
   protected List<Endpoint> getEndpoints() {
-    return this.endpoints;
+    return endpoints;
   }
 
   protected AuthenticationProvider getAuthenticationProvider() {
-    return this.authenticationProvider;
+    return authenticationProvider;
   }
 
   protected boolean isValid(JSONObject json) {
-    return this.validations == null || this.validations.stream().allMatch(validation -> validation.validate(json));
+    return validations == null || validations.stream().allMatch(validation -> validation.validate(json));
   }
 
   protected JSONObject createResponseMessage(Exception ex, int statusCode) {

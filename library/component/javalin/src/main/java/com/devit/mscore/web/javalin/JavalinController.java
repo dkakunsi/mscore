@@ -1,7 +1,7 @@
 package com.devit.mscore.web.javalin;
 
-import static com.devit.mscore.util.AttributeConstants.CODE;
-import static com.devit.mscore.util.AttributeConstants.ID;
+import static com.devit.mscore.util.Constants.CODE;
+import static com.devit.mscore.util.Constants.ID;
 
 import com.devit.mscore.Service;
 import com.devit.mscore.Synchronizer;
@@ -40,7 +40,7 @@ public class JavalinController {
 
   @Deprecated
   public String getDomain() {
-    return this.service.getDomain();
+    return service.getDomain();
   }
 
   public String getBasePath() {
@@ -50,7 +50,7 @@ public class JavalinController {
   public Handler post() {
     return ctx -> {
       var payload = ctx.body();
-      var id = this.service.save(new JSONObject(payload));
+      var id = service.save(new JSONObject(payload));
       var data = new JSONObject().put(ID, id);
 
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
@@ -63,7 +63,7 @@ public class JavalinController {
       var payload = ctx.body();
       var data = new JSONObject(payload).put(ID, key);
 
-      var id = this.service.save(data);
+      var id = service.save(data);
       data = new JSONObject().put(ID, id);
 
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
@@ -73,7 +73,7 @@ public class JavalinController {
   public Handler getOne() {
     return ctx -> {
       var key = ctx.pathParam(ID);
-      var data = this.service.find(key);
+      var data = service.find(key);
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
     };
   }
@@ -81,7 +81,7 @@ public class JavalinController {
   public Handler getOneByCode() {
     return ctx -> {
       var code = ctx.pathParam(CODE);
-      var data = this.service.findByCode(code);
+      var data = service.findByCode(code);
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
     };
   }
@@ -94,14 +94,14 @@ public class JavalinController {
       }
 
       var keys = Arrays.asList(listId.split(","));
-      var data = this.service.find(keys);
+      var data = service.find(keys);
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
     };
   }
 
   public Handler all() {
     return ctx -> {
-      var data = this.service.all();
+      var data = service.all();
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
     };
   }
@@ -115,7 +115,7 @@ public class JavalinController {
   public Handler search() {
     return ctx -> {
       var criteria = ctx.body();
-      var result = this.service.search(new JSONObject(criteria));
+      var result = service.search(new JSONObject(criteria));
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(result.toString());
     };
   }
@@ -123,7 +123,7 @@ public class JavalinController {
   public Handler syncById() {
     return ctx -> {
       var key = ctx.pathParam(ID);
-      this.synchronizer.synchronize(key);
+      synchronizer.synchronize(key);
       var data = getSyncMessage();
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
     };
@@ -131,7 +131,7 @@ public class JavalinController {
 
   public Handler syncAll() {
     return ctx -> {
-      this.synchronizer.synchronize();
+      synchronizer.synchronize();
       var data = getSyncMessage();
       ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(data.toString());
     };

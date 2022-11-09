@@ -102,7 +102,7 @@ public class FlowableTest {
       assertTrue(taskOpt.isPresent());
       var workflowTask = taskOpt.get();
       assertThat(workflowTask.getName(), is("Test Approve"));
-      
+
       // complete task
       taskRepository.complete(task.getId(), Map.of("approved", true));
       tasks = taskRepository.getTasks(instance.getId());

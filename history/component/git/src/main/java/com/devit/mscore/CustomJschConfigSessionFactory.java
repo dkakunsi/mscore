@@ -31,13 +31,13 @@ public class CustomJschConfigSessionFactory extends JschConfigSessionFactory {
     var jsch = super.createDefaultJSch(fs);
     addHostKey(jsch);
     jsch.removeAllIdentity();
-    jsch.addIdentity(this.keyLocation, this.passPhrase);
+    jsch.addIdentity(keyLocation, passPhrase);
     return jsch;
   }
 
   private void addHostKey(JSch jsch) throws JSchException {
-    var key = Base64.getDecoder().decode(this.hostKey);
-    var hostKey = new HostKey(this.hostName, key);
+    var key = Base64.getDecoder().decode(hostKey);
+    var hostKey = new HostKey(hostName, key);
     jsch.getHostKeyRepository().add(hostKey, null);
   }
 }

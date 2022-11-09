@@ -19,10 +19,9 @@ import com.sun.jersey.api.client.ClientResponse;
 
 import jakarta.ws.rs.core.Response;
 
-
 public class Requester {
 
-  protected Logger logger = ApplicationLogger.getLogger(this.getClass());
+  protected Logger logger = ApplicationLogger.getLogger(getClass());
 
   protected Map<String, String> buildRequestHeader(Map<String, String> headers) {
     var context = getContext();

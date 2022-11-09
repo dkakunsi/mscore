@@ -11,11 +11,11 @@ public class ElasticsearchMapping extends Resource {
 
   protected ElasticsearchMapping(File resourceFile) throws ResourceException {
     super(resourceFile);
-    this.name = resourceFile.getName().split("\\.")[0];
+    name = resourceFile.getName().split("\\.")[0];
   }
 
   @Override
   public String getContent() {
-    return new JSONObject(this.content).toString();
+    return new JSONObject(content).toString();
   }
 }

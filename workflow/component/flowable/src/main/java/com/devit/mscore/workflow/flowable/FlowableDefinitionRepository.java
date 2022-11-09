@@ -18,13 +18,13 @@ public class FlowableDefinitionRepository implements WorkflowDefinitionRepositor
   private RepositoryService repositoryService;
 
   public FlowableDefinitionRepository(ProcessEngine processEngine) {
-    this.repositoryService = processEngine.getRepositoryService();
+    repositoryService = processEngine.getRepositoryService();
   }
 
   @Override
   public void deploy(WorkflowDefinition definition) {
     if (!isExists(definition)) {
-      this.repositoryService.createDeployment().addString(definition.getResourceName(), definition.getContent())
+      repositoryService.createDeployment().addString(definition.getResourceName(), definition.getContent())
           .deploy();
       LOGGER.debug("Definition '{}' is deployed to Flowable", definition.getName());
     }
@@ -42,7 +42,7 @@ public class FlowableDefinitionRepository implements WorkflowDefinitionRepositor
   }
 
   private Optional<ProcessDefinition> getDefinition(String resourceName) {
-    var definitions = this.repositoryService.createProcessDefinitionQuery().processDefinitionResourceName(resourceName)
+    var definitions = repositoryService.createProcessDefinitionQuery().processDefinitionResourceName(resourceName)
         .list();
     return definitions == null || definitions.isEmpty() ? Optional.empty() : Optional.of(definitions.get(0));
   }

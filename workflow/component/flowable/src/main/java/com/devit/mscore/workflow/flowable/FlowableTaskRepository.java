@@ -19,13 +19,13 @@ public class FlowableTaskRepository implements WorkflowTaskRepository {
   private HistoryService historyService;
 
   public FlowableTaskRepository(ProcessEngine processEngine) {
-    this.taskService = processEngine.getTaskService();
-    this.historyService = processEngine.getHistoryService();
+    taskService = processEngine.getTaskService();
+    historyService = processEngine.getHistoryService();
   }
 
   @Override
   public List<WorkflowTask> getTasks(String instanceId) {
-    var tasks = this.taskService.createTaskQuery().processInstanceId(instanceId).list();
+    var tasks = taskService.createTaskQuery().processInstanceId(instanceId).list();
     if (tasks == null) {
       return List.of();
     }
@@ -37,14 +37,14 @@ public class FlowableTaskRepository implements WorkflowTaskRepository {
   }
 
   private Map<String, Object> getVariables(String instanceId) {
-    var processInstance = this.historyService.createHistoricProcessInstanceQuery().processInstanceId(instanceId)
+    var processInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(instanceId)
         .singleResult();
     return processInstance.getProcessVariables();
   }
 
   @Override
   public Optional<WorkflowTask> getTask(String taskId) {
-    var task = this.taskService.createTaskQuery().taskId(taskId).singleResult();
+    var task = taskService.createTaskQuery().taskId(taskId).singleResult();
     if (task == null) {
       return Optional.empty();
     }
@@ -54,6 +54,6 @@ public class FlowableTaskRepository implements WorkflowTaskRepository {
 
   @Override
   public void complete(String taskId, Map<String, Object> variables) {
-    this.taskService.complete(taskId, variables);    
+    taskService.complete(taskId, variables);
   }
 }

@@ -19,17 +19,17 @@ public class DataClient {
 
   public DataClient(Client client, ServiceRegistration serviceRegistration, String workflowDomain) {
     this.workflowDomain = workflowDomain;
-    this.uriCache = new HashMap<>();
     this.client = client;
     this.serviceRegistration = serviceRegistration;
+    uriCache = new HashMap<>();
   }
 
   public Client getClient() {
-    return this.client;
+    return client;
   }
 
   public String getWorkflowUri() {
-    return getUri(this.workflowDomain);
+    return getUri(workflowDomain);
   }
 
   public String getDomainUri(String domain) {
@@ -37,14 +37,14 @@ public class DataClient {
   }
 
   private String getUri(String domain) {
-    this.uriCache.computeIfAbsent(domain, key -> {
+    uriCache.computeIfAbsent(domain, key -> {
       try {
-        return this.serviceRegistration.get(key);
+        return serviceRegistration.get(key);
       } catch (RegistryException ex) {
         throw new ApplicationRuntimeException(ex);
       }
     });
 
-    return this.uriCache.get(domain);
+    return uriCache.get(domain);
   }
 }

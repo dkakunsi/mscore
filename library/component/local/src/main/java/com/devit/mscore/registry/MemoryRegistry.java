@@ -29,35 +29,35 @@ public class MemoryRegistry implements Registry {
 
   @Override
   public String getName() {
-    return this.name;
+    return name;
   }
 
   @Override
   public void add(String key, String value) throws RegistryException {
-    this.register.put(key, value);
+    register.put(key, value);
     LOG.debug("Object '{}' is added to memory register", key);
   }
 
   @Override
   public Map<String, String> all() throws RegistryException {
     LOG.debug("Retrieving all value from memory register");
-    return new HashMap<>(this.register);
+    return new HashMap<>(register);
   }
 
   @Override
   public List<String> values() throws RegistryException {
-    return new ArrayList<>(this.register.values());
+    return new ArrayList<>(register.values());
   }
 
   @Override
   public List<String> keys() throws RegistryException {
-    return new ArrayList<>(this.register.keySet());
+    return new ArrayList<>(register.keySet());
   }
 
   @Override
   public String get(String key) throws RegistryException {
     LOG.debug("Retrieving data with key '{}'", key);
-    return this.register.get(key);
+    return register.get(key);
   }
 
   @Override
