@@ -4,58 +4,48 @@ import static com.devit.mscore.util.JsonUtils.hasValue;
 
 import org.json.JSONObject;
 
-public final class AttributeConstants {
+public interface AttributeConstants extends Constants {
 
-  public static final String DOMAIN = "domain";
+  String NAME = "name";
 
-  public static final String WORKFLOW = "workflow";
+  // TODO: remove this audit element. We already use history
+  String CREATED_DATE = "createdDate";
 
-  public static final String ID = "id";
+  String CREATED_BY = "createdBy";
 
-  public static final String CODE = "code";
+  String LAST_UPDATED_DATE = "lastUpdatedDate";
 
-  public static final String NAME = "name";
+  String LAST_UPDATED_BY = "lastUpdatedBy";
 
-  public static final String CREATED_DATE = "createdDate";
-
-  public static final String CREATED_BY = "createdBy";
-
-  public static final String LAST_UPDATED_DATE = "lastUpdatedDate";
-
-  public static final String LAST_UPDATED_BY = "lastUpdatedBy";
-
-  private AttributeConstants() {
-  }
-
-  public static boolean hasDomain(JSONObject json) {
+  static boolean hasDomain(JSONObject json) {
     return hasValue(DOMAIN, json);
   }
 
-  public static String getDomain(JSONObject json) {
+  static String getDomain(JSONObject json) {
     return json.optString(DOMAIN);
   }
 
-  public static boolean hasId(JSONObject json) {
+  static boolean hasId(JSONObject json) {
     return hasValue(ID, json);
   }
 
-  public static String getId(JSONObject json) {
+  static String getId(JSONObject json) {
     return json.optString(ID);
   }
 
-  public static boolean hasCode(JSONObject json) {
+  static boolean hasCode(JSONObject json) {
     return hasValue(CODE, json);
   }
 
-  public static String getCode(JSONObject json) {
+  static String getCode(JSONObject json) {
     return json.optString(CODE);
   }
 
-  public static boolean hasName(JSONObject json) {
+  static boolean hasName(JSONObject json) {
     return hasValue(NAME, json);
   }
 
-  public static String getName(JSONObject json) {
+  static String getName(JSONObject json) {
     return json.optString(NAME);
   }
 }

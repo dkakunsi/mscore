@@ -1,9 +1,9 @@
 package com.devit.mscore.web.javalin;
 
-import static com.devit.mscore.util.Utils.ACTION;
-import static com.devit.mscore.util.Utils.AUTHORIZATION;
-import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
-import static com.devit.mscore.util.Utils.EVENT_TYPE;
+import static com.devit.mscore.util.Constants.ACTION;
+import static com.devit.mscore.util.Constants.AUTHORIZATION;
+import static com.devit.mscore.util.Constants.BREADCRUMB_ID;
+import static com.devit.mscore.util.Constants.EVENT_TYPE;
 
 import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.Event;

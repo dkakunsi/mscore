@@ -1,9 +1,10 @@
 package com.devit.mscore.web.javalin;
 
 import static com.devit.mscore.ApplicationContext.setContext;
+import static com.devit.mscore.util.Constants.AUTHORIZATION;
+import static com.devit.mscore.util.Constants.EVENT_TYPE;
+import static com.devit.mscore.util.Constants.PRINCIPAL;
 import static com.devit.mscore.util.JsonUtils.isNotJsonString;
-import static com.devit.mscore.util.Utils.EVENT_TYPE;
-import static com.devit.mscore.util.Utils.PRINCIPAL;
 
 import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.AuthenticationProvider;
@@ -51,8 +52,6 @@ import io.javalin.http.ExceptionHandler;
 public final class JavalinServer extends Server {
 
   private static final Logger LOG = ApplicationLogger.getLogger(JavalinServer.class);
-
-  private static final String AUTHORIZATION = "Authorization";
 
   private static final String[] MUTATION_REQUEST_METHOD = { "post", "put" };
 

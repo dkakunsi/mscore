@@ -1,12 +1,14 @@
 package com.devit.mscore;
 
-import static com.devit.mscore.util.Utils.ACTION;
-import static com.devit.mscore.util.Utils.AUTHORIZATION;
-import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
-import static com.devit.mscore.util.Utils.EVENT_TYPE;
-import static com.devit.mscore.util.Utils.PRINCIPAL;
-import static com.devit.mscore.util.Utils.REQUESTED_BY;
-import static com.devit.mscore.util.Utils.ROLE;
+import static com.devit.mscore.util.Constants.ACTION;
+import static com.devit.mscore.util.Constants.AUTHORIZATION;
+import static com.devit.mscore.util.Constants.BREADCRUMB_ID;
+import static com.devit.mscore.util.Constants.EMPTY;
+import static com.devit.mscore.util.Constants.EVENT_TYPE;
+import static com.devit.mscore.util.Constants.PRINCIPAL;
+import static com.devit.mscore.util.Constants.REQUESTED_BY;
+import static com.devit.mscore.util.Constants.ROLE;
+import static com.devit.mscore.util.Constants.UNKNOWN;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,10 +27,6 @@ import org.json.JSONObject;
 public abstract class ApplicationContext {
 
   private static ThreadLocal<ApplicationContext> context = new InheritableThreadLocal<>();
-
-  private static final String UNKNOWN = "UNKNOWN";
-
-  private static final String EMPTY = "";
 
   protected Map<String, Object> contextData;
 

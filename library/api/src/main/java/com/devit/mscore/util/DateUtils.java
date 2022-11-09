@@ -8,8 +8,6 @@ import java.util.Date;
 
 public class DateUtils {
 
-  public static final String TIMEZONE = "timezone";
-
   private static ZoneId zoneId;
 
   private DateUtils() {

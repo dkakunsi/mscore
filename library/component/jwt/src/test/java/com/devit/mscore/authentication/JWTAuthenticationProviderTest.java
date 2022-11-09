@@ -1,7 +1,7 @@
 package com.devit.mscore.authentication;
 
-import static com.devit.mscore.util.Utils.REQUESTED_BY;
-import static com.devit.mscore.util.Utils.ROLE;
+import static com.devit.mscore.util.Constants.REQUESTED_BY;
+import static com.devit.mscore.util.Constants.ROLE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;

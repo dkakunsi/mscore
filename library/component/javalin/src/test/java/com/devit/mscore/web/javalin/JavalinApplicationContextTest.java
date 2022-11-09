@@ -1,8 +1,8 @@
 package com.devit.mscore.web.javalin;
 
-import static com.devit.mscore.util.Utils.BREADCRUMB_ID;
-import static com.devit.mscore.util.Utils.EVENT_TYPE;
-import static com.devit.mscore.util.Utils.PRINCIPAL;
+import static com.devit.mscore.util.Constants.BREADCRUMB_ID;
+import static com.devit.mscore.util.Constants.EVENT_TYPE;
+import static com.devit.mscore.util.Constants.PRINCIPAL;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
