@@ -107,6 +107,7 @@ public class Event {
     CREATE("create"),
     UPDATE("update"),
     REMOVE("remove"),
+    RETRIEVE("retrieve"),
     TASK("task");
 
     private String name;
