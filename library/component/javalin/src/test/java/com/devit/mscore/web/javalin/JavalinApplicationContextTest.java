@@ -1,5 +1,6 @@
 package com.devit.mscore.web.javalin;
 
+import static com.devit.mscore.util.Constants.AUTHORIZATION;
 import static com.devit.mscore.util.Constants.BREADCRUMB_ID;
 import static com.devit.mscore.util.Constants.EVENT_TYPE;
 import static com.devit.mscore.util.Constants.PRINCIPAL;
@@ -42,6 +43,19 @@ public class JavalinApplicationContextTest {
 
     assertTrue(applicationContext.hasRole("user"));
     assertFalse(applicationContext.hasRole("admin"));
+  }
+
+  @Test
+  public void testRemoveAuthorizationWhenGetContextData() {
+    var authorization = "ABCD";
+    var ctx = mock(Context.class);
+    doReturn(authorization).when(ctx).header(AUTHORIZATION);
+
+    var applicationContext = JavalinApplicationContext.of(ctx);
+    assertThat(applicationContext.getToken().get(), is(authorization));
+    var contextData = applicationContext.getContextData();
+    assertFalse(contextData.containsKey(AUTHORIZATION));
+    assertThat(applicationContext.getToken().get(), is(authorization));
   }
 
   @Test

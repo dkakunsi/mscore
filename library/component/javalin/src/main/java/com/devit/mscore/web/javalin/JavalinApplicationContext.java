@@ -88,6 +88,13 @@ public class JavalinApplicationContext extends ApplicationContext {
   }
 
   @Override
+  public Map<String, Object> getContextData() {
+    var map = new HashMap<>(contextData);
+    map.remove(AUTHORIZATION);
+    return map;
+  }
+
+  @Override
   public String getSource() {
     return "web";
   }
