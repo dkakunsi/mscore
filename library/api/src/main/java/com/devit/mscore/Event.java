@@ -38,6 +38,14 @@ public class Event {
     return new Event(type, domain, action, data, variables);
   }
 
+  public static Event of(Type type, String domain, String action, JSONObject data) {
+    return of(type, domain, action, data, null);
+  }
+
+  public static Event of(Type type, String domain, JSONObject data) {
+    return of(type, domain, null, data);
+  }
+
   private static String generateAction(String domain, Type type) {
     return String.format("%s.%s", domain, type);
   }

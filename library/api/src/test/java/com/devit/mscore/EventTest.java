@@ -27,12 +27,16 @@ public class EventTest {
     var jsonData = new JSONObject("{\"id\":\"id\"}");
     json.put(DATA, jsonData);
     var event = Event.of(json);
+
+    var expected = Event.of(Event.Type.CREATE, DOMAIN, "domain.create", jsonData, null);
+
     assertNotNull(event);
-    assertThat(event.getAction(), is("domain.create"));
-    assertTrue(event.getData().similar(jsonData));
-    assertTrue(event.toJson().similar(json));
-    assertThat(event.getType(), is(Event.Type.CREATE));
-    assertThat(event.getDomain(), is("domain"));
+    assertThat(event.getAction(), is(expected.getAction()));
+    assertTrue(event.getData().similar(expected.getData()));
+    assertTrue(event.toJson().similar(expected.toJson()));
+    assertThat(event.getType(), is(expected.getType()));
+    assertThat(event.getDomain(), is(expected.getDomain()));
+    assertThat(event.getVariables(), is(expected.getVariables()));
     assertTrue(event.isDomainEvent());
   }
 
