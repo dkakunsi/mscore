@@ -50,6 +50,8 @@ public interface Constants {
 
   String SECURE = "secure";
 
+  String TASK = "task";
+
   String TEMPLATE = "template";
 
   String TIMEZONE = "timezone";

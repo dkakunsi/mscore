@@ -99,6 +99,7 @@ public class Event {
     event.put(DOMAIN, domain);
     event.put(DATA, data);
     event.put(ACTION, action);
+    event.put(VARIABLE, variables);
     return event;
   }
 
