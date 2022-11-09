@@ -73,7 +73,7 @@ public class WorkflowServiceImpl implements WorkflowService {
 
   @Override
   public void deployDefinition(WorkflowDefinition definition) throws ProcessException {
-    LOGGER.info("Deploying definition: dilayanan{}", definition);
+    LOGGER.info("Deploying definition: {}", definition);
 
     try {
       if (!definitionRepository.isExists(definition)) {
@@ -91,7 +91,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     var definitionId = definitionRepository.getDefinitionId(definition.getResourceName())
         .orElseThrow(() -> new RegistryException(String.format(FAIL_REGISTER_MESSAGE_TEMPLATE, definition.getName())));
     registry.add(definition.getName(), definitionId);
-    LOGGER.info("Workflow '{}' is added to registry", definition.getName());
+    LOGGER.info("Workflow '{}' for definition '{}' is added to registry", definition.getName(), definitionId);
   }
 
   @Override
@@ -101,12 +101,12 @@ public class WorkflowServiceImpl implements WorkflowService {
     try {
       definitionId = registry.get(action);
     } catch (RegistryException ex) {
-      LOGGER.error("Error when retrieving definition for action '%s': %s", ex, action, ex.getMessage());
+      LOGGER.error("Error when retrieving definition for action '{}': {}", ex, action, ex.getMessage());
       return createDomainWithoutWorkflow(entity, action);
     }
 
     if (StringUtils.isBlank(definitionId)) {
-      LOGGER.info("Process definition is not found for action '%s'", action);
+      LOGGER.info("Process definition is not found for action '{}'", action);
       return createDomainWithoutWorkflow(entity, action);
     }
 
