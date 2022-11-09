@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 public class WorkflowServiceImpl implements WorkflowService {
@@ -96,19 +97,31 @@ public class WorkflowServiceImpl implements WorkflowService {
   @Override
   public Optional<WorkflowInstance> executeWorkflow(String action, JSONObject entity, Map<String, Object> variables)
       throws ProcessException {
+    String definitionId;
     try {
-      var definitionId = registry.get(action);
-      var processVariables = populateVariables(entity, variables);
-      var instance = instanceRepository.create(definitionId, processVariables);
-      syncCreate(instance);
-      return Optional.of(instance);
+      definitionId = registry.get(action);
     } catch (RegistryException ex) {
-      LOGGER.info(String.format("Process definition is not found for action '%s'", action));
-      var domain = AttributeConstants.getDomain(entity);
-      var eventType = getContext().getEventType().get();
-      publishDomainEvent(entity, domain, Event.Type.valueOf(eventType.toUpperCase()));
-      return Optional.empty();
+      LOGGER.error("Error when retrieving definition for action '%s': %s", ex, action, ex.getMessage());
+      return createDomainWithoutWorkflow(entity, action);
     }
+
+    if (StringUtils.isBlank(definitionId)) {
+      LOGGER.info("Process definition is not found for action '%s'", action);
+      return createDomainWithoutWorkflow(entity, action);
+    }
+
+    var processVariables = populateVariables(entity, variables);
+    var instance = instanceRepository.create(definitionId, processVariables);
+    syncCreate(instance);
+    return Optional.of(instance);
+  }
+
+  private Optional<WorkflowInstance> createDomainWithoutWorkflow(JSONObject entity, String action) {
+    LOGGER.info("Create domain object without executing workflow for action '%s'", action);
+    var domain = AttributeConstants.getDomain(entity);
+    var eventType = getContext().getEventType().get();
+    publishDomainEvent(entity, domain, Event.Type.valueOf(eventType.toUpperCase()));
+    return Optional.empty();
   }
 
   private Map<String, Object> populateVariables(JSONObject entity, Map<String, Object> variables) {

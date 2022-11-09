@@ -83,12 +83,40 @@ public class WebApplicationTest {
   }
 
   @Test
-  public void givenValidRequest_WhenExecuteWorkflowIsCalledAndNoDefinitionForAction_ShouldSuccess()
+  public void givenValidRequest_WhenExecuteWorkflowIsCalledAndErrorRetrievingDefinition_ThenShouldSuccess()
       throws ApplicationException {
     doReturn(Optional.of("12001")).when(this.configuration).getConfig("services.workflow.web.port");
     doThrow(RegistryException.class).when(this.registry).get(REQUEST_ACTION);
 
     var uri = "http://localhost:12001/process";
+    var server = this.apiFactory.server();
+
+    server.start();
+    testWithoutCreatingInstance(uri);
+    server.stop();
+  }
+
+  @Test
+  public void givenValidRequest_WhenExecuteWorkflowIsCalledAndGetNullWhenRetrievingDefinition_ThenShouldSuccess()
+      throws ApplicationException {
+    doReturn(Optional.of("12002")).when(this.configuration).getConfig("services.workflow.web.port");
+    doReturn(null).when(this.registry).get(REQUEST_ACTION);
+
+    var uri = "http://localhost:12002/process";
+    var server = this.apiFactory.server();
+
+    server.start();
+    testWithoutCreatingInstance(uri);
+    server.stop();
+  }
+
+  @Test
+  public void givenValidRequest_WhenExecuteWorkflowIsCalledAndGetEmptyStringWhenRetrievingDefinition_ThenShouldSuccess()
+      throws ApplicationException {
+    doReturn(Optional.of("12003")).when(this.configuration).getConfig("services.workflow.web.port");
+    doReturn("").when(this.registry).get(REQUEST_ACTION);
+
+    var uri = "http://localhost:12003/process";
     var server = this.apiFactory.server();
 
     server.start();
@@ -118,7 +146,7 @@ public class WebApplicationTest {
   }
 
   @Test
-  public void givenValidRequest_WhenExecuteWorkflowIsCalled_ShouldSuccess() throws ApplicationException {
+  public void givenValidRequest_WhenExecuteWorkflowIsCalled_ThenShouldSuccess() throws ApplicationException {
     doReturn(Optional.of("12000")).when(this.configuration).getConfig("services.workflow.web.port");
     doReturn("definitionId").when(this.registry).get(REQUEST_ACTION);
 
