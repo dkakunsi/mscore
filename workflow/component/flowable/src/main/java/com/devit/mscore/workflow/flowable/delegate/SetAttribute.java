@@ -41,7 +41,7 @@ public class SetAttribute implements JavaDelegate {
 
     LOGGER.info("Updating attribute '{}' of domain '{}' to '{}'", targetAttribute, domain, targetValue);
 
-    var entity = getEntity(domain, entityId, targetAttribute, targetValue);
+    var entity = getEntityFromData(domain, entityId, targetAttribute, targetValue);
     entity.put(targetAttribute, targetValue);
 
     updateEntity(entity);
@@ -50,7 +50,7 @@ public class SetAttribute implements JavaDelegate {
     LOGGER.info("Entity process variable is updated");
   }
 
-  protected JSONObject getEntity(String domain, String entityId, String targetAttribute, String targetValue)
+  protected JSONObject getEntityFromData(String domain, String entityId, String targetAttribute, String targetValue)
       throws ApplicationRuntimeException {
     var context = (FlowableApplicationContext) getContext();
     var dataClient = context.getDataClient();

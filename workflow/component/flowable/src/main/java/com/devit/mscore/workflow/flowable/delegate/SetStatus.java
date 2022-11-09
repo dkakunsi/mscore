@@ -30,7 +30,7 @@ public class SetStatus extends SetAttribute {
 
     LOGGER.info("Updating status of '{}' in domain '{}' to '{}'", entityId, domain, targetValue);
 
-    var entity = getEntity(domain, entityId, "status", targetValue);
+    var entity = getEntityFromData(domain, entityId, "status", targetValue);
     entity.put("status", targetValue);
 
     var closeReasonStr = getCloseReason(execution);
