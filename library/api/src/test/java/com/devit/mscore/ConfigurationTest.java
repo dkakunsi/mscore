@@ -33,6 +33,22 @@ public class ConfigurationTest {
   }
 
   @Test
+  public void testGetConfigInt() throws ConfigException {
+    var configuration = new ConfigurationImpl();
+    var optInt = configuration.getConfigInt("integer");
+    assertTrue(optInt.isPresent());
+    assertThat(optInt.get(), is(0));
+  }
+
+  @Test
+  public void testGetConfigLong_GetException_ShouldBeDefaultValue() throws ConfigException {
+    var configuration = new ConfigurationImpl();
+    var optInt = configuration.getConfigLong("long");
+    assertTrue(optInt.isPresent());
+    assertThat(optInt.get(), is(0L));
+  }
+
+  @Test
   public void testHas() {
     var configuration = new ConfigurationImpl();
     assertTrue(configuration.has("prefix.config1"));
@@ -55,7 +71,7 @@ public class ConfigurationTest {
     private Map<String, String> map;
 
     public ConfigurationImpl() {
-      this.map = Map.of("prefix.config1", "value1", "prefix.config2", "value2", "config3", "value3");
+      this.map = Map.of("prefix.config1", "value1", "prefix.config2", "value2", "config3", "value3", "integer", "0", "long", "long");
     }
 
     @Override

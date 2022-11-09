@@ -5,6 +5,9 @@ import com.devit.mscore.exception.ConfigException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * <p>
@@ -35,7 +38,28 @@ public interface Configuration {
    * @throws ConfigException cannot get the value.
    */
   default Optional<String> getConfig(String key) throws ConfigException {
-    return Optional.empty();
+    var value = getConfigs().get(key);
+    return StringUtils.isNotBlank(value) ? Optional.of(value) : Optional.empty();
+  }
+
+  default <T> Optional<T> getConfigOf(String key, Function<String, T> func, T defaultValue) throws ConfigException {
+    var optConfigValue = getConfig(key);
+    var configValue = optConfigValue.map(v -> {
+      try {
+        return func.apply(v);
+      } catch (RuntimeException ex) {
+        return defaultValue;
+      }
+    }).orElse(defaultValue);
+    return Optional.of(configValue);
+  }
+
+  default Optional<Integer> getConfigInt(String key) throws ConfigException {
+    return getConfigOf(key, Integer::parseInt, 0);
+  }
+
+  default Optional<Long> getConfigLong(String key) throws ConfigException {
+    return getConfigOf(key, Long::parseLong, 0L);
   }
 
   /**
