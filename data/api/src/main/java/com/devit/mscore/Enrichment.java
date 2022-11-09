@@ -34,19 +34,33 @@ import org.json.JSONObject;
  */
 public abstract class Enrichment {
 
+  private static final int DEFAULT_NUMBER_OF_RETRY = 1;
+
+  private static final long DEFAULT_SLEEP_BETWEEN_RETRY = 0L;
+
   private static final Logger LOGGER = ApplicationLogger.getLogger(Enrichment.class);
 
   protected final String domain;
 
   protected final String attribute;
 
+  protected final int numberOfRetry;
+
+  protected final long sleepBetweenRetry;
+
   protected Enrichment(String attribute) {
     this(ALL, attribute);
   }
 
   protected Enrichment(String domain, String attribute) {
+    this(domain, attribute, DEFAULT_NUMBER_OF_RETRY, DEFAULT_SLEEP_BETWEEN_RETRY);
+  }
+
+  protected Enrichment(String domain, String attribute, int numberOfRetry, long sleepBetweenRetry) {
     this.domain = domain;
     this.attribute = attribute;
+    this.numberOfRetry = numberOfRetry;
+    this.sleepBetweenRetry = sleepBetweenRetry;
   }
 
   /**
@@ -129,8 +143,8 @@ public abstract class Enrichment {
       throws DataException, InterruptedException {
     var loadedObject = loadFromDataStore(refDomain, refId);
     var retryNumber = 0;
-    while (loadedObject.isEmpty() && retryNumber < 3) {
-      Thread.sleep(1000L);
+    while (loadedObject.isEmpty() && retryNumber < numberOfRetry) {
+      Thread.sleep(sleepBetweenRetry);
       retryNumber++;
       LOGGER.info("Try: #{}. Load entity '{}' from domain '{}'", retryNumber, refId, refDomain);
       loadedObject = loadFromDataStore(refDomain, refId);

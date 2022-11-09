@@ -32,6 +32,11 @@ public class IndexEnrichment extends Enrichment {
     this.indeces = indeces;
   }
 
+  public IndexEnrichment(Map<String, Index> indeces, String domain, String attribute, int numberOfRetry, long sleepBetweenRetry) {
+    super(domain, attribute, numberOfRetry, sleepBetweenRetry);
+    this.indeces = indeces;
+  }
+
   @Override
   protected Optional<JSONObject> loadFromDataStore(String domain, String id)
       throws DataException {

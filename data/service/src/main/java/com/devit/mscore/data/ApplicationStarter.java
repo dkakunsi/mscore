@@ -62,6 +62,10 @@ public class ApplicationStarter implements Starter {
 
   private static final String SYNC_DELAY = "services.%s.synchronization.delay";
 
+  private static final String ENRICHMENT_DELAY = "services.%s.enrichment.delay";
+
+  private static final String ENRICHMENT_RETRY_COUNT = "services.%s.enrichment.retry.count";
+
   private Configuration configuration;
 
   private Registry schemaRegistry;
@@ -144,11 +148,13 @@ public class ApplicationStarter implements Starter {
     var syncObserver = new SynchronizationObserver();
     var publisher = messagingFactory.publisher();
     var services = new HashMap<String, Service>();
-    var syncDelay = getSyncDelay();
+    var syncDelay = getDelay(SYNC_DELAY);
+    var enrichmentDelay = getDelay(ENRICHMENT_DELAY);
+    var enrichmentRetryCount = getRetry(ENRICHMENT_RETRY_COUNT);
 
     // Generate service and it's dependencies from schema.
     for (var s : schemaManager.getSchemas()) {
-      var service = processSchema(s, filterExecutor, syncObserver, publisher, syncDelay);
+      var service = processSchema(s, filterExecutor, syncObserver, publisher, syncDelay, enrichmentRetryCount, enrichmentDelay);
       // set synchronizer to cotroller.
       apiFactory.add(service);
       registration.register(service);
@@ -161,7 +167,7 @@ public class ApplicationStarter implements Starter {
   }
 
   private Service processSchema(Schema schema, FiltersExecutor filters, SynchronizationObserver so, Publisher publisher,
-      long syncDelay)
+      long syncDelay, int enrichmentRetryCount, long enrichmentDelay)
       throws RegistryException, ConfigException {
 
     var index = indexFactory.index(schema.getDomain());
@@ -169,7 +175,7 @@ public class ApplicationStarter implements Starter {
     indices.put(schema.getDomain(), index.build());
 
     schema.getReferences().forEach((attr, refDomains) -> {
-      enrichmentsExecutor.add(new IndexEnrichment(indices, schema.getDomain(), attr));
+      enrichmentsExecutor.add(new IndexEnrichment(indices, schema.getDomain(), attr, enrichmentRetryCount, enrichmentDelay));
       refDomains.forEach(rd -> so.add(new IndexSynchronization(index, rd, attr).with(filters).with(indexingObserver)));
     });
 
@@ -205,17 +211,14 @@ public class ApplicationStarter implements Starter {
     }
   }
 
-  private long getSyncDelay() throws ConfigException {
-    var configName = String.format(SYNC_DELAY, configuration.getServiceName());
-    var syncDelay = configuration.getConfig(configName);
-    long delay = 0L;
-    try {
-      delay = syncDelay.isPresent() ? Long.parseLong(syncDelay.get()) : 0L;
-    } catch (NumberFormatException ex) {
-      LOGGER.warn("Cannot read sync delay", ex);
-    }
-    LOGGER.info("Adding sync delay of '{} ms'", delay);
-    return delay;
+  private long getDelay(String configNameTemplate) throws ConfigException {
+    var configName = String.format(configNameTemplate, configuration.getServiceName());
+    return configuration.getConfigLong(configName).orElse(0L);
+  }
+
+  private int getRetry(String configNameTemplate) throws ConfigException {
+    var configName = String.format(configNameTemplate, configuration.getServiceName());
+    return configuration.getConfigInt(configName).orElse(0);
   }
 
   private void createFilter(Configuration configuration, FiltersExecutor executors) {
