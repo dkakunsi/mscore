@@ -1,6 +1,7 @@
 package com.devit.mscore.workflow.service;
 
 import static com.devit.mscore.ApplicationContext.getContext;
+import static com.devit.mscore.WorkflowConstants.BUSINESS_KEY;
 import static com.devit.mscore.util.AttributeConstants.CREATED_BY;
 import static com.devit.mscore.util.AttributeConstants.NAME;
 import static com.devit.mscore.util.AttributeConstants.getId;
@@ -12,6 +13,7 @@ import static com.devit.mscore.util.Constants.ENTITY;
 import static com.devit.mscore.util.Constants.EVENT_TYPE;
 import static com.devit.mscore.util.Constants.PRINCIPAL;
 import static com.devit.mscore.util.Constants.PROCESS;
+import static com.devit.mscore.util.Constants.WORKFLOW;
 
 import com.devit.mscore.Event;
 import com.devit.mscore.Logger;
@@ -41,8 +43,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 public class WorkflowServiceImpl implements WorkflowService {
-
-  public static final String WORKFLOW = "workflow";
 
   private static final Logger LOGGER = ApplicationLogger.getLogger(WorkflowServiceImpl.class);
 
@@ -130,7 +130,7 @@ public class WorkflowServiceImpl implements WorkflowService {
     var context = getContext();
     vars.put(ENTITY, entity.toString());
     vars.put(DOMAIN, AttributeConstants.getDomain(entity));
-    vars.put("businessKey", getId(entity));
+    vars.put(BUSINESS_KEY, getId(entity));
     vars.put(NAME, getName(entity));
 
     vars.put(BREADCRUMB_ID, context.getBreadcrumbId());

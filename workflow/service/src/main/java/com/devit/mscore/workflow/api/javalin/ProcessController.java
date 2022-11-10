@@ -1,5 +1,7 @@
 package com.devit.mscore.workflow.api.javalin;
 
+import static com.devit.mscore.WorkflowConstants.INSTANCE_ID;
+import static com.devit.mscore.util.Constants.PROCESS;
 import static com.devit.mscore.util.Constants.UNKNOWN;
 
 import com.devit.mscore.Event;
@@ -14,15 +16,13 @@ import io.javalin.http.Handler;
 
 public class ProcessController extends JavalinController {
 
-  private static final String INSTANCE_ID = "instanceId";
-
   public ProcessController(WorkflowService workflowProcess) {
     super(workflowProcess);
   }
 
   @Override
   public String getBasePath() {
-    return "process";
+    return PROCESS;
   }
 
   @Override

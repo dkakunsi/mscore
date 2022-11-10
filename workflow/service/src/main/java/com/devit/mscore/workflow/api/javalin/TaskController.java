@@ -1,6 +1,7 @@
 package com.devit.mscore.workflow.api.javalin;
 
 import static com.devit.mscore.util.AttributeConstants.getId;
+import static com.devit.mscore.util.Constants.TASK;
 
 import com.devit.mscore.Event;
 import com.devit.mscore.WorkflowService;
@@ -20,7 +21,7 @@ public class TaskController extends JavalinController {
 
   @Override
   public String getBasePath() {
-    return "task";
+    return TASK;
   }
 
   @Override
