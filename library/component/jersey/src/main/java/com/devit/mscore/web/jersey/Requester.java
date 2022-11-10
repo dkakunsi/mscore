@@ -10,6 +10,7 @@ import static com.devit.mscore.util.Constants.PRINCIPAL;
 import com.devit.mscore.Logger;
 import com.devit.mscore.logging.ApplicationLogger;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -25,7 +26,8 @@ public class Requester {
 
   protected final Logger logger = ApplicationLogger.getLogger(getClass());
 
-  protected Map<String, String> buildRequestHeader(Map<String, String> headers) {
+  protected Map<String, String> buildRequestHeader() {
+    var headers = new HashMap<String, String>();
     var context = getContext();
     if (context == null) {
       return headers;
@@ -87,4 +89,11 @@ public class Requester {
   private static boolean isError(int status) {
     return status >= 400 && status <= 600;
   }
+
+  protected Map<String, String> getPrintableHeaders(Map<String, String> headers) {
+    var printableheader = new HashMap<>(headers);
+    printableheader.remove(AUTHORIZATION);
+    return printableheader;
+  }
+
 }

@@ -23,13 +23,13 @@ public class JerseyClient extends Requester implements com.devit.mscore.web.Clie
 
   @Override
   public JSONObject delete(String uri) {
-    var response = request(HttpMethod.DELETE, uri, new HashMap<>(), new HashMap<>()).delete();
+    var response = request(HttpMethod.DELETE, uri, new HashMap<>()).delete();
     return buildResponse(uri, response);
   }
 
   @Override
   public JSONObject get(String uri, Map<String, String> params) {
-    var response = request(HttpMethod.GET, uri, params, new HashMap<>()).get();
+    var response = request(HttpMethod.GET, uri, params).get();
     return buildResponse(uri, response);
   }
 
@@ -37,9 +37,9 @@ public class JerseyClient extends Requester implements com.devit.mscore.web.Clie
   public JSONObject post(String uri, Optional<JSONObject> payload) {
     Response response;
     if (payload.isPresent()) {
-      response = request(HttpMethod.POST, uri, new HashMap<>(), new HashMap<>()).post(Entity.json(payload.get().toString()));
+      response = request(HttpMethod.POST, uri, new HashMap<>()).post(Entity.json(payload.get().toString()));
     } else {
-      response = request(HttpMethod.POST, uri, new HashMap<>(), new HashMap<>()).post(null);
+      response = request(HttpMethod.POST, uri, new HashMap<>()).post(null);
     }
     return buildResponse(uri, response);
   }
@@ -48,29 +48,26 @@ public class JerseyClient extends Requester implements com.devit.mscore.web.Clie
   public JSONObject put(String uri, Optional<JSONObject> payload) {
     Response response;
     if (payload.isPresent()) {
-      response = request(HttpMethod.PUT, uri, new HashMap<>(), new HashMap<>()).put(Entity.json(payload.get().toString()));
+      response = request(HttpMethod.PUT, uri, new HashMap<>()).put(Entity.json(payload.get().toString()));
     } else {
-      response = request(HttpMethod.PUT, uri, new HashMap<>(), new HashMap<>()).put(null);
+      response = request(HttpMethod.PUT, uri, new HashMap<>()).put(null);
     }
     return buildResponse(uri, response);
   }
 
-  private Builder request(String method, String uri, Map<String, String> params,
-      Map<String, String> headers) {
+  private Builder request(String method, String uri, Map<String, String> params) {
 
     var target = client.target(uri);
     if (params != null) {
       params.forEach(target::queryParam);
     }
 
-    var builtHeaders = buildRequestHeader(headers);
+    var builtHeaders = buildRequestHeader();
     var builder = target.request();
-    if (builtHeaders != null) {
-      builtHeaders.forEach(builder::header);
-    }
+    builtHeaders.forEach(builder::header);
     builder.accept(MediaType.APPLICATION_JSON);
 
-    logger.info(LOG_INFO_FORMAT, method, uri, builtHeaders);
+    logger.info(LOG_INFO_FORMAT, method, uri, getPrintableHeaders(builtHeaders));
     return builder;
   }
 }
