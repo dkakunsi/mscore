@@ -18,8 +18,6 @@ import io.javalin.http.Handler;
 
 public class TaskController extends JavalinController {
 
-  private static final String RESPONSE = "response";
-
   public TaskController(TaskService taskService) {
     super(taskService);
   }
@@ -30,14 +28,13 @@ public class TaskController extends JavalinController {
   }
 
   @Override
-  public Handler post() {
+  public Handler put() {
     return ctx -> {
       updateContext();
 
-      var payload = new JSONObject(ctx.body());
-      var taskId = payload.getString(ID);
-      var response = payload.getJSONObject(RESPONSE);
-      var resourceId = ((TaskService) service).completeTask(taskId, response);
+      var taskId = ctx.pathParam(ID);
+      var taskResponse = new JSONObject(ctx.body());
+      var resourceId = ((TaskService) service).completeTask(taskId, taskResponse);
       var result = new JSONObject().put(ID, resourceId);
       ctx.status(200).contentType(CONTENT_TYPE).result(result.toString());
     };

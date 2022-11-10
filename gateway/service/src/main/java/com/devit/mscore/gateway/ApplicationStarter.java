@@ -15,6 +15,7 @@ import com.devit.mscore.exception.ConfigException;
 import com.devit.mscore.exception.RegistryException;
 import com.devit.mscore.gateway.api.ApiFactory;
 import com.devit.mscore.gateway.service.ResourceService;
+import com.devit.mscore.gateway.service.TaskService;
 import com.devit.mscore.messaging.kafka.KafkaMessagingFactory;
 import com.devit.mscore.registry.ZookeeperRegistryFactory;
 import com.devit.mscore.util.DateUtils;
@@ -62,8 +63,10 @@ public class ApplicationStarter implements Starter {
     var domainTopics = messagingFactory.getTopic(DOMAIN).orElseThrow();
     var publisher = messagingFactory.publisher();
     var resourceService = new ResourceService(serviceRegistration, webClient, publisher, domainTopics);
+    var taskService = new TaskService(serviceRegistration, webClient);
 
     apiFactory.add(resourceService);
+    apiFactory.add(taskService);
 
     var server = apiFactory.server();
     server.start();

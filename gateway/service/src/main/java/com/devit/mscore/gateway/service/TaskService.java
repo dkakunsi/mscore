@@ -16,7 +16,7 @@ public class TaskService extends AbstractGatewayService {
 
   private static final String TASK_ACTION = "task.update";
 
-  protected TaskService(ServiceRegistration serviceRegistration, Client client) {
+  public TaskService(ServiceRegistration serviceRegistration, Client client) {
     super(serviceRegistration, client);
   }
 
