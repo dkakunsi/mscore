@@ -21,28 +21,22 @@ public class MailSenderTest {
 
   @Before
   public void setup() {
-    this.sender = new MailSender();
-    this.smtpServer = new GreenMail(ServerSetupTest.SMTP);
-    this.smtpServer.start();
+    sender = new MailSender();
+    smtpServer = new GreenMail(ServerSetupTest.SMTP);
+    smtpServer.start();
   }
 
   @After
   public void destroy() {
-    this.smtpServer.stop();
+    smtpServer.stop();
   }
 
   @Test
   public void testSend() throws MessagingException {
-    var sendInfo = new SendInfo();
-    sendInfo.setHost("localhost");
-    sendInfo.setPort("3025");
-    sendInfo.setUser("user");
-    sendInfo.setPassword("password");
-    sendInfo.setFrom("from@email.com");
+    var sendInfo = new SendInfo("localhost", "3025", "user", "password", "from@email.com", "subject");
+    sender.send(sendInfo, "recipient@email.com", "Subject", "Template name: 123454321");
 
-    this.sender.send(sendInfo, "recipient@email.com", "Subject", "Template name: 123454321");
-
-    var messages = this.smtpServer.getReceivedMessages();
+    var messages = smtpServer.getReceivedMessages();
     assertThat(messages.length, is(1));
     assertThat(messages[0].getFrom()[0].toString(), is("from@email.com"));
     assertThat(messages[0].getAllRecipients()[0].toString(), is("recipient@email.com"));
@@ -53,14 +47,10 @@ public class MailSenderTest {
 
   @Test
   public void testSend_WithoutAuth() throws MessagingException {
-    var sendInfo = new SendInfo();
-    sendInfo.setHost("localhost");
-    sendInfo.setPort("3025");
-    sendInfo.setFrom("from@email.com");
+    var sendInfo = new SendInfo("localhost", "3025", "from@email.com", "subject");
+    sender.send(sendInfo, "recipient@email.com", "Subject", "Template name: 123454321");
 
-    this.sender.send(sendInfo, "recipient@email.com", "Subject", "Template name: 123454321");
-
-    var messages = this.smtpServer.getReceivedMessages();
+    var messages = smtpServer.getReceivedMessages();
     assertThat(messages.length, is(1));
     assertThat(messages[0].getFrom()[0].toString(), is("from@email.com"));
     assertThat(messages[0].getAllRecipients()[0].toString(), is("recipient@email.com"));

@@ -9,6 +9,18 @@ public class MailNotificationFactory {
 
   private static final String POSSIBLE_ATTRIBUTES = "platform.mail.possibleAttributes";
 
+  private static final String MAIL_HOST = "platform.mail.host";
+
+  private static final String MAIL_PORT = "platform.mail.port";
+
+  private static final String MAIL_USERNAME = "platform.mail.username";
+
+  private static final String MAIL_PASSWORD = "platform.mail.password";
+
+  private static final String MAIL_FROM = "platform.mail.from";
+
+  private static final String MAIL_SUBJECT_TEMPLATE = "services.%s.email.subject";
+
   private final Configuration configuration;
 
   private final Registry registry;
@@ -29,10 +41,28 @@ public class MailNotificationFactory {
   }
 
   public MailNotification mailNotification() throws ConfigException {
-    var sendInfo = new SendInfo(configuration);
-    var possibleAttributes = configuration.getConfig(POSSIBLE_ATTRIBUTES)
-        .orElseThrow(() -> new ConfigException("No possible attribute is configured"));
+    var subjectConfigName = String.format(MAIL_SUBJECT_TEMPLATE, configuration.getServiceName());
+
+    var host = getOrThrow(configuration, MAIL_HOST);
+    var port = getOrThrow(configuration, MAIL_PORT);
+    var username = getOrBlank(configuration, MAIL_USERNAME);
+    var password = getOrBlank(configuration, MAIL_PASSWORD);
+    var from = getOrThrow(configuration, MAIL_FROM);
+    var subject = getOrThrow(configuration, subjectConfigName);
+    var sendInfo = new SendInfo(host, port, username, password, from, subject);
+
+    var possibleAttributes = getOrThrow(configuration, POSSIBLE_ATTRIBUTES);
+
     return new MailNotification(registry, sender, template, sendInfo)
         .withPossibleAttributes(possibleAttributes);
+  }
+
+  private static String getOrThrow(Configuration configuration, String configName) throws ConfigException {
+    return configuration.getConfig(configName)
+        .orElseThrow(() -> new ConfigException("No configuration value provided for " + configName));
+  }
+
+  private static String getOrBlank(Configuration configuration, String configName) throws ConfigException {
+    return configuration.getConfig(configName).orElse("");
   }
 }

@@ -15,10 +15,14 @@ import jakarta.mail.internet.MimeMessage;
 
 public class MailSender {
 
+  private static final String SMTP_HOST = "mail.smtp.host";
+
+  private static final String SMTP_PORT = "mail.smtp.port";
+
   public void send(SendInfo sendInfo, String to, String emailSubject, String text) throws MessagingException {
     var properties = System.getProperties();
-    properties.setProperty("mail.smtp.host", sendInfo.getHost());
-    properties.setProperty("mail.smtp.port", sendInfo.getPort());
+    properties.setProperty(SMTP_HOST, sendInfo.getHost());
+    properties.setProperty(SMTP_PORT, sendInfo.getPort());
 
     Session session;
     if (StringUtils.isNotBlank(sendInfo.getUser()) && StringUtils.isNotBlank(sendInfo.getPassword())) {
@@ -47,5 +51,4 @@ public class MailSender {
     message.setText(text);
     return message;
   }
-
 }

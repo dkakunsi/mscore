@@ -28,6 +28,8 @@ public class MailNotification implements Notification {
 
   private static final Logger LOGGER = ApplicationLogger.getLogger(MailNotification.class);
 
+  private static final String CONTENT = "content";
+
   private Registry registry;
 
   private MailSender sender;
@@ -64,7 +66,6 @@ public class MailNotification implements Notification {
     }
 
     var emails = optional.get();
-
     var templateName = StringUtils.isNotBlank(code) ? code : getTemplateName(data);
     if (!Pattern.matches("[a-zA-Z]+\\.[a-zA-Z]+", templateName)) {
       LOGGER.warn("No email template found for '{}'", templateName);
@@ -91,7 +92,7 @@ public class MailNotification implements Notification {
         LOGGER.error("Template is empty: '{}'", templateName);
         throw new NotificationException("Template is empty. " + templateName);
       }
-      return new JSONObject(template).getString("content");
+      return new JSONObject(template).getString(CONTENT);
     } catch (JSONException | RegistryException ex) {
       LOGGER.error("Cannot load email template '{}'", ex);
       throw new NotificationException("Cannot load email template", ex);

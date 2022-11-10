@@ -1,5 +1,8 @@
 package com.devit.mscore.notification;
 
+import static com.devit.mscore.util.Constants.CODE;
+import static com.devit.mscore.util.Constants.DATA;
+
 import com.devit.mscore.Listener;
 import com.devit.mscore.Notification;
 import com.devit.mscore.Subscriber;
@@ -39,7 +42,7 @@ public class EventListener extends Listener {
     notifications.forEach(n -> {
       try {
         logger.info("Sending '{}' notification", n.getType());
-        n.send(message.getString("code"), message.getJSONObject("data"));
+        n.send(message.getString(CODE), message.getJSONObject(DATA));
       } catch (NotificationException ex) {
         logger.error("Notification failed", ex);
       }
