@@ -47,10 +47,10 @@ public class ResourceService extends AbstractGatewayService {
     try {
       var action = context.getAction();
       if (action.isPresent()) {
-        createByWorkflow(domain, action.get(), entity, variables);
+        processByWorkflow(domain, action.get(), Event.Type.CREATE, entity, variables);
       } else {
         // TODO; add validation to only ADMIN can do this
-        createByEvent(domain, entity);
+        submitByEvent(domain, Event.Type.CREATE, entity);
       }
       return id;
     } catch (ApplicationRuntimeException ex) {
@@ -66,18 +66,6 @@ public class ResourceService extends AbstractGatewayService {
     return getId(json);
   }
 
-  private JSONObject createByWorkflow(String domain, String action, JSONObject entity, JSONObject variable)
-      throws WebClientException {
-    var uri = getUri(PROCESS);
-    var event = Event.of(Event.Type.CREATE, domain, action, entity, variable);
-    return client.post(uri, Optional.of(event.toJson()));
-  }
-
-  private void createByEvent(String domain, JSONObject entity) {
-    var event = Event.of(Event.Type.CREATE, domain, entity);
-    publisher.publish(domainEventChannel, event.toJson());
-  }
-
   public String update(String domain, String id, JSONObject payload) throws WebClientException {
     var context = getContext();
     var entity = payload.getJSONObject(ENTITY);
@@ -86,10 +74,10 @@ public class ResourceService extends AbstractGatewayService {
     try {
       var action = context.getAction();
       if (action.isPresent()) {
-        updateByWorkflow(domain, action.get(), id, entity, variables);
+        processByWorkflow(domain, action.get(), Event.Type.UPDATE, entity, variables);
       } else {
         // TODO; add validation to only ADMIN can do this
-        updateByEvent(domain, id, entity);
+        submitByEvent(domain, Event.Type.UPDATE, entity);
       }
       return id;
     } catch (ApplicationRuntimeException ex) {
@@ -97,15 +85,15 @@ public class ResourceService extends AbstractGatewayService {
     }
   }
 
-  private JSONObject updateByWorkflow(String domain, String action, String id, JSONObject entity, JSONObject variables)
-      throws WebClientException {
-    var uri = String.format("%s/%s", getUri(domain), id);
-    var event = Event.of(Event.Type.UPDATE, domain, action, entity, variables);
-    return client.put(uri, Optional.of(event.toJson()));
+  private JSONObject processByWorkflow(String domain, String action, Event.Type eventType, JSONObject entity,
+      JSONObject variable) throws WebClientException {
+    var uri = getUri(PROCESS);
+    var event = Event.of(eventType, domain, action, entity, variable);
+    return client.post(uri, Optional.of(event.toJson()));
   }
 
-  private void updateByEvent(String domain, String id, JSONObject entity) {
-    var event = Event.of(Event.Type.UPDATE, domain, entity);
+  private void submitByEvent(String domain, Event.Type eventType, JSONObject entity) {
+    var event = Event.of(eventType, domain, entity);
     publisher.publish(domainEventChannel, event.toJson());
   }
 

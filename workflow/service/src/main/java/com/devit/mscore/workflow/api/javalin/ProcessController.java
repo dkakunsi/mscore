@@ -27,15 +27,6 @@ public class ProcessController extends JavalinController {
 
   @Override
   public Handler post() {
-    return handleRequest();
-  }
-
-  @Override
-  public Handler put() {
-    return handleRequest();
-  }
-
-  private Handler handleRequest() {
     return ctx -> {
       var payload = new JSONObject(ctx.body());
       var event = Event.of(payload);
