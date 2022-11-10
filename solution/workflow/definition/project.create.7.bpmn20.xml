@@ -2,18 +2,7 @@
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
   <process id="project.create" name="Create Project" isExecutable="true">
     <startEvent id="startEvent1" flowable:formFieldValidation="true"></startEvent>
-    <userTask id="tskSetStatus" name="Set Status to Declined" flowable:formFieldValidation="true">
-      <extensionElements>
-        <flowable:executionListener event="start" class="com.devit.mscore.workflow.flowable.delegate.LogMessage">
-          <flowable:field name="level">
-            <flowable:string><![CDATA[info]]></flowable:string>
-          </flowable:field>
-          <flowable:field name="value">
-            <flowable:string><![CDATA[Set project status]]></flowable:string>
-          </flowable:field>
-        </flowable:executionListener>
-      </extensionElements>
-    </userTask>
+    <userTask id="tskSetStatus" name="Validate Project"></userTask>
     <serviceTask id="svcSaveProject" name="Save Project" flowable:class="com.devit.mscore.workflow.flowable.delegate.Delegate">
       <extensionElements>
         <flowable:executionListener event="start" class="com.devit.mscore.workflow.flowable.delegate.SetOrganisationVariable">
