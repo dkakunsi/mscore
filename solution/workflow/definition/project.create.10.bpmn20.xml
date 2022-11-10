@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
   <process id="project.create" name="Create Project" isExecutable="true">
-    <startEvent id="startEvent1" flowable:formFieldValidation="true"></startEvent>
-    <serviceTask id="svcSaveProject" name="Save Project" flowable:class="com.devit.mscore.workflow.flowable.delegate.Delegate">
+    <startEvent id="startEvent1" flowable:formFieldValidation="true">
       <extensionElements>
-        <flowable:executionListener event="start" class="com.devit.mscore.workflow.flowable.delegate.SetOrganisationVariable">
+        <flowable:executionListener event="end" class="com.devit.mscore.workflow.flowable.delegate.SetOrganisationVariable">
           <flowable:field name="value">
             <flowable:string><![CDATA[Devit]]></flowable:string>
           </flowable:field>
         </flowable:executionListener>
-        <flowable:executionListener event="end" class="com.devit.mscore.workflow.flowable.delegate.SaveEntity"></flowable:executionListener>
       </extensionElements>
-    </serviceTask>
+    </startEvent>
+    <serviceTask id="svcSaveProject" name="Save Project" flowable:class="com.devit.mscore.workflow.flowable.delegate.SaveEntity"></serviceTask>
     <sequenceFlow id="sid-EB811B55-37B9-4D44-A9AA-CA776D8FBD0C" sourceRef="startEvent1" targetRef="svcSaveProject"></sequenceFlow>
     <exclusiveGateway id="sid-CB8F4DD0-3BD9-41CE-9747-BFC303D4706F" default="sid-17F32F3A-846A-4219-B665-3BC70DCF433A"></exclusiveGateway>
     <serviceTask id="svcActivateProject" name="Activate Project" flowable:class="com.devit.mscore.workflow.flowable.delegate.SetStatus">
