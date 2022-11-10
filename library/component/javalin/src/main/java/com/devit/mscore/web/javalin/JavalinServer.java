@@ -51,7 +51,7 @@ import io.javalin.http.ExceptionHandler;
  */
 public final class JavalinServer extends Server {
 
-  private static final Logger LOG = ApplicationLogger.getLogger(JavalinServer.class);
+  private static final Logger LOGGER = ApplicationLogger.getLogger(JavalinServer.class);
 
   private static final String[] MUTATION_REQUEST_METHOD = { "post", "put" };
 
@@ -91,7 +91,7 @@ public final class JavalinServer extends Server {
 
   public <T extends Exception> void addExceptionHandler(Class<T> type, int statusCode) {
     addExceptionHandler(type, (ex, ctx) -> {
-      LOG.error("Cannot process request. Reason: {}", ex, ex.getMessage());
+      LOGGER.error("Cannot process request. Reason: {}", ex, ex.getMessage());
       ctx.status(statusCode).contentType("application/json")
           .result(createResponseMessage(ex, statusCode).toString());
     });
@@ -124,17 +124,15 @@ public final class JavalinServer extends Server {
   private void initValidationAndSecurityCheck() {
     app.before(ctx -> {
       var applicationContext = Util.initiateContext(ctx);
-      LOG.info("Receiving request '{}': '{}' with context '{}'", ctx.method(), ctx.path(), applicationContext.getContextData());
+      LOGGER.info("Receiving request '{}': '{}' with context '{}'", ctx.method(), ctx.path(), applicationContext.getContextData());
 
-      if (Util.isValidatable(ctx.method(), ctx.path())) {
+      if (Util.requireValidation(ctx.method(), ctx.path())) {
         validateRequest(ctx);
       }
-      if (Util.isPreflightRequest(ctx.method())) {
-        return;
-      }
-      if (authenticationProvider != null) {
+      if (requireSecurityCheck(ctx)) {
         doSecurityCheck(applicationContext, ctx);
       }
+      LOGGER.info("Delegating request to handler");
     });
   }
 
@@ -146,6 +144,10 @@ public final class JavalinServer extends Server {
     if (!isValid(new JSONObject(body))) {
       throw new ValidationException("Invalid data. Please check log for detail");
     }
+  }
+
+  private boolean requireSecurityCheck(Context ctx) {
+    return !Util.isPreflightRequest(ctx.method()) && authenticationProvider != null;
   }
 
   private void doSecurityCheck(ApplicationContext applicationContext, Context ctx)
@@ -234,7 +236,7 @@ public final class JavalinServer extends Server {
       }
     }
 
-    static boolean isValidatable(String method, String path) {
+    static boolean requireValidation(String method, String path) {
       return isMutationRequest(method) && isCrudRequest(path);
     }
 
