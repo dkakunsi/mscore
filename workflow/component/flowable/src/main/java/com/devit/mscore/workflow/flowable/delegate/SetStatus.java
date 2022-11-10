@@ -1,61 +1,18 @@
 package com.devit.mscore.workflow.flowable.delegate;
 
-import static com.devit.mscore.ApplicationContext.setContext;
-
-import com.devit.mscore.Logger;
-import com.devit.mscore.logging.ApplicationLogger;
-import com.devit.mscore.util.AttributeConstants;
-
-import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.api.delegate.Expression;
 import org.flowable.engine.delegate.DelegateExecution;
-import org.json.JSONObject;
 
 public class SetStatus extends SetAttribute {
 
-  private static final Logger LOGGER = ApplicationLogger.getLogger(SetStatus.class);
+  // TODO: move to core constants
+  private static final String STATUS = "status";
 
   private Expression status;
 
-  private Expression closeReason;
-
   @Override
   public void execute(DelegateExecution execution) {
-    var context = FlowableApplicationContext.of(execution);
-    setContext(context);
-
-    var domain = getEntityDomain(execution);
-    var entityId = execution.getVariable("businessKey", String.class);
-    var targetValue = status.getValue(execution).toString();
-
-    LOGGER.info("Updating status of '{}' in domain '{}' to '{}'", entityId, domain, targetValue);
-
-    var entity = getEntityFromData(domain, entityId, "status", targetValue);
-    entity.put("status", targetValue);
-
-    var closeReasonStr = getCloseReason(execution);
-    if (StringUtils.isNotBlank(closeReasonStr)) {
-      entity.put("closeReason", closeReasonStr);
-    }
-
-    updateEntity(entity);
-
-    execution.setVariable("entity", entity.toString());
-    LOGGER.info("Entity process variable is updated");
-  }
-
-  private String getCloseReason(DelegateExecution execution) {
-    try {
-      return closeReason.getValue(execution).toString();
-    } catch (NullPointerException npe) {
-      // get closeReason from variable.
-      return execution.getVariable("closeReason", String.class);
-    }
-  }
-
-  private static String getEntityDomain(DelegateExecution execution) {
-    var entityStr = execution.getVariable("entity", String.class);
-    var entityObj = new JSONObject(entityStr);
-    return AttributeConstants.getDomain(entityObj);
+    var statusValue = status.getValue(execution).toString();
+    updateAttribute(execution, STATUS, statusValue);
   }
 }
