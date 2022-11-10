@@ -101,7 +101,6 @@ public class WorkflowServiceImpl implements WorkflowService {
     try {
       LOGGER.info("Retrieving definition for action '{}'", action);
       definitionId = registry.get(action);
-      LOGGER.info("Retrieved definition: '{}'", definitionId);
     } catch (RegistryException ex) {
       LOGGER.error("Error when retrieving definition for action '{}': {}", ex, action, ex.getMessage());
       return createDomainWithoutWorkflow(entity, action);

@@ -16,7 +16,11 @@
     </userTask>
     <serviceTask id="svcSaveProject" name="Save Project" flowable:class="com.devit.mscore.workflow.flowable.delegate.Delegate">
       <extensionElements>
-        <flowable:executionListener event="start" class="com.devit.mscore.workflow.flowable.delegate.SetOrganisationVariable"></flowable:executionListener>
+        <flowable:executionListener event="start" class="com.devit.mscore.workflow.flowable.delegate.SetOrganisationVariable">
+          <flowable:field name="value">
+            <flowable:string><![CDATA[Devit]]></flowable:string>
+          </flowable:field>
+        </flowable:executionListener>
         <flowable:executionListener event="start" class="com.devit.mscore.workflow.flowable.delegate.SaveEntity"></flowable:executionListener>
       </extensionElements>
     </serviceTask>
