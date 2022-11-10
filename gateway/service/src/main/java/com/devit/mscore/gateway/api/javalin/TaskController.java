@@ -10,13 +10,15 @@ import com.devit.mscore.gateway.service.TaskService;
 import com.devit.mscore.web.javalin.JavalinApplicationContext;
 import com.devit.mscore.web.javalin.JavalinController;
 
-import java.util.Map;
+import java.util.HashMap;
 
 import org.json.JSONObject;
 
 import io.javalin.http.Handler;
 
 public class TaskController extends JavalinController {
+
+  private static final String RESPONSE = "response";
 
   public TaskController(TaskService taskService) {
     super(taskService);
@@ -28,20 +30,22 @@ public class TaskController extends JavalinController {
   }
 
   @Override
-  public Handler put() {
+  public Handler post() {
     return ctx -> {
       updateContext();
 
-      var taskId = ctx.pathParam(ID);
-      var taskResponse = new JSONObject(ctx.body());
-      var resourceId = ((TaskService) service).completeTask(taskId, taskResponse);
+      var payload = new JSONObject(ctx.body());
+      var taskId = payload.getString(ID);
+      var response = payload.getJSONObject(RESPONSE);
+      var resourceId = ((TaskService) service).completeTask(taskId, response);
       var result = new JSONObject().put(ID, resourceId);
       ctx.status(200).contentType(CONTENT_TYPE).result(result.toString());
     };
   }
 
   private void updateContext() {
-    var contextData = Map.of(EVENT_TYPE, (Object) Event.Type.TASK);
+    var contextData = new HashMap<String, Object>();
+    contextData.put(EVENT_TYPE, Event.Type.TASK);
     var context = JavalinApplicationContext.of(getContext(), contextData);
     setContext(context);
   }

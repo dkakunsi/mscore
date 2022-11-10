@@ -28,9 +28,9 @@ public class TaskService extends AbstractGatewayService {
   public String completeTask(String taskId, JSONObject taskResponse) throws WebClientException {
     var entity = new JSONObject();
     entity.put(ID, taskId);
+    var event = Event.of(Event.Type.UPDATE, TASK, TASK_ACTION, entity, taskResponse);
 
     var uri = getUri(TASK);
-    var event = Event.of(Event.Type.UPDATE, TASK, TASK_ACTION, entity, taskResponse);
     client.post(uri, Optional.of(event.toJson()));
 
     return taskId;
