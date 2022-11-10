@@ -8,6 +8,10 @@ public class SetOrganisationVariable extends ApplicationDelegate {
 
   @Override
   public void execute(DelegateExecution execution) {
+    initContext(execution);
+
+    logger.info("Initializing organization variable");
+
     var organisation = getValue(execution);
     execution.setVariable(ORGANISATION, organisation);
   }

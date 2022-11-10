@@ -21,6 +21,8 @@ public class SendNotification extends ApplicationDelegate {
   public void execute(DelegateExecution execution) {
     var context = initContext(execution);
 
+    logger.info("Sending notification");
+
     var publisher = context.getPublisher();
     var notificationChannel = context.getChannel(NOTIFICATION);
     var data = getEntityObject(execution);

@@ -9,6 +9,10 @@ public class SetStatus extends SetAttribute {
 
   @Override
   public void execute(DelegateExecution execution) {
+    initContext(execution);
+
+    logger.info("Set entity status");
+
     var status = getValue(execution);
     updateAttribute(execution, STATUS, status);
   }

@@ -16,6 +16,8 @@ public class LogMessage extends ApplicationDelegate {
   public void execute(DelegateExecution execution) {
     initContext(execution);
 
+    logger.info("Logging message");
+
     var message = getValue(execution);
     var levelValue = getValue(execution, level);
 

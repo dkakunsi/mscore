@@ -13,6 +13,8 @@ public class SetAttribute extends ApplicationDelegate {
   public void execute(DelegateExecution execution) {
     initContext(execution);
 
+    logger.info("Set entity attribute");
+
     var targetAttribute = getValue(execution, attribute);
     var targetValue = getValue(execution);
     updateAttribute(execution, targetAttribute, targetValue);

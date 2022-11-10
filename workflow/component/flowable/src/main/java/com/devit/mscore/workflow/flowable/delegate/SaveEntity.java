@@ -23,6 +23,8 @@ public class SaveEntity extends ApplicationDelegate {
   public void execute(DelegateExecution execution) {
     var context = initContext(execution);
 
+    logger.info("Saving entity");
+
     var entity = getEntityObject(execution);
     var domain = getDomainVariable(execution);
     var action = context.getAction().orElse(null);
