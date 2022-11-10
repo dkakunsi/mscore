@@ -4,11 +4,11 @@
     <startEvent id="startEvent1" flowable:formFieldValidation="true"></startEvent>
     <userTask id="tskSetStatus" name="Set Status to Declined" flowable:formFieldValidation="true">
       <extensionElements>
-        <flowable:executionListener event="start" class="com.devit.mscore.workflow.flowable.delegate.LogDelegate">
+        <flowable:executionListener event="start" class="com.devit.mscore.workflow.flowable.delegate.LogMessage">
           <flowable:field name="level">
             <flowable:string><![CDATA[info]]></flowable:string>
           </flowable:field>
-          <flowable:field name="message">
+          <flowable:field name="value">
             <flowable:string><![CDATA[Set project status]]></flowable:string>
           </flowable:field>
         </flowable:executionListener>
@@ -21,14 +21,14 @@
     <sequenceFlow id="sid-0EF0E6FD-6507-4856-9C43-8B96B0E92E20" sourceRef="tskSetStatus" targetRef="sid-CB8F4DD0-3BD9-41CE-9747-BFC303D4706F"></sequenceFlow>
     <serviceTask id="svcActivateProject" name="Activate Project" flowable:class="com.devit.mscore.workflow.flowable.delegate.SetStatus">
       <extensionElements>
-        <flowable:field name="status">
+        <flowable:field name="value">
           <flowable:string><![CDATA[Active]]></flowable:string>
         </flowable:field>
       </extensionElements>
     </serviceTask>
     <serviceTask id="svcDeclineProject" name="Decline Project" flowable:class="com.devit.mscore.workflow.flowable.delegate.SetStatus">
       <extensionElements>
-        <flowable:field name="status">
+        <flowable:field name="value">
           <flowable:string><![CDATA[Declined]]></flowable:string>
         </flowable:field>
       </extensionElements>

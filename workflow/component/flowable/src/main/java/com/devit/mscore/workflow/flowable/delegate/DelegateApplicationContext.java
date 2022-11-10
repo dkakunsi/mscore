@@ -15,9 +15,9 @@ import java.util.Map;
 
 import org.flowable.engine.delegate.DelegateExecution;
 
-public class FlowableApplicationContext extends ApplicationContext {
+public class DelegateApplicationContext extends ApplicationContext {
 
-  private FlowableApplicationContext(Map<String, Object> contextData) {
+  private DelegateApplicationContext(Map<String, Object> contextData) {
     super(contextData);
   }
 
@@ -28,7 +28,7 @@ public class FlowableApplicationContext extends ApplicationContext {
 
   public static ApplicationContext of(DelegateExecution execution) {
     var contextData = new HashMap<String, Object>();
-    var context = new FlowableApplicationContext(contextData);
+    var context = new DelegateApplicationContext(contextData);
     context.breadcrumbId(execution);
     context.eventType(execution);
     context.principal(execution);
