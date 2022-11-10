@@ -14,7 +14,12 @@
         </flowable:executionListener>
       </extensionElements>
     </userTask>
-    <serviceTask id="svcSaveProject" name="Save Project" flowable:class="com.devit.mscore.workflow.flowable.delegate.SaveEntity"></serviceTask>
+    <serviceTask id="svcSaveProject" name="Save Project" flowable:class="com.devit.mscore.workflow.flowable.delegate.Delegate">
+      <extensionElements>
+        <flowable:executionListener event="start" class="com.devit.mscore.workflow.flowable.delegate.SetOrganisationVariable"></flowable:executionListener>
+        <flowable:executionListener event="start" class="com.devit.mscore.workflow.flowable.delegate.SaveEntity"></flowable:executionListener>
+      </extensionElements>
+    </serviceTask>
     <sequenceFlow id="sid-7B3246F9-176B-4FC6-AA89-97C3CAA22D7B" sourceRef="svcSaveProject" targetRef="tskSetStatus"></sequenceFlow>
     <sequenceFlow id="sid-EB811B55-37B9-4D44-A9AA-CA776D8FBD0C" sourceRef="startEvent1" targetRef="svcSaveProject"></sequenceFlow>
     <exclusiveGateway id="sid-CB8F4DD0-3BD9-41CE-9747-BFC303D4706F" default="sid-17F32F3A-846A-4219-B665-3BC70DCF433A"></exclusiveGateway>
@@ -39,7 +44,7 @@
     <sequenceFlow id="sid-4E038B56-81CA-4BA5-A604-A6118F632F6B" sourceRef="svcActivateProject" targetRef="sid-69E13D18-77E2-4A95-9849-37EFB2E67052"></sequenceFlow>
     <sequenceFlow id="sid-17F32F3A-846A-4219-B665-3BC70DCF433A" sourceRef="sid-CB8F4DD0-3BD9-41CE-9747-BFC303D4706F" targetRef="svcDeclineProject"></sequenceFlow>
     <sequenceFlow id="sid-08843672-F459-4011-9C10-E0D9DE03FC5C" sourceRef="sid-CB8F4DD0-3BD9-41CE-9747-BFC303D4706F" targetRef="svcActivateProject">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${approved=='true'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${approved == 'true'}]]></conditionExpression>
     </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_project.create">
@@ -51,7 +56,7 @@
         <omgdc:Bounds height="80.0" width="100.0" x="420.0" y="138.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="svcSaveProject" id="BPMNShape_svcSaveProject">
-        <omgdc:Bounds height="80.0" width="100.0" x="255.0" y="138.0"></omgdc:Bounds>
+        <omgdc:Bounds height="80.0" width="100.0" x="225.0" y="138.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sid-CB8F4DD0-3BD9-41CE-9747-BFC303D4706F" id="BPMNShape_sid-CB8F4DD0-3BD9-41CE-9747-BFC303D4706F">
         <omgdc:Bounds height="40.0" width="40.0" x="600.0" y="160.0"></omgdc:Bounds>
@@ -69,8 +74,8 @@
         <omgdc:Bounds height="28.0" width="28.0" x="946.0" y="60.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="sid-7B3246F9-176B-4FC6-AA89-97C3CAA22D7B" id="BPMNEdge_sid-7B3246F9-176B-4FC6-AA89-97C3CAA22D7B">
-        <omgdi:waypoint x="354.9499999998897" y="178.0"></omgdi:waypoint>
-        <omgdi:waypoint x="419.99999999998465" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="324.94999999986936" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="419.9999999999363" y="178.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-17F32F3A-846A-4219-B665-3BC70DCF433A" id="BPMNEdge_sid-17F32F3A-846A-4219-B665-3BC70DCF433A">
         <omgdi:waypoint x="630.735738659173" y="189.21395582329316"></omgdi:waypoint>
@@ -81,8 +86,8 @@
         <omgdi:waypoint x="946.0" y="295.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-EB811B55-37B9-4D44-A9AA-CA776D8FBD0C" id="BPMNEdge_sid-EB811B55-37B9-4D44-A9AA-CA776D8FBD0C">
-        <omgdi:waypoint x="129.9499993132565" y="178.0"></omgdi:waypoint>
-        <omgdi:waypoint x="254.99999999998667" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="129.94999896904577" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="225.0" y="178.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-08843672-F459-4011-9C10-E0D9DE03FC5C" id="BPMNEdge_sid-08843672-F459-4011-9C10-E0D9DE03FC5C">
         <omgdi:waypoint x="631.6803124999999" y="171.70833333333331"></omgdi:waypoint>
