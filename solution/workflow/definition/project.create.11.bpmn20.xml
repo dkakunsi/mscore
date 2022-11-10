@@ -3,7 +3,7 @@
   <process id="project.create" name="Create Project" isExecutable="true">
     <startEvent id="startEvent1" flowable:formFieldValidation="true">
       <extensionElements>
-        <flowable:executionListener event="end" class="com.devit.mscore.workflow.flowable.delegate.SetOrganisationVariable">
+        <flowable:executionListener event="start" class="com.devit.mscore.workflow.flowable.delegate.SetOrganisationVariable">
           <flowable:field name="value">
             <flowable:string><![CDATA[Devit]]></flowable:string>
           </flowable:field>
@@ -32,8 +32,8 @@
     <endEvent id="sid-69E13D18-77E2-4A95-9849-37EFB2E67052"></endEvent>
     <sequenceFlow id="sid-4E038B56-81CA-4BA5-A604-A6118F632F6B" sourceRef="svcActivateProject" targetRef="sid-69E13D18-77E2-4A95-9849-37EFB2E67052"></sequenceFlow>
     <userTask id="sid-F243B17C-1BDA-438F-9412-72ED0607CCDF" name="Validate Project" flowable:formFieldValidation="true"></userTask>
-    <sequenceFlow id="sid-7B3246F9-176B-4FC6-AA89-97C3CAA22D7B" sourceRef="svcSaveProject" targetRef="sid-F243B17C-1BDA-438F-9412-72ED0607CCDF"></sequenceFlow>
     <sequenceFlow id="sid-0EF0E6FD-6507-4856-9C43-8B96B0E92E20" sourceRef="sid-F243B17C-1BDA-438F-9412-72ED0607CCDF" targetRef="sid-CB8F4DD0-3BD9-41CE-9747-BFC303D4706F"></sequenceFlow>
+    <sequenceFlow id="sid-7B3246F9-176B-4FC6-AA89-97C3CAA22D7B" sourceRef="svcSaveProject" targetRef="sid-F243B17C-1BDA-438F-9412-72ED0607CCDF"></sequenceFlow>
     <sequenceFlow id="sid-17F32F3A-846A-4219-B665-3BC70DCF433A" sourceRef="sid-CB8F4DD0-3BD9-41CE-9747-BFC303D4706F" targetRef="svcDeclineProject"></sequenceFlow>
     <sequenceFlow id="sid-08843672-F459-4011-9C10-E0D9DE03FC5C" sourceRef="sid-CB8F4DD0-3BD9-41CE-9747-BFC303D4706F" targetRef="svcActivateProject">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${approved == 'true'}]]></conditionExpression>
@@ -63,11 +63,11 @@
         <omgdc:Bounds height="28.0" width="28.0" x="946.0" y="60.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="sid-F243B17C-1BDA-438F-9412-72ED0607CCDF" id="BPMNShape_sid-F243B17C-1BDA-438F-9412-72ED0607CCDF">
-        <omgdc:Bounds height="80.0" width="100.0" x="405.0" y="138.0"></omgdc:Bounds>
+        <omgdc:Bounds height="80.0" width="100.0" x="405.0" y="120.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="sid-7B3246F9-176B-4FC6-AA89-97C3CAA22D7B" id="BPMNEdge_sid-7B3246F9-176B-4FC6-AA89-97C3CAA22D7B">
-        <omgdi:waypoint x="324.95000000000005" y="180.90992945460064"></omgdi:waypoint>
-        <omgdi:waypoint x="404.99999999999994" y="185.57338997193355"></omgdi:waypoint>
+        <omgdi:waypoint x="324.95000000000005" y="175.13375796178343"></omgdi:waypoint>
+        <omgdi:waypoint x="405.0" y="170.54490445859872"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-17F32F3A-846A-4219-B665-3BC70DCF433A" id="BPMNEdge_sid-17F32F3A-846A-4219-B665-3BC70DCF433A">
         <omgdi:waypoint x="630.735738659173" y="189.21395582329316"></omgdi:waypoint>
@@ -90,8 +90,8 @@
         <omgdi:waypoint x="946.0001601925575" y="74.06804813353862"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-0EF0E6FD-6507-4856-9C43-8B96B0E92E20" id="BPMNEdge_sid-0EF0E6FD-6507-4856-9C43-8B96B0E92E20">
-        <omgdi:waypoint x="504.94999999999993" y="183.21194544760883"></omgdi:waypoint>
-        <omgdi:waypoint x="600.9588276484815" y="180.9576805793605"></omgdi:waypoint>
+        <omgdi:waypoint x="504.95000000000005" y="168.57802838295743"></omgdi:waypoint>
+        <omgdi:waypoint x="601.4288701996699" y="178.53594938728926"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
