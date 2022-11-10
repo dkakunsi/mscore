@@ -1,5 +1,6 @@
 package com.devit.mscore.web.jersey;
 
+import static com.devit.mscore.util.Constants.AUTHORIZATION;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.util.HashMap;
@@ -75,7 +76,13 @@ public class SunJerseyClient extends Requester implements com.devit.mscore.web.C
     if (builtHeaders != null) {
       builtHeaders.forEach(builder::header);
     }
-    logger.info(LOG_INFO_FORMAT, method, uri, builtHeaders);
+    logger.info(LOG_INFO_FORMAT, method, uri, getPrintableHeaders(builtHeaders));
     return builder;
+  }
+
+  private Map<String, String> getPrintableHeaders(Map<String, String> headers) {
+    var printableheader = new HashMap<>(headers);
+    printableheader.remove(AUTHORIZATION);
+    return printableheader;
   }
 }
