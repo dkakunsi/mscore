@@ -1,6 +1,7 @@
 package com.devit.mscore.workflow.api.javalin;
 
 import static com.devit.mscore.util.AttributeConstants.getId;
+import static com.devit.mscore.util.Constants.ID;
 import static com.devit.mscore.util.Constants.TASK;
 
 import com.devit.mscore.Event;
@@ -33,7 +34,9 @@ public class TaskController extends JavalinController {
       var variables = event.getVariables() != null ? event.getVariables().toMap() : new HashMap<String, Object>();
       ((WorkflowService) service).completeTask(taskId, variables);
 
-      ctx.status(SUCCESS);
+      var result = new JSONObject();
+      result.put(ID, taskId);
+      ctx.status(SUCCESS).contentType(CONTENT_TYPE).result(result.toString());
     };
   }
 }
