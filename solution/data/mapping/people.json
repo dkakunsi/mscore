@@ -27,14 +27,14 @@
     "contacts": {
       "type": "nested",
       "properties": {
-        "detail": {
+        "name": {
           "type": "text"
         },
-        "description": {
+        "email": {
           "type": "text"
         },
-        "type": {
-          "type": "keyword"
+        "phone": {
+          "type": "text"
         }
       }
     },

@@ -1,0 +1,10 @@
+Hi, {{ name }}.
+
+Data anda sudah ditambahkan ke dalam sistem dengan kode {{ code }}.
+
+Terima kasih.
+
+--
+MSCORE, Devit
+
+https://mscore.devit.id

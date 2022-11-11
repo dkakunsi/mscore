@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/processdef">
+  <process id="people.create" name="Create People" isExecutable="true">
+    <startEvent id="startEvent1" flowable:formFieldValidation="true"></startEvent>
+    <serviceTask id="svcSavePeople" name="Save People" flowable:class="com.devit.mscore.workflow.flowable.delegate.SaveEntity"></serviceTask>
+    <sequenceFlow id="sid-18745972-A1CB-4E88-B42B-A6AE4F0D491C" sourceRef="startEvent1" targetRef="svcSavePeople"></sequenceFlow>
+    <serviceTask id="sid-41AEE9CE-34C6-41B6-9676-B66A16C7CD62" name="Send Notification" flowable:class="com.devit.mscore.workflow.flowable.delegate.SendNotification">
+      <extensionElements>
+        <flowable:field name="code">
+          <flowable:string><![CDATA[people.create]]></flowable:string>
+        </flowable:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="sid-B989261C-B168-4185-99D5-556A24182C48" sourceRef="svcSavePeople" targetRef="sid-41AEE9CE-34C6-41B6-9676-B66A16C7CD62"></sequenceFlow>
+    <endEvent id="sid-CC29AB13-6433-4BD9-93BB-A215B8FC43DE"></endEvent>
+    <sequenceFlow id="sid-A48E78A5-36FB-4491-9F26-804D625090CA" sourceRef="sid-41AEE9CE-34C6-41B6-9676-B66A16C7CD62" targetRef="sid-CC29AB13-6433-4BD9-93BB-A215B8FC43DE"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_peoplecreate">
+    <bpmndi:BPMNPlane bpmnElement="peoplecreate" id="BPMNPlane_peoplecreate">
+      <bpmndi:BPMNShape bpmnElement="startEvent1" id="BPMNShape_startEvent1">
+        <omgdc:Bounds height="30.0" width="30.0" x="100.0" y="163.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="svcSavePeople" id="BPMNShape_svcSavePeople">
+        <omgdc:Bounds height="80.0" width="100.0" x="263.0" y="138.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-41AEE9CE-34C6-41B6-9676-B66A16C7CD62" id="BPMNShape_sid-41AEE9CE-34C6-41B6-9676-B66A16C7CD62">
+        <omgdc:Bounds height="80.0" width="100.0" x="540.0" y="138.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-CC29AB13-6433-4BD9-93BB-A215B8FC43DE" id="BPMNShape_sid-CC29AB13-6433-4BD9-93BB-A215B8FC43DE">
+        <omgdc:Bounds height="28.0" width="28.0" x="786.0" y="163.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-18745972-A1CB-4E88-B42B-A6AE4F0D491C" id="BPMNEdge_sid-18745972-A1CB-4E88-B42B-A6AE4F0D491C">
+        <omgdi:waypoint x="129.94999953374543" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="263.0" y="178.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A48E78A5-36FB-4491-9F26-804D625090CA" id="BPMNEdge_sid-A48E78A5-36FB-4491-9F26-804D625090CA">
+        <omgdi:waypoint x="639.9499999999937" y="177.76190476190476"></omgdi:waypoint>
+        <omgdi:waypoint x="786.0001525103507" y="177.06642791272668"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-B989261C-B168-4185-99D5-556A24182C48" id="BPMNEdge_sid-B989261C-B168-4185-99D5-556A24182C48">
+        <omgdi:waypoint x="362.9499999999746" y="178.0"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="178.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
