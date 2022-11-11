@@ -94,7 +94,7 @@ services:
       - 1010:587
     environment:
       - SMTP_SERVER=smtp.gmail.com
-      - SMTP_PORT=465
+      - SMTP_PORT=587
       - SMTP_USERNAME=$POSTFIX_USERNAME
       - SMTP_PASSWORD=$POSTFIX_PASSWORD
       - SERVER_HOSTNAME=sangihekab.go.id
