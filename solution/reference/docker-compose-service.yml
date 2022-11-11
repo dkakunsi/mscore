@@ -41,15 +41,3 @@ services:
       - 2102:2000
     volumes:
       - ./logs/notification-service:/opt/mscore/logs
-
-volumes:
-  dataservice:
-    driver: local
-  historyservice:
-    driver: local
-  workflowservice:
-    driver: local
-  gatewayservice:
-    driver: local
-  notificationservice:
-    driver: local

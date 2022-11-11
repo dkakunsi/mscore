@@ -16,9 +16,5 @@ services:
       KIBANA_HOST: http://dashboard:5601
       ELASTICSEARCH_USERNAME: ${ELASTIC_USERNAME}
       ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
-    #   - setup.kibana.host: dashboard:5601
-    #   - output.elasticsearch.hosts: ["index:9200"]
-    #   - output.elasticsearch.username: ${ELASTIC_USERNAME}
-    #   - output.elasticsearch.password: ${ELASTIC_PASSWORD}
     volumes:
-      - ~/logs:/home/logs
+      - ./logs:/home/logs
