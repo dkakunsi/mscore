@@ -19,7 +19,8 @@
     <liquibase.version>4.11.0</liquibase.version>
     <postgres.version>42.4.1</postgres.version>
     <embedded-postgres.version>1.3.1</embedded-postgres.version>
-    <minimum.bundle.line.coverage>0.88</minimum.bundle.line.coverage>
+    <minimum.bundle.line.coverage>0.87</minimum.bundle.line.coverage>
+    <minimum.class.line.coverage>0.72</minimum.class.line.coverage>
   </properties>
 
   <dependencies>

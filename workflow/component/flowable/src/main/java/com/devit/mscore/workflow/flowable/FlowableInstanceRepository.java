@@ -5,11 +5,14 @@ import com.devit.mscore.WorkflowInstanceRepository;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.flowable.common.engine.api.FlowableObjectNotFoundException;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.IdentityService;
 import org.flowable.engine.ProcessEngine;
 import org.flowable.engine.RuntimeService;
+import org.flowable.variable.api.history.HistoricVariableInstance;
 
 public class FlowableInstanceRepository implements WorkflowInstanceRepository {
 
@@ -44,7 +47,15 @@ public class FlowableInstanceRepository implements WorkflowInstanceRepository {
 
   @Override
   public Map<String, Object> getVariables(String instanceId) {
-    return runtimeService.getVariables(instanceId);
+    try {
+      return runtimeService.getVariables(instanceId);
+    } catch (FlowableObjectNotFoundException ex) {
+      var historicVariables = historyService.createHistoricVariableInstanceQuery()
+          .processInstanceId(instanceId)
+          .list();
+      return historicVariables.stream()
+          .collect(Collectors.toMap(HistoricVariableInstance::getVariableName, HistoricVariableInstance::getValue));
+    }
   }
 
   @Override
