@@ -2,6 +2,9 @@ package com.devit.mscore.notification.mail;
 
 import static jakarta.mail.Message.RecipientType.TO;
 
+import com.devit.mscore.Logger;
+import com.devit.mscore.logging.ApplicationLogger;
+
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.mail.Authenticator;
@@ -15,11 +18,14 @@ import jakarta.mail.internet.MimeMessage;
 
 public class MailSender {
 
+  private static final Logger LOGGER = ApplicationLogger.getLogger(MailSender.class);
+
   private static final String SMTP_HOST = "mail.smtp.host";
 
   private static final String SMTP_PORT = "mail.smtp.port";
 
   public void send(SendInfo sendInfo, String to, String emailSubject, String text) throws MessagingException {
+    LOGGER.info("Sending email to '{}'", to);
     var properties = System.getProperties();
     properties.setProperty(SMTP_HOST, sendInfo.getHost());
     properties.setProperty(SMTP_PORT, sendInfo.getPort());

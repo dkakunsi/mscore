@@ -162,7 +162,6 @@
   "required": [
     "domain",
     "code",
-    "name",
-    "type"
+    "name"
   ]
 }

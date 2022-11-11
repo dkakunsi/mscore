@@ -95,9 +95,9 @@ services:
     environment:
       - SMTP_SERVER=smtp.gmail.com
       - SMTP_PORT=465
-      - SERVER_HOSTNAME=sangihekab.go.id
       - SMTP_USERNAME=$POSTFIX_USERNAME
       - SMTP_PASSWORD=$POSTFIX_PASSWORD
+      - SERVER_HOSTNAME=sangihekab.go.id
 
   dashboard:
     image: elastic/kibana:7.6.2
