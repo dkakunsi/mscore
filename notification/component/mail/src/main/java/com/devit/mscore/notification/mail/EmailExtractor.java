@@ -1,10 +1,9 @@
 package com.devit.mscore.notification.mail;
 
-import com.devit.mscore.Logger;
-import com.devit.mscore.logging.ApplicationLogger;
-
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -12,8 +11,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class EmailExtractor {
-
-  private static final Logger LOGGER = ApplicationLogger.getLogger(EmailExtractor.class);
 
   private EmailExtractor() {
   }
@@ -27,6 +24,7 @@ public class EmailExtractor {
     return Optional.of(possibility);
   }
 
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   private static void extract(JSONObject data, List<String> possibility, List<String> possibleAttributes) {
     var nestedObjects = new ArrayList<JSONObject>();
 
@@ -35,17 +33,15 @@ public class EmailExtractor {
         var value = data.get(pa);
         if (value instanceof JSONObject) {
           nestedObjects.add((JSONObject) value);
-        } else if (!(value instanceof JSONArray)) {
-          possibility.add(value.toString());
+        } else if (value instanceof JSONArray) {
+          nestedObjects.addAll((List) ((JSONArray) value).toList());
         } else {
-          LOGGER.info("Cannot use attribute '{}' of unsupported type '{}'", pa, value.getClass());
+          possibility.add(value.toString());
         }
       } else {
-        var nested = data.keySet().stream()
-            .map(k -> data.get(k))
-            .filter(v -> v instanceof JSONObject)
-            .map(v -> (JSONObject) v)
-            .collect(Collectors.toList());
+        var nestedList = getJsonObjectsFromNestedArray(data);
+        nestedObjects.addAll(nestedList);
+        var nested = getNestedJsonObjects(data);
         nestedObjects.addAll(nested);
       }
     }
@@ -55,5 +51,26 @@ public class EmailExtractor {
     if (possibility.isEmpty()) {
       nestedObjects.forEach(no -> extract(no, possibility, possibleAttributes));
     }
+  }
+
+  @SuppressWarnings("rawtypes")
+  private static List<JSONObject> getJsonObjectsFromNestedArray(JSONObject data) {
+    return data.keySet()
+        .stream()
+        .map(k -> data.get(k))
+        .filter(v -> v instanceof JSONArray)
+        .map(v -> ((JSONArray) v).toList())
+        .flatMap(Collection::stream)
+        .filter(v -> v instanceof Map)
+        .map(v -> new JSONObject((Map) v))
+        .collect(Collectors.toList());
+  }
+
+  private static List<JSONObject> getNestedJsonObjects(JSONObject data) {
+    return data.keySet().stream()
+        .map(k -> data.get(k))
+        .filter(v -> v instanceof JSONObject)
+        .map(v -> (JSONObject) v)
+        .collect(Collectors.toList());
   }
 }
