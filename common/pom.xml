@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.devit.mscore</groupId>
   <artifactId>parent</artifactId>
-  <version>1.4</version>
+  <version>2.1</version>
   <packaging>pom</packaging>
 
   <name>MS Core :: Parent</name>
@@ -44,7 +44,7 @@
     <awaitality.version>4.2.0</awaitality.version>
 
     <!-- will be used by all components -->
-    <library.version>[2.0.20221110204650-SNAPSHOT,)</library.version>
+    <library.version>[2.1,)</library.version>
 
     <!-- Sonarcloud.io -->
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
