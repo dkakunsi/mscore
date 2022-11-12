@@ -53,11 +53,6 @@
     </dependency>
     <dependency>
       <groupId>com.devit.mscore</groupId>
-      <artifactId>log4j</artifactId>
-      <version>${library.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.devit.mscore</groupId>
       <artifactId>git</artifactId>
       <version>${revision}</version>
     </dependency>
