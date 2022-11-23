@@ -18,7 +18,7 @@ public class SearchCriteriaTest {
   public void givenValidSearchCriteria_WhenConvertingFromJsonSuccessful_ThenShouldReturnObject() throws IndexingException {
     var jsonCriteria = new JSONObject();
     jsonCriteria.put("page", 0);
-    // size by default is 10
+    // size by default is 10000
     var criterion = new JSONObject();
     criterion.put("operator", "equals");
     criterion.put("attribute", "id");
@@ -30,7 +30,7 @@ public class SearchCriteriaTest {
     var searchCriteria = SearchCriteria.from(jsonCriteria);
 
     assertThat(searchCriteria.getPage(), is(0));
-    assertThat(searchCriteria.getSize(), is(10));
+    assertThat(searchCriteria.getSize(), is(10000));
     var listCriteria = searchCriteria.getCriteria();
     assertThat(listCriteria.size(), is(1));
     var criteriaObject = listCriteria.get(0);

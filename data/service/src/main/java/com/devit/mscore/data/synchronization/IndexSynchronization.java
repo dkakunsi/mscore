@@ -1,8 +1,9 @@
 package com.devit.mscore.data.synchronization;
 
 import com.devit.mscore.Index;
+import com.devit.mscore.Index.Criteria;
+import com.devit.mscore.Index.Criteria.Operator;
 import com.devit.mscore.Index.SearchCriteria;
-import com.devit.mscore.Index.SearchCriteria.Operator;
 import com.devit.mscore.Resource;
 import com.devit.mscore.Synchronization;
 import com.devit.mscore.exception.IndexingException;
@@ -14,7 +15,6 @@ import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -65,19 +65,8 @@ public class IndexSynchronization extends Synchronization {
     }
   }
 
-  private JSONObject createSearchCriteria(String searchAttribute, String searchValue) {
-    var criteria = new SearchCriteria(Operator.EQUALS, searchAttribute, searchValue);
-    var c = new JSONObject();
-    c.put("attribute", searchAttribute);
-    c.put("operator", "equals");
-    c.put("value", searchValue);
-
-    var criteria = new JSONArray();
-    criteria.put(c);
-
-    var query = new JSONObject();
-    query.put("criteria", criteria);
-
-    return query;
+  private SearchCriteria createSearchCriteria(String searchAttribute, String searchValue) {
+    var criteria = new Criteria(Operator.EQUALS, searchAttribute, searchValue);
+    return new SearchCriteria(List.of(criteria));
   }
 }

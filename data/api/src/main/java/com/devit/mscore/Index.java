@@ -95,11 +95,17 @@ public abstract class Index {
     // A bigger value is needed for enrichment
     private static final int DEFAULT_SIZE = 10000;
 
+    private static final int DEFAULT_PAGE = 0;
+
     private List<Criteria> criteria;
 
     private int page;
 
     private int size;
+
+    public SearchCriteria(List<Criteria> criteria) {
+      this(criteria, DEFAULT_PAGE, DEFAULT_SIZE);
+    }
 
     public SearchCriteria(List<Criteria> criteria, int page, int size) {
       this.criteria = criteria;

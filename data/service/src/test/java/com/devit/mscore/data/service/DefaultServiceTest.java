@@ -15,6 +15,7 @@ import com.devit.mscore.ApplicationContext;
 import com.devit.mscore.DefaultApplicationContext;
 import com.devit.mscore.FiltersExecutor;
 import com.devit.mscore.Index;
+import com.devit.mscore.Index.SearchCriteria;
 import com.devit.mscore.Publisher;
 import com.devit.mscore.Repository;
 import com.devit.mscore.Schema;
@@ -199,7 +200,7 @@ public class DefaultServiceTest {
   public void testSearch() throws JSONException, ApplicationException {
     var criteria = "{\"criteria\": [{\"attribute\": \"name\",\"value\": \"Family\",\"operator\": \"contains\"}]}";
     doReturn(Optional.of(new JSONArray("[{\"name\":\"Given Family\"}]"))).when(this.index)
-        .search(any(JSONObject.class));
+        .search(any(SearchCriteria.class));
     var result = this.service.search(new JSONObject(criteria));
 
     assertFalse(result.isEmpty());
@@ -208,7 +209,7 @@ public class DefaultServiceTest {
   @Test
   public void testSearch_EmptyResult() throws JSONException, ApplicationException {
     var criteria = "{\"criteria\": [{\"attribute\": \"name\",\"value\": \"Family\",\"operator\": \"contains\"}]}";
-    doReturn(Optional.empty()).when(this.index).search(any(JSONObject.class));
+    doReturn(Optional.empty()).when(this.index).search(any(SearchCriteria.class));
     var result = this.service.search(new JSONObject(criteria));
 
     assertTrue(result.isEmpty());
