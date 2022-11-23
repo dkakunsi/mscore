@@ -17,8 +17,7 @@
           "type": "string",
           "maxLength": 36
         }
-      ],
-      "unique": true
+      ]
     },
     "name": {
       "type": "string",
@@ -117,8 +116,7 @@
                     "type": "string",
                     "maxLength": 36
                   }
-                ],
-                "unique": true
+                ]
               },
               "name": {
                 "type": "string",
@@ -198,5 +196,16 @@
     "name",
     "action",
     "entity"
+  ],
+  "index": [
+    {
+      "field": "id",
+      "unique": true
+    },
+    {
+      "field": "task.id",
+      "unique": true
+    }
   ]
+
 }

@@ -14,13 +14,11 @@
           "type": "string",
           "maxLength": 256
         }
-      ],
-      "unique": true
+      ]
     },
     "code": {
       "type": "string",
-      "maxLength": 100,
-      "unique": true
+      "maxLength": 100
     },
     "domain": {
       "type": "string",
@@ -115,5 +113,15 @@
         }
       ]
     }
-  }
+  },
+  "index": [
+    {
+      "field": "id",
+      "unique": true
+    },
+    {
+      "field": "code",
+      "unique": true
+    }
+  ]
 }
