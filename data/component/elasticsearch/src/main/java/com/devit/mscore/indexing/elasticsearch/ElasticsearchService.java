@@ -1,12 +1,17 @@
 package com.devit.mscore.indexing.elasticsearch;
 
 import static com.devit.mscore.util.AttributeConstants.getId;
+import static com.devit.mscore.util.Constants.ID;
 
+import com.devit.mscore.Index;
+import com.devit.mscore.Index.Criteria.Operator;
+import com.devit.mscore.Index.SearchCriteria;
 import com.devit.mscore.Logger;
 import com.devit.mscore.exception.IndexingException;
 import com.devit.mscore.logging.ApplicationLogger;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -155,10 +160,7 @@ public class ElasticsearchService {
 
   Optional<JSONObject> get(String indexName, String id) throws IndexingException {
     LOGGER.debug("Retrieving document '{}' from index '{}'", id, indexName);
-
-    var str = "{\"criteria\":[{\"attribute\":\"id\",\"operator\":\"equals\",\"value\":\"" + id
-        + "\"}],\"page\":0,\"size\":1}";
-    var query = new JSONObject(str);
+    var query = new SearchCriteria(List.of(new Index.Criteria(Operator.EQUALS, ID, id)), 0, 1);
 
     var searchRequest = new SearchRequest(indexName);
     searchRequest.searchType(SearchType.DFS_QUERY_THEN_FETCH);
@@ -171,12 +173,12 @@ public class ElasticsearchService {
     return Optional.of(array.get().getJSONObject(0));
   }
 
-  Optional<JSONArray> search(String indexName, JSONObject query) throws IndexingException {
+  Optional<JSONArray> search(String indexName, SearchCriteria query) throws IndexingException {
     var queryBuilder = ElasticsearchQueryHelper.createQuery(query);
     LOGGER.debug("Executing search query: {}", queryBuilder);
 
-    var queryPage = query.has("page") ? query.optInt("page") : 0;
-    var querySize = query.has("size") ? query.getInt("size") : 10000;
+    var queryPage = query.getPage();
+    var querySize = query.getSize();
     SearchSourceBuilder ssb = new SearchSourceBuilder();
     ssb.postFilter(queryBuilder);
     ssb.from(queryPage * querySize);

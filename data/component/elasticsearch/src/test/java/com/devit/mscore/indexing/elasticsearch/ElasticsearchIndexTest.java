@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import com.devit.mscore.Index.SearchCriteria;
 import com.devit.mscore.exception.IndexingException;
 import com.devit.mscore.exception.RegistryException;
 
@@ -46,8 +47,17 @@ public class ElasticsearchIndexTest {
 
   @Test
   public void testSearch() throws IndexingException {
-    doReturn(Optional.of(new JSONArray())).when(this.service).search(eq("indexName"), any(JSONObject.class));
-    var result = this.index.search(new JSONObject());
+    doReturn(Optional.of(new JSONArray())).when(this.service).search(eq("indexName"), any(SearchCriteria.class));
+    var jsonCriteria = new JSONObject();
+
+    var c = new JSONObject();
+    c.put("operator", "equals");
+    c.put("attribute", "attribute");
+    c.put("value", "value");
+    var criteria = new JSONArray();
+    criteria.put(c);
+    jsonCriteria.put("criteria", criteria);
+    var result = this.index.search(jsonCriteria);
     assertTrue(result.isPresent());
   }
 

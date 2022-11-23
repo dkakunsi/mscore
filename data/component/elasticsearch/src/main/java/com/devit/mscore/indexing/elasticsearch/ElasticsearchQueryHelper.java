@@ -1,43 +1,40 @@
 package com.devit.mscore.indexing.elasticsearch;
 
+import com.devit.mscore.Index.Criteria;
+import com.devit.mscore.Index.Criteria.Operator;
+import com.devit.mscore.Index.SearchCriteria;
+
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class ElasticsearchQueryHelper {
-
-  private static final String EQUALS = "equals";
-
-  private static final String ATTRIBUTE = "attribute";
-
-  private static final String CRITERIA = "criteria";
 
   private ElasticsearchQueryHelper() {
   }
 
-  public static QueryBuilder createQuery(JSONObject query) {
+  public static QueryBuilder createQuery(SearchCriteria query) {
     if (isAllQuery(query)) {
       return allQuery();
     }
-    return attributesQuery(query.getJSONArray(CRITERIA));
+    return attributesQuery(query.getCriteria());
   }
 
-  private static boolean isAllQuery(JSONObject query) {
-    return query.getJSONArray(CRITERIA).isEmpty();
+  private static boolean isAllQuery(SearchCriteria query) {
+    return query.getCriteria().isEmpty();
   }
 
   private static QueryBuilder allQuery() {
-    var terminated = attributeQuery(EQUALS, "status", "Terminated");
+    var terminated = attributeQuery(Operator.EQUALS, "status", "Terminated");
     return QueryBuilders.boolQuery().mustNot(terminated);
   }
 
-  private static QueryBuilder attributeQuery(String operator, String attribute, String value) {
+  private static QueryBuilder attributeQuery(Operator operator, String attribute, String value) {
     switch (operator) {
-      case "contains":
+      case CONTAINS:
         return QueryBuilders.queryStringQuery(String.format("*%s*", value)).field(attribute);
       case EQUALS: // the default is equals operation
       default:
@@ -45,14 +42,13 @@ public class ElasticsearchQueryHelper {
     }
   }
 
-  private static QueryBuilder attributesQuery(JSONArray criteria) {
+  private static QueryBuilder attributesQuery(List<Criteria> criteria) {
     var queryBuilder = QueryBuilders.boolQuery();
 
-    criteria.forEach(criterion -> {
-      var json = (JSONObject) criterion;
-      var operator = json.getString("operator");
-      var attribute = json.getString(ATTRIBUTE);
-      var value = json.getString("value");
+    criteria.forEach(c -> {
+      var operator = c.getOperator();
+      var attribute = c.getAttribute();
+      var value = c.getValue();
 
       queryBuilder.must(attributeQuery(operator, value, 1, attribute.split("\\.")));
     });
@@ -60,7 +56,7 @@ public class ElasticsearchQueryHelper {
     return queryBuilder;
   }
 
-  private static QueryBuilder attributeQuery(String operator, String value, int currentDepth, String... path) {
+  private static QueryBuilder attributeQuery(Operator operator, String value, int currentDepth, String... path) {
 
     if (currentDepth < path.length) {
       // Handling nested query.

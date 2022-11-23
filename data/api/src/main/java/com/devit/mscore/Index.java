@@ -92,7 +92,8 @@ public abstract class Index {
 
   public static class SearchCriteria {
 
-    private static final int DEFAULT_SIZE = 10;
+    // A bigger value is needed for enrichment
+    private static final int DEFAULT_SIZE = 10000;
 
     private List<Criteria> criteria;
 
