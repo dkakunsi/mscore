@@ -7,8 +7,10 @@ import com.devit.mscore.Repository;
 import com.devit.mscore.exception.DataException;
 import com.devit.mscore.exception.IndexingException;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -36,11 +38,15 @@ public class MongoIndex extends Index {
   public Optional<JSONArray> search(SearchCriteria criteria) throws IndexingException {
     criteria.validate();
     try {
-      if (!criteria.isEqualitySearch()) {
-        logger.error("Search operator '{}' is not supported", criteria.getOperator());
-        throw new IndexingException("Search operator currently not supported");
+      var listCriteria = new ArrayList<Pair<String, Object>>();
+      for (var c : criteria.getCriteria()) {
+        if (!c.isEqualitySearch()) {
+          logger.error("Search operator '{}' is not supported", c.getOperator());
+          throw new IndexingException("Search operator currently not supported");
+        }
+        listCriteria.add(Pair.of(c.getAttribute(), c.getValue()));
       }
-      return repository.find(criteria.getAttribute(), criteria.getValue());
+      return repository.findByCriteria(listCriteria);
     } catch (DataException ex) {
       logger.error("Cannot search document", ex);
       throw new IndexingException(ex);

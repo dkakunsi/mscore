@@ -6,6 +6,7 @@ import com.devit.mscore.exception.ImplementationException;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -78,6 +79,17 @@ public interface Repository {
    * @throws DataException invalid data is provided.
    */
   default Optional<JSONArray> all() throws DataException {
+    throw new DataException(new ImplementationException());
+  }
+
+  /**
+   * Find data base on the specified criteria.
+   * 
+   * @param criteria to find the data
+   * @return data matching the criteria
+   * @throws DataException invalid data is provided
+   */
+  default Optional<JSONArray> findByCriteria(List<Pair<String, Object>> criteria) throws DataException {
     throw new DataException(new ImplementationException());
   }
 }

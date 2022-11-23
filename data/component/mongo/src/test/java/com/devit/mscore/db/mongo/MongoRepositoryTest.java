@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.AfterClass;
@@ -113,8 +114,8 @@ public class MongoRepositoryTest {
   public void testSave() throws DataException, JSONException {
     var json = new JSONObject();
     json.put("id", "999999999999999999999001");
-    json.put("name", "domain");
-    json.put("domain", "name1");
+    json.put("name", "name1");
+    json.put("domain", "domain");
     json.put("code", "code1");
 
     var result = this.repository.save(json);
@@ -127,9 +128,16 @@ public class MongoRepositoryTest {
     assertTrue(result.similar(json));
 
     // find by code
-    var optResultArr = this.repository.find("code", "code1");
+    var optResultArr = this.repository.findByCriteria(List.of(Pair.of("code", "code1")));
     assertTrue(optResultArr.isPresent());
     var resultArr = optResultArr.get();
+    result = resultArr.getJSONObject(0);
+    assertTrue(result.similar(json));
+
+    // find by code and domain
+    optResultArr = this.repository.findByCriteria(List.of(Pair.of("code", "code1"), Pair.of("domain", "domain")));
+    assertTrue(optResultArr.isPresent());
+    resultArr = optResultArr.get();
     result = resultArr.getJSONObject(0);
     assertTrue(result.similar(json));
   }

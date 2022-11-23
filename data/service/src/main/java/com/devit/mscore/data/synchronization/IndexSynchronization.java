@@ -1,6 +1,8 @@
 package com.devit.mscore.data.synchronization;
 
 import com.devit.mscore.Index;
+import com.devit.mscore.Index.SearchCriteria;
+import com.devit.mscore.Index.SearchCriteria.Operator;
 import com.devit.mscore.Resource;
 import com.devit.mscore.Synchronization;
 import com.devit.mscore.exception.IndexingException;
@@ -64,6 +66,7 @@ public class IndexSynchronization extends Synchronization {
   }
 
   private JSONObject createSearchCriteria(String searchAttribute, String searchValue) {
+    var criteria = new SearchCriteria(Operator.EQUALS, searchAttribute, searchValue);
     var c = new JSONObject();
     c.put("attribute", searchAttribute);
     c.put("operator", "equals");

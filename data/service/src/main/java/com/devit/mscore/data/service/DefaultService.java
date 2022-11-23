@@ -11,6 +11,7 @@ import static com.devit.mscore.util.AttributeConstants.getId;
 
 import com.devit.mscore.FiltersExecutor;
 import com.devit.mscore.Index;
+import com.devit.mscore.Index.SearchCriteria;
 import com.devit.mscore.Logger;
 import com.devit.mscore.PostProcessObserver;
 import com.devit.mscore.Repository;
@@ -205,6 +206,7 @@ public class DefaultService implements Service {
 
   @Override
   public JSONArray search(JSONObject query) throws ApplicationException {
-    return index.search(query).orElse(new JSONArray());
+    var criteria = SearchCriteria.from(query);
+    return index.search(criteria).orElse(new JSONArray());
   }
 }

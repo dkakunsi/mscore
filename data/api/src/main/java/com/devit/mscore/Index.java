@@ -92,13 +92,68 @@ public abstract class Index {
 
   public static class SearchCriteria {
 
+    private static final int DEFAULT_SIZE = 10;
+
+    private List<Criteria> criteria;
+
+    private int page;
+
+    private int size;
+
+    public SearchCriteria(List<Criteria> criteria, int page, int size) {
+      this.criteria = criteria;
+      this.page = page;
+      if (size == 0) {
+        this.size = DEFAULT_SIZE;
+      } else {
+        this.size = size;
+      }
+    }
+
+    public List<Criteria> getCriteria() {
+      return criteria;
+    }
+
+    public int getPage() {
+      return page;
+    }
+
+    public int getSize() {
+      return size;
+    }
+
+    public void validate() throws IndexingException {
+      if (page < 0) {
+        throw new IndexingException("Search page is not valid");
+      }
+      if (size <= 0) {
+        throw new IndexingException("Search size is not valid");
+      }
+      for (var c : criteria) {
+        c.validate();
+      }
+    }
+
+    public static SearchCriteria from(JSONObject json) {
+      var criteria = json.getJSONArray("criteria");
+      var page = json.optInt("page");
+      var size = json.optInt("size");
+
+      var listCriteria = new ArrayList<Criteria>();
+      criteria.forEach(o -> listCriteria.add(Criteria.from((JSONObject) o)));
+      return new SearchCriteria(listCriteria, page, size);
+    }
+  }
+
+  public static class Criteria {
+
+    private static final Logger LOGGER = ApplicationLogger.getLogger(Criteria.class);
+
     protected static final String OPERATOR = "operator";
 
     protected static final String ATTRIBUTE = "attribute";
   
     protected static final String VALUE = "value";
-  
-    private static final Logger LOGGER = ApplicationLogger.getLogger(SearchCriteria.class);
 
     private Operator operator;
 
@@ -106,7 +161,7 @@ public abstract class Index {
 
     private String value;
 
-    public SearchCriteria(Operator operator, String attribute, String value) {
+    public Criteria(Operator operator, String attribute, String value) {
       this.operator = operator;
       this.attribute = attribute;
       this.value = value;
@@ -143,13 +198,13 @@ public abstract class Index {
       return Operator.EQUALS.equals(operator);
     }
 
-    public static SearchCriteria from(JSONObject criteria) {
+    public static Criteria from(JSONObject criteria) {
       var operator = criteria.getString(OPERATOR);
       var attribute = criteria.getString(ATTRIBUTE);
       var value = criteria.getString(VALUE);
-      return new SearchCriteria(Operator.valueOf(operator.toUpperCase()), attribute, value);
+      return new Criteria(Operator.valueOf(operator.toUpperCase()), attribute, value);
     }
-  
+
     public static enum Operator {
       EQUALS("equals"), CONTAINS("contains");
   

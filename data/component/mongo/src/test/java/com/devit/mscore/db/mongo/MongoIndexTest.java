@@ -13,11 +13,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import com.devit.mscore.Index;
-import com.devit.mscore.Index.SearchCriteria.Operator;
+import com.devit.mscore.Index.Criteria.Operator;
 import com.devit.mscore.Repository;
 import com.devit.mscore.exception.DataException;
 import com.devit.mscore.exception.IndexingException;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.json.JSONArray;
@@ -63,24 +64,27 @@ public class MongoIndexTest {
   @Test
   public void givenValidSearchCriteria_WhenSearchSuccessful_ThenShouldReturnResult() throws IndexingException, DataException {
     var array = new JSONArray();
-    doReturn(Optional.of(array)).when(repository).find(anyString(), anyString());
+    doReturn(Optional.of(array)).when(repository).findByCriteria(any());
 
-    var criteria = new Index.SearchCriteria(Operator.EQUALS, "code", "C001");
-    var result = index.search(criteria);
+    var criteria = new Index.Criteria(Operator.EQUALS, "code", "C001");
+    var searchCriteria = new Index.SearchCriteria(List.of(criteria), 0, 0);
+    var result = index.search(searchCriteria);
     assertThat(result.isPresent(), is(true));
   }
 
   @Test
   public void givenValidSearchCriteria_WhenSearchFailed_ThenShouldThrowIndexingException() throws DataException {
-    doThrow(DataException.class).when(repository).find(anyString(), anyString());
-    var criteria = new Index.SearchCriteria(Operator.EQUALS, "code", "C001");
-    assertThrows(IndexingException.class, () -> index.search(criteria));
+    doThrow(DataException.class).when(repository).findByCriteria(any());
+    var criteria = new Index.Criteria(Operator.EQUALS, "code", "C001");
+    var searchCriteria = new Index.SearchCriteria(List.of(criteria), 0, 0);
+    assertThrows(IndexingException.class, () -> index.search(searchCriteria));
   }
 
   @Test
   public void givenValidSearchCriteriaAndOperatorIsContains_WhenSearchExecuted_ThenShouldThrowIndexingException() throws DataException {
-    var criteria = new Index.SearchCriteria(Operator.CONTAINS, "code", "C001");
-    assertThrows(IndexingException.class, () -> index.search(criteria));
+    var criteria = new Index.Criteria(Operator.CONTAINS, "code", "C001");
+    var searchCriteria = new Index.SearchCriteria(List.of(criteria), 0, 0);
+    assertThrows(IndexingException.class, () -> index.search(searchCriteria));
     verify(repository, never()).find(anyString(), anyString());
   }
 

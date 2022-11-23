@@ -16,7 +16,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
@@ -127,6 +129,17 @@ public class MongoRepository implements Repository {
   public Optional<JSONArray> find(String field, Object value) {
     var filter = Filters.eq(field, value);
     var result = collection.find(filter);
+    return loadResult(result);
+  }
+
+  public Optional<JSONArray> findByCriteria(List<Pair<String, Object>> criteria) {
+    if (criteria.size() == 1) {
+      return find(criteria.get(0).getLeft(), criteria.get(0).getRight());
+    }
+
+    var filters = criteria.stream().map((p) -> Filters.eq(p.getLeft(), p.getRight())).collect(Collectors.toList());
+    var aggregate = Filters.and(filters);
+    var result = collection.find(aggregate);
     return loadResult(result);
   }
 
