@@ -84,17 +84,19 @@ public class JSONSchemaTest {
   }
 
   @Test
-  public void testGetUniqueAttributes() throws URISyntaxException, ResourceException {
+  public void testGetIndeces() throws URISyntaxException, ResourceException {
     var resourceFile = getResourceFile("resource/resource.json");
     var content = new JSONSchema(resourceFile).getContent();
     var json = new JSONObject("{\"domain\":\"resource\",\"name\":\"name\"}")
         .put("content", content);
 
     var schema = new JSONSchema(json);
-    var uniqueAttributes = schema.getUniqueAttributes();
+    var indeces = schema.getIndeces();
 
-    assertThat(uniqueAttributes.size(), is(1));
-    assertThat(uniqueAttributes.get(0), is("id"));
+    // indeces = { field: { unique: true } }
+    assertThat(indeces.size(), is(1));
+    assertThat(indeces.get(0).getField(), is("id"));
+    assertThat(indeces.get(0).isUnique(), is(true));
   }
 
   public static File getResourceFile(String resourceName) throws URISyntaxException {

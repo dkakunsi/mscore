@@ -2,6 +2,7 @@ package com.devit.mscore.db.mongo;
 
 import com.devit.mscore.Configuration;
 import com.devit.mscore.Schema;
+import com.devit.mscore.Schema.Index;
 import com.devit.mscore.exception.ApplicationRuntimeException;
 import com.devit.mscore.exception.ConfigException;
 
@@ -65,32 +66,34 @@ public class MongoDatabaseFactory {
     repositories.computeIfAbsent(domain,
         key -> {
           var collection = collection(domain);
-          var uniqueAttributes = schema.getUniqueAttributes();
+          var uniqueAttributes = schema.getIndeces();
           createIndex(collection, uniqueAttributes);
           return new MongoRepository(collection);
         });
     return repositories.get(domain);
   }
 
-  private static void createIndex(MongoCollection<Document> collection, List<String> uniqueAttributes) {
-    var missingIndeces = getMissingIndex(collection, uniqueAttributes);
+  private static void createIndex(MongoCollection<Document> collection, List<Index> indeces) {
+    var missingIndeces = getMissingIndex(collection, indeces);
     if (!missingIndeces.isEmpty()) {
       createMissingIndex(collection, missingIndeces);
     }
   }
 
-  private static List<String> getMissingIndex(MongoCollection<Document> collection, List<String> uniqueAttributes) {
-    var nonExistingIndex = new ArrayList<String>(uniqueAttributes);
+  private static List<Index> getMissingIndex(MongoCollection<Document> collection, List<Index> indeces) {
+    var nonExistingIndex = new ArrayList<Index>(indeces);
     for (var index : collection.listIndexes()) {
       var indexName = index.get("name").toString();
-      nonExistingIndex.remove(indexName);
+      nonExistingIndex.remove(new Index(indexName));
     }
     return nonExistingIndex;
   }
 
-  private static void createMissingIndex(MongoCollection<Document> collection, List<String> missingIndeces) {
-    var indexOptions = new IndexOptions().unique(true);
-    missingIndeces.forEach(index -> collection.createIndex(Indexes.ascending(index), indexOptions));
+  private static void createMissingIndex(MongoCollection<Document> collection, List<Index> missingIndeces) {
+    missingIndeces.forEach(index -> {
+      var indexOptions = new IndexOptions().unique(index.isUnique());
+      collection.createIndex(Indexes.ascending(index.getField()), indexOptions);
+    });
   }
 
   public MongoCollection<Document> collection(String collection) {

@@ -2,8 +2,11 @@ package com.devit.mscore;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.devit.mscore.Schema.Index.Options;
 import com.devit.mscore.exception.ResourceException;
 
 import java.io.File;
@@ -41,6 +44,16 @@ public class SchemaTest {
     assertTrue(StringUtils.isNotBlank(actual.getString("content")));
   }
 
+  @Test
+  public void testCreateIndex() {
+    var index = new Schema.Index("field", new Options(true));
+    assertThat(index.getField(), is("field"));
+    assertThat(index.isUnique(), is(true));
+    assertThat(index.hashCode(), not(0));
+    assertTrue(index.equals(new Schema.Index("field")));
+    assertFalse(index.equals("other"));
+  }
+
   public static File getResourceFile(String resourceName) throws URISyntaxException {
     var resource = SchemaTest.class.getClassLoader().getResource(resourceName);
     return new File(resource.toURI());
@@ -76,7 +89,7 @@ public class SchemaTest {
     }
 
     @Override
-    public List<String> getUniqueAttributes() {
+    public List<Index> getIndeces() {
       return null;
     }
   }

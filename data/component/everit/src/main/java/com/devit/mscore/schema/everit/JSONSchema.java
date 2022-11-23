@@ -22,6 +22,8 @@ public class JSONSchema extends Schema {
 
   private static final String PROPERTIES = "properties";
 
+  private static final String INDEX = "index";
+
   private static final String CONST = "const";
 
   private static final String ONE_OF = "oneOf";
@@ -159,17 +161,18 @@ public class JSONSchema extends Schema {
   }
 
   @Override
-  public java.util.List<String> getUniqueAttributes() {
-    var uniqueAttributes = new ArrayList<String>();
+  public List<Index> getIndeces() {
     var schema = getJsonSchema();
-    var attributes = schema.getJSONObject(PROPERTIES);
-    for (var key : attributes.keySet()) {
-      var attributeProperties = attributes.getJSONObject(key);
-      if (attributeProperties.optBoolean("unique")) {
-        uniqueAttributes.add(key);
-      }
-    }
-    return uniqueAttributes;
+    var indexDefinition = schema.getJSONArray(INDEX);
+
+    var indeces = new ArrayList<Index>();
+    indexDefinition.forEach(i -> {
+      var json = (JSONObject) i;
+      var field = json.getString("field");
+      var isUnique = json.getBoolean("unique");
+      indeces.add(new Index(field, new Index.Options(isUnique)));
+    });
+    return indeces;
   }
 
   private JSONObject getJsonSchema() {

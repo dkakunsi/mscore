@@ -10,8 +10,7 @@
     },
     "id": {
       "type": "string",
-      "maxLength": 8,
-      "unique": true
+      "maxLength": 8
     },
     "name": {
       "type": "string",
@@ -56,5 +55,11 @@
     "id",
     "name",
     "reference1"
+  ],
+  "index": [
+    {
+      "field": "id",
+      "unique": true
+    }
   ]
 }

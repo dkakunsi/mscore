@@ -105,7 +105,8 @@ public class MongoRepositoryTest {
 
     var schema = mock(Schema.class);
     doReturn("domain").when(schema).getDomain();
-    doReturn(List.of("id", "code")).when(schema).getUniqueAttributes();
+    var indexOption = new Schema.Index.Options(true);
+    doReturn(List.of(new Schema.Index("id", indexOption),new Schema.Index( "code", indexOption))).when(schema).getIndeces();
 
     this.repository = databaseFactory.repository(schema);
   }

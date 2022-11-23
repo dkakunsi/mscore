@@ -18,7 +18,7 @@ public class MongoIndex extends Index {
 
   private Repository repository;
 
-  protected MongoIndex(String indexName, Repository repository) {
+  public MongoIndex(String indexName, Repository repository) {
     super(indexName);
     this.repository = repository;
   }
