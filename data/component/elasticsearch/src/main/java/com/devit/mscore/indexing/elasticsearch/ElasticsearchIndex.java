@@ -28,8 +28,12 @@ public class ElasticsearchIndex extends Index {
 
   @Override
   public Optional<JSONArray> search(JSONObject criteria) throws IndexingException {
-    var query = SearchCriteria.from(criteria);
-    return service.search(indexName, query);
+    return search(SearchCriteria.from(criteria));
+  }
+
+  @Override
+  public Optional<JSONArray> search(SearchCriteria criteria) throws IndexingException {
+    return service.search(indexName, criteria);
   }
 
   @Override
